@@ -42,7 +42,7 @@ There are three viable families for real-time voice interaction. They differ in 
 
 ### 2.2 Recommended Hybrid Topology
 
-```mermaid
+\`\`\`mermaid
 flowchart TD
     A[User audio] --> B[VAD + Turn Detector]
     B --> C{Mode Router}
@@ -59,7 +59,7 @@ flowchart TD
     L --> M[Learning Record Store]
     J --> M
     F --> A
-```
+\`\`\`
 
 **Component responsibilities.**
 
@@ -91,7 +91,7 @@ A common implementation mistake is to wait for STT finalization before invoking 
 The STT choice is a trade-off between accuracy, latency, language coverage, streaming support, licensing, and cost. The following shortlist covers the viable managed and open-weight options.
 
 | Model | Type | WER (reported) | Latency / streaming | License | Notable constraints |
-|---|---|---|---|---|---|
+|---|---|---|---|---|
 | **Deepgram Nova-3** | Managed | Competitive; not directly comparable across benchmarks | Streaming; first-partial in the 100–150 ms band | Proprietary API | Pay-as-you-go $0.0043/min monolingual, $0.0052/min multilingual; 45+ languages |
 | **Deepgram Flux** | Managed | Newer model; promotional pricing | Streaming | Proprietary API | $0.0078/min pay-as-you-go; positioned for conversational workloads |
 | **ElevenLabs Scribe v2 Realtime** | Managed | Vendor claims sub-150 ms latency; 90+ languages | Streaming | Proprietary API | Vendor claims $0.40/hour, “72% cheaper than Google or AWS”; treat as vendor claim until independently verified |
@@ -121,7 +121,7 @@ TTS quality and latency have improved dramatically, and the managed market is se
 | **ElevenLabs Flash v2.5 / Turbo** | Managed | ~75 ms Flash; ~150 ms standard | Yes, extensive | 70+ | Proprietary; ~$0.05/min for v3 Conversational, ~$0.10/min for standard; free plan 15 minutes |
 | **ElevenLabs v3 Conversational** | Managed | ~280 ms | Yes | 70+ | Proprietary; ~$0.05/min |
 | **Kokoro** | Open-weight | Realtime on CPU (ONNX int8) | Limited | 8+ languages | Apache 2.0; 82M params |
-| **Orpheus** | Open-weight | ~0.2× realtime on CPU; GPU required for realtime | Yes | English-focused | Apache 2.0; 3B params; emotion tags |
+| **Orpheus** | Open-weight | ~0.2× realtime on CPU; GPU required for realtime | Yes, English-focused | English-focused | Apache 2.0; 3B params; emotion tags |
 | **XTTS v2 (Coqui)** | Open-weight | Moderate | Yes, 17 languages | 17 | Coqui Public Model License; non-commercial by default, commercial use requires separate terms |
 | **Piper** | Open-weight | Fastest embedded; ONNX | Limited | Many | MIT |
 | **Chatterbox / CosyVoice 2 / OpenVoice v2** | Open-weight | Varies | Yes | Varies | MIT / Apache 2.0 |
@@ -152,7 +152,7 @@ S2S models accept audio and emit audio without an intermediate text bottleneck. 
 | **OpenAI gpt-realtime** | $32/M audio input, $64/M audio output, $0.40/M cached input | ~$0.06/min input + ~$0.24/min output; roughly $0.15/min blended |
 | **OpenAI gpt-realtime-mini** | $10/M audio input, $0.30/M cached | Lower-cost variant |
 | **Gemini Live (gemini-3.x-live)** | $3.00/M audio input ($0.005/min), $12.00/M audio output ($0.018/min) | ~$0.023/min audio output; text output $4.50/M |
-| **Amazon Nova 2 Sonic** | $0.33/M input, $2.75/M output | Positioned as significantly cheaper than GPT-4o; vendor claims ~80% cheaper than GPT-4o for the original Nova Sonic |
+| **Amazon Nova 2 Sonic** | $0.33/M input, $2.75/M output | Positioned as significantly cheaper than GPT-4o; vendor claims ~80% cheaper than the original Nova Sonic |
 | **Deepgram Voice Agent API** | $4.50/hour flat | Vertically integrated Nova-3 + Aura-2; ~$0.075/min |
 | **ElevenLabs Conversational AI** | ~$0.10/min standard, $0.08/min Business, $0.02–0.03/min at high volume + LLM cost | Latency 1–3 s in vendor comparison; not an S2S model, an orchestration platform |
 
@@ -215,7 +215,7 @@ Tool calling is the mechanism by which the voice agent fetches review items, rec
 
 **Verified fact.** NemotronLabs VoiceChat is an open full-duplex S2S model with native tool-calling capabilities, combining a streaming speech encoder and decoder-only language model with parallel output streams for agent text and structured function calls. This is a promising direction but its production maturity is unknown.
 
-**Technical inference.** In the cascaded pipeline, tool calling belongs at the LLM stage and should be governed by the pedagogical orchestrator, not left entirely to the model’s discretion. The orchestrator should decide which tools are exposed for a given scenario and learner state, and it should validate tool arguments before execution. For example, the `record_pronunciation_score` tool should not be callable until the acoustic scorer has produced a score; the `fetch_next_review_item` tool should respect the spaced-repetition scheduler’s due-item policy.
+**Technical inference.** In the cascaded pipeline, tool calling belongs at the LLM stage and should be governed by the pedagogical orchestrator, not left entirely to the model’s discretion. The orchestrator should decide which tools are exposed for a given scenario and learner state, and it should validate tool arguments before execution. For example, the \`record_pronunciation_score\` tool should not be callable until the acoustic scorer has produced a score; the \`fetch_next_review_item\` tool should respect the spaced-repetition scheduler’s due-item policy.
 
 **Critical dependency on platform and learning science.** Tool-calling reliability depends on the LLM’s function-calling quality and on the schema design of the tools. The learning-science report must define the review-item schema, the scoring rubric, and the scheduling policy; the platform report must define the API contracts and authorization model. The voice pipeline’s responsibility is to ensure that tool calls are executed within the latency budget (they should not block the audio path) and that their results are incorporated into the next LLM turn without breaking streaming.
 
@@ -420,7 +420,7 @@ The following is a rough order-of-magnitude estimate for a cascaded pipeline ser
 The following decision criteria should guide the voice/AI specialty’s choices:
 
 1. **Pedagogical control first.** Any component that prevents the orchestrator from inspecting, correcting, or scoring the interaction is disqualified from the default path.
-2. **Latency SLO per scenario class.** A single global latency target is wrong; each scenario class should have its own target and its own acceptance criteria.
+2. **Latency SLO per scenario class.** A single global latency target is wrong; each scenario class must have its own target and its own acceptance criteria.
 3. **Provider portability.** The architecture must allow STT, LLM, TTS, and S2S providers to be swapped without rewriting the orchestrator or the learning logic.
 4. **Zero-spend development, paid production.** The development path must be free; the production path must be priced honestly, including concurrency and SLA costs.
 5. **Observability is non-negotiable.** Every stage must emit latency, error, and fallback metrics. A voice pipeline without observability cannot be tuned or trusted.
