@@ -60,3 +60,24 @@ The Grok PDF required OCR (Tesseract, 300 DPI). Its conversion contains recogniz
 The converted files are comparison aids, not replacements for the originals or automatically authoritative transcriptions. No content in `grok.md` or `perplexity.md` was changed on the basis of conversion alone.
 
 **Interpretation:** the repository history records `grok.md` as added verbatim and `perplexity.md` as an archived original report. The present PDF-conversion exercise has not disproved that provenance; it has only failed to establish exact equivalence between the Markdown and the PDF exports. The archived Markdown should not be labelled “unverified” without specifying which relationship is meant. A direct byte/text comparison against the original full AI responses, if preserved separately from the PDFs, would settle response-to-Markdown fidelity; PDF conversion alone cannot.
+
+## Final content-level verification (2026-10-19)
+
+A section-by-section comparison was run between each archived Markdown report and its committed PDF-derived Markdown comparison copy. The comparison normalizes case, URLs, punctuation, and whitespace, then measures overlap of distinct words. This is a diagnostic for content correspondence, not a cryptographic or verbatim-text test.
+
+| Report | Main-section structure | Distinct-word overlap | Finding |
+|---|---|---|---|
+| Perplexity | All 18 numbered sections are represented; the PDF conversion loses the explicit “7. Candidate architecture” heading but its stack, diagram, and component-responsibility content appears under unnumbered headings | 99.0% of distinct words in the existing Markdown also occur in the PDF conversion; 99.0% of distinct words in the PDF conversion occur in the existing Markdown | **Content correspondence verified at section/word-coverage level.** The remaining character-count difference is not evidence by itself of missing substantive material. Not byte-for-byte identical. |
+| Grok | All 7 numbered sections are represented | 91.3% of distinct words in the existing Markdown occur in the OCR conversion; 97.9% of distinct words in the OCR conversion occur in the existing Markdown | **Broad content correspondence verified; exact wording/table fidelity remains unverified.** The largest mismatch is the competitor matrix, where image-based PDF OCR fails to recover some table text. Other numbered sections show approximately 92.7%–100% distinct-word coverage in the existing Markdown, with most above 98%. |
+
+The overall figures above are based on normalized distinct-word sets, not character-level similarity. They must not be described as “99% of the text is identical” or as proof that every sentence and table cell matches. The earlier 84.8%/85.2% SequenceMatcher scores used a different normalization/comparison method and should be treated as rough diagnostics; the section-level analysis provides a more useful description of where the conversion succeeds and where OCR/layout loss is concentrated.
+
+### Final disposition
+
+- **Claude, Gemini Deep Research, and DeepSeek:** byte-for-byte verified against the supplied plain-text source files.
+- **Perplexity:** verified as a strong content-level match to the preserved PDF export, across the report structure and normalized vocabulary; not byte-for-byte verified.
+- **Grok:** verified as a broad content-level match to the preserved PDF export across all seven major sections; exact table and wording fidelity cannot be certified from the image-based PDF OCR.
+- **Source-of-truth policy:** keep both original PDFs unchanged as the authoritative preserved source artifacts. Keep `grok.md` and `perplexity.md` as useful text archives, and keep the PDF-derived Markdown under `converted/` as comparison aids. Do not overwrite either report with OCR output.
+- **Scope limitation:** the supplied archive contains the original Grok and Perplexity PDFs, but no separate plain-text captures of those two original responses. Therefore a byte-for-byte comparison against a separate raw response capture is not possible from the preserved files currently available. This limitation does not mean the existing Markdown reports are unsupported or unusable; it defines the fidelity level that can honestly be claimed.
+
+This closes the available-file verification task at the level supported by the preserved sources. No further PDF reconversion is needed unless a specific OCR/table discrepancy is being investigated.
