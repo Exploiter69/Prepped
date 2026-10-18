@@ -1,241 +1,388 @@
-# Prepped — Product Blueprint
+# Prepped — Complete Product and System Blueprint
 
-**Status:** Product direction v1.0 — research synthesis, ready to guide the first implementation  
+**Version:** 2.0 — complete project direction  
+**Status:** Approved direction for implementation; not a claim that the software is already built  
 **Last updated:** 2026-10-19  
-**Source research:** Claude, Gemini Deep Research, DeepSeek, Grok, and Perplexity reports archived under [`research/raw/`](../research/raw/).
+**Repository:** Exploiter69/Prepped  
+**Companion documents:** [Complete Roadmap](COMPLETE_ROADMAP.md) · [Research Decision Matrix](RESEARCH_DECISION_MATRIX.md) · [Research Archive Verification](../research/raw/VERIFICATION.md)
 
-> Prepped helps Indian engineering students practise important placement and professional conversations, get specific feedback tied to what they actually said, and improve through repeated practice.
+## 1. Product definition
 
-This is the agreed product direction—not a claim that the software is already built or that learning outcomes have been proven.
+**Prepped helps Indian engineering students practise important placement and professional conversations, get specific feedback tied to what they actually said, and improve through repeated practice.**
 
-## 1. The problem
+Prepped is a structured practice environment, not a general-purpose chatbot, an official university service, a hiring tool, or a placement predictor.
 
-Students can know technical concepts and still struggle to explain a project, answer interview questions clearly, organise an answer under pressure, or respond confidently to follow-up questions. Generic chatbots can help, but unstructured chatting does not guarantee realistic practice, useful feedback, or deliberate improvement over time.
+### The problem
 
-Prepped will provide **structured conversation practice**: a realistic scenario, clear goal, a short session, evidence-linked feedback, and a practical next attempt.
+Students may understand their projects and technical subjects but still find it difficult to explain their contribution, organise an answer, support claims with concrete examples, or respond to follow-up questions under pressure. Practising in front of peers or mentors can feel embarrassing, while generic chat does not guarantee realistic scenarios or useful feedback.
 
-## 2. Who we build for first
+Prepped offers a private, repeatable way to practise a defined conversation, review the answer, and try again with a clear next step.
 
-**Primary user:** Indian college engineering students preparing for placements, internships, project reviews, and professional communication.
+### Primary user
 
-**First job to be done:** “Help me practise explaining my project and answering follow-up questions before a real placement interview.”
+Indian college engineering students preparing for placements, internships, project reviews, and early-career professional communication.
 
-**Initial scenario:** *Explain your project to a placement interviewer.* The interviewer asks a small number of relevant follow-ups based on the student's answers. The learner can retry after receiving feedback.
+### First job to be done
 
-English is the first practice language. Keep the interface simple and allow clear, natural Indian English. Do not claim support for every Indian accent or language until tested.
+“Help me practise explaining my project and answering follow-up questions before a real placement interview.”
 
-### Why this starting point
+### First scenario
 
-- It is specific enough for a student team to implement and evaluate.
-- Students can try it without institutional integrations or paid accounts.
-- A repeatable scenario makes feedback and progress easier to compare than open-ended chat.
-- It leaves a path to add HR interviews, technical explanations, presentations, teamwork, and difficult conversations later.
+**Explain your project to a placement interviewer.**
 
-## 3. The core product loop
+The simulated interviewer asks a small number of follow-ups about the problem, the learner's role, design decisions, evidence/results, and lessons learned. Questions should respond to the learner's actual answers rather than follow a long fixed script.
 
-1. **Choose a scenario** with a clear goal and simple instructions.
-2. **Practise** with a simulated interviewer. The first build may use text; voice is a planned capability, not a prerequisite for proving the scenario and feedback loop.
-3. **Review the transcript** or answers from the session.
-4. **Get actionable feedback**: what worked, what was unclear, and one or two concrete ways to improve.
-5. **Retry the same scenario** and see whether the response improved against the same checklist.
+English is the first practice language. Use clear, natural language and avoid claiming support for every Indian accent or language until it has been tested.
 
-The product's value is not “talk to an AI.” It is **practise → receive evidence-linked feedback → try again**.
+## 2. Product principles
 
-## 4. Scope: what we will and will not build
+1. **Practice a real task:** each session has a clear scenario, role, goal, and ending.
+2. **Evidence before judgement:** feedback must point to words or actions present in the session.
+3. **Action over scores:** give a concrete next step, not an unexplained number.
+4. **Retry is central:** the learner can try again using the same rubric.
+5. **Deterministic control:** application code owns scenario state and allowed transitions; an LLM cannot decide its own permissions.
+6. **Local-first by default:** the core demo must run without a paid API, subscription, hosted database, or paid deployment.
+7. **Privacy is a feature:** collect little data, do not store raw audio by default, and provide deletion for stored sessions.
+8. **Accessible alternatives:** text interaction, readable transcripts, keyboard use, and clear error states are first-class.
+9. **Evidence-led scope:** features are added because tests or users justify them, not because a research report lists them.
+10. **Honest claims:** clearly distinguish proposed, implemented, tested, and observed outcomes.
 
-### First working MVP
+## 3. The first release and its boundaries
 
-- One curated scenario: explaining a project to a placement interviewer.
-- A guided session with a small number of interviewer turns and follow-up questions.
-- Text input and responses, so the end-to-end learning loop can be tested without voice infrastructure.
-- A transparent feedback checklist with examples quoted from the learner's answer.
-- A retry flow using the same rubric.
-- Local session history and a way to delete a session.
-- A small test suite for scenario transitions, feedback structure, and data deletion.
-- Optional local LLM support behind an interface; the basic demo must still run without a paid API.
+### Included in the first working MVP
 
-### Add only after the first MVP works
+- One curated project-explanation interview scenario.
+- A short guided conversation with a small number of relevant follow-up questions.
+- Text input and responses.
+- Ordered session transcript/answer history.
+- Transparent checklist feedback with evidence from the learner's actual answer.
+- One or two concrete improvement actions.
+- Retry of the same scenario.
+- Comparison of first and second attempts using the same rubric.
+- Local session history and explicit session deletion.
+- Automated tests for scenario flow, feedback grounding, malformed output, retry consistency, and deletion.
+- Optional local LLM integration behind a small interface, only if the base app still works without it.
 
-- Local speech-to-text and text-to-speech.
-- Voice practice with captions and interruption handling, once tested on available hardware.
-- A second or third scenario based on student feedback.
-- Local review cards for recurring improvement areas.
-- Basic progress comparison across attempts.
+### Explicitly excluded from the first MVP
 
-### Explicitly out of scope for the first MVP
+- Required paid APIs, temporary free-credit dependencies, paid hosting, or hosted database services.
+- Mandatory login, institution accounts, SSO, LMS integration, or multi-tenant cloud.
+- Public social feeds, profiles, community posts, marketplace, or peer ranking.
+- Multiple agents, a general-purpose graph platform, or a complex workflow engine.
+- Avatars, animated faces, viseme/lip-sync, VR, or virtual worlds.
+- Emotion detection, personality inference, automated confidence scoring, or employability judgements.
+- Phoneme-level pronunciation scores, IELTS/ACTFL certification, or a single overall “communication score.”
+- Predictive placement modelling or any unsupported percentage-improvement claim.
+- Automatic recording or retention of raw audio.
 
-- Avatars, animated faces, lip-sync, or virtual worlds.
-- Multi-agent simulations or a general-purpose graph platform.
-- Institutional dashboards, cohort analytics, SSO, LMS integration, or enterprise features.
-- Public social feeds, community features, or a marketplace.
-- A huge scenario library, mobile apps, or multi-tenant cloud infrastructure.
-- Fine-grained phoneme scoring, emotion detection, personality inference, or automated placement-readiness certification.
-- Claims such as “improves placement chances by 40%” without a properly designed study.
-- Mandatory paid APIs, subscriptions, hosted databases, or paid deployment.
+These exclusions are intentional scope control, not a statement that the features can never be considered.
 
-These features may be reconsidered later only when user evidence, capability, and budget justify them.
+## 4. Core learner experience
 
-## 5. Feedback and evidence rules
+### Flow A — first attempt
 
-Prepped must not pretend that an AI-generated number is an objective measure of ability.
+1. **Welcome:** explain that this is a practice prototype and not an official assessment.
+2. **Scenario briefing:** explain the interviewer role, task, approximate length, and what the learner should prepare.
+3. **Start:** create a local session and show the first interviewer question.
+4. **Answer:** learner enters a text response.
+5. **Follow-up:** deterministic scenario logic chooses a relevant next question using explicit state and simple validated rules. Optional model-generated wording may be used only behind validation.
+6. **Finish:** the learner can finish early or complete the bounded scenario.
+7. **Review:** show the learner's answers and the checklist feedback.
+8. **Retry:** learner tries the same scenario again.
+9. **Compare:** show the two attempts and their checklist criteria side by side.
+10. **Delete:** learner can remove saved session data.
 
-The first rubric uses observable behaviours, for example:
+### Flow B — feedback review
 
-- **Clarity:** Can the learner explain the project's purpose in understandable terms?
-- **Structure:** Does the answer cover the problem, approach, personal contribution, and result?
-- **Specificity:** Does the learner give concrete details instead of unsupported claims?
-- **Follow-up handling:** Does the answer respond to the actual question?
-- **Conciseness:** Does the learner stay relevant without losing important context?
+Every feedback item contains:
 
-For each piece of feedback:
+- Criterion name.
+- Observed evidence from the actual answer.
+- Plain-language explanation of what worked or what is missing.
+- One concrete action or example to try next.
+- An uncertainty state when the answer does not provide enough evidence.
 
-1. Quote or point to the learner's actual words.
-2. Explain the specific issue in plain language.
-3. Offer a concrete revision or practice action.
-4. Say “not enough evidence” when the answer does not support a judgement.
-5. Keep observations separate from conclusions. Do not infer personality, confidence, intelligence, employability, or future placement outcomes from one session.
+Do not quote fabricated text. Do not infer intelligence, personality, confidence, empathy, or hiring potential from a single response. A better second answer is an observed difference in this task, not proof of general employability improvement.
 
-Initially show a checklist and written reasoning, not a single “communication score.” If numeric scoring is explored later, compare it with human ratings first and document the limitations.
+### Flow C — later voice mode
 
-## 6. Architecture decision for the student MVP
+Voice is added only after the text loop works and a feasibility experiment supports it. The expected flow is microphone permission → voice capture → transcript/caption → learner correction when needed → response → feedback. Text remains available when microphone access, speech recognition, hardware, or network conditions fail.
 
-**Choose the simplest local-first modular application. Do not implement the production architectures in the research reports wholesale.**
+## 5. Initial feedback rubric
 
-| Layer | First choice | Reason |
+The initial rubric is formative and checklist-based. It is not a validated psychometric instrument.
+
+| Criterion | Observable question | Example evidence |
 |---|---|---|
-| Application/backend | Python + FastAPI | Familiar AI ecosystem and straightforward testing |
-| Interface | Plain HTML, CSS, and JavaScript served by the app | Avoid a separate frontend build system until it is needed |
-| Storage | SQLite | Local, zero-cost, no database server to operate |
-| Scenario definition | Versioned JSON files | Easy to inspect, edit, and test |
-| Scenario logic | Small deterministic state/turn controller | Predictable behaviour; no general graph engine |
-| Feedback | Explicit rubric + validated structured output | Keeps feedback reviewable and testable |
-| Optional local model | Ollama-compatible local endpoint behind an adapter | No paid API dependency; app must explain when no model is configured |
-| Tests | Python standard test tooling / pytest | Exercise scenario flow, failure cases, and data handling |
+| **Clarity** | Can a listener understand the project's purpose? | The answer explains the problem in plain language |
+| **Structure** | Does the answer cover the key parts in a logical order? | Problem, approach, personal contribution, result |
+| **Specificity** | Does the learner give concrete details rather than unsupported claims? | A named component, decision, constraint, or result |
+| **Follow-up handling** | Does the answer address the question actually asked? | Responds to the interviewer's stated concern rather than changing the subject |
+| **Conciseness** | Is the answer relevant without omitting important context? | Avoids repetition while retaining necessary detail |
 
-Do not introduce PostgreSQL, Redis, queues, background-worker systems, microservices, Kubernetes, or a separate workflow engine for this MVP. They solve problems we do not yet have.
+Each criterion may be marked as **evident**, **partly evident**, or **not enough evidence**. Use these labels as guidance, not as calibrated scores. The exact wording and examples should be reviewed by the team and, if possible, a faculty member before the pilot.
 
-### Voice is a gated second milestone
+### Feedback generation policy
 
-Research consistently identifies voice as the long-term differentiator, but also flags latency, accent robustness, hardware, and model quality as real constraints. Do not assume that local voice will be fast or accurate enough on the available laptop.
+- First choice: transparent deterministic checks and a small curated feedback library.
+- Optional local LLM: may suggest wording or a revision, but the output must be checked against the learner's actual answer and the allowed feedback schema.
+- If model output is malformed, unsupported, or unavailable: fall back to deterministic feedback and tell the learner when a richer suggestion could not be generated.
+- Keep feedback generation separate from the interviewer persona. The interviewer should not expose the full rubric while roleplaying.
+- Record scenario/rubric versions with each session so comparisons remain meaningful.
 
-After the text MVP passes user testing, run a small local feasibility spike:
-- speech-to-text: compare a local Whisper implementation with another viable local option;
-- text-to-speech: compare Piper and Kokoro on the actual machine;
-- language model: benchmark a locally runnable model through the optional adapter;
-- record response time, transcription errors, memory use, and whether the experience is usable.
+## 6. System architecture for the first implementation
 
-Only choose a voice stack after this test. Do not use temporary free API credits as proof of a permanently zero-cost architecture. The product must remain usable in text mode if voice dependencies are unavailable.
+Use one local-first modular application. The design should be simple enough for the student team to understand, test, and explain.
 
-## 7. Privacy and safe defaults
+### Chosen first stack
 
-- Keep development and the initial demo local-first.
-- Do not record or persist raw audio by default.
-- Make session saving explicit and provide deletion.
-- Do not send transcripts to external services without clear user awareness and consent.
-- Treat learner responses as untrusted input; model text must never directly control application permissions or database operations.
-- Validate structured model output and handle malformed or unavailable model responses gracefully.
-- Do not collect sensitive personal details that are unnecessary for interview practice.
-- Do not present generated feedback as a formal hiring decision or validated assessment.
+| Layer | Choice | Responsibility |
+|---|---|---|
+| Application/backend | Python + FastAPI | Serves the interface and handles session operations |
+| Interface | Plain HTML, CSS, JavaScript | Scenario screens, answers, transcript, feedback, retry, comparison |
+| Local data | SQLite | Session metadata, turns/answers, feedback result, deletion |
+| Scenario content | Versioned JSON files | Questions, roles, states, transitions, and completion rules |
+| Scenario controller | Small deterministic Python module | Owns state, validates transitions, decides next allowed question |
+| Feedback | Explicit rubric and validated structured output | Produces evidence-linked coaching |
+| Optional model | Local model adapter, such as an Ollama-compatible endpoint | Provides alternative wording or follow-up phrasing if available |
+| Tests | pytest or Python standard testing tools | Verifies core behaviour and failure handling |
+| Source of truth | GitHub repository | Code, docs, scenario versions, tests, decisions, and evidence |
 
-Before any public deployment or collection of real student data, review applicable privacy obligations and deployment security.
+The optional model adapter is an interface, not a commitment to one model. The app should start and complete the deterministic scenario even if the local model is not installed or running.
 
-## 8. Validation plan
+### Logical modules
 
-Research is not proof of demand or learning impact. The first evidence must come from students trying the actual prototype.
+1. **Scenario catalog:** loads and validates scenario JSON.
+2. **Session controller:** starts, advances, ends, and retries sessions.
+3. **Question selector:** selects the next allowed interviewer question based on scenario state and validated answer signals.
+4. **Answer store:** saves ordered turns for local review.
+5. **Feedback engine:** applies the rubric and associates each feedback item with answer evidence.
+6. **Attempt comparison:** compares two sessions against the same rubric version.
+7. **Privacy/data controls:** deletes selected session data and associated feedback.
+8. **Optional model adapter:** generates suggestions only through a narrow, validated interface.
+9. **Test/evaluation fixtures:** known answers, edge cases, expected transitions, and feedback-grounding checks.
 
-### Small pilot
+Do not create separate services or deployment units for these modules. Keep them as clearly named parts of one application.
 
-Recruit **10–20 student volunteers** if available. Explain that this is an early prototype, not a placement predictor. Ask them to complete the same scenario, read the feedback, and retry.
+### Scenario state model
 
-Record:
-- whether they complete the session without help;
-- which steps confuse them;
-- whether feedback points to something actually present in their answer;
-- whether they can produce a clearer second answer using the feedback;
-- whether they would voluntarily use it again;
-- bugs, failure cases, and time to complete.
+The first scenario can use states such as:
 
-Compare first and second attempts using the same transparent checklist. Keep raw counts and anonymised notes; do not turn a small convenience sample into a broad effectiveness claim. Report the sample size and limitations in any presentation.
+- Introduction
+- Project purpose
+- Learner contribution
+- Design decision
+- Result/evidence
+- Follow-up challenge
+- Learner question / closing
+- Completed
 
-### MVP acceptance checklist
+Transitions are explicit. A state has a goal, a question or allowed question set, and a next state or terminal condition. A model may help phrase a question, but it cannot create arbitrary states, bypass completion rules, or change permissions.
 
-- [ ] A new user can complete the one scenario from start to finish.
-- [ ] Follow-up questions remain relevant to the learner's answer and scenario goal.
-- [ ] Feedback references the actual answer and provides a concrete next step.
-- [ ] The learner can retry and compare both attempts using the same rubric.
-- [ ] Missing or broken local model configuration does not crash the application without explanation.
-- [ ] Session data stays local by default and can be deleted.
-- [ ] Tests cover the main flow, invalid model output, empty answers, and deletion.
-- [ ] A pilot has been run and its findings are recorded honestly.
+### Conceptual data model
 
-## 9. Build roadmap and decision gates
+| Record | Minimum information | Reason |
+|---|---|---|
+| Scenario definition | ID, version, title, role, state list, transitions, rubric reference | Reproducible scenario flow |
+| Session | ID, scenario version, start/end time, status | Session lifecycle |
+| Turn/answer | Session ID, sequence, speaker, text, timestamp/order | Transcript and evidence |
+| Feedback item | Session ID, rubric version, criterion, evidence reference, explanation, next action | Grounded feedback |
+| Attempt comparison | Session IDs and shared rubric version | Consistent retry review |
 
-### Gate 0 — Product foundation
-Write and review this blueprint, create the app skeleton, define the scenario JSON format, and agree on the feedback rubric.
+Avoid storing unnecessary identity, demographic, placement, health, or sensitive information. The first local demo does not need institutional or user-profile tables.
 
-**Exit:** a runnable app skeleton and a documented scenario/rubric.
+## 7. Optional model integration contract
 
-### Gate 1 — One complete text scenario
-Build the scenario flow, answer capture, follow-up logic, feedback checklist, retry, and local storage.
+The app must not require a model to function. If a local model is enabled, keep its responsibility narrow:
 
-**Exit:** the MVP acceptance checklist for the core flow passes locally.
+- Input: scenario-safe context, the current question/state, and learner answer text.
+- Output: a schema-validated suggestion such as a candidate follow-up question or a rewritten example.
+- Forbidden: SQL, direct database access, file access, permission changes, arbitrary scenario transitions, hidden system configuration, or unsupported score claims.
+- Validation: check output shape, length, relevance to current state, and evidence references.
+- Failure: one bounded retry at most, then deterministic fallback.
+- Provenance: record whether a response was deterministic or model-assisted, along with the model/prompt version when available.
 
-### Gate 2 — Test with students
-Run the small pilot, fix confusing interactions, and inspect whether feedback is grounded and useful.
+The application controller remains the authority. Treat all learner text and model output as untrusted input.
 
-**Exit:** documented observations and a decision to iterate, narrow, or proceed. Do not require a predetermined positive result.
+## 8. Privacy, safety, and trust
 
-### Gate 3 — Local voice feasibility
-Benchmark local STT, LLM, and TTS on the actual available hardware; preserve text mode as a fallback.
+### MVP defaults
 
-**Exit:** measured results and a documented go/no-go decision for voice.
+- Local-only operation unless a future deployment explicitly changes that policy.
+- No raw audio capture or storage in the text MVP.
+- Explain what is saved and why.
+- Provide session deletion and test it.
+- Do not transmit learner answers to external services by default.
+- Do not collect personal identifiers that are not required for the practice task.
+- Do not use session content for model training.
+- Show a clear notice that the interviewer is simulated.
+- Provide a stop/end action at all times.
+- Avoid roleplay that pressures users to reveal sensitive personal information.
 
-### Gate 4 — Improve the learning loop
-Add a second scenario and simple recurring-weakness review only if the pilot supports them.
+### Voice-stage requirements
 
-**Exit:** repeat attempts can be compared consistently, and the feature demonstrably addresses a pilot finding.
+- Explicit microphone permission.
+- Separate choice for retaining audio; default to no raw audio retention.
+- Text captions and an alternative text interaction.
+- Visible recording and connection states.
+- No voice cloning.
+- No emotion/personality inference.
+- A documented retention/deletion policy before any external pilot.
 
-### Later, not promised
-Broader language support, more scenarios, validated scoring, mobile packaging, and institutional capabilities remain future options—not MVP commitments.
+### Legal note
 
-## 10. What the five research reports contribute
+Privacy and child-data obligations depend on the launch context and current law. The AI reports are not legal advice. Before processing data from minors or launching a public service, review current requirements with an appropriate qualified person. A local student prototype should minimise data and avoid collecting under-18 user data unless the team has a clear approved process.
 
-The reports are complementary research inputs, not five independent votes that make every proposal correct.
+## 9. Accessibility and usability
 
-- **Claude — architecture:** supports clear module boundaries, versioned scenarios, evidence separated from judgement, testable state transitions, and staged implementation. Its production architecture is deliberately simplified here for a local student MVP.
-- **Gemini Deep Research — voice and learning technologies:** contributes voice pipeline options, local speech tooling, scenario logic, and learning-science ideas. Performance figures and vendor/free-tier details must be rechecked on our hardware before being treated as guarantees.
-- **DeepSeek — voice/AI engineering:** supports comparing cascaded STT → LLM → TTS with speech-to-speech, measuring latency and transcription quality, keeping providers replaceable, and validating feedback. Its managed-provider examples are not a requirement for this zero-spend project.
-- **Grok — market gaps and product opportunities:** informs the scenario-based practice angle, feedback quality, accessibility, and the need to test whether users improve. Competitor observations are hypotheses to revisit, not proof of market demand.
-- **Perplexity — product, learning loop, and roadmap:** contributes the practice → feedback → review → retry loop, competitor mapping, explicit MVP prioritisation, and human-anchored assessment. Its broader platform plan is narrowed to the first student use case.
+Include from the beginning:
 
-### Shared conclusions we adopt
+- Readable typography, contrast, and responsive layout.
+- Keyboard navigation for the entire text flow.
+- Clear focus states and labels.
+- No reliance on colour alone to communicate feedback.
+- A text-only path for every scenario.
+- Clear loading, empty, error, and completion states.
+- An easy-to-find stop, restart, retry, and delete action.
+- For later voice: captions, replay, speed control, microphone state, and graceful fallback.
 
-1. Start with a focused learner and a real practice task.
-2. Make scenarios structured and testable rather than offering only open chat.
-3. Tie feedback to observable evidence and avoid unvalidated scores.
-4. Keep model and voice components replaceable.
-5. Validate demand, usability, and feedback quality with real users.
-6. Defer avatars, institutional tooling, and complex infrastructure.
-7. Keep zero mandatory spend as a hard constraint and state the limits of local/free-tier systems honestly.
+Target good accessibility practices from the first version; formal WCAG conformance should not be claimed without an appropriate audit.
 
-### Disagreements resolved for Prepped
+## 10. Quality strategy
 
-- **Voice-first versus text-first:** voice is the long-term direction, but text is the first implementation gate so the core learning loop can be tested before taking on audio latency and hardware risks.
-- **Managed free tiers versus strictly local:** the reports discuss both; this project chooses local-first and no mandatory paid API. Free quotas may be used only for explicitly optional experiments, never as a dependency.
-- **Production architecture versus student scope:** production reports recommend durable workers, service boundaries, and more sophisticated infrastructure. The MVP uses one local application, SQLite, JSON scenarios, and a deterministic controller.
-- **Broad multi-skill platform versus a narrow wedge:** the long-term idea can grow, but the first use case is project explanation in a placement interview.
+### Functional tests
 
-## 11. Rules for future decisions
+- Scenario JSON validation.
+- Valid state transitions and terminal completion.
+- Question relevance for representative answer cases.
+- Session ordering and persistence.
+- Retry consistency with the same rubric version.
+- Feedback evidence exists in the learner's actual answer.
+- Invalid model output falls back safely.
+- Empty/long/unexpected input handling.
+- Session deletion removes all related local records.
+- Fresh-checkout setup and smoke test.
 
-Every proposed feature must answer:
-1. Which real student problem does it address?
-2. What is the smallest version we can test?
-3. Can it be built and run with no mandatory spending?
-4. How will we know it works?
-5. What existing work or complexity can we avoid?
+### Feedback-quality tests
 
-If there is no clear answer, defer the feature. GitHub is the source of truth; record meaningful product or architecture changes here before expanding scope.
+Create a small fixed set of representative answers:
 
----
+- Clear and well-structured answer.
+- Vague answer with no concrete contribution.
+- Answer that makes a claim without evidence.
+- Answer that does not address the follow-up.
+- Very short answer with insufficient evidence.
+- Prompt-injection attempt asking the model to ignore the scenario.
+- Malformed or fabricated model output.
 
-**Current decision:** build one local text-based project-interview practice flow with evidence-linked checklist feedback and retry. Test it with students. Then measure whether local voice is feasible on the actual hardware.
+For each case, record expected behaviour and regressions. Automated tests can verify grounding and structure; human review is still required to judge whether feedback is understandable and useful.
+
+### Pilot metrics
+
+For a small pilot of 10–20 student volunteers if available, record:
+
+- Completion without assistance.
+- Confusing steps and bugs.
+- Whether feedback cites actual answers.
+- Whether the learner understands the next action.
+- Change between first and second attempts using the same checklist.
+- Willingness to use it again.
+- Time to complete and reported friction.
+
+State the sample size and limitations. Do not claim causality or general placement impact from a small convenience sample.
+
+## 11. Voice architecture — future option, not a dependency
+
+The reports discuss cascaded speech pipelines (VAD → STT → LLM → TTS), speech-to-speech, LiveKit Agents, Pipecat, Whisper/faster-whisper, Parakeet, Kokoro, Piper, and multiple managed providers.
+
+No voice framework or model is selected yet. After the text MVP and pilot:
+
+1. Benchmark local STT, TTS, and optional LLM on the actual available laptop.
+2. Record hardware, model versions, setup burden, latency, memory use, transcription errors, and failures.
+3. Start with push-to-talk or record-and-submit turns before full-duplex streaming.
+4. Keep the transcript inspectable and correctable.
+5. Use a deterministic scenario controller and run assessment off the live response path.
+6. Compare LiveKit Agents and Pipecat only if a realtime transport is justified.
+7. Preserve text fallback.
+8. Make a documented go/no-go decision.
+
+A reported 500 ms latency or a model benchmark in an AI report is not a Prepped performance result. Report only measurements from the actual tested setup.
+
+## 12. Learning loop beyond the first MVP
+
+After feedback and retry prove useful, consider a review loop:
+
+1. Identify a concrete weakness in a learner answer.
+2. Propose a small review item tied to the source answer.
+3. Let the learner accept, edit, or reject it.
+4. Deduplicate similar items.
+5. Reintroduce the skill in a later scenario.
+6. Observe whether the learner applies the idea again.
+7. Consider FSRS scheduling only after review-item quality and usefulness are demonstrated.
+
+Candidate review items may include project explanation structure, missing evidence, concise phrasing, or handling a common follow-up. Do not automatically turn uncertain AI judgments into persistent learner traits.
+
+## 13. Complete project phases
+
+The detailed gates, tasks, semester map, testing plan, and deliverables live in the [Complete Roadmap](COMPLETE_ROADMAP.md). The overall order is:
+
+1. **Foundation:** repository truth, scenario, rubric, local app skeleton.
+2. **Text vertical slice:** scenario, answers, feedback, retry, comparison, deletion.
+3. **Pilot:** student usability and feedback-grounding evidence.
+4. **Quality iteration:** improve the loop based on observed problems.
+5. **Voice feasibility:** measure local models and hardware.
+6. **Voice integration:** only if the experiment passes.
+7. **Review loop:** evidence-linked review items and later scheduling.
+8. **Second scenario:** validate reusable scenario structure.
+9. **Human calibration:** evaluate rubric consistency before any score claims.
+10. **Final-year options:** additional scenarios, language support, faculty/institution features, advanced audio, or avatars only when justified.
+
+## 14. Feature priority by evidence gate
+
+| Feature | Priority | Gate |
+|---|---|---|
+| One text project-interview scenario | Required | First runnable MVP |
+| Evidence-linked checklist feedback | Required | First runnable MVP |
+| Retry and attempt comparison | Required | First runnable MVP |
+| Local history and deletion | Required | First runnable MVP |
+| Optional local LLM | Optional | Only after deterministic flow works |
+| Voice input/output | Conditional | Local hardware feasibility |
+| Review items | Later | Feedback quality and student usefulness |
+| FSRS | Later experiment | Review-item usefulness demonstrated |
+| Second scenario | Later | Pilot identifies useful expansion |
+| Pronunciation/GOP scoring | Research only initially | Audio benchmark and human validation |
+| Numeric rubric score | Not in v1 | Human calibration and clear validity limits |
+| Avatar/lip-sync/VR | Deferred | Evidence of learning benefit and feasible cost |
+| Faculty dashboards / LMS / SSO | Deferred | Real stakeholder need, privacy basis, and capacity |
+| Placement prediction / “40% improvement” | Not approved | Requires a properly designed study; no claim currently supported |
+
+## 15. How research is used
+
+The five AI reports are complementary, not a single authoritative specification:
+
+- **Claude** informs boundaries, state control, evidence provenance, reliability, privacy, and testing; its production infrastructure is simplified.
+- **Gemini Deep Research** informs scenario learning, local voice options, accessibility, FSRS and pronunciation-assessment hypotheses; its performance, pricing, and legal claims require verification.
+- **DeepSeek** informs future voice-pipeline comparisons, streaming/interruption requirements, stage-level measurement, fallbacks, and human validation.
+- **Grok** informs competitor hypotheses and potential differentiation; its image-based PDF limits exact transcription fidelity and its market claims need fresh verification.
+- **Perplexity** informs the broader practice-feedback-review loop, accessibility, assessment validity, and future feature roadmap; its broad production stack is narrowed to the first student use case.
+
+See the [Research Decision Matrix](RESEARCH_DECISION_MATRIX.md) for explicit adopted, deferred, rejected, and re-verification decisions. See the archive [verification report](../research/raw/VERIFICATION.md) for source fidelity.
+
+## 16. Claim and evidence policy
+
+Every project claim must be labelled correctly:
+
+- **Proposed:** written in a plan but not built.
+- **Implemented:** present in the code.
+- **Tested:** a repeatable test verifies it; record test and environment.
+- **Observed:** a pilot or experiment produced recorded results.
+- **Externally reported:** supported by a named source and date.
+- **Hypothesis:** plausible but not established.
+
+Do not use AI-generated research as proof of implementation. Do not present the previous “40% improvement in readiness” statement as a result. Do not say Prepped measures confidence, personality, employability, or placement chances. Do not claim formal accessibility conformance, legal compliance, or validated assessment without the relevant review.
+
+## 17. Current decision
+
+**Build one local text-based project-interview practice flow with evidence-linked checklist feedback, retry, attempt comparison, local history, and deletion. Test it with students. Then measure local voice feasibility on actual hardware.**
+
+That is the project's committed starting point. Everything else remains a conditional expansion, not a prerequisite.
