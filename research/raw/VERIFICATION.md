@@ -53,7 +53,7 @@ A second comparison was performed after converting both PDFs to Markdown with Py
 | `converted/perplexity-from-pdf.md` | 45,677 | `perplexity.md` | 64,274 |
 | `converted/grok-from-pdf.md` | 14,637 | `grok.md` | 16,651 |
 
-The converted Perplexity file retains the main 18-section structure, but the existing Markdown has additional subsections (including a core user journey, open-source/infrastructure projects, evaluation datasets, and explicit acceptance-criteria headings) and is materially longer. The conversion and existing Markdown therefore are not interchangeable; these differences require content-level review before any edits are justified.
+The converted Perplexity file retains the main 18-section structure and contains the same key subsections checked (including core user journey, open-source/infrastructure projects, evaluation datasets, and acceptance criteria). Heading formatting and layout differ, and the converted file is shorter by 18,597 characters. That size difference alone does not establish that substantive content is missing; a detailed sentence/table-level review would be needed to certify completeness.
 
 The Grok PDF required OCR (Tesseract, 300 DPI). Its conversion contains recognizable versions of all seven major report sections, but OCR artifacts remain and the Markdown's wording/length differs. OCR output cannot establish verbatim fidelity.
 
