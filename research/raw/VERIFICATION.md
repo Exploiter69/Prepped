@@ -32,7 +32,7 @@ The original DeepSeek source is a `.txt` file; `deepseek.md` contains the same b
 
 ## PDF-derived Markdown comparison
 
-The original PDFs were extracted locally with `pdftotext` and, for Grok, rendered with `pdftoppm` and OCRed with Tesseract. A diagnostic comparison lowercased text, replaced URLs with a common placeholder, collapsed whitespace, and used Python `SequenceMatcher`. These similarity figures help locate discrepancies but are **not** proof of completeness or fidelity.
+The original PDFs were extracted locally with `pdftotext` and, for Grok, rendered with `pdftoppm` and OCRed with Tesseract. A diagnostic comparison lowercased text, replaced URLs with a common placeholder, collapsed whitespace, and used Python `SequenceMatcher`. These scores assess only how the current Markdown compares with a machine-extracted PDF representation; they do **not** establish whether the archived Markdown matches the full AI response the user originally supplied. These are two separate verification questions.
 
 | Source PDF | Existing Markdown | Extracted/normalized source | Normalized Markdown | Similarity | Assessment |
 |---|---|---:|---:|---:|---|
@@ -41,10 +41,10 @@ The original PDFs were extracted locally with `pdftotext` and, for Grok, rendere
 
 The raw Perplexity text extraction was 58,092 characters before normalization. Direct text extraction from Grok yielded only 8 bytes, so its 14,015-character comparison source came from OCR.
 
-| Existing path | Git blob SHA | Status |
-|---|---|---|
-| `grok.md` | `312e3fa27ac4fa11f97705a5513cb45793013b8f` | Markdown derivative; not verified as a verbatim transcription of the original PDF |
-| `perplexity.md` | `cd6f9c3bda56648feac901431acc77e469f76e72` | Markdown derivative; not verified as a verbatim transcription of the original PDF |
+| Existing path | Git blob SHA | Repository provenance | PDF comparison status |
+|---|---|---|---|
+| `grok.md` | `312e3fa27ac4fa11f97705a5513cb45793013b8f` | Added in commit `d059ec9`, titled “Add original Grok competitor research report verbatim” | Not proven to be a verbatim transcription of the PDF; OCR comparison is inconclusive |
+| `perplexity.md` | `cd6f9c3bda56648feac901431acc77e469f76e72` | Added in commit `f56e326`, titled “Archive original Perplexity research report” | Not proven to be a verbatim transcription of the PDF; text-extraction comparison is inconclusive |
 
 A second comparison was performed after converting both PDFs to Markdown with PyMuPDF4LLM; the generated comparison files are committed under `research/raw/converted/`:
 
@@ -59,4 +59,4 @@ The Grok PDF required OCR (Tesseract, 300 DPI). Its conversion contains recogniz
 
 The converted files are comparison aids, not replacements for the originals or automatically authoritative transcriptions. No content in `grok.md` or `perplexity.md` was changed on the basis of conversion alone.
 
-The original PDFs remain preserved separately. Do not describe these two Markdown files as exact copies unless their textual fidelity is established through closer review. The normalized similarity score alone is not enough to decide which text should be changed.
+**Interpretation:** the repository history records `grok.md` as added verbatim and `perplexity.md` as an archived original report. The present PDF-conversion exercise has not disproved that provenance; it has only failed to establish exact equivalence between the Markdown and the PDF exports. The archived Markdown should not be labelled “unverified” without specifying which relationship is meant. A direct byte/text comparison against the original full AI responses, if preserved separately from the PDFs, would settle response-to-Markdown fidelity; PDF conversion alone cannot.
