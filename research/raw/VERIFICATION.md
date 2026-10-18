@@ -2,30 +2,36 @@
 
 Repository: `Exploiter69/Prepped`
 Branch: `main`
+Last verified: 2026-10-19
 
-## Verification status (2026-10-19)
+## Original source archive
 
-The user supplied a ZIP containing the five original research artifacts. The ZIP passed its integrity test and contains:
+The five supplied source files are preserved under `research/raw/originals/` in commit `fa3ea9b` (`Archive original AI research reports`). The three text originals' Git blob SHAs were checked against the uploaded ZIP's file bytes and match exactly. The two PDFs were copied unchanged and committed as binary files.
 
-- Claude: Markdown source (56,775 bytes)
-- Gemini Deep Research: Markdown source (51,345 bytes)
-- DeepSeek: text source (57,062 bytes)
-- Grok: PDF source (8 pages; image-only pages)
-- Perplexity: PDF source (8 pages)
+| Source | Archived path | Bytes | Git blob SHA |
+|---|---|---:|---|
+| Claude | `originals/claude.md` | 56,775 | `0f1eb4d0eb7acad2ca472a1f47a585071a66d19e` |
+| Gemini Deep Research | `originals/gemini-deep-research.md` | 51,345 | `298923132019171f3f52b2c20755e0b5263e6dd7` |
+| DeepSeek | `originals/deepseek.txt` | 57,062 | `8888fcd5432c7eab6ca99446c2af3187c7798fae` |
+| Grok | `originals/grok_report.pdf` | 5,543,785 | `25c384d49410319cea074325442fcf52aa8ac5c9` |
+| Perplexity | `originals/perplexity_report.pdf` | 1,226,022 | `55b6f9ef69f95cbeea5a61b37d72cd32cb333884` |
 
-The existing Markdown files in `research/raw/` are **not verified exact copies** of those original artifacts. Comparison findings:
+Paths in this table are relative to `research/raw/`.
 
-| Report | Existing archive file | Finding |
+## Comparison with the existing Markdown files
+
+| Existing file | Existing Git blob SHA | Result |
 |---|---|---|
-| Claude | `claude.md` | Source and archived Git blob SHA differ; not an exact match. |
-| Gemini Deep Research | `gemini-deep-research.md` | Source is 51,345 bytes while the archived text is substantially shorter (37,738 characters); not an exact match. |
-| DeepSeek | `deepseek.md` | Source and archived Git blob SHA differ; not an exact match. |
-| Grok | `grok.md` | Original is an image-based PDF; OCR yields about 14,131 characters versus 16,651 characters in the Markdown archive. OCR is imperfect, so this is not a verbatim comparison. |
-| Perplexity | `perplexity.md` | PDF text extraction yields about 57,940 characters versus 64,274 characters in the Markdown archive; not an exact match. |
+| `claude.md` | `5b9d2bc529512c14bbe034029174067e354c56b9` | Differs from original Claude source; not an exact copy. |
+| `gemini-deep-research.md` | `f80ea7bb9cb8b20bc962d6c8f7f30021cb0ce0a0` | Differs from original Gemini source; not an exact copy. |
+| `deepseek.md` | `f0e0c0e17ff85168a5036551c2e11224ebe54aaf` | Differs from original DeepSeek source; not an exact copy. |
+| `grok.md` | `312e3fa27ac4fa11f97705a5513cb45793013b8f` | Markdown derivative of a PDF; not byte-comparable and not verified as a verbatim transcription. |
+| `perplexity.md` | `cd6f9c3bda56648feac901431acc77e469f76e72` | Markdown derivative of a PDF; not byte-comparable and not verified as a verbatim transcription. |
 
-## Important limitation
+## Status and limitations
 
-The uploaded originals have been inspected locally, but the original files have **not yet been committed into this repository**. The three text-source comparisons used the original files' bytes/Git blob hashes and the existing GitHub blob SHAs. The PDF comparisons are extraction/OCR-based and cannot establish byte-for-byte equality with Markdown.
-
-Do not label any of the five existing Markdown files as an exact match. Preserve the uploaded originals unchanged and add them to the repository before replacing or regenerating archive content. For Grok and Perplexity, preserve the original PDFs themselves; any extracted Markdown should be clearly labeled as a derivative.
-
+- The five original source files are now archived separately from the existing research files.
+- Claude, Gemini, and DeepSeek originals have been checked by Git blob SHA against the uploaded source bytes; all three original archive files match exactly.
+- The existing Claude, Gemini, and DeepSeek Markdown files do not match their original source files byte-for-byte. They have not been overwritten.
+- Grok and Perplexity originals are PDFs, while their existing archive files are Markdown. A byte-for-byte comparison between those formats cannot establish textual fidelity. Treat the Markdown files as unverified derivatives until a careful extraction/OCR comparison is completed.
+- Do not describe any existing Markdown derivative as an exact copy without further evidence.
