@@ -8,7 +8,7 @@ This file tracks archival integrity only. It does not assess or synthesize the r
 | Report | Archive path | Current fetch | Integrity status |
 |---|---|---|---|
 | Claude | `research/raw/claude.md` | Present; 56,769 characters | **Exact match verified in this turn** against the original uploaded text file. Source and GitHub content were character-for-character identical. |
-| DeepSeek | `research/raw/deepseek.md` | Present; 56,783 characters | **Exact match pending.** The original was pasted inline, but its full source text is not available to the current verification process. The opening and ending were checked; that is not proof of exact identity. |
+| DeepSeek | `research/raw/deepseek.md` | Present; 56,793 characters | **Exact match verified in this turn.** Replaced the archive with the complete report supplied by the user, fetched it back from GitHub, and confirmed character-for-character equality (56,793 characters). |
 | Gemini Deep Research | `research/raw/gemini-deep-research.md` | Present; 37,738 characters | **Exact match verified in this turn** against the original uploaded text file. Source and GitHub content were character-for-character identical. |
 | Grok | `research/raw/grok.md` | Present; 16,651 characters | **Exact match was reported as verified in the prior conversation.** This turn confirmed the archived file exists and checked its opening and ending, but the original inline source was not independently available for a fresh comparison. |
 | Perplexity | `research/raw/perplexity.md` | Present; 64,274 characters | **Exact match pending.** The original was pasted inline, but its full source text is not available to the current verification process. The opening and ending were checked; that is not proof of exact identity. |
