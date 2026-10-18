@@ -244,3 +244,10 @@ Do not convert “AI research says it is possible” into “Prepped does it.”
 - Grok: [original PDF](../research/raw/originals/grok_report.pdf) · [readable archive](../research/raw/grok.md) · [PDF conversion comparison](../research/raw/converted/grok-from-pdf.md)
 - Perplexity: [original PDF](../research/raw/originals/perplexity_report.pdf) · [readable archive](../research/raw/perplexity.md) · [PDF conversion comparison](../research/raw/converted/perplexity-from-pdf.md)
 - Archive fidelity notes: [VERIFICATION.md](../research/raw/VERIFICATION.md)
+
+
+## 13. Source-level anomaly found during detailed reading
+
+The preserved Claude architecture report contains an unrelated voice/AI research task brief inserted immediately after the example scenario JSON in section 5.3, before the code fence closes. It begins “Investigate real-time voice interaction...” and ends with a voice-pipeline deliverable description. This appears to be cross-specialty prompt text embedded in the report, not part of the JSON example or a coherent architecture recommendation.
+
+The original source is preserved unchanged because archive integrity matters. For synthesis, treat that inserted brief as a source artefact; the separate DeepSeek report is the actual voice-pipeline specialty report. Do not copy the stray lines into the scenario schema or implementation.
