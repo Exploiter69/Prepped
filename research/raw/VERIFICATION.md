@@ -30,11 +30,20 @@ The existing Markdown files for Claude, Gemini, and DeepSeek were replaced with 
 
 The original DeepSeek source is a `.txt` file; `deepseek.md` contains the same bytes, retained at the existing path for repository continuity.
 
-## PDF-derived Markdown files
+## PDF-derived Markdown comparison
+
+The original PDFs were extracted locally with `pdftotext` and, for Grok, rendered with `pdftoppm` and OCRed with Tesseract. A diagnostic comparison lowercased text, replaced URLs with a common placeholder, collapsed whitespace, and used Python `SequenceMatcher`. These similarity figures help locate discrepancies but are **not** proof of completeness or fidelity.
+
+| Source PDF | Existing Markdown | Extracted/normalized source | Normalized Markdown | Similarity | Assessment |
+|---|---|---:|---:|---:|---|
+| Grok OCR | `grok.md` | 14,015 characters | 16,526 characters | 85.2% | Partial textual similarity; OCR errors and content/format differences need review |
+| Perplexity text extraction | `perplexity.md` | 39,275 characters | 44,875 characters | 84.8% | Partial textual similarity; content/format differences need review |
+
+The raw Perplexity text extraction was 58,092 characters before normalization. Direct text extraction from Grok yielded only 8 bytes, so its 14,015-character comparison source came from OCR.
 
 | Existing path | Git blob SHA | Status |
 |---|---|---|
 | `grok.md` | `312e3fa27ac4fa11f97705a5513cb45793013b8f` | Markdown derivative; not verified as a verbatim transcription of the original PDF |
 | `perplexity.md` | `cd6f9c3bda56648feac901431acc77e469f76e72` | Markdown derivative; not verified as a verbatim transcription of the original PDF |
 
-The source PDFs are preserved separately. PDF-to-Markdown comparison requires text extraction/OCR and manual review; byte-level equality is not meaningful across different formats. Do not describe these two Markdown files as exact copies unless their textual fidelity is separately established.
+The original PDFs remain preserved separately. Do not describe these two Markdown files as exact copies unless their textual fidelity is established through closer review. The normalized similarity score alone is not enough to decide which text should be changed.
