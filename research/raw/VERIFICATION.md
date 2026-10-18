@@ -46,4 +46,17 @@ The raw Perplexity text extraction was 58,092 characters before normalization. D
 | `grok.md` | `312e3fa27ac4fa11f97705a5513cb45793013b8f` | Markdown derivative; not verified as a verbatim transcription of the original PDF |
 | `perplexity.md` | `cd6f9c3bda56648feac901431acc77e469f76e72` | Markdown derivative; not verified as a verbatim transcription of the original PDF |
 
+A second comparison was performed after converting both PDFs to Markdown with PyMuPDF4LLM; the generated comparison files are committed under `research/raw/converted/`:
+
+| PDF-derived comparison file | Characters | Existing Markdown | Characters |
+|---|---:|---|---:|
+| `converted/perplexity-from-pdf.md` | 45,677 | `perplexity.md` | 64,274 |
+| `converted/grok-from-pdf.md` | 14,637 | `grok.md` | 16,651 |
+
+The converted Perplexity file retains the main 18-section structure, but the existing Markdown has additional subsections (including a core user journey, open-source/infrastructure projects, evaluation datasets, and explicit acceptance-criteria headings) and is materially longer. The conversion and existing Markdown therefore are not interchangeable; these differences require content-level review before any edits are justified.
+
+The Grok PDF required OCR (Tesseract, 300 DPI). Its conversion contains recognizable versions of all seven major report sections, but OCR artifacts remain and the Markdown's wording/length differs. OCR output cannot establish verbatim fidelity.
+
+The converted files are comparison aids, not replacements for the originals or automatically authoritative transcriptions. No content in `grok.md` or `perplexity.md` was changed on the basis of conversion alone.
+
 The original PDFs remain preserved separately. Do not describe these two Markdown files as exact copies unless their textual fidelity is established through closer review. The normalized similarity score alone is not enough to decide which text should be changed.
