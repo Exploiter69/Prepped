@@ -1,20 +1,31 @@
 # Raw Research Archive Verification
 
-Repository: `Exploiter69/Prepped-`
+Repository: `Exploiter69/Prepped`
 Branch: `main`
 
-This file tracks archival integrity only. It does not assess or synthesize the reports. Raw report files should remain unchanged.
+## Verification status (2026-10-19)
 
-| Report | Archive path | Current fetch | Integrity status |
-|---|---|---|---|
-| Claude | `research/raw/claude.md` | Present; 56,769 characters | **Exact match verified in this turn** against the original uploaded text file. Source and GitHub content were character-for-character identical. |
-| DeepSeek | `research/raw/deepseek.md` | Present; 56,793 characters | **Exact match verified in this turn.** Replaced the archive with the complete report supplied by the user, fetched it back from GitHub, and confirmed character-for-character equality (56,793 characters). |
-| Gemini Deep Research | `research/raw/gemini-deep-research.md` | Present; 37,738 characters | **Exact match verified in this turn** against the original uploaded text file. Source and GitHub content were character-for-character identical. |
-| Grok | `research/raw/grok.md` | Present; 16,651 characters | **Exact match was reported as verified in the prior conversation.** This turn confirmed the archived file exists and checked its opening and ending, but the original inline source was not independently available for a fresh comparison. |
-| Perplexity | `research/raw/perplexity.md` | Present; 64,274 characters | **Exact match pending.** The original was pasted inline, but its full source text is not available to the current verification process. The opening and ending were checked; that is not proof of exact identity. |
+The user supplied a ZIP containing the five original research artifacts. The ZIP passed its integrity test and contains:
 
-## Verification rule
+- Claude: Markdown source (56,775 bytes)
+- Gemini Deep Research: Markdown source (51,345 bytes)
+- DeepSeek: text source (57,062 bytes)
+- Grok: PDF source (8 pages; image-only pages)
+- Perplexity: PDF source (8 pages)
 
-A report is marked **exact match verified in this turn** only when the complete original source text is available and compares character-for-character equal to the fetched GitHub file. Matching titles, endings, or character counts alone are insufficient.
+The existing Markdown files in `research/raw/` are **not verified exact copies** of those original artifacts. Comparison findings:
 
-No raw report was modified during this verification pass.
+| Report | Existing archive file | Finding |
+|---|---|---|
+| Claude | `claude.md` | Source and archived Git blob SHA differ; not an exact match. |
+| Gemini Deep Research | `gemini-deep-research.md` | Source is 51,345 bytes while the archived text is substantially shorter (37,738 characters); not an exact match. |
+| DeepSeek | `deepseek.md` | Source and archived Git blob SHA differ; not an exact match. |
+| Grok | `grok.md` | Original is an image-based PDF; OCR yields about 14,131 characters versus 16,651 characters in the Markdown archive. OCR is imperfect, so this is not a verbatim comparison. |
+| Perplexity | `perplexity.md` | PDF text extraction yields about 57,940 characters versus 64,274 characters in the Markdown archive; not an exact match. |
+
+## Important limitation
+
+The uploaded originals have been inspected locally, but the original files have **not yet been committed into this repository**. The three text-source comparisons used the original files' bytes/Git blob hashes and the existing GitHub blob SHAs. The PDF comparisons are extraction/OCR-based and cannot establish byte-for-byte equality with Markdown.
+
+Do not label any of the five existing Markdown files as an exact match. Preserve the uploaded originals unchanged and add them to the repository before replacing or regenerating archive content. For Grok and Perplexity, preserve the original PDFs themselves; any extracted Markdown should be clearly labeled as a derivative.
+
