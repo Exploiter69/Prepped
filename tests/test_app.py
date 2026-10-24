@@ -36,13 +36,19 @@ def test_health_endpoint_and_database_initialization(tmp_path: Path) -> None:
     assert {"sessions", "answers"}.issubset(tables)
 
 
-def test_homepage_is_served() -> None:
-    with TestClient(create_app(db_path=Path(":memory:"), scenario_path=SCENARIO_PATH)) as client:
+def test_homepage_and_static_assets_are_served(tmp_path: Path) -> None:
+    with TestClient(create_app(db_path=tmp_path / "test.sqlite3", scenario_path=SCENARIO_PATH)) as client:
         response = client.get("/")
+        css_response = client.get("/static/style.css")
+        js_response = client.get("/static/app.js")
 
     assert response.status_code == 200
     assert "Prepped" in response.text
     assert "practice flow and feedback engine are not implemented yet" in response.text
+    assert css_response.status_code == 200
+    assert "color-scheme: dark" in css_response.text
+    assert js_response.status_code == 200
+    assert 'fetch("/api/health")' in js_response.text
 
 
 def test_scenario_endpoint_returns_versioned_scenario(tmp_path: Path) -> None:
