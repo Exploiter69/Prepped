@@ -62,4 +62,4 @@ Feedback is a simple text heuristic, **not a validated assessment, AI interviewe
 
 ## Current status
 
-The local practice loop is implemented on the Step 5 branch and is under automated test. The intended merge gate is a passing GitHub Actions run. Voice remains a later feasibility experiment based on measurements from the target hardware, not an assumed requirement.
+The local text practice loop is implemented on `main`, including deterministic feedback, retry, attempt comparison, local history, and session deletion. PR #6 improved checklist evidence selection and prompt-specific follow-up signals; its GitHub Actions test run passed before merge. Automated tests cover the core API flow, but a clean-checkout setup check and a human student pilot are still outstanding. Voice remains gated on pilot findings and measured feasibility on the target hardware.
