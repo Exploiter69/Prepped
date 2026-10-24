@@ -22,8 +22,7 @@ OVERVIEW_BENEFIT = (
 )
 OVERVIEW_FEATURES = (
     "posts", "replies", "polls", "voting", "directory", "notices", "feed",
-    "search", "dashboard", "api", "database", "application", "platform",
-    "feature", "tool", "workflow",
+    "search", "dashboard", "api", "database", "endpoint", "test", "interface",
 )
 CONTRIBUTION_ACTIONS = (
     "i built", "i implemented", "i wrote", "i developed", "i designed",
@@ -69,7 +68,7 @@ STRUCTURE_MARKERS = (
 
 
 def _words(text: str) -> list[str]:
-    return re.findall(r"\\b[\\w'-]+\\b", text, flags=re.UNICODE)
+    return re.findall(r"\b[\w'-]+\b", text, flags=re.UNICODE)
 
 
 def _evidence_excerpt(text: str, limit: int = 180) -> str | None:
@@ -86,7 +85,7 @@ def _contains_marker(text: str, markers: tuple[str, ...]) -> bool:
     """Match phrases without treating a short token as part of a longer word."""
     lowered = text.casefold()
     for marker in markers:
-        pattern = rf"(?<!\\w){re.escape(marker.casefold())}(?!\\w)"
+        pattern = rf"(?<!\w){re.escape(marker.casefold())}(?!\w)"
         if re.search(pattern, lowered):
             return True
     return False
@@ -153,7 +152,7 @@ def build_feedback(session: dict[str, Any], answers: list[dict[str, Any]]) -> di
     rubric = session.get("rubric") or scenario.get("rubric", [])
     by_question = {answer["question_id"]: answer["answer_text"] for answer in answers}
     nonempty = [text.strip() for text in by_question.values() if text.strip()]
-    combined = "\\n".join(nonempty)
+    combined = "\n".join(nonempty)
     total_words = sum(len(_words(text)) for text in nonempty)
 
     question_feedback: list[dict[str, Any]] = []
