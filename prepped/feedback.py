@@ -283,17 +283,19 @@ def build_feedback(session: dict[str, Any], answers: list[dict[str, Any]]) -> di
                 )
                 next_action = "Try saying the answer aloud; keep the details that directly answer the prompt and remove only what feels unnecessary."
             else:
-                status = "evidence_found"
                 if answer_details:
+                    status = "evidence_found"
                     longest = max(answer_details, key=lambda item: item[2])
                     seconds = round(longest[2] / 130 * 60)
                     message = (
                         f"The longest answer has {longest[2]} words, roughly {seconds} seconds at an illustrative "
                         "130 words per minute. No exact repeated full sentence was detected; repeated ideas may still be present."
                     )
+                    next_action = "Read each answer aloud once. Keep the details needed to answer the prompt; this checklist cannot judge natural spoken delivery."
                 else:
+                    status = "not_enough_evidence"
                     message = "No non-empty answers were available to review for conciseness."
-                next_action = "Read each answer aloud once. Keep the details needed to answer the prompt; this checklist cannot judge natural spoken delivery."
+                    next_action = "Answer at least one prompt before reviewing conciseness; this checklist cannot judge natural spoken delivery."
         else:
             status = "not_enough_evidence"
             evidence = _evidence_excerpt(combined)
