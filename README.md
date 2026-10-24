@@ -6,15 +6,15 @@ Prepped is an evidence-led, local-first practice app. The first working slice is
 
 ## Start here
 
-0. [Current implementation and acceptance status](docs/CURRENT_STATE.md)
-0. [Student usability pilot protocol](docs/PILOT_PROTOCOL.md)
-1. [Complete Product and System Blueprint](docs/PRODUCT_BLUEPRINT.md)
-2. [Architecture Decision Record 001](docs/ADR-001-MINIMAL-LOCAL-FIRST-ARCHITECTURE.md)
-3. [Complete Project Roadmap](docs/COMPLETE_ROADMAP.md)
-4. [Research Review and Decision Matrix](docs/RESEARCH_DECISION_MATRIX.md)
-5. [Research archive verification](research/raw/VERIFICATION.md)
-6. [Upstream repository audit](docs/UPSTREAM_REPOSITORY_AUDIT.md)
-7. [Upstream feature mapping](docs/UPSTREAM_FEATURE_MAPPING.md)
+- [Current implementation and acceptance status](docs/CURRENT_STATE.md)
+- [Student usability pilot protocol](docs/PILOT_PROTOCOL.md)
+- [Complete Product and System Blueprint](docs/PRODUCT_BLUEPRINT.md)
+- [Architecture Decision Record 001](docs/ADR-001-MINIMAL-LOCAL-FIRST-ARCHITECTURE.md)
+- [Complete Project Roadmap](docs/COMPLETE_ROADMAP.md)
+- [Research Review and Decision Matrix](docs/RESEARCH_DECISION_MATRIX.md)
+- [Research archive verification](research/raw/VERIFICATION.md)
+- [Upstream repository audit](docs/UPSTREAM_REPOSITORY_AUDIT.md)
+- [Upstream feature mapping](docs/UPSTREAM_FEATURE_MAPPING.md)
 
 ## First scenario
 
