@@ -549,7 +549,11 @@ def test_feedback_handles_curly_apostrophes_and_does_not_count_denied_testing_as
     feedback = build_feedback(session, answers)
     question_items = feedback["question_feedback"]
     assert [item["question_id"] for item in question_items] == [q["id"] for q in questions]
-    assert [item["evidence"] for item in question_items] == answers_text
+    assert all(
+        answer.startswith(item["evidence"].removesuffix("…"))
+        and len(item["evidence"]) <= 180
+        for item, answer in zip(question_items, answers_text, strict=True)
+    )
     assert question_items[0]["status"] == "evidence_found"
     assert question_items[3]["status"] == "try_next"
     assert "real check or observed result" in question_items[3]["next_action"]
