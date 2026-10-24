@@ -255,3 +255,78 @@ def test_scenario_loader_still_validates_duplicate_question_ids(tmp_path: Path) 
         assert "Duplicate question id" in str(exc)
     else:
         raise AssertionError("Invalid scenario was accepted")
+
+
+def test_feedback_uses_question_specific_signals_and_actions() -> None:
+    from prepped.feedback import build_feedback
+
+    questions = [
+        {"id": "project_overview", "prompt": "Describe the project."},
+        {"id": "personal_contribution", "prompt": "What did you build?"},
+        {"id": "design_decision", "prompt": "What decision did you make?"},
+        {"id": "evidence_and_result", "prompt": "What evidence do you have?"},
+        {"id": "reflection", "prompt": "What would you improve?"},
+    ]
+    answers_text = [
+        "VGU-Pulse helps students find campus information. I wanted to address scattered updates, and the platform includes polls and a student directory.",
+        "I implemented the API endpoints and SQLite persistence, and I wrote tests for saving answers.",
+        "I chose SQLite because the app runs locally. I considered a hosted database, but that would add setup and service dependency.",
+        "I tested the session API locally and the tests passed. I have not measured student outcomes or tested with real students yet.",
+        "Next I would test the interface with students. I learned that working code does not prove the project solves the user problem.",
+    ]
+    session = {
+        "id": "test-session",
+        "scenario_id": "project-explanation",
+        "scenario_version": "1.0.0",
+        "attempt_number": 1,
+        "completed_at": None,
+        "scenario": {"questions": questions, "rubric": []},
+        "rubric": [],
+    }
+    answers = [
+        {"question_id": question["id"], "answer_text": text}
+        for question, text in zip(questions, answers_text, strict=True)
+    ]
+
+    feedback = build_feedback(session, answers)
+    assert [item["status"] for item in feedback["question_feedback"]] == [
+        "evidence_found", "evidence_found", "evidence_found", "evidence_found", "evidence_found",
+    ]
+    assert all(item["next_action"] for item in feedback["question_feedback"])
+    assert "not measured" in feedback["question_feedback"][3]["next_action"].lower()
+    assert "overall_score" not in feedback
+
+
+def test_feedback_does_not_treat_generic_keywords_as_evidence_for_every_question() -> None:
+    from prepped.feedback import build_feedback
+
+    questions = [
+        {"id": "project_overview", "prompt": "Describe the project."},
+        {"id": "personal_contribution", "prompt": "What did you build?"},
+        {"id": "design_decision", "prompt": "What decision did you make?"},
+        {"id": "evidence_and_result", "prompt": "What evidence do you have?"},
+        {"id": "reflection", "prompt": "What would you improve?"},
+    ]
+    generic_answer = "I built a platform because it was useful for users and the project is important."
+    session = {
+        "id": "test-session",
+        "scenario_id": "project-explanation",
+        "scenario_version": "1.0.0",
+        "attempt_number": 1,
+        "completed_at": None,
+        "scenario": {"questions": questions, "rubric": []},
+        "rubric": [],
+    }
+    answers = [
+        {"question_id": question["id"], "answer_text": generic_answer}
+        for question in questions
+    ]
+
+    feedback = build_feedback(session, answers)
+    statuses = [item["status"] for item in feedback["question_feedback"]]
+    assert statuses[0] == "try_next"  # no concrete feature/example
+    assert statuses[2] == "try_next"  # no stated choice and alternative
+    assert statuses[3] == "try_next"  # "built" is not a test result
+    assert statuses[4] == "try_next"  # no learning/improvement reflection
+    assert "feature or example" in feedback["question_feedback"][0]["next_action"]
+    assert "test result" in feedback["question_feedback"][3]["next_action"]
