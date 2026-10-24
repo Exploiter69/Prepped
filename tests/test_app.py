@@ -375,7 +375,7 @@ def test_conciseness_feedback_reports_illustrative_speaking_time_for_longest_ans
         {"id": "evidence_and_result", "prompt": "What evidence do you have?"},
         {"id": "reflection", "prompt": "What would you improve?"},
     ]
-    long_answer = " ".join(["I implemented and tested a concrete feature for this project."] * 25)
+    long_answer = " ".join([f"I implemented and tested feature number {index} for this project." for index in range(25)])
     answers = [
         {"question_id": q["id"], "answer_text": long_answer if q["id"] == "personal_contribution" else ""}
         for q in questions
