@@ -20,8 +20,10 @@ OVERVIEW_PROBLEM = (
     "find information", "look in different places",
 )
 OVERVIEW_BENEFIT = (
-    "students", "users", "learners", "helps", "benefit", "for people",
-    "makes it easier", "so that", "in one place",
+    "for university students", "designed for students", "students can",
+    "students benefit", "helps students", "helps users", "for learners",
+    "for people", "benefit", "makes it easier", "so that", "in one place",
+    "who want a more convenient way",
 )
 OVERVIEW_FEATURES = (
     "posts", "replies", "polls", "voting", "directory", "notices", "feed",
