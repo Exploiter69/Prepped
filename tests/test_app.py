@@ -395,3 +395,29 @@ def test_conciseness_feedback_reports_illustrative_speaking_time_for_longest_ans
     assert item["status"] == "try_next"
     assert "illustrative 130 words per minute" in item["message"]
     assert "word count cannot determine" in item["message"].lower()
+
+
+def test_conciseness_feedback_reports_not_enough_evidence_when_all_answers_are_empty() -> None:
+    from prepped.feedback import build_feedback
+
+    questions = [
+        {"id": "project_overview", "prompt": "Describe the project."},
+        {"id": "personal_contribution", "prompt": "What did you build?"},
+        {"id": "design_decision", "prompt": "What decision did you make?"},
+        {"id": "evidence_and_result", "prompt": "What evidence do you have?"},
+        {"id": "reflection", "prompt": "What would you improve?"},
+    ]
+    session = {
+        "id": "empty-conciseness-session",
+        "scenario_id": "project-explanation",
+        "scenario_version": "1.0.0",
+        "attempt_number": 1,
+        "completed_at": None,
+        "scenario": {"questions": questions, "rubric": [{"id": "conciseness", "label": "Conciseness"}]},
+        "rubric": [{"id": "conciseness", "label": "Conciseness"}],
+    }
+    answers = [{"question_id": question["id"], "answer_text": ""} for question in questions]
+
+    feedback = build_feedback(session, answers)
+    assert feedback["rubric_feedback"][0]["status"] == "not_enough_evidence"
+    assert "No non-empty answers" in feedback["rubric_feedback"][0]["message"]
