@@ -7,6 +7,7 @@ from typing import Any
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from prepped.database import initialize_database
 from prepped.scenarios import DEFAULT_SCENARIO_PATH, ScenarioValidationError, load_scenario
@@ -34,6 +35,8 @@ def create_app(
         version="0.1.0",
         lifespan=lifespan,
     )
+
+    application.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")
 
     @application.get("/", include_in_schema=False)
     def home() -> FileResponse:
