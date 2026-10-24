@@ -16,9 +16,10 @@
 - Regression tests for core flow, feedback grounding/limitations, empty answers, cancellation, boundaries, retry, history, and deletion.
 - No mandatory AI account, paid API, hosted database, or raw audio capture.
 
-## Recent change
+## Recent changes
 
-PR [#6 — Improve evidence quality in the practice checklist](https://github.com/Exploiter69/Prepped/pull/6) was merged on 2026-10-24. Merge commit: `c547dea5a43b917ddcffda89fbcfeaf01577c504`. The PR's GitHub Actions `tests` workflow passed on head commit `c37c0f47d084dc24c3240b5220bcb1aeef6f0ad2`.
+- PR [#7 — Fix feedback signals for pasted answers](https://github.com/Exploiter69/Prepped/pull/7) merged on 2026-10-24 as `4bf7774810bd76ae904505109f4dab49dbec23ba`. Its GitHub Actions test workflow passed. It normalizes curly apostrophes and typographic dashes, recognizes common reflection wording, and avoids counting explicitly denied testing as positive test evidence.
+- PR [#6 — Improve evidence quality in the practice checklist](https://github.com/Exploiter69/Prepped/pull/6) merged on 2026-10-24 as `c547dea5a43b917ddcffda89fbcfeaf01577c504`. Its GitHub Actions test workflow passed.
 
 ## Not yet evidenced / remaining
 
