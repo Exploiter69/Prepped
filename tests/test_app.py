@@ -293,7 +293,7 @@ def test_feedback_uses_question_specific_signals_and_actions() -> None:
         "evidence_found", "evidence_found", "evidence_found", "evidence_found", "evidence_found",
     ]
     assert all(item["next_action"] for item in feedback["question_feedback"])
-    assert "not measured" in feedback["question_feedback"][3]["next_action"].lower()
+    assert "unmeasured" in feedback["question_feedback"][3]["next_action"].lower()
     assert "overall_score" not in feedback
 
 
