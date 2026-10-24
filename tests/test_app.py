@@ -330,3 +330,68 @@ def test_feedback_does_not_treat_generic_keywords_as_evidence_for_every_question
     assert statuses[4] == "try_next"  # no learning/improvement reflection
     assert "feature or example" in feedback["question_feedback"][0]["next_action"]
     assert "test result" in feedback["question_feedback"][3]["next_action"]
+
+
+
+def test_conciseness_feedback_detects_exact_repeated_sentences_without_overreacting_to_length() -> None:
+    from prepped.feedback import build_feedback
+
+    questions = [
+        {"id": "project_overview", "prompt": "Describe the project."},
+        {"id": "personal_contribution", "prompt": "What did you build?"},
+        {"id": "design_decision", "prompt": "What decision did you make?"},
+        {"id": "evidence_and_result", "prompt": "What evidence do you have?"},
+        {"id": "reflection", "prompt": "What would you improve?"},
+    ]
+    repeated = "I built the API and tested it with pytest. The API handles student posts and replies. I built the API and tested it with pytest."
+    answers = [
+        {"question_id": q["id"], "answer_text": repeated if q["id"] == "personal_contribution" else ""}
+        for q in questions
+    ]
+    session = {
+        "id": "conciseness-session",
+        "scenario_id": "project-explanation",
+        "scenario_version": "1.0.0",
+        "attempt_number": 1,
+        "completed_at": None,
+        "scenario": {"questions": questions, "rubric": [{"id": "conciseness", "label": "Conciseness"}]},
+        "rubric": [{"id": "conciseness", "label": "Conciseness"}],
+    }
+
+    feedback = build_feedback(session, answers)
+    item = feedback["rubric_feedback"][0]
+    assert item["status"] == "try_next"
+    assert "repeated full sentence" in item["message"]
+    assert "remove it only if" in item["next_action"]
+
+
+def test_conciseness_feedback_reports_illustrative_speaking_time_for_longest_answer() -> None:
+    from prepped.feedback import build_feedback
+
+    questions = [
+        {"id": "project_overview", "prompt": "Describe the project."},
+        {"id": "personal_contribution", "prompt": "What did you build?"},
+        {"id": "design_decision", "prompt": "What decision did you make?"},
+        {"id": "evidence_and_result", "prompt": "What evidence do you have?"},
+        {"id": "reflection", "prompt": "What would you improve?"},
+    ]
+    long_answer = " ".join(["I implemented and tested a concrete feature for this project."] * 25)
+    answers = [
+        {"question_id": q["id"], "answer_text": long_answer if q["id"] == "personal_contribution" else ""}
+        for q in questions
+    ]
+    session = {
+        "id": "conciseness-session",
+        "scenario_id": "project-explanation",
+        "scenario_version": "1.0.0",
+        "attempt_number": 1,
+        "completed_at": None,
+        "scenario": {"questions": questions, "rubric": [{"id": "conciseness", "label": "Conciseness"}]},
+        "rubric": [{"id": "conciseness", "label": "Conciseness"}],
+    }
+
+    feedback = build_feedback(session, answers)
+    item = feedback["rubric_feedback"][0]
+    assert item["status"] == "try_next"
+    assert "illustrative 130 words per minute" in item["message"]
+    assert "word count cannot determine" in item["message"]
