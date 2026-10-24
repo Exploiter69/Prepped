@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#111111">
+    <meta name="description" content="Prepped is a local-first practice prototype for placement conversations.">
+    <title>Prepped — Practice with purpose</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="wordmark" href="/" aria-label="Prepped home">prepped<span>.</span></a>
+      <span class="header-note">LOCAL PROTOTYPE · 0.1.0</span>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">PRACTICE ROOM / 001</p>
+        <h1 id="page-title">Get better at explaining<br>the work you do.</h1>
+        <p class="intro-copy">A private practice space for engineering students preparing for real placement conversations. Start with one skill: explaining your project with clarity and evidence.</p>
+      </section>
+
+      <section class="scenario-panel" aria-labelledby="scenario-title">
+        <div class="panel-topline">
+          <span class="eyebrow">FIRST SCENARIO</span>
+          <span class="status" id="system-status" role="status">Checking local app…</span>
+        </div>
+        <h2 id="scenario-title">Explain your project to a placement interviewer</h2>
+        <p id="scenario-description" class="scenario-description">Loading the versioned scenario definition…</p>
+        <div class="scenario-meta">
+          <div><span class="meta-label">ROLE</span><span id="scenario-role">—</span></div>
+          <div><span class="meta-label">LENGTH</span><span id="scenario-length">—</span></div>
+          <div><span class="meta-label">VERSION</span><span id="scenario-version">—</span></div>
+        </div>
+        <div class="divider"></div>
+        <h3>What you will practise</h3>
+        <ol id="question-list" class="question-list">
+          <li>Loading scenario questions…</li>
+        </ol>
+        <div class="notice">
+          <strong>Honest by design.</strong>
+          <span>This is an early prototype, not an official assessment. The practice flow and feedback engine are not implemented yet.</span>
+        </div>
+      </section>
+
+      <section class="principles" aria-label="Product principles">
+        <article><span class="principle-index">01</span><h3>Evidence, not guesses</h3><p>Future feedback must point to what you actually said.</p></article>
+        <article><span class="principle-index">02</span><h3>Retry, then compare</h3><p>Practise again with the same transparent checklist.</p></article>
+        <article><span class="principle-index">03</span><h3>Local by default</h3><p>This starter stores data locally and does not send answers to an AI service.</p></article>
+      </section>
+    </main>
+
+    <footer><span>PREPPED / TDP</span><span>Built for practice, not prediction.</span></footer>
+  </body>
+</html>
