@@ -107,12 +107,16 @@ def _marker_evidence(text: str, groups: list[tuple[str, tuple[str, ...]]]) -> st
     parts: list[str] = []
     used: set[int] = set()
     for label, markers in groups:
-        for index in range(len(sentences) - 1, -1, -1):
-            sentence = sentences[index]
-            if index not in used and _contains_marker(sentence, markers):
-                parts.append(f"{label}: “{_evidence_excerpt(sentence, 220)}”")
-                used.add(index)
-                break
+        candidates = [
+            (priority, index, sentence)
+            for priority, marker in enumerate(markers)
+            for index, sentence in enumerate(sentences)
+            if index not in used and _contains_marker(sentence, (marker,))
+        ]
+        if candidates:
+            priority, index, sentence = min(candidates, key=lambda item: (item[0], -item[1]))
+            parts.append(f"{label}: “{_evidence_excerpt(sentence, 220)}”")
+            used.add(index)
     return "\n".join(parts) if parts else None
 
 
