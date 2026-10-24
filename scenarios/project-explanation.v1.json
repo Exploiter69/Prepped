@@ -1,0 +1,57 @@
+{
+  "id": "project-explanation",
+  "version": "1.0.0",
+  "title": "Explain your project to a placement interviewer",
+  "description": "Practise explaining a project clearly, describing your own contribution, defending a design decision, and reflecting on evidence and lessons learned.",
+  "role": "Placement interviewer",
+  "estimated_minutes": 8,
+  "questions": [
+    {
+      "id": "project_overview",
+      "prompt": "Tell me about a project you have worked on. What problem were you trying to solve, and who would benefit from the solution?"
+    },
+    {
+      "id": "personal_contribution",
+      "prompt": "What specifically did you build or contribute, and which parts were your responsibility?"
+    },
+    {
+      "id": "design_decision",
+      "prompt": "Describe one important technical or design decision you made. What alternatives or constraints did you consider?"
+    },
+    {
+      "id": "evidence_and_result",
+      "prompt": "What evidence do you have that the project works or addresses the problem? Be clear about what you measured and what you have not measured."
+    },
+    {
+      "id": "reflection",
+      "prompt": "What would you improve next, and what did you learn from building this project?"
+    }
+  ],
+  "rubric": [
+    {
+      "id": "clarity",
+      "label": "Clarity",
+      "question": "Can a listener understand the project's purpose?"
+    },
+    {
+      "id": "structure",
+      "label": "Structure",
+      "question": "Are the problem, approach, contribution, and result explained in a logical order?"
+    },
+    {
+      "id": "specificity",
+      "label": "Specificity",
+      "question": "Does the answer include concrete details rather than unsupported claims?"
+    },
+    {
+      "id": "follow_up_handling",
+      "label": "Follow-up handling",
+      "question": "Does the answer address the question that was asked?"
+    },
+    {
+      "id": "conciseness",
+      "label": "Conciseness",
+      "question": "Is the answer relevant without unnecessary repetition or missing key context?"
+    }
+  ]
+}

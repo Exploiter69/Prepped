@@ -43,6 +43,27 @@ The learner answers a few questions, receives feedback tied to their actual word
 
 ## Current status
 
-**Research archived and reviewed; product direction, architecture decision, and roadmap documented; application implementation has not yet been established.**
+**Research and architecture decisions documented; the initial FastAPI skeleton, health endpoint, scenario loader, SQLite schema, and scenario preview interface are now present. The complete practice flow and feedback engine are not implemented yet.**
+
+## Run the starter application
+
+Requires Python 3.11 or newer.
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -e ".[dev]"
+uvicorn prepped.main:app --reload
+```
+
+Open `http://127.0.0.1:8000`. The starter page loads the scenario definition from the local API. The health endpoint is `/api/health`; the versioned scenario endpoint is `/api/scenarios/project-explanation`. SQLite is created at `data/prepped.sqlite3` when the application starts. Runtime data is local and ignored by Git.
+
+Run automated tests:
+
+```bash
+pytest
+```
+
+This is the runnable foundation only: session creation, answer submission, the interview state controller, evidence-linked feedback, retry/comparison, and history deletion remain future implementation tasks. Do not present them as implemented.
 
 The next milestone is one complete local text scenario with evidence-linked feedback, retry, attempt comparison, local history, deletion, and automated tests. See the [Complete Roadmap](docs/COMPLETE_ROADMAP.md).
