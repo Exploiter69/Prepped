@@ -506,3 +506,53 @@ def test_follow_up_handling_does_not_treat_five_nonempty_generic_answers_as_hand
     assert item["status"] == "try_next"
     assert "0 of 5 answers" in item["evidence"]
     assert "does not prove the answer is wrong" in item["message"]
+
+
+def test_feedback_handles_curly_apostrophes_and_does_not_count_denied_testing_as_a_test() -> None:
+    from prepped.feedback import build_feedback
+
+    questions = [
+        {"id": "project_overview", "prompt": "Describe the project."},
+        {"id": "personal_contribution", "prompt": "What did you build?"},
+        {"id": "design_decision", "prompt": "What decision did you make?"},
+        {"id": "evidence_and_result", "prompt": "What evidence do you have?"},
+        {"id": "reflection", "prompt": "What would you improve?"},
+    ]
+    answers_text = [
+        "Students may have to look across different channels to find information, so I wanted to explore bringing it together. The platform includes posts, replies, polls, voting, and a student directory for university students.",
+        "My main contribution has been developing the core application features and backend. I worked on posts, replies, polls, voting, reporting, blocking, and saving content.",
+        "I chose to distinguish student-created discussions from official information. I could have used a single feed, but the trade-off is that students may find source distinctions less clear.",
+        "I have implemented features such as posts and polls, and the application uses a database for storage. I haven’t yet tested this with enough students to know whether it improves campus communication, and I don’t have reliable adoption data.",
+        "My next priority would be usability testing. The biggest lesson I’ve learned is that a working application doesn’t automatically mean the original problem has been solved.",
+    ]
+    rubric = [
+        {"id": "clarity", "label": "Clarity"},
+        {"id": "structure", "label": "Structure"},
+        {"id": "specificity", "label": "Specificity"},
+        {"id": "follow_up_handling", "label": "Follow-up handling"},
+        {"id": "conciseness", "label": "Conciseness"},
+    ]
+    session = {
+        "id": "unicode-feedback-session",
+        "scenario_id": "project-explanation",
+        "scenario_version": "1.0.0",
+        "attempt_number": 1,
+        "completed_at": None,
+        "scenario": {"questions": questions, "rubric": rubric},
+        "rubric": rubric,
+    }
+    answers = [
+        {"question_id": question["id"], "answer_text": answer}
+        for question, answer in zip(questions, answers_text, strict=True)
+    ]
+
+    feedback = build_feedback(session, answers)
+    question_items = feedback["question_feedback"]
+    assert [item["question_id"] for item in question_items] == [q["id"] for q in questions]
+    assert [item["evidence"] for item in question_items] == answers_text
+    assert question_items[0]["status"] == "evidence_found"
+    assert question_items[3]["status"] == "try_next"
+    assert "real check or observed result" in question_items[3]["next_action"]
+    assert question_items[4]["status"] == "evidence_found"
+    assert "not measured" in feedback["rubric_feedback"][0]["message"].lower() or feedback["rubric_feedback"][0]["status"] in {"evidence_found", "try_next"}
+
