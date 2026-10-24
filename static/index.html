@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#111111">
-    <meta name="description" content="Prepped is a local-first practice prototype for placement conversations.">
+    <meta name="description" content="Private, local-first practice for placement conversations.">
     <title>Prepped — Practice with purpose</title>
     <link rel="stylesheet" href="/static/style.css">
     <script src="/static/app.js" defer></script>
@@ -12,46 +12,57 @@
   <body>
     <header class="site-header">
       <a class="wordmark" href="/" aria-label="Prepped home">prepped<span>.</span></a>
-      <span class="header-note">LOCAL PROTOTYPE · 0.1.0</span>
+      <div class="header-actions"><span class="header-note">LOCAL PRACTICE · 0.2.0</span><button id="history-toggle" class="button button-quiet" type="button">History</button></div>
     </header>
-
     <main>
       <section class="intro" aria-labelledby="page-title">
         <p class="eyebrow">PRACTICE ROOM / 001</p>
         <h1 id="page-title">Get better at explaining<br>the work you do.</h1>
-        <p class="intro-copy">A private practice space for engineering students preparing for real placement conversations. Start with one skill: explaining your project with clarity and evidence.</p>
+        <p class="intro-copy">A private practice space for engineering students preparing for real placement conversations. Practise explaining your project, review specific evidence from your own words, then try again.</p>
       </section>
-
-      <section class="scenario-panel" aria-labelledby="scenario-title">
-        <div class="panel-topline">
-          <span class="eyebrow">FIRST SCENARIO</span>
-          <span class="status" id="system-status" role="status">Checking local app…</span>
-        </div>
+      <p id="global-status" class="global-status" role="status" aria-live="polite">Checking local app…</p>
+      <section id="home-view" class="scenario-panel" aria-labelledby="scenario-title">
+        <div class="panel-topline"><span class="eyebrow">FIRST SCENARIO</span><span class="status" id="system-status">Loading scenario…</span></div>
         <h2 id="scenario-title">Explain your project to a placement interviewer</h2>
         <p id="scenario-description" class="scenario-description">Loading the versioned scenario definition…</p>
-        <div class="scenario-meta">
-          <div><span class="meta-label">ROLE</span><span id="scenario-role">—</span></div>
-          <div><span class="meta-label">LENGTH</span><span id="scenario-length">—</span></div>
-          <div><span class="meta-label">VERSION</span><span id="scenario-version">—</span></div>
-        </div>
-        <div class="divider"></div>
-        <h3>What you will practise</h3>
-        <ol id="question-list" class="question-list">
-          <li>Loading scenario questions…</li>
-        </ol>
-        <div class="notice">
-          <strong>Honest by design.</strong>
-          <span>This is an early prototype, not an official assessment. The practice flow and feedback engine are not implemented yet.</span>
-        </div>
+        <div class="scenario-meta"><div><span class="meta-label">ROLE</span><span id="scenario-role">—</span></div><div><span class="meta-label">LENGTH</span><span id="scenario-length">—</span></div><div><span class="meta-label">VERSION</span><span id="scenario-version">—</span></div></div>
+        <div class="divider"></div><h3>What you will practise</h3>
+        <ol id="question-list" class="question-list"><li>Loading scenario questions…</li></ol>
+        <div class="notice"><strong>Honest by design.</strong><span>Feedback uses a transparent text checklist. It is not a validated assessment, placement predictor, or measure of speaking ability.</span></div>
+        <div class="primary-action"><button id="start-button" class="button button-primary" type="button" disabled>Start practice <span aria-hidden="true">→</span></button><span class="action-note">Your answers stay in this local app.</span></div>
       </section>
-
+      <section id="practice-view" class="scenario-panel hidden" aria-labelledby="practice-title">
+        <div class="panel-topline"><span class="eyebrow">LIVE PRACTICE</span><span id="practice-progress" class="status">Question 1 of 5</span></div>
+        <div class="progress-track" aria-hidden="true"><div id="progress-bar" class="progress-bar"></div></div>
+        <h2 id="practice-title">Question</h2><p id="question-prompt" class="question-prompt"></p>
+        <form id="answer-form">
+          <label for="answer-input">Your answer</label>
+          <textarea id="answer-input" name="answer" rows="7" maxlength="6000" placeholder="Answer in your own words. Specific details are useful; do not invent results." aria-describedby="answer-help answer-count"></textarea>
+          <div class="input-meta"><span id="answer-help">Up to 6,000 characters. You can skip a question.</span><span id="answer-count">0 / 6000</span></div>
+          <p id="answer-error" class="inline-error" role="alert"></p>
+          <div class="form-actions"><button id="cancel-button" class="button button-quiet" type="button">End session</button><div class="action-group"><button id="skip-button" class="button button-secondary" type="button">Skip</button><button id="submit-button" class="button button-primary" type="submit">Save answer <span aria-hidden="true">→</span></button></div></div>
+        </form>
+        <p class="privacy-note">Saved to a local SQLite database on this computer. No AI service is called.</p>
+      </section>
+      <section id="feedback-view" class="scenario-panel hidden" aria-labelledby="feedback-title">
+        <div class="panel-topline"><span class="eyebrow">SESSION REVIEW</span><span id="attempt-label" class="status"></span></div>
+        <h2 id="feedback-title">Review your practice</h2><p id="feedback-summary" class="scenario-description"></p>
+        <div id="feedback-limitations" class="notice"></div><div class="divider"></div>
+        <h3>Question-by-question notes</h3><div id="question-feedback" class="feedback-list"></div>
+        <div class="divider"></div><h3>Transparent checklist</h3><p class="section-help">These are simple text signals, not grades. Read the evidence and decide what is useful.</p><div id="rubric-feedback" class="feedback-list"></div>
+        <section id="comparison-section" class="comparison-section hidden" aria-labelledby="comparison-title"><div class="divider"></div><h3 id="comparison-title">Attempt comparison</h3><p id="comparison-note" class="section-help"></p><div id="comparison-content"></div></section>
+        <div class="form-actions review-actions"><button id="back-home-button" class="button button-quiet" type="button">Back to scenario</button><div class="action-group"><button id="delete-session-button" class="button button-secondary" type="button">Delete this session</button><button id="retry-button" class="button button-primary" type="button">Try again <span aria-hidden="true">→</span></button></div></div>
+      </section>
+      <section id="history-view" class="scenario-panel hidden" aria-labelledby="history-title">
+        <div class="panel-topline"><span class="eyebrow">LOCAL ONLY</span><span class="status">Saved on this device</span></div><h2 id="history-title">Practice history</h2>
+        <p class="scenario-description">Open a past attempt to review it, or delete an attempt and its answers from this local database.</p><div id="history-list" class="history-list"></div><button id="history-home-button" class="button button-quiet" type="button">Back to scenario</button>
+      </section>
       <section class="principles" aria-label="Product principles">
-        <article><span class="principle-index">01</span><h3>Evidence, not guesses</h3><p>Future feedback must point to what you actually said.</p></article>
-        <article><span class="principle-index">02</span><h3>Retry, then compare</h3><p>Practise again with the same transparent checklist.</p></article>
-        <article><span class="principle-index">03</span><h3>Local by default</h3><p>This starter stores data locally and does not send answers to an AI service.</p></article>
+        <article><span class="principle-index">01</span><h3>Evidence, not guesses</h3><p>Feedback quotes or points to your submitted words.</p></article>
+        <article><span class="principle-index">02</span><h3>Retry, then compare</h3><p>Repeat the same scenario and checklist; review differences without an overall score.</p></article>
+        <article><span class="principle-index">03</span><h3>Local by default</h3><p>Answers stay in this local app unless you choose to export them yourself.</p></article>
       </section>
     </main>
-
     <footer><span>PREPPED / TDP</span><span>Built for practice, not prediction.</span></footer>
   </body>
 </html>
