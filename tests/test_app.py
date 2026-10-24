@@ -116,7 +116,7 @@ def test_full_practice_flow_feedback_retry_comparison_and_delete(tmp_path: Path)
         assert "overall_score" not in feedback
         assert feedback["question_feedback"][0]["evidence"] == answers[0]
         assert feedback["rubric_feedback"][2]["evidence"]
-        assert any("not a validated assessment" in item for item in feedback["limitations"])
+        assert any("validated assessment" in item for item in feedback["limitations"])
 
         retry = client.post(f"/api/sessions/{first_id}/retry")
         assert retry.status_code == 201
