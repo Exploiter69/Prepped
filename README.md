@@ -2,50 +2,23 @@
 
 **Prepped helps Indian engineering students practise placement and professional conversations, get specific feedback tied to their answers, and improve through repeated practice.**
 
-Prepped is being restarted from a clean, evidence-led scope. The first version is a **local, text-based project-interview practice flow**. Voice is a later milestone gated on measured local-hardware feasibility. The project does not claim validated placement outcomes or assessment accuracy.
+Prepped is an evidence-led, local-first practice app. The first working slice is a **text-based project-interview scenario**. It deliberately avoids paid services, mandatory AI, overall scores, and claims about placement outcomes.
 
 ## Start here
 
-1. [Complete Product and System Blueprint](docs/PRODUCT_BLUEPRINT.md) — product, user flows, rubric, architecture, privacy, testing, and scope.
-2. [Architecture Decision Record 001](docs/ADR-001-MINIMAL-LOCAL-FIRST-ARCHITECTURE.md) — accepted stack, module boundaries, data/privacy defaults, acceptance gates, and explicit non-goals for the first MVP.
-3. [Complete Project Roadmap](docs/COMPLETE_ROADMAP.md) — implementation gates, pilot, voice feasibility, and semester-by-semester TDP outcomes.
-4. [Research Review and Decision Matrix](docs/RESEARCH_DECISION_MATRIX.md) — what each AI report contributes and what we adopt, defer, reject, or re-verify.
-5. [Research archive verification](research/raw/VERIFICATION.md) — what is exact and what PDF/OCR limitations remain.
-6. [Upstream repository audit](docs/UPSTREAM_REPOSITORY_AUDIT.md) — source-inspected dependencies, licenses, offline-mode claims, CI evidence, and audit limitations.
-7. [Upstream feature mapping](docs/UPSTREAM_FEATURE_MAPPING.md) — feature-by-feature reuse/adapt/build/defer/reject decisions against Prepped's blueprint.
+1. [Complete Product and System Blueprint](docs/PRODUCT_BLUEPRINT.md)
+2. [Architecture Decision Record 001](docs/ADR-001-MINIMAL-LOCAL-FIRST-ARCHITECTURE.md)
+3. [Complete Project Roadmap](docs/COMPLETE_ROADMAP.md)
+4. [Research Review and Decision Matrix](docs/RESEARCH_DECISION_MATRIX.md)
+5. [Research archive verification](research/raw/VERIFICATION.md)
+6. [Upstream repository audit](docs/UPSTREAM_REPOSITORY_AUDIT.md)
+7. [Upstream feature mapping](docs/UPSTREAM_FEATURE_MAPPING.md)
 
-## Original AI research
+## First scenario
 
-- [Claude architecture research](research/raw/claude.md)
-- [Gemini Deep Research report](research/raw/gemini-deep-research.md)
-- [DeepSeek voice/AI research](research/raw/deepseek.md)
-- [Grok competitor research](research/raw/grok.md)
-- [Perplexity product research dossier](research/raw/perplexity.md)
-- [Preserved original source files and PDFs](research/raw/originals/)
+**Explain your project to a placement interviewer.** The learner answers five prompts about the problem, personal contribution, a design decision, evidence, and reflection. After the final answer, Prepped shows question-by-question notes and a transparent checklist, then supports retry, attempt comparison, local history, and deletion.
 
-The original reports are inputs, not a specification to implement wholesale. Their recommendations conflict on product scope, text versus voice, architecture complexity, and managed versus local services. The decision matrix records how those conflicts were resolved.
-
-## First MVP
-
-One scenario: **Explain your project to a placement interviewer.**
-
-The learner answers a few questions, receives feedback tied to their actual words, retries using the same transparent checklist, compares attempts, and can delete local session history. The first version prioritises a working, testable learning loop over real-time audio, avatars, social features, institutional dashboards, or a large scenario library.
-
-## Project constraints
-
-- ₹0 mandatory spending: no required paid APIs, subscriptions, hosting, or usage-based services.
-- Local-first development with a small, understandable architecture.
-- Initial stack: Python + FastAPI, plain HTML/CSS/JavaScript, SQLite, and versioned JSON scenarios.
-- Optional local AI must not be required for the app skeleton or deterministic scenario tests to work.
-- No unsupported claims about placement rates, validated skill scores, or learning effectiveness.
-- No raw audio storage by default; privacy and deletion are part of the design.
-- GitHub is the source of truth.
-
-## Current status
-
-**Research and architecture decisions documented; the initial FastAPI skeleton, health endpoint, scenario loader, SQLite schema, and scenario preview interface are now present. The complete practice flow and feedback engine are not implemented yet.**
-
-## Run the starter application
+## Run locally
 
 Requires Python 3.11 or newer.
 
@@ -53,17 +26,40 @@ Requires Python 3.11 or newer.
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install -e ".[dev]"
-uvicorn prepped.main:app --reload
+python -m uvicorn prepped.main:app --reload
 ```
 
-Open `http://127.0.0.1:8000`. The starter page loads the scenario definition from the local API. The health endpoint is `/api/health`; the versioned scenario endpoint is `/api/scenarios/project-explanation`. SQLite is created at `data/prepped.sqlite3` when the application starts. Runtime data is local and ignored by Git.
+Open `http://127.0.0.1:8000`. The health endpoint is `/api/health`; the scenario definition is `/api/scenarios/project-explanation`. SQLite is created at `data/prepped.sqlite3` on startup. The data directory and database files are ignored by Git.
 
-Run automated tests:
+Run tests:
 
 ```bash
-pytest
+python -m pytest
 ```
 
-This is the runnable foundation only: session creation, answer submission, the interview state controller, evidence-linked feedback, retry/comparison, and history deletion remain future implementation tasks. Do not present them as implemented.
+## What the first loop does
 
-The next milestone is one complete local text scenario with evidence-linked feedback, retry, attempt comparison, local history, deletion, and automated tests. See the [Complete Roadmap](docs/COMPLETE_ROADMAP.md).
+- Creates a local session and saves a snapshot of its scenario and rubric version.
+- Saves one answer per prompt in order, supports skipping with an empty answer, and caps each answer at 6,000 characters.
+- Completes the session after the final prompt; prevents out-of-order or post-completion answers.
+- Produces deterministic, explainable feedback with excerpts from submitted text and a concrete next action.
+- Shows when there is not enough evidence instead of inventing an answer or forcing a score.
+- Supports retry against the same scenario/rubric snapshot and compares checklist labels across attempts.
+- Lists up to 100 local sessions, allows an in-progress session to resume, and deletes a session with its answers.
+- Uses SQLite foreign-key enforcement on every connection and applies additive schema migrations to the starter database.
+
+## Feedback limitations
+
+Feedback is a simple text heuristic, **not a validated assessment, AI interviewer, or placement predictor**. It checks a few explicit text and length signals. Those signals can miss good answers or flag weak ones; they do not measure spoken delivery, pronunciation, listener understanding, or actual learning outcomes. There is no overall score. Do not invent project details, results, metrics, or evidence to satisfy the checklist.
+
+## Project constraints
+
+- ₹0 mandatory spending: no required paid APIs, subscriptions, hosting, or usage-based services.
+- Local-first development with Python, FastAPI, plain HTML/CSS/JavaScript, SQLite, and versioned JSON.
+- No model or API credentials required; no answer text is sent to an AI service.
+- No raw audio is collected in this text-only slice.
+- GitHub is the source of truth.
+
+## Current status
+
+The local practice loop is implemented on the Step 5 branch and is under automated test. The intended merge gate is a passing GitHub Actions run. Voice remains a later feasibility experiment based on measurements from the target hardware, not an assumed requirement.

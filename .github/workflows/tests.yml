@@ -2,7 +2,7 @@ name: tests
 
 on:
   push:
-    branches: [main, "step-4/**"]
+    branches: [main, "step-4/**", "step-5/**"]
   pull_request:
     branches: [main]
 
@@ -20,6 +20,8 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
+      - name: Check browser JavaScript syntax
+        run: node --check static/app.js
       - name: Install project and test dependencies
         run: python -m pip install -e ".[dev]"
       - name: Run tests
