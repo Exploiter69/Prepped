@@ -91,6 +91,21 @@ def _contains_marker(text: str, markers: tuple[str, ...]) -> bool:
     return False
 
 
+def _repeated_sentence_count(text: str) -> int:
+    """Count exact repeated sentences, ignoring case and surrounding punctuation."""
+    sentences = re.split(r"(?<=[.!?])\\s+", text.strip())
+    seen: set[str] = set()
+    repeated: set[str] = set()
+    for sentence in sentences:
+        normalized = re.sub(r"[^\\w' -]", "", sentence.casefold()).strip()
+        if len(_words(normalized)) < 4:
+            continue
+        if normalized in seen:
+            repeated.add(normalized)
+        seen.add(normalized)
+    return len(repeated)
+
+
 def _question_signal(question_id: str, answer: str) -> tuple[bool, str]:
     """Return whether a prompt-specific signal exists and what may be missing."""
     if question_id == "project_overview":
@@ -241,19 +256,44 @@ def build_feedback(session: dict[str, Any], answers: list[dict[str, Any]]) -> di
             message = "This counts answered prompts only; it cannot determine whether an answer is relevant." if answered == len(questions) else "Some prompts were skipped or left blank."
             next_action = "Make the first sentence directly answer the question before adding context."
         elif criterion_id == "conciseness":
-            long_answers = [
-                (question, text) for question in questions
+            answer_details = [
+                (question, text, len(_words(text)), _repeated_sentence_count(text))
+                for question in questions
                 if (text := by_question.get(question["id"], "").strip())
-                and len(_words(text)) > 120
             ]
-            evidence = _evidence_excerpt(long_answers[0][1]) if long_answers else _evidence_excerpt(combined)
-            status = "try_next" if long_answers else "evidence_found"
-            message = (
-                "At least one response is over 120 words. Word count alone cannot tell whether it is repetitive or too long for spoken delivery."
-                if long_answers
-                else f"The non-empty answers contain {total_words} words in total; this checklist cannot judge spoken delivery."
-            )
-            next_action = "Review longer answers sentence by sentence; remove repetition, but keep details needed to answer the question."
+            repeated_answers = [item for item in answer_details if item[3] > 0]
+            very_long_answers = [item for item in answer_details if item[2] > 180]
+            flagged = repeated_answers or very_long_answers
+            evidence = _evidence_excerpt(flagged[0][1]) if flagged else _evidence_excerpt(combined)
+            if repeated_answers:
+                _, _, count, repeated_count = repeated_answers[0]
+                status = "try_next"
+                message = (
+                    f"One answer contains {repeated_count} repeated full sentence(s). "
+                    "This exact-text check can miss repeated ideas phrased differently."
+                )
+                next_action = "Check whether the repeated sentence adds anything new; remove it only if it repeats an earlier point."
+            elif very_long_answers:
+                _, _, count, _ = very_long_answers[0]
+                seconds = round(count / 130 * 60)
+                status = "try_next"
+                message = (
+                    f"One answer has {count} words, roughly {seconds} seconds at an illustrative "
+                    "130 words per minute. Word count cannot determine whether the spoken answer feels too long."
+                )
+                next_action = "Try saying the answer aloud; keep the details that directly answer the prompt and remove only what feels unnecessary."
+            else:
+                status = "evidence_found"
+                if answer_details:
+                    longest = max(answer_details, key=lambda item: item[2])
+                    seconds = round(longest[2] / 130 * 60)
+                    message = (
+                        f"The longest answer has {longest[2]} words, roughly {seconds} seconds at an illustrative "
+                        "130 words per minute. No exact repeated full sentence was detected; repeated ideas may still be present."
+                    )
+                else:
+                    message = "No non-empty answers were available to review for conciseness."
+                next_action = "Read each answer aloud once. Keep the details needed to answer the prompt; this checklist cannot judge natural spoken delivery."
         else:
             status = "not_enough_evidence"
             evidence = _evidence_excerpt(combined)
