@@ -1,7 +1,8 @@
 """Deterministic, evidence-linked formative feedback.
 
-This module does not grade a person's ability or predict placement outcomes.
-It only reports simple, explainable signals found in the submitted text.
+This module reports explainable text signals, not a person's ability or placement
+readiness. Each prompt has its own checks; a detected phrase is never proof that
+the answer is correct or that a real-world outcome has been achieved.
 """
 from __future__ import annotations
 
@@ -9,16 +10,66 @@ import re
 from typing import Any
 
 
-CONCRETE_MARKERS = (
-    "for example", "for instance", "because", "built", "implemented", "tested",
-    "measured", "users", "user", "database", "api", "python", "javascript",
-    "fastapi", "sqlite", "react", "latency", "seconds", "percent", "%",
+# These are deliberately small, inspectable phrase lists, not a language model.
+# A match is only a prompt for learner review, never a quality verdict.
+OVERVIEW_PROBLEM = (
+    "problem", "needed to", "wanted to address", "because", "challenge",
+    "students missed", "students had to", "difficult to", "hard to",
 )
-STRUCTURE_MARKERS = ("first", "then", "next", "finally", "because", "so that", "as a result")
+OVERVIEW_BENEFIT = (
+    "students", "users", "learners", "helps", "benefit", "for people",
+    "makes it easier", "so that", "in one place",
+)
+OVERVIEW_FEATURES = (
+    "posts", "replies", "polls", "voting", "directory", "notices", "feed",
+    "search", "dashboard", "api", "database", "application", "platform",
+    "feature", "tool", "workflow",
+)
+CONTRIBUTION_ACTIONS = (
+    "i built", "i implemented", "i wrote", "i developed", "i designed",
+    "i created", "i worked on", "i was responsible", "my contribution",
+    "my role", "i contributed", "i added", "i maintained",
+)
+ARTIFACT_DETAILS = (
+    "api", "endpoint", "database", "sqlite", "fastapi", "python", "javascript",
+    "test", "migration", "worker", "interface", "posts", "replies", "polls",
+    "directory", "authentication", "validation", "deployment",
+)
+DECISION_CHOICES = (
+    "i chose", "i decided", "i used", "i selected", "i went with",
+    "the decision", "i kept", "i avoided",
+)
+ALTERNATIVES_CONSTRAINTS = (
+    "considered", "alternative", "instead", "trade-off", "tradeoff",
+    "constraint", "cost", "complexity", "compared with", "rather than",
+    "would add", "because",
+)
+TEST_EVIDENCE = (
+    "tested", "tests passed", "test passed", "verified", "checked",
+    "ran the tests", "manual test", "observed", "measured", "measurement",
+    "logs showed", "successfully", "working locally", "request returned",
+)
+LIMITATION_EVIDENCE = (
+    "have not measured", "haven't measured", "not measured", "not yet measured",
+    "have not tested with", "haven't tested with", "not tested with",
+    "have not collected", "haven't collected", "no user data",
+    "not collected", "don't know yet", "do not know yet",
+)
+REFLECTION_IMPROVEMENT = (
+    "next", "improve", "improvement", "would change", "would add",
+    "prioritise", "prioritize", "fix", "test with users", "user feedback",
+)
+REFLECTION_LEARNING = (
+    "i learned", "i learnt", "i learned", "taught me", "i realised",
+    "i realized", "i discovered", "i now understand",
+)
+STRUCTURE_MARKERS = (
+    "first", "then", "next", "finally", "as a result", "because", "so that",
+)
 
 
 def _words(text: str) -> list[str]:
-    return re.findall(r"\b[\w'-]+\b", text, flags=re.UNICODE)
+    return re.findall(r"\\b[\\w'-]+\\b", text, flags=re.UNICODE)
 
 
 def _evidence_excerpt(text: str, limit: int = 180) -> str | None:
@@ -32,8 +83,67 @@ def _evidence_excerpt(text: str, limit: int = 180) -> str | None:
 
 
 def _contains_marker(text: str, markers: tuple[str, ...]) -> bool:
+    """Match phrases without treating a short token as part of a longer word."""
     lowered = text.casefold()
-    return any(marker in lowered for marker in markers)
+    for marker in markers:
+        pattern = rf"(?<!\\w){re.escape(marker.casefold())}(?!\\w)"
+        if re.search(pattern, lowered):
+            return True
+    return False
+
+
+def _question_signal(question_id: str, answer: str) -> tuple[bool, str]:
+    """Return whether a prompt-specific signal exists and what may be missing."""
+    if question_id == "project_overview":
+        has_problem = _contains_marker(answer, OVERVIEW_PROBLEM)
+        has_benefit = _contains_marker(answer, OVERVIEW_BENEFIT)
+        has_feature = _contains_marker(answer, OVERVIEW_FEATURES)
+        if has_problem and has_benefit and has_feature:
+            return True, "Keep the example, and make sure it names the problem, a real feature, and who benefits."
+        missing = []
+        if not has_problem:
+            missing.append("the problem you were addressing")
+        if not has_benefit:
+            missing.append("who benefits or how")
+        if not has_feature:
+            missing.append("one concrete feature or example")
+        return False, "Add " + ", ".join(missing) + " if you can support it with your actual work."
+    if question_id == "personal_contribution":
+        has_action = _contains_marker(answer, CONTRIBUTION_ACTIONS)
+        has_detail = _contains_marker(answer, ARTIFACT_DETAILS)
+        if has_action and has_detail:
+            return True, "Keep the specific contribution and be ready to explain what you personally implemented."
+        if not has_action:
+            return False, "State what you personally built, changed, tested, or maintained; separate your work from the team's."
+        return False, "Name one concrete artifact you worked on, such as an endpoint, data model, test, or interface."
+    if question_id == "design_decision":
+        has_choice = _contains_marker(answer, DECISION_CHOICES)
+        has_alternative = _contains_marker(answer, ALTERNATIVES_CONSTRAINTS)
+        if has_choice and has_alternative:
+            return True, "Keep both the decision and the alternative or constraint, then explain the trade-off."
+        if not has_choice:
+            return False, "State the decision you actually made before explaining the reasoning."
+        return False, "Name an alternative or constraint you genuinely considered, and explain why it mattered."
+    if question_id == "evidence_and_result":
+        has_test = _contains_marker(answer, TEST_EVIDENCE)
+        has_limit = _contains_marker(answer, LIMITATION_EVIDENCE)
+        if has_test and has_limit:
+            return True, "Separate what you directly tested or observed from what remains unmeasured."
+        if not has_test:
+            return False, "Give a real check or observed result (for example, a test you ran); feature existence alone is not a test result."
+        return False, "State what you have not measured or verified yet; do not imply user impact without evidence."
+    if question_id == "reflection":
+        has_improvement = _contains_marker(answer, REFLECTION_IMPROVEMENT)
+        has_learning = _contains_marker(answer, REFLECTION_LEARNING)
+        if has_improvement and has_learning:
+            return True, "Keep one specific next improvement and one lesson learned from the work."
+        if not has_improvement:
+            return False, "Name one concrete next improvement and why you would prioritise it."
+        return False, "State one lesson you personally learned, ideally tied to a decision or mistake."
+    return (
+        _contains_marker(answer, ARTIFACT_DETAILS),
+        "Add a concrete detail you can explain, if you have one; do not invent evidence.",
+    )
 
 
 def build_feedback(session: dict[str, Any], answers: list[dict[str, Any]]) -> dict[str, Any]:
@@ -43,12 +153,13 @@ def build_feedback(session: dict[str, Any], answers: list[dict[str, Any]]) -> di
     rubric = session.get("rubric") or scenario.get("rubric", [])
     by_question = {answer["question_id"]: answer["answer_text"] for answer in answers}
     nonempty = [text.strip() for text in by_question.values() if text.strip()]
-    combined = "\n".join(nonempty)
+    combined = "\\n".join(nonempty)
     total_words = sum(len(_words(text)) for text in nonempty)
 
     question_feedback: list[dict[str, Any]] = []
     for question in questions:
-        answer = by_question.get(question["id"], "").strip()
+        question_id = question["id"]
+        answer = by_question.get(question_id, "").strip()
         count = len(_words(answer))
         if not answer:
             status = "not_enough_evidence"
@@ -57,17 +168,17 @@ def build_feedback(session: dict[str, Any], answers: list[dict[str, Any]]) -> di
         elif count < 8:
             status = "try_next"
             message = "This response is very brief. It may leave the interviewer without enough context."
-            next_action = "Add the specific situation, what you did, and one detail that supports the point."
-        elif _contains_marker(answer, CONCRETE_MARKERS):
-            status = "evidence_found"
-            message = "This answer contains at least one concrete-detail signal. Check that it directly supports your main point."
-            next_action = "Keep the detail and explain why it matters to the problem or decision."
+            next_action = "Add the key detail this question asks for, using only what you actually did or observed."
         else:
-            status = "try_next"
-            message = "The text does not contain a clear concrete-detail signal recognised by this simple checklist."
-            next_action = "Add a specific example, tool, constraint, test, measurement, or result if you have one. Do not invent evidence."
+            signal_found, next_action = _question_signal(question_id, answer)
+            if signal_found:
+                status = "evidence_found"
+                message = "The answer includes phrase signals relevant to this prompt. Review the excerpt to confirm they describe your actual work."
+            else:
+                status = "try_next"
+                message = "The checklist could not find all of the expected signals for this prompt. That does not prove the answer is wrong."
         question_feedback.append({
-            "question_id": question["id"],
+            "question_id": question_id,
             "prompt": question["prompt"],
             "status": status,
             "word_count": count,
@@ -77,60 +188,73 @@ def build_feedback(session: dict[str, Any], answers: list[dict[str, Any]]) -> di
         })
 
     rubric_feedback: list[dict[str, Any]] = []
+    overview = by_question.get("project_overview", "").strip()
     for criterion in rubric:
         criterion_id = criterion["id"]
         if not combined:
             status = "not_enough_evidence"
-            message = "No non-empty answers were provided; this checklist item cannot be assessed."
+            message = "No non-empty answers were provided; this checklist item cannot be reviewed."
             evidence = None
             next_action = "Try one question with a concrete example before interpreting this item."
         elif criterion_id == "clarity":
-            answer = by_question.get("project_overview", "").strip()
-            count = len(_words(answer))
-            status = "evidence_found" if count >= 12 else "not_enough_evidence"
-            evidence = _evidence_excerpt(answer)
+            count = len(_words(overview))
+            has_problem = _contains_marker(overview, OVERVIEW_PROBLEM)
+            has_benefit = _contains_marker(overview, OVERVIEW_BENEFIT)
+            status = "evidence_found" if count >= 12 and has_problem and has_benefit else "try_next"
+            evidence = _evidence_excerpt(overview)
             message = (
-                "The project overview has enough text for a first clarity review; this does not prove that a listener understood it."
+                "The overview contains phrase signals for a problem and beneficiary; this cannot confirm that a listener understood it."
                 if status == "evidence_found"
-                else "There is not enough text in the project overview to review clarity."
+                else "The checklist could not find both a problem signal and a beneficiary signal in the overview."
             )
-            next_action = "State the problem first, then the solution and who benefits."
+            next_action = "Introduce the problem, then say who it affects and how your project helps."
         elif criterion_id == "structure":
-            answer = by_question.get("project_overview", "").strip()
-            status = "evidence_found" if _contains_marker(answer, STRUCTURE_MARKERS) else "try_next"
-            evidence = _evidence_excerpt(answer)
+            has_problem = _contains_marker(overview, OVERVIEW_PROBLEM)
+            has_solution = _contains_marker(overview, OVERVIEW_FEATURES)
+            has_benefit = _contains_marker(overview, OVERVIEW_BENEFIT)
+            status = "evidence_found" if has_problem and has_solution and has_benefit else "try_next"
+            evidence = _evidence_excerpt(overview)
             message = (
-                "The overview contains a linking or sequencing phrase."
+                "The overview contains phrase signals for a problem, solution detail, and beneficiary; their logical order is not verified."
                 if status == "evidence_found"
-                else "The overview does not contain a sequencing/linking signal recognised by this checklist."
+                else "One or more expected overview elements were not recognised by the checklist."
             )
-            next_action = "Try a simple order: problem → your approach → result or current evidence."
+            next_action = "Try this order: problem → your approach or feature → who benefits or current evidence."
         elif criterion_id == "specificity":
-            matches = [text for text in nonempty if _contains_marker(text, CONCRETE_MARKERS)]
-            evidence = _evidence_excerpt(matches[0]) if matches else _evidence_excerpt(combined)
+            matches = [
+                (question, by_question.get(question["id"], "").strip())
+                for question in questions
+                if by_question.get(question["id"], "").strip()
+                and _question_signal(question["id"], by_question[question["id"]].strip())[0]
+            ]
+            evidence = _evidence_excerpt(matches[0][1]) if matches else _evidence_excerpt(combined)
             status = "evidence_found" if matches else "try_next"
             message = (
-                "At least one answer contains a concrete-detail signal recognised by this checklist."
+                "At least one answer contains prompt-specific phrase signals. Check that the detail is accurate and supports the point."
                 if matches
-                else "No recognised concrete-detail signal was found. The heuristic may miss valid technical details."
+                else "No prompt-specific detail pattern was recognised. The heuristic may miss valid evidence."
             )
-            next_action = "Use a real example, implementation detail, constraint, test, or result that you can explain."
+            next_action = "Use one real implementation detail, decision, test, or observed result that you can explain."
         elif criterion_id == "follow_up_handling":
             answered = sum(bool(by_question.get(question["id"], "").strip()) for question in questions)
             status = "evidence_found" if answered == len(questions) else "try_next"
             evidence = f"{answered} of {len(questions)} questions have non-empty answers."
-            message = "This counts answered prompts only; it cannot determine semantic relevance." if answered == len(questions) else "Some prompts were skipped or left blank."
+            message = "This counts answered prompts only; it cannot determine whether an answer is relevant." if answered == len(questions) else "Some prompts were skipped or left blank."
             next_action = "Make the first sentence directly answer the question before adding context."
         elif criterion_id == "conciseness":
-            long_answers = [text for text in nonempty if len(_words(text)) > 120]
-            evidence = _evidence_excerpt(long_answers[0]) if long_answers else _evidence_excerpt(combined)
-            status = "try_next" if long_answers else ("evidence_found" if total_words else "not_enough_evidence")
+            long_answers = [
+                (question, text) for question in questions
+                if (text := by_question.get(question["id"], "").strip())
+                and len(_words(text)) > 120
+            ]
+            evidence = _evidence_excerpt(long_answers[0][1]) if long_answers else _evidence_excerpt(combined)
+            status = "try_next" if long_answers else "evidence_found"
             message = (
-                "At least one response is over 120 words; consider trimming it. Length alone does not establish repetition."
+                "At least one response is over 120 words. Word count alone cannot tell whether it is repetitive or too long for spoken delivery."
                 if long_answers
                 else f"The non-empty answers contain {total_words} words in total; this checklist cannot judge spoken delivery."
             )
-            next_action = "Lead with the answer, keep only relevant context, and finish with the evidence or takeaway."
+            next_action = "Review longer answers sentence by sentence; remove repetition, but keep details needed to answer the question."
         else:
             status = "not_enough_evidence"
             evidence = _evidence_excerpt(combined)
@@ -159,8 +283,8 @@ def build_feedback(session: dict[str, Any], answers: list[dict[str, Any]]) -> di
         "rubric_feedback": rubric_feedback,
         "limitations": [
             "This is a transparent text heuristic, not an AI interviewer or validated assessment.",
-            "Keyword and length signals can miss good answers and can also flag weak ones.",
+            "Phrase patterns can miss good answers and can also match weak or inaccurate answers.",
             "No overall score, personality judgement, or placement prediction is produced.",
-            "Only your submitted text is analysed; speaking, pronunciation, and listener understanding are not measured.",
+            "Only submitted text is analysed; speaking, pronunciation, listener understanding, and real-world outcomes are not measured.",
         ],
     }
