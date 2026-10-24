@@ -213,6 +213,16 @@ Prepped should define and document whether attempts are transient or saved by de
 
 Initial tests should cover session transitions, bounded follow-up turns, empty/oversized answers, feedback schema validation, malformed model output, no-provider fallback, same-rubric retry comparisons, and deletion of session-linked records. Green tests using mocks do not prove real provider or real-time voice operation.
 
+## Public CI status snapshot
+
+I also inspected recent GitHub Actions history as a separate signal. This is **not** a substitute for running the projects on Prepped's target laptop, and a successful workflow must be interpreted by its workflow name and commit.
+
+- **DeepInterview:** recent dependency-update checks for root formatting/types/tests, agent and LightRAG Python/Docker, and web Docker completed successfully around 2026-10-19. Example: https://github.com/ngoanpv/DeepInterview/actions/runs/39324853529
+- **AI Mock Interviewer:** the main-branch CI run listed for commit 0f14400f completed successfully on 2026-10-15; a subsequent dependency-update CI run also succeeded on 2026-10-18. Example: https://github.com/iarsingh/ai-mock-interviewer/actions/runs/38736828775
+- **Sotto:** production-image and several dependency-update workflows for commit 17a31623 completed successfully on 2026-10-23/24. A separate CI workflow on a Dependabot branch failed on 2026-10-23; that failure should not be represented as a failure of main, but it is a reminder that a dependency update can break checks. Example successful production-image run: https://github.com/affromero/Sotto/actions/runs/40060596800
+
+These results show active automated maintenance and some recent passing checks. They do not establish that every suite passed on the exact same commit, that real voice works offline, or that an air-gapped installation succeeds.
+
 ## Audit limitations and confidence
 
 **Verified by source inspection:** root license declarations/files; root and application manifests; documented runtimes and dependency families; selected Compose services; selected SQLite and interview-service implementation; example service tests; documented offline modes.
