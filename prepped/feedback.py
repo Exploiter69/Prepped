@@ -7,6 +7,7 @@ the answer is correct or that a real-world outcome has been achieved.
 from __future__ import annotations
 
 import re
+import unicodedata
 from typing import Any
 
 
@@ -15,6 +16,8 @@ from typing import Any
 OVERVIEW_PROBLEM = (
     "problem", "needed to", "wanted to address", "because", "challenge",
     "students missed", "students had to", "difficult to", "hard to",
+    "scattered", "look across", "across different channels", "have to look",
+    "find information", "look in different places",
 )
 OVERVIEW_BENEFIT = (
     "students", "users", "learners", "helps", "benefit", "for people",
@@ -51,16 +54,20 @@ TEST_EVIDENCE = (
 LIMITATION_EVIDENCE = (
     "have not measured", "haven't measured", "not measured", "not yet measured",
     "have not tested with", "haven't tested with", "not tested with",
-    "have not collected", "haven't collected", "no user data",
-    "not collected", "don't know yet", "do not know yet",
+    "haven't yet tested", "not yet tested", "have not collected",
+    "haven't collected", "no user data", "not collected",
+    "don't know yet", "do not know yet", "don't have reliable adoption data",
+    "adoption data", "not measured whether", "not demonstrated",
 )
 REFLECTION_IMPROVEMENT = (
     "next", "improve", "improvement", "would change", "would add",
     "prioritise", "prioritize", "fix", "test with users", "user feedback",
 )
 REFLECTION_LEARNING = (
-    "i learned", "i learnt", "i learned", "taught me", "i realised",
-    "i realized", "i discovered", "i now understand",
+    "i learned", "i learnt", "i've learned", "i've learnt",
+    "lesson i've learned", "biggest lesson i've learned",
+    "lesson i learned", "taught me", "i realised", "i realized",
+    "i discovered", "i now understand",
 )
 STRUCTURE_MARKERS = (
     "first", "then", "next", "finally", "as a result", "because", "so that",
@@ -121,11 +128,19 @@ def _marker_evidence(text: str, groups: list[tuple[str, tuple[str, ...]]]) -> st
 
 
 def _contains_marker(text: str, markers: tuple[str, ...]) -> bool:
-    """Match phrases without treating a short token as part of a longer word."""
-    lowered = text.casefold()
+    """Match inspectable phrases while normalizing common Unicode punctuation."""
+    # Learners often paste polished prose containing curly apostrophes and
+    # typographic dashes. Normalize those variants before checking phrases.
+    punctuation = str.maketrans({
+        "\u2018": "'", "\u2019": "'", "\u02bc": "'",
+        "\u2010": "-", "\u2011": "-", "\u2012": "-",
+        "\u2013": "-", "\u2014": "-",
+    })
+    normalized = unicodedata.normalize("NFKC", text).casefold().translate(punctuation)
     for marker in markers:
-        pattern = rf"(?<!\w){re.escape(marker.casefold())}(?!\w)"
-        if re.search(pattern, lowered):
+        normalized_marker = unicodedata.normalize("NFKC", marker).casefold().translate(punctuation)
+        pattern = rf"(?<!\w){re.escape(normalized_marker)}(?!\w)"
+        if re.search(pattern, normalized):
             return True
     return False
 
@@ -143,6 +158,21 @@ def _repeated_sentence_count(text: str) -> int:
             repeated.add(normalized)
         seen.add(normalized)
     return len(repeated)
+
+
+def _contains_positive_test_evidence(text: str) -> bool:
+    """Avoid treating an explicitly denied test as evidence that a test passed."""
+    negative_test_signals = (
+        "not tested", "haven't tested", "have not tested", "never tested",
+        "not yet tested", "haven't yet tested", "not verified",
+        "haven't verified", "have not verified", "not checked",
+        "haven't checked", "have not checked",
+    )
+    return any(
+        not _contains_marker(sentence, negative_test_signals)
+        and _contains_marker(sentence, TEST_EVIDENCE)
+        for sentence in _sentences(text)
+    )
 
 
 def _question_signal(question_id: str, answer: str) -> tuple[bool, str]:
@@ -178,7 +208,7 @@ def _question_signal(question_id: str, answer: str) -> tuple[bool, str]:
             return False, "State the decision you actually made before explaining the reasoning."
         return False, "Name an alternative or constraint you genuinely considered, and explain why it mattered."
     if question_id == "evidence_and_result":
-        has_test = _contains_marker(answer, TEST_EVIDENCE)
+        has_test = _contains_positive_test_evidence(answer)
         has_limit = _contains_marker(answer, LIMITATION_EVIDENCE)
         if has_test and has_limit:
             return True, "Separate what you directly tested or observed from what remains unmeasured."
