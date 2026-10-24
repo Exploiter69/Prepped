@@ -160,6 +160,21 @@ def _repeated_sentence_count(text: str) -> int:
     return len(repeated)
 
 
+def _contains_positive_test_evidence(text: str) -> bool:
+    """Avoid treating an explicitly denied test as evidence that a test passed."""
+    negative_test_signals = (
+        "not tested", "haven't tested", "have not tested", "never tested",
+        "not yet tested", "haven't yet tested", "not verified",
+        "haven't verified", "have not verified", "not checked",
+        "haven't checked", "have not checked",
+    )
+    return any(
+        not _contains_marker(sentence, negative_test_signals)
+        and _contains_marker(sentence, TEST_EVIDENCE)
+        for sentence in _sentences(text)
+    )
+
+
 def _question_signal(question_id: str, answer: str) -> tuple[bool, str]:
     """Return whether a prompt-specific signal exists and what may be missing."""
     if question_id == "project_overview":
@@ -193,7 +208,7 @@ def _question_signal(question_id: str, answer: str) -> tuple[bool, str]:
             return False, "State the decision you actually made before explaining the reasoning."
         return False, "Name an alternative or constraint you genuinely considered, and explain why it mattered."
     if question_id == "evidence_and_result":
-        has_test = _contains_marker(answer, TEST_EVIDENCE)
+        has_test = _contains_positive_test_evidence(answer)
         has_limit = _contains_marker(answer, LIMITATION_EVIDENCE)
         if has_test and has_limit:
             return True, "Separate what you directly tested or observed from what remains unmeasured."
