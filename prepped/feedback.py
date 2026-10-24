@@ -85,14 +85,17 @@ def _sentences(text: str) -> list[str]:
     """Split an answer into bounded sentence-level evidence candidates."""
     return [
         sentence.strip()
-        for sentence in re.split(r"(?<=[.!?])\\s+", text.strip())
+        for sentence in re.split(r"(?<=[.!?])\s+", text.strip())
         if sentence.strip()
     ]
 
 
-def _sentence_index(text: str, markers: tuple[str, ...]) -> int | None:
-    """Return the first sentence index containing any marker, if present."""
-    for index, sentence in enumerate(_sentences(text)):
+def _sentence_index(text: str, markers: tuple[str, ...], *, last: bool = False) -> int | None:
+    """Return the first or last sentence index containing any marker."""
+    indexed = list(enumerate(_sentences(text)))
+    if last:
+        indexed.reverse()
+    for index, sentence in indexed:
         if _contains_marker(sentence, markers):
             return index
     return None
@@ -104,12 +107,13 @@ def _marker_evidence(text: str, groups: list[tuple[str, tuple[str, ...]]]) -> st
     parts: list[str] = []
     used: set[int] = set()
     for label, markers in groups:
-        for index, sentence in enumerate(sentences):
+        for index in range(len(sentences) - 1, -1, -1):
+            sentence = sentences[index]
             if index not in used and _contains_marker(sentence, markers):
                 parts.append(f"{label}: “{_evidence_excerpt(sentence, 220)}”")
                 used.add(index)
                 break
-    return "\\n".join(parts) if parts else None
+    return "\n".join(parts) if parts else None
 
 
 def _contains_marker(text: str, markers: tuple[str, ...]) -> bool:
@@ -259,7 +263,7 @@ def build_feedback(session: dict[str, Any], answers: list[dict[str, Any]]) -> di
         elif criterion_id == "structure":
             problem_index = _sentence_index(overview, OVERVIEW_PROBLEM)
             solution_index = _sentence_index(overview, OVERVIEW_FEATURES)
-            benefit_index = _sentence_index(overview, OVERVIEW_BENEFIT)
+            benefit_index = _sentence_index(overview, OVERVIEW_BENEFIT, last=True)
             found = all(index is not None for index in (problem_index, solution_index, benefit_index))
             ordered = found and problem_index <= solution_index <= benefit_index
             status = "evidence_found" if ordered else "try_next"
