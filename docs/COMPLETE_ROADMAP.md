@@ -1,7 +1,7 @@
 # Prepped — Complete Project Roadmap
 
 **Status:** Working roadmap for the complete TDP, from research archive to evaluated prototype  
-**Date:** 2026-10-19  
+**Date:** 2026-10-24  
 **Planning basis:** B.Tech semester 3 now; TDP continues through the final year. Dates are decision gates, not promises that every feature will be delivered.  
 **Companion documents:** [Complete Product Blueprint](PRODUCT_BLUEPRINT.md) · [Research Decision Matrix](RESEARCH_DECISION_MATRIX.md)
 
@@ -25,18 +25,20 @@ The first proof is this loop working end to end—not an avatar, a dashboard, or
 
 ## 2. Current baseline and truth reset
 
-As of 2026-10-19, the GitHub repository contains research reports, archive-verification notes, a README, and a product blueprint. The repository tree does not yet show an application implementation. Therefore:
+**Status updated 2026-10-24.** The repository now contains a runnable local text MVP. PR #6 (checklist evidence quality) has been merged to `main` as commit `c547dea5a43b917ddcffda89fbcfeaf01577c504`; its GitHub Actions test run passed before merge.
 
-- **Research collected:** yes, five AI reports archived.
+- **Research collected:** yes, five AI reports are archived; see the verification notes for extraction limitations.
 - **Product direction selected:** yes, one text-first project-interview scenario.
-- **Application implemented:** not yet evidenced in the repository.
-- **User pilot run:** not yet evidenced.
+- **Application implemented:** yes — FastAPI, plain HTML/CSS/JavaScript, SQLite, and versioned JSON scenario/rubric.
+- **Core flow automated-tested:** yes — session creation, ordered answers, completion, feedback, retry, attempt grouping/comparison data, history, deletion, empty answers, cancellation, and answer-length boundaries have regression coverage.
+- **Checklist feedback:** deterministic phrase heuristics with excerpts from learner answers; not a validated assessment. PR #6 adds separate sentence-level evidence and prompt-specific follow-up signals. Heuristics can still miss meaning, so user review is required.
+- **Local fresh-checkout acceptance:** not yet independently confirmed after the latest merge. Run the documented install/test/start flow from a clean checkout.
+- **Student pilot:** not yet run or evidenced. This is the next product-validation gate.
 - **Placement-readiness improvement measured:** no.
 - **Voice pipeline benchmarked on target hardware:** no.
 - **AI scoring validated against human raters:** no.
 
-The old Phase 2 PPT/report proposed graph logic, voice, avatars, “Skill DNA,” institutional heatmaps, and an estimated 40% improvement. These are historical proposal claims, not proof of implementation or results. The roadmap replaces them with verifiable gates. Remove the 40% claim from future presentations unless an appropriate study supports it.
-
+The old Phase 2 PPT/report proposed graph logic, voice, avatars, “Skill DNA,” institutional heatmaps, and an estimated 40% improvement. These are historical proposal claims, not proof of implementation or results. Do not repeat the 40% claim unless an appropriate study supports it.
 ## 3. Hard constraints
 
 - No mandatory paid APIs, subscriptions, hosted databases, paid hosting, or pay-per-use services.
@@ -385,11 +387,10 @@ Prepped is ready for final TDP submission when the team can provide:
 
 ## 20. Immediate next actions
 
-1. Create the application skeleton and local run instructions.
-2. Add the first scenario JSON and rubric.
-3. Implement the deterministic text session controller.
-4. Build answer capture, feedback, retry, local history, and deletion.
-5. Add tests for the full core loop.
-6. Demonstrate it from a clean checkout before expanding scope.
+1. **Verify the merged MVP locally:** sync `main`, install from the documented development requirements in a clean environment, run the complete test suite, and smoke-test the browser flow.
+2. **Close the manual acceptance gate:** confirm retry uses the same scenario/rubric version, attempt comparison is understandable, history persists after restart, and deletion removes the selected session and answers.
+3. **Run a small student usability pilot:** invite 10–20 volunteers if available; clearly label the app as a prototype, collect minimal anonymous observations, and record task completion, feedback grounding, next-action clarity, confusion, and willingness to practise again.
+4. **Publish the evidence:** add a dated pilot/test record with method, sample size, observations, failures, and limitations. Do not invent results if a pilot cannot be run.
+5. **Decide the next iteration from evidence:** improve feedback and attempt comparison first. Only then begin a measured local voice feasibility spike; do not integrate voice frameworks or paid services by default.
 
-**The immediate milestone is one complete local text scenario with evidence-linked feedback and retry. Voice and advanced features are gated by results, not assumed in advance.**
+**Current gate:** the text MVP is implemented and its core automated tests are passing on the feature branch before merge. Product completion is not claimed until fresh-checkout and manual acceptance checks are recorded and a student pilot (or a documented reason it could not be run) informs the next decision.
