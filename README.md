@@ -10,6 +10,8 @@ Prepped is being restarted from a clean, evidence-led scope. The first version i
 2. [Complete Project Roadmap](docs/COMPLETE_ROADMAP.md) — implementation gates, pilot, voice feasibility, and semester-by-semester TDP outcomes.
 3. [Research Review and Decision Matrix](docs/RESEARCH_DECISION_MATRIX.md) — what each AI report contributes and what we adopt, defer, reject, or re-verify.
 4. [Research archive verification](research/raw/VERIFICATION.md) — what is exact and what PDF/OCR limitations remain.
+5. [Upstream repository audit](docs/UPSTREAM_REPOSITORY_AUDIT.md) — source-inspected dependencies, licenses, offline-mode claims, CI evidence, and audit limitations.
+6. [Upstream feature mapping](docs/UPSTREAM_FEATURE_MAPPING.md) — feature-by-feature reuse/adapt/build/defer/reject decisions against Prepped's blueprint.
 
 ## Original AI research
 
