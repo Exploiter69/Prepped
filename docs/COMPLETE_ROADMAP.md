@@ -25,13 +25,13 @@ The first proof is this loop working end to end—not an avatar, a dashboard, or
 
 ## 2. Current baseline and truth reset
 
-**Status updated 2026-10-24.** The repository now contains a runnable local text MVP. PR #6 (checklist evidence quality) has been merged to `main` as commit `c547dea5a43b917ddcffda89fbcfeaf01577c504`; its GitHub Actions test run passed before merge.
+**Status updated 2026-10-24.** The repository contains a runnable local text MVP. PR #6 improved checklist evidence selection; PR #7 (`4bf7774810bd76ae904505109f4dab49dbec23ba`) normalized Unicode punctuation in feedback signals and stopped explicitly denied testing from counting as positive test evidence. PR #7's GitHub Actions test run passed before merge.
 
 - **Research collected:** yes, five AI reports are archived; see the verification notes for extraction limitations.
 - **Product direction selected:** yes, one text-first project-interview scenario.
 - **Application implemented:** yes — FastAPI, plain HTML/CSS/JavaScript, SQLite, and versioned JSON scenario/rubric.
 - **Core flow automated-tested:** yes — session creation, ordered answers, completion, feedback, retry, attempt grouping/comparison data, history, deletion, empty answers, cancellation, and answer-length boundaries have regression coverage.
-- **Checklist feedback:** deterministic phrase heuristics with excerpts from learner answers; not a validated assessment. PR #6 adds separate sentence-level evidence and prompt-specific follow-up signals. Heuristics can still miss meaning, so user review is required.
+- **Checklist feedback:** deterministic phrase heuristics with excerpts from learner answers; not a validated assessment. PR #6 adds separate sentence-level evidence and prompt-specific follow-up signals; PR #7 improves matching for curly apostrophes and guards against false-positive test evidence. Heuristics can still miss meaning, so user review is required.
 - **Local fresh-checkout acceptance:** not yet independently confirmed after the latest merge. Run the documented install/test/start flow from a clean checkout.
 - **Student pilot:** not yet run or evidenced. This is the next product-validation gate.
 - **Placement-readiness improvement measured:** no.
