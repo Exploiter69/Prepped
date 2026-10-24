@@ -81,6 +81,45 @@ def _evidence_excerpt(text: str, limit: int = 180) -> str | None:
     return clean[: limit - 1].rsplit(" ", 1)[0] + "…"
 
 
+def _sentences(text: str) -> list[str]:
+    """Split an answer into bounded sentence-level evidence candidates."""
+    return [
+        sentence.strip()
+        for sentence in re.split(r"(?<=[.!?])\s+", text.strip())
+        if sentence.strip()
+    ]
+
+
+def _sentence_index(text: str, markers: tuple[str, ...], *, last: bool = False) -> int | None:
+    """Return the first or last sentence index containing any marker."""
+    indexed = list(enumerate(_sentences(text)))
+    if last:
+        indexed.reverse()
+    for index, sentence in indexed:
+        if _contains_marker(sentence, markers):
+            return index
+    return None
+
+
+def _marker_evidence(text: str, groups: list[tuple[str, tuple[str, ...]]]) -> str | None:
+    """Return distinct, labelled sentence excerpts for the requested signals."""
+    sentences = _sentences(text)
+    parts: list[str] = []
+    used: set[int] = set()
+    for label, markers in groups:
+        candidates = [
+            (priority, index, sentence)
+            for priority, marker in enumerate(markers)
+            for index, sentence in enumerate(sentences)
+            if index not in used and _contains_marker(sentence, (marker,))
+        ]
+        if candidates:
+            priority, index, sentence = min(candidates, key=lambda item: (item[0], -item[1]))
+            parts.append(f"{label}: “{_evidence_excerpt(sentence, 220)}”")
+            used.add(index)
+    return "\n".join(parts) if parts else None
+
+
 def _contains_marker(text: str, markers: tuple[str, ...]) -> bool:
     """Match phrases without treating a short token as part of a longer word."""
     lowered = text.casefold()
@@ -215,46 +254,78 @@ def build_feedback(session: dict[str, Any], answers: list[dict[str, Any]]) -> di
             has_problem = _contains_marker(overview, OVERVIEW_PROBLEM)
             has_benefit = _contains_marker(overview, OVERVIEW_BENEFIT)
             status = "evidence_found" if count >= 12 and has_problem and has_benefit else "try_next"
-            evidence = _evidence_excerpt(overview)
+            evidence = _marker_evidence(overview, [
+                ("Problem signal", OVERVIEW_PROBLEM),
+                ("Who benefits", OVERVIEW_BENEFIT),
+            ])
             message = (
-                "The overview contains phrase signals for a problem and beneficiary; this cannot confirm that a listener understood it."
+                "Separate sentence excerpts contain phrase signals for a problem and beneficiary; this cannot confirm that a listener understood the explanation."
                 if status == "evidence_found"
                 else "The checklist could not find both a problem signal and a beneficiary signal in the overview."
             )
             next_action = "Introduce the problem, then say who it affects and how your project helps."
         elif criterion_id == "structure":
-            has_problem = _contains_marker(overview, OVERVIEW_PROBLEM)
-            has_solution = _contains_marker(overview, OVERVIEW_FEATURES)
-            has_benefit = _contains_marker(overview, OVERVIEW_BENEFIT)
-            status = "evidence_found" if has_problem and has_solution and has_benefit else "try_next"
-            evidence = _evidence_excerpt(overview)
+            problem_index = _sentence_index(overview, OVERVIEW_PROBLEM)
+            solution_index = _sentence_index(overview, OVERVIEW_FEATURES)
+            benefit_index = _sentence_index(overview, OVERVIEW_BENEFIT, last=True)
+            found = all(index is not None for index in (problem_index, solution_index, benefit_index))
+            ordered = found and problem_index <= solution_index <= benefit_index
+            status = "evidence_found" if ordered else "try_next"
+            evidence = _marker_evidence(overview, [
+                ("Problem", OVERVIEW_PROBLEM),
+                ("Feature or approach", OVERVIEW_FEATURES),
+                ("Beneficiary", OVERVIEW_BENEFIT),
+            ])
             message = (
-                "The overview contains phrase signals for a problem, solution detail, and beneficiary; their logical order is not verified."
-                if status == "evidence_found"
-                else "One or more expected overview elements were not recognised by the checklist."
+                "Phrase signals appear in problem → feature → beneficiary order. This does not verify that the reasoning is clear or complete."
+                if ordered
+                else "The expected problem → feature → beneficiary signals were missing or did not appear in that order."
             )
             next_action = "Try this order: problem → your approach or feature → who benefits or current evidence."
         elif criterion_id == "specificity":
-            matches = [
-                (question, by_question.get(question["id"], "").strip())
-                for question in questions
-                if by_question.get(question["id"], "").strip()
-                and _question_signal(question["id"], by_question[question["id"]].strip())[0]
-            ]
-            evidence = _evidence_excerpt(matches[0][1]) if matches else _evidence_excerpt(combined)
-            status = "evidence_found" if matches else "try_next"
+            preferred_ids = ("personal_contribution", "design_decision", "evidence_and_result", "reflection", "project_overview")
+            candidates: list[tuple[str, str]] = []
+            for question_id in preferred_ids:
+                answer = by_question.get(question_id, "").strip()
+                if not answer:
+                    continue
+                concrete_sentence = next(
+                    (
+                        sentence for sentence in _sentences(answer)
+                        if _contains_marker(sentence, ARTIFACT_DETAILS)
+                        or _contains_marker(sentence, TEST_EVIDENCE)
+                        or _contains_marker(sentence, DECISION_CHOICES)
+                    ),
+                    None,
+                )
+                if concrete_sentence:
+                    candidates.append((question_id, concrete_sentence))
+            evidence = (
+                f"{candidates[0][0].replace('_', ' ').title()}: “{_evidence_excerpt(candidates[0][1], 220)}”"
+                if candidates else None
+            )
+            status = "evidence_found" if candidates else "try_next"
             message = (
-                "At least one answer contains prompt-specific phrase signals. Check that the detail is accurate and supports the point."
-                if matches
-                else "No prompt-specific detail pattern was recognised. The heuristic may miss valid evidence."
+                "This excerpt names a concrete artifact, decision, or check. Confirm it reflects work you personally did; a phrase match does not verify accuracy."
+                if candidates
+                else "No concrete implementation detail or check was recognised. The heuristic may miss valid examples."
             )
             next_action = "Use one real implementation detail, decision, test, or observed result that you can explain."
         elif criterion_id == "follow_up_handling":
             answered = sum(bool(by_question.get(question["id"], "").strip()) for question in questions)
-            status = "evidence_found" if answered == len(questions) else "try_next"
-            evidence = f"{answered} of {len(questions)} questions have non-empty answers."
-            message = "This counts answered prompts only; it cannot determine whether an answer is relevant." if answered == len(questions) else "Some prompts were skipped or left blank."
-            next_action = "Make the first sentence directly answer the question before adding context."
+            signal_count = sum(
+                item["status"] == "evidence_found"
+                for item in question_feedback
+            )
+            all_signals = answered == len(questions) and signal_count == len(questions)
+            status = "evidence_found" if all_signals else "try_next"
+            evidence = f"Prompt-specific phrase signals were found in {signal_count} of {len(questions)} answers; {answered} answers were non-empty."
+            message = (
+                "Each answer triggered its prompt's expected phrase signals. This still cannot determine relevance, completeness, or whether the question was genuinely answered."
+                if all_signals
+                else "At least one answer was blank or did not trigger all expected phrase signals. Review its question-specific note; a missed signal does not prove the answer is wrong."
+            )
+            next_action = "Make the first sentence directly answer the question, then add only the context needed to explain it."
         elif criterion_id == "conciseness":
             answer_details = [
                 (question, text, len(_words(text)), _repeated_sentence_count(text))

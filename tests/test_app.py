@@ -421,3 +421,88 @@ def test_conciseness_feedback_reports_not_enough_evidence_when_all_answers_are_e
     feedback = build_feedback(session, answers)
     assert feedback["rubric_feedback"][0]["status"] == "not_enough_evidence"
     assert "No non-empty answers" in feedback["rubric_feedback"][0]["message"]
+
+
+
+def test_rubric_evidence_is_checklist_specific_and_follow_up_uses_prompt_signals() -> None:
+    from prepped.feedback import build_feedback
+
+    questions = [
+        {"id": "project_overview", "prompt": "Describe the project."},
+        {"id": "personal_contribution", "prompt": "What did you build?"},
+        {"id": "design_decision", "prompt": "What decision did you make?"},
+        {"id": "evidence_and_result", "prompt": "What evidence do you have?"},
+        {"id": "reflection", "prompt": "What would you improve?"},
+    ]
+    rubric = [
+        {"id": "clarity", "label": "Clarity"},
+        {"id": "structure", "label": "Structure"},
+        {"id": "specificity", "label": "Specificity"},
+        {"id": "follow_up_handling", "label": "Follow-up handling"},
+    ]
+    answers_text = [
+        "Campus updates were scattered, so I wanted to address that problem. I built posts and polls into the platform. University students benefit because they can find updates in one place.",
+        "I implemented the posts API and SQLite persistence. I also wrote tests for saving posts.",
+        "I chose SQLite because the app runs locally. I considered a hosted database, but it would add setup.",
+        "I ran pytest and the tests passed. I have not measured student outcomes.",
+        "Next I would test the interface with students. I learned to validate assumptions.",
+    ]
+    session = {
+        "id": "rubric-evidence-session",
+        "scenario_id": "project-explanation",
+        "scenario_version": "1.0.0",
+        "attempt_number": 1,
+        "completed_at": None,
+        "scenario": {"questions": questions, "rubric": rubric},
+        "rubric": rubric,
+    }
+    answers = [
+        {"question_id": question["id"], "answer_text": text}
+        for question, text in zip(questions, answers_text, strict=True)
+    ]
+
+    feedback = build_feedback(session, answers)
+    items = {item["criterion_id"]: item for item in feedback["rubric_feedback"]}
+
+    assert items["clarity"]["status"] == "evidence_found"
+    assert "Problem signal:" in items["clarity"]["evidence"]
+    assert "Who benefits:" in items["clarity"]["evidence"]
+    assert items["structure"]["status"] == "evidence_found"
+    assert "Problem:" in items["structure"]["evidence"]
+    assert "Feature or approach:" in items["structure"]["evidence"]
+    assert "Beneficiary:" in items["structure"]["evidence"]
+    assert items["specificity"]["evidence"].startswith("Personal Contribution:")
+    assert "posts API" in items["specificity"]["evidence"]
+    assert items["follow_up_handling"]["status"] == "evidence_found"
+    assert "5 of 5 answers" in items["follow_up_handling"]["evidence"]
+    assert "cannot determine relevance" in items["follow_up_handling"]["message"]
+
+
+def test_follow_up_handling_does_not_treat_five_nonempty_generic_answers_as_handled() -> None:
+    from prepped.feedback import build_feedback
+
+    questions = [
+        {"id": "project_overview", "prompt": "Describe the project."},
+        {"id": "personal_contribution", "prompt": "What did you build?"},
+        {"id": "design_decision", "prompt": "What decision did you make?"},
+        {"id": "evidence_and_result", "prompt": "What evidence do you have?"},
+        {"id": "reflection", "prompt": "What would you improve?"},
+    ]
+    rubric = [{"id": "follow_up_handling", "label": "Follow-up handling"}]
+    session = {
+        "id": "generic-follow-up-session",
+        "scenario_id": "project-explanation",
+        "scenario_version": "1.0.0",
+        "attempt_number": 1,
+        "completed_at": None,
+        "scenario": {"questions": questions, "rubric": rubric},
+        "rubric": rubric,
+    }
+    generic = "This project is useful and important for people."
+    answers = [{"question_id": question["id"], "answer_text": generic} for question in questions]
+
+    feedback = build_feedback(session, answers)
+    item = feedback["rubric_feedback"][0]
+    assert item["status"] == "try_next"
+    assert "0 of 5 answers" in item["evidence"]
+    assert "does not prove the answer is wrong" in item["message"]
