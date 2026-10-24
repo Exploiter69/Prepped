@@ -394,4 +394,4 @@ def test_conciseness_feedback_reports_illustrative_speaking_time_for_longest_ans
     item = feedback["rubric_feedback"][0]
     assert item["status"] == "try_next"
     assert "illustrative 130 words per minute" in item["message"]
-    assert "word count cannot determine" in item["message"]
+    assert "word count cannot determine" in item["message"].lower()
