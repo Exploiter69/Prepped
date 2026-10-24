@@ -6,6 +6,7 @@ Prepped is an evidence-led, local-first practice app. The first working slice is
 
 ## Start here
 
+0. [Current implementation and acceptance status](docs/CURRENT_STATE.md)
 1. [Complete Product and System Blueprint](docs/PRODUCT_BLUEPRINT.md)
 2. [Architecture Decision Record 001](docs/ADR-001-MINIMAL-LOCAL-FIRST-ARCHITECTURE.md)
 3. [Complete Project Roadmap](docs/COMPLETE_ROADMAP.md)
