@@ -163,16 +163,25 @@ def _repeated_sentence_count(text: str) -> int:
 
 
 def _contains_positive_test_evidence(text: str) -> bool:
-    """Avoid treating an explicitly denied test as evidence that a test passed."""
+    """Recognize completed checks, not denied checks or future plans."""
     negative_test_signals = (
         "not tested", "haven't tested", "have not tested", "never tested",
         "not yet tested", "haven't yet tested", "not verified",
         "haven't verified", "have not verified", "not checked",
-        "haven't checked", "have not checked",
+        "haven't checked", "have not checked", "not measured",
+        "haven't measured", "have not measured", "never measured",
+        "not yet measured", "not observed", "haven't observed",
+        "have not observed", "not collected", "haven't collected",
+        "have not collected",
+    )
+    future_or_planned_signals = (
+        "would", "will", "next step", "plan to", "planning to",
+        "need to", "want to", "could", "should", "hope to",
     )
     return any(
-        not _contains_marker(sentence, negative_test_signals)
-        and _contains_marker(sentence, TEST_EVIDENCE)
+        _contains_marker(sentence, TEST_EVIDENCE)
+        and not _contains_marker(sentence, negative_test_signals)
+        and not _contains_marker(sentence, future_or_planned_signals)
         for sentence in _sentences(text)
     )
 
