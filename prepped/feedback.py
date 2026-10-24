@@ -93,11 +93,11 @@ def _contains_marker(text: str, markers: tuple[str, ...]) -> bool:
 
 def _repeated_sentence_count(text: str) -> int:
     """Count exact repeated sentences, ignoring case and surrounding punctuation."""
-    sentences = re.split(r"(?<=[.!?])\\s+", text.strip())
+    sentences = re.split(r"(?<=[.!?])\s+", text.strip())
     seen: set[str] = set()
     repeated: set[str] = set()
     for sentence in sentences:
-        normalized = re.sub(r"[^\\w' -]", "", sentence.casefold()).strip()
+        normalized = re.sub(r"[^\w' -]", "", sentence.casefold()).strip()
         if len(_words(normalized)) < 4:
             continue
         if normalized in seen:
