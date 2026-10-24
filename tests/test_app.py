@@ -508,6 +508,47 @@ def test_follow_up_handling_does_not_treat_five_nonempty_generic_answers_as_hand
     assert "does not prove the answer is wrong" in item["message"]
 
 
+def test_feedback_does_not_count_future_testing_or_unmeasured_outcomes_as_evidence() -> None:
+    from prepped.feedback import build_feedback
+
+    questions = [
+        {"id": "project_overview", "prompt": "Describe the project."},
+        {"id": "personal_contribution", "prompt": "What did you build?"},
+        {"id": "design_decision", "prompt": "What decision did you make?"},
+        {"id": "evidence_and_result", "prompt": "What evidence do you have?"},
+        {"id": "reflection", "prompt": "What would you improve?"},
+    ]
+    answers_text = [
+        "Students may have to look across different channels for campus updates. The platform includes posts and polls. It is designed for university students who want a more convenient way to connect. I need feedback from actual students to know whether it helps.",
+        "I implemented the posts API and SQLite persistence.",
+        "I chose a single feed and considered separate feeds.",
+        "The application includes posts and polls. I haven't measured whether students find information faster. My next step would be to test the platform with actual students, observe how they complete tasks, and collect feedback.",
+        "Next I would test the interface with students. I learned that working code does not prove the problem is solved.",
+    ]
+    rubric = [{"id": "clarity", "label": "Clarity"}]
+    session = {
+        "id": "signal-regression-session",
+        "scenario_id": "project-explanation",
+        "scenario_version": "1.0.0",
+        "attempt_number": 1,
+        "completed_at": None,
+        "scenario": {"questions": questions, "rubric": rubric},
+        "rubric": rubric,
+    }
+    answers = [
+        {"question_id": question["id"], "answer_text": answer}
+        for question, answer in zip(questions, answers_text, strict=True)
+    ]
+
+    feedback = build_feedback(session, answers)
+    question_items = feedback["question_feedback"]
+    assert question_items[3]["status"] == "try_next"
+    assert "real check or observed result" in question_items[3]["next_action"]
+    clarity = feedback["rubric_feedback"][0]
+    assert clarity["status"] == "evidence_found"
+    assert "designed for university students" in clarity["evidence"]
+
+
 def test_feedback_handles_curly_apostrophes_and_does_not_count_denied_testing_as_a_test() -> None:
     from prepped.feedback import build_feedback
 
