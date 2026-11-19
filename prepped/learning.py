@@ -365,10 +365,14 @@ def create_learning_router(db_path: Path, curriculum_path: Path = DEFAULT_CURRIC
         for skill in data["skills"]:
             lesson_ids = [lesson["id"] for lesson in data["lessons"] if skill["id"] in lesson["skill_ids"]]
             skills.append({"skill_id": skill["id"], "title": skill["title"],
+                           "status": skill.get("status", "active"), "description": skill["description"],
+                           "outcomes": skill.get("outcomes", []),
                            "completed_lessons": sum(completed_by_lesson.get(item, 0) for item in lesson_ids),
                            "available_lessons": len(lesson_ids)})
         return {"attempts_started": len(rows), "lessons_completed": sum(row["status"] == "completed" for row in rows),
-                "learning_events": event_count, "skills": skills, "recent_attempts": [dict(row) for row in rows[:10]],
+                "learning_events": event_count, "skills": skills,
+                "completed_lesson_ids": sorted(completed_by_lesson),
+                "recent_attempts": [dict(row) for row in rows[:10]],
                 "note": "Counts show recorded activity only. They are not proficiency levels or a measure of learning gain."}
 
     return router
