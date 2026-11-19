@@ -9,6 +9,8 @@ This repository does **not** claim validated speech accuracy, placement improvem
 ## Start here
 
 - [Current implementation and verification status](docs/CURRENT_STATE.md)
+- [Clean install, supported environment and recovery](docs/INSTALL.md)
+- [Security boundaries and release hardening](docs/RELEASE_HARDENING.md)
 - [Foundation browser and data acceptance checklist](docs/ACCEPTANCE_CHECKLIST.md)
 - [Voice setup, privacy, and troubleshooting](docs/VOICE.md)
 - [ADR-002: local voice slice](docs/ADR-002-LOCAL-VOICE-SLICE.md)
@@ -41,7 +43,7 @@ The lesson runner displays each lesson's learning outcomes before exercises and 
 - Deterministic answer feedback for closed exercises; open responses are saved for learner self-review and are not automatically graded.
 - Ordered attempts, prerequisite enforcement, restart-safe resume, and progress events.
 
-The saved learner goal and focus areas select an explainable starter route through the English and project-communication tracks. The optional Starting point check records sentence, listening, and project-response tasks for later comparison. It can be repeated and reviewed; it assigns no proficiency level or total score. The progress view reports recorded activity counts, not proficiency or learning gains. Open speaking and pronunciation responses are saved for self-review, not automatically graded. Advanced diagnostic interpretation, learner-controlled revision, and dedicated HR/technical interview content remain on the roadmap.
+The saved learner goal and focus areas select an explainable starter route through the English and project-communication tracks. The optional Starting point check records sentence, listening, and project-response tasks for later comparison. It can be repeated and reviewed; it assigns no proficiency level or total score. The progress view reports recorded activity counts, not proficiency or learning gains. Open speaking and pronunciation responses are saved for self-review, not automatically graded. Advanced diagnostic interpretation remains future work. Learner-controlled revision is implemented in Phase D, and the Career workspace's project, HR/behavioural, and technical interview studios are implemented in Phase E. Phase F adds the cross-module progress and recovery view.
 
 Learning API: GET /api/learning/catalog, GET /api/learning/recommendations, POST /api/learning/attempts, GET /api/learning/attempts/{id}, POST /api/learning/attempts/{id}/responses, GET /api/learning/progress, and GET /api/learning/diagnostic/latest.
 
@@ -53,10 +55,10 @@ Requires Python 3.11 or newer. The voice slice also uses `ffmpeg` to decode brow
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install -e ".[dev,voice,voice-cloud]"
-python -m uvicorn prepped.main:app --reload
+python -m uvicorn prepped.main:app --host 127.0.0.1 --port 8000
 ```
 
-Open `http://127.0.0.1:8000`. The health endpoint is `/api/health`; the scenario definition is `/api/scenarios/project-explanation`; voice provider availability is `/api/voice/status`.
+Open `http://127.0.0.1:8000`. Keep the server bound to loopback; do not expose the prototype on a LAN or public network. Health/readiness endpoints are `/api/health` and `/api/ready`; voice provider availability is `/api/voice/status`. See [INSTALL.md](docs/INSTALL.md) for a clean install and recovery instructions.
 
 ### Enable local voice
 
@@ -156,7 +158,7 @@ The text feedback system is frozen for this phase. Do not keep adding phrase heu
 
 ## Current status
 
-The text practice loop is implemented on `main`. The voice slice has modular Groq Whisper and Vosk STT adapters, Piper/espeak TTS adapters, browser record/stop controls, editable transcripts, and text fallbacks. The Groq adapter has mocked automated tests; a live provider call and target-laptop browser acceptance are still outstanding. See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md).
+The complete Phase A–F implementation is on `feature/learner-profile`; this is not yet a release or a claim of target-device acceptance. The voice slice has modular Groq Whisper and Vosk STT adapters, Piper/espeak TTS adapters, browser record/stop controls, editable transcripts, and text fallbacks. Live speech quality and target-laptop browser acceptance remain manual checks. See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md).
 
 
 ## Personal learning memory and revision (Phase D)
@@ -177,3 +179,16 @@ Answers can be typed or recorded and transcribed through the existing optional v
 Completed interviews show question-by-question formative reflection with the original answer and transparent text signals. This is not a technical correctness grader, recruiter evaluation, or placement predictor. Sessions are stored locally, can be resumed/retried/deleted, and a learner can explicitly send an answer to the Phase D memory editor for review before saving.
 
 The studio content is versioned in `content/career-studios.v1.json`. API routes are under `/api/career`. No paid service, account, remote LLM interviewer, or additional infrastructure is required. GitHub Actions passes on the implementation commit: [88 passed, 2 skipped](https://github.com/Exploiter69/Prepped/actions/runs/44568533503); the two skips require `espeak-ng`. Target-device microphone/TTS and responsive acceptance remain manual checks; see [the acceptance checklist](docs/ACCEPTANCE_CHECKLIST.md).
+
+
+## Progress, goals, and portability (Phase F)
+
+The Progress workspace combines saved lesson completions and linked skill evidence with project-practice sessions, career interviews, memory reviews, due notes, recent activity, and a seven-day activity view. Skill coverage is based on completed curriculum lessons; it is not a proficiency score or prediction.
+
+Learners can create, edit, archive, restore, and delete goals for completed lessons, project-practice sessions, interviews, and memory reviews. Goal counts begin when the goal is created. Recommendations explain whether they are based on a saved profile route, an unfinished lesson, due memory notes, or an active goal.
+
+The same workspace can export a local JSON backup and restore it after explicit confirmation. It includes the learner profile, practice answers, lesson attempts/events, memory notes/reviews, interview sessions/turns, and goals. Restore is a full replacement, not a merge; the app validates the backup in a temporary database before replacing current data. Backups are unencrypted and contain personal content; keep them private. Current limit: 25 MiB / 200,000 records, backup/schema version 1.
+
+The app is designed for single-user loopback use. Run it on 127.0.0.1 only; it has no authentication or multi-user isolation and must not be exposed to a LAN or public internet. See [the release hardening record](docs/RELEASE_HARDENING.md) and [the clean install/recovery guide](docs/INSTALL.md).
+
+Progress is evidence of saved activity, not proficiency, learning gains, confidence measurement, hiring likelihood, or placement prediction. The optional student usability pilot has not been run; no results are claimed.
