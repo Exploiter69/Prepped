@@ -166,3 +166,14 @@ The Learning workspace includes an optional, learner-controlled memory library. 
 Saved items can be edited, suspended, resumed, dismissed/restored, deduplicated, and deleted. The due-review queue reveals the answer before the learner rates recall as Again, Hard, Good, or Easy. A small deterministic local interval scheduler stores due dates and review history in SQLite. It is intentionally not FSRS and does not claim measured learning gain.
 
 The feature uses additive SQLite tables and the existing FastAPI/plain JavaScript stack. It requires no account, paid service, external model, or hosted infrastructure. See [the Product Roadmap](docs/PRODUCT_ROADMAP.md) and [Phase D acceptance checklist](docs/ACCEPTANCE_CHECKLIST.md). Implementation and acceptance status are tracked separately in [Current State](docs/CURRENT_STATE.md).
+
+
+## Career & Interview Studios (Phase E)
+
+The Career workspace adds three authored interview studios: project explanation, HR/behavioural interviews, and technical fundamentals. Each has four main questions and a relevant follow-up for every answer. Guided, standard, and challenging modes select different authored follow-up wording.
+
+Answers can be typed or recorded and transcribed through the existing optional voice layer. Transcripts remain editable; prompts can be spoken with the existing TTS adapter. If Groq Whisper is configured, the interface discloses remote audio processing before requesting microphone access. Prepped does not store raw recordings.
+
+Completed interviews show question-by-question formative reflection with the original answer and transparent text signals. This is not a technical correctness grader, recruiter evaluation, or placement predictor. Sessions are stored locally, can be resumed/retried/deleted, and a learner can explicitly send an answer to the Phase D memory editor for review before saving.
+
+The studio content is versioned in `content/career-studios.v1.json`. API routes are under `/api/career`. No paid service, account, remote LLM interviewer, or additional infrastructure is required. Target-device microphone/TTS and responsive acceptance remain manual checks; see [the acceptance checklist](docs/ACCEPTANCE_CHECKLIST.md).
