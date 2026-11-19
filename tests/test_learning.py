@@ -15,7 +15,7 @@ def client_for(tmp_path: Path) -> TestClient:
 
 def test_curriculum_loads_with_unique_skills_tracks_lessons_and_supported_exercises() -> None:
     data = load_curriculum()
-    assert data["schema_version"] == "1.0.0"
+    assert data["schema_version"] == "1.1.0"
     assert len({item["id"] for item in data["skills"]}) == len(data["skills"])
     assert len({item["id"] for item in data["tracks"]}) == len(data["tracks"])
     assert len({item["id"] for item in data["lessons"]}) == len(data["lessons"])
