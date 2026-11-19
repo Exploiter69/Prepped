@@ -293,3 +293,47 @@ Review is formative and transparent: it displays each original answer, simple re
 New additive SQLite tables: `career_sessions` and `career_turns`. Existing practice sessions, answers, learner profile, learning attempts/events, and memory tables are preserved. No paid service, new infrastructure, mandatory model, or remote LLM feedback was added.
 
 **CI evidence:** [run 44568533503](https://github.com/Exploiter69/Prepped/actions/runs/44568533503) — 88 passed, 2 skipped (both require `espeak-ng`), including API and Chromium coverage. **Manual verification still required:** target-laptop text-mode completion across all studios; microphone permission and local/Groq disclosure paths; TTS playback where available; session resume/retry/delete; memory handoff; keyboard and narrow-screen acceptance. Do not mark Phase E fully accepted until device checks are recorded.
+
+
+---
+
+## Phase F — Progress, portability, and release hardening (2026-11-19)
+
+**Implementation added on `feature/learner-profile`; final CI evidence and target-laptop manual acceptance are pending.** Phase D and Phase E target-laptop acceptance remain separate open gates.
+
+### Progress and goals
+
+- New `/api/progress/overview` combines completed lesson evidence by curriculum skill, project-practice sessions, career interview sessions, memory review counts, due notes, active goals, seven-day activity, recent activity, and explainable next steps.
+- Skill progress is linked to completed lesson events and the curriculum's declared skill IDs. It reports lesson coverage and evidence titles only; it is not a skill-proficiency score. The baseline diagnostic is excluded from lesson completion counts.
+- Learner-owned goals support lessons completed, project practice sessions, interviews completed, and memory reviews. Create, edit, archive/restore, and delete are available. Counts start at each goal's creation timestamp; existing activity is not silently credited to a newly created goal.
+- Recommendations are deterministic and explain their source: resume an unfinished lesson, review due learner-saved notes, continue the next lesson in the profile-selected route, or work toward an active goal.
+
+### Export, backup, restore, and recovery
+
+- New `/api/data/status`, `GET /api/data/export`, and `POST /api/data/restore` endpoints.
+- Progress workspace can download a JSON backup and select a local backup for restore.
+- The versioned backup contains all current learner-data tables: `learner_profile`, `sessions`, `answers`, `learning_attempts`, `learning_events`, `learning_memory`, `learning_memory_reviews`, `career_sessions`, `career_turns`, and `learner_goals`.
+- It does not include source code, environment variables, API keys, or voice models.
+- Restore requires an explicit confirmation and replaces all current learner data; it is not a merge. Request size is capped at 25 MiB and records at 200,000.
+- Restore first rebuilds the data in a temporary database using the current additive schema, validates exact tables/columns and scalar fields, checks constraints, SQLite integrity, and foreign keys, then copies the validated database into place. Invalid backups leave the current database unchanged.
+- Backup format version and database schema version are explicit (both currently version 1). Incompatible versions fail closed.
+- Backups are unencrypted JSON and contain personal answers and notes; users must keep them private.
+
+### Release hardening
+
+- The application accepts loopback Host names only and rejects cross-origin state-changing requests when an Origin header is present.
+- Added CSP, frame denial, MIME sniffing protection, restrictive referrer and permissions policies, same-origin resource/opener policies, and `Cache-Control: no-store` on API responses.
+- Added `/api/ready` to check SQLite quick integrity, required Phase A–F tables, and curriculum loading.
+- CI now checks `static/progress.js`, runs API and Chromium acceptance, and performs a Python dependency audit with `pip-audit`.
+- Added [clean install, supported environment and recovery guide](INSTALL.md) and [release hardening/security record](RELEASE_HARDENING.md).
+
+### Verification still required
+
+- **Automated:** final GitHub Actions run for the exact Phase F commit, including dependency audit, compilation, all JavaScript syntax checks, API tests, and Chromium progress/backup journeys.
+- **Target device:** fresh install on Omarchy; check progress numbers against saved records; create/edit/archive/restore/delete goals; backup and restore every data category; verify an invalid backup leaves current data intact; keyboard-only and screen-reader labels/status; focus, contrast, and narrow-screen layout.
+- **Existing phases:** Phase D memory and Phase E interview journeys still need their own target-laptop acceptance. CI does not prove microphone permission, live transcription quality, local Piper/espeak playback, or device-specific behaviour.
+- **Usability validation:** the optional student pilot has not been run. No sample size, participant results, learning gains, or placement outcomes are claimed.
+
+### Scope and limitations
+
+Prepped remains a local single-user loopback application with no authentication or multi-user isolation. Do not expose it on a LAN, public internet, reverse proxy, or tunnel. Progress is saved-activity evidence, not proficiency or learning gain. Backups are not encrypted and currently support only the version-1 schema. See [INSTALL.md](INSTALL.md), [RELEASE_HARDENING.md](RELEASE_HARDENING.md), and [ACCEPTANCE_CHECKLIST.md](ACCEPTANCE_CHECKLIST.md).
