@@ -91,11 +91,10 @@ const areaLabels = {
 function renderProfile(result) {
   profileConfigured = result.configured;
   const profile = result.profile;
-  const form = $("#profile-form");
   if (!profile) {
     $("#profile-summary").textContent = "Not set up yet. Add a few details to help Prepped organise relevant practice. You can skip this and start practising.";
     $("#profile-edit-toggle").textContent = "Set up profile";
-    form.classList.add("hidden");
+    setProfileFormOpen(false);
     return;
   }
 
@@ -118,7 +117,16 @@ function renderProfile(result) {
   const focus = profile.improvement_areas.map((area) => areaLabels[area]).filter(Boolean);
   $("#profile-summary").textContent = details.join(" · ") + (focus.length ? ". Focus: " + focus.join(", ") + "." : ".");
   $("#profile-edit-toggle").textContent = "Edit profile";
-  form.classList.add("hidden");
+  setProfileFormOpen(false);
+}
+
+function setProfileFormOpen(open) {
+  const form = $("#profile-form");
+  const toggle = $("#profile-edit-toggle");
+  form.classList.toggle("hidden", !open);
+  toggle.setAttribute("aria-expanded", String(open));
+  toggle.textContent = open ? "Close profile" : (profileConfigured ? "Edit profile" : "Set up profile");
+  if (open) $("#profile-name").focus();
 }
 
 async function loadProfile() {
@@ -432,9 +440,7 @@ async function loadHistory() {
 }
 
 $("#profile-edit-toggle").addEventListener("click", () => {
-  const form = $("#profile-form");
-  form.classList.toggle("hidden");
-  if (!form.classList.contains("hidden")) $("#profile-name").focus();
+  setProfileFormOpen($("#profile-form").classList.contains("hidden"));
 });
 $("#profile-cancel").addEventListener("click", async () => {
   if (profileConfigured) await loadProfile();
