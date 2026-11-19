@@ -61,7 +61,7 @@ It is a practice and learning tool, not a hiring assessment, placement predictor
 - Progress by skill using explainable evidence and counts, not a misleading single score.
 - Recurring patterns and recently practised topics.
 - Review completion, consistency, and personal goals.
-- Recommendations show why they were suggested and let the learner dismiss them.
+- Recommendations show why they were suggested and let the learner dismiss and restore them.
 - Export/backup and restore of local learning data before broad use.
 
 ## Delivery sequence
@@ -230,8 +230,8 @@ Deliver a coherent first track rather than a large empty catalogue.
 
 - [x] Skill-level progress derived from completed lesson events and linked curriculum skills; no single ability score.
 - [x] Local progress overview combines lesson evidence, project practice, interview completions, memory reviews, weekly activity, and recent activity.
-- [x] Learner-owned goals for completed lessons, project practice sessions, completed interviews, and memory reviews. Goals can be created, edited, archived/restored, and deleted; progress counts only activity recorded after the goal was created.
-- [x] Explainable next-step recommendations use saved profile preferences, unfinished lesson/practice/interview sessions, due memory reviews, and active goals.
+- [x] Learner-owned goals for completed lessons, project practice sessions, completed interviews, and memory reviews. Goals can be created, edited, archived/restored, and deleted; progress counts only activity recorded after the goal was created. Recommendation dismissals are persisted and can be restored.
+- [x] Explainable next-step recommendations use saved profile preferences, unfinished lesson/practice/interview sessions, due memory reviews, and active goals; learners can dismiss and restore suggestions, with dismissal state persisted locally and included in backups.
 - [x] Local JSON export covers profile, sessions/answers, lesson attempts/events, memory items/reviews, career sessions/turns, and goals.
 - [x] Restore is explicit full replacement, not merge. It is size/row bounded, validates the backup in a staged database, checks SQLite integrity and foreign keys, and only then replaces the active database.
 - [x] Additive `learner_goals` migration and explicit backup format/database schema versions.
@@ -241,7 +241,7 @@ Deliver a coherent first track rather than a large empty catalogue.
 - [ ] Complete target-Omarchy fresh-install and manual end-to-end acceptance for progress, goals, backup/restore, keyboard/screen-reader use, contrast, and responsive layout.
 - [ ] Run the optional consent-based usability study only when participants are available; record method, sample size, failures, and limitations. No pilot results are claimed.
 
-**Known boundaries:** backups are unencrypted JSON and contain personal answers; the current 25 MiB / 200,000-record limits and backup format version 1 / database schema version 2 compatibility are deliberate. Restore replaces all current local data. Prepped remains a single-user loopback application, not a public or multi-user deployment.
+**Known boundaries:** backups are unencrypted JSON and contain personal answers; the current 25 MiB / 200,000-record limits and backup format version 1 / database schema version 3 compatibility are deliberate. Restore replaces all current local data. Prepped remains a single-user loopback application, not a public or multi-user deployment.
 
 **Exit gate:** reproducible clean install, automated suite and CI pass, core journeys accepted manually, data backup/restore works, known limitations are documented, and no unsupported product claims remain. Manual target-device acceptance is not claimed until recorded.
 
