@@ -612,4 +612,4 @@ def test_career_interview_can_resume_at_saved_followup(local_app_url: str, brows
     page.wait_for_function(
         "() => document.querySelector('#career-turn-label').textContent.includes('FOLLOW-UP')"
     )
-    assert "different priorities" in page.locator("#career-prompt-title").inner_text().lower()
+    assert "which experience or project" in page.locator("#career-prompt-title").inner_text().lower()
