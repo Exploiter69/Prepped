@@ -478,12 +478,12 @@
           : ["Suggested answer: " + (item.correct_answer || (item.suggested_order || []).join(" → ")), item.explanation].filter(Boolean).join("\n\n");
         document.dispatchEvent(new CustomEvent("prepped:memory-save", { detail: {
           item_type: openResponse ? "example" : "correction",
-          front: openResponse ? (item.original_response || item.prompt) : item.prompt,
-          back: back || "Review this response and add your own explanation.",
+          front: (openResponse ? (item.original_response || item.prompt) : item.prompt).slice(0, 240),
+          back: (back || "Review this response and add your own explanation.").slice(0, 2000),
           source_type: "lesson",
           source_id: state.attempt?.id || "",
           source_title: state.attempt?.lesson?.title || "Learning lesson",
-          source_excerpt: item.prompt || "",
+          source_excerpt: (item.prompt || "").slice(0, 1000),
         }}));
       });
       card.append(save);
