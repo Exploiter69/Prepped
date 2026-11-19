@@ -1,9 +1,21 @@
 # Prepped — Current State
 
 **Updated:** 2026-11-19<br>
-**Source of truth:** GitHub `main`<br>
+**Source of truth:** GitHub `feature/learner-profile` (working branch; `main` remains the last synced baseline)<br>
 **Product direction:** Voice-first, personalised practice and learning platform for Indian engineering students. The text practice loop is a reliable fallback and is frozen for feature development except material bugs.<br>
 **Engineering stage:** Record/stop voice slice with optional Groq Whisper and offline Vosk adapters; real browser/microphone and live-provider acceptance remain.
+
+## Learner workspace — implementation in progress
+
+The `feature/learner-profile` branch now contains:
+- `docs/PRODUCT_ROADMAP.md` defining the full product modules, delivery sequence, architecture constraints, and quality gates.
+- Additive SQLite `learner_profile` table; existing session and answer tables are not dropped or rewritten.
+- `GET /api/profile` and `PUT /api/profile` endpoints for one local profile.
+- Server-side validation for study year, goal, confidence level, text lengths, and improvement-area choices.
+- Profile setup/edit UI with optional name, study year, branch, target role, primary goal, confidence, and improvement areas. Profile setup can be skipped; the existing practice flow is not gated.
+- `tests/test_profile.py` covering initial state, save/read, updates, restart persistence, invalid input, and legacy session/answer preservation.
+
+**Validation status:** These changes have been committed to the remote feature branch, but have not yet been run on the user's laptop. Do not describe this milestone as tested or complete until `pytest`, JavaScript syntax checks, and a browser smoke test pass locally.
 
 ## What this milestone is
 
