@@ -61,21 +61,19 @@ class GoalPayload(BaseModel):
     def clean_description(cls, value: str) -> str:
         return value.strip()
 
-def _goal_progress(conn: sqlite3.Connection, goal_type: str) -> int:
+def _goal_progress(conn: sqlite3.Connection, goal_type: str, created_at: str) -> int:
     queries = {
-        "practice_sessions": "SELECT COUNT(*) AS n FROM sessions WHERE status = 'completed'",
-        "interviews_completed": "SELECT COUNT(*) AS n FROM career_sessions WHERE status = 'completed'",
-        "memory_reviews": "SELECT COUNT(*) AS n FROM learning_memory_reviews",
+        "lessons_completed": "SELECT COUNT(DISTINCT lesson_id) AS n FROM learning_attempts WHERE status='completed' AND completed_at >= ? AND lesson_id != 'baseline-check'",
+        "practice_sessions": "SELECT COUNT(*) AS n FROM sessions WHERE status='completed' AND completed_at >= ?",
+        "interviews_completed": "SELECT COUNT(*) AS n FROM career_sessions WHERE status='completed' AND completed_at >= ?",
+        "memory_reviews": "SELECT COUNT(*) AS n FROM learning_memory_reviews WHERE reviewed_at >= ?",
     }
-    if goal_type == "lessons_completed":
-        row = conn.execute("SELECT COUNT(DISTINCT lesson_id) AS n FROM learning_attempts WHERE status='completed' AND lesson_id != 'baseline-check'").fetchone()
-    else:
-        row = conn.execute(queries[goal_type]).fetchone()
+    row = conn.execute(queries[goal_type], (created_at,)).fetchone()
     return int(row["n"] or 0)
 
 def _goal_view(conn: sqlite3.Connection, row: sqlite3.Row) -> dict[str, Any]:
     item = dict(row)
-    progress = _goal_progress(conn, item["goal_type"])
+    progress = _goal_progress(conn, item["goal_type"], item["created_at"])
     item.update({"current_count": progress, "remaining": max(0, item["target_count"] - progress),
                  "reached_target": progress >= item["target_count"]})
     return item
