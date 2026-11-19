@@ -176,10 +176,12 @@ def test_practice_room_is_not_gated_by_profile_and_text_flow_completes(local_app
     page.locator("#learning-view").wait_for(state="visible")
     assert page.locator("#memory-source-type").input_value() == "practice"
     assert "Attempt 1" in page.locator("#memory-source-title").input_value()
-    assert page.locator("#memory-front").input_value().strip()
+    saved_front = page.locator("#memory-front").input_value().strip()
+    assert saved_front
     page.locator("#memory-form-submit").click()
     page.wait_for_function(
-        "() => document.querySelector('#memory-items').children.length > 0"
+        "(expected) => document.querySelector('#memory-items').textContent.includes(expected)",
+        arg=saved_front,
     )
 
     page.locator("#history-toggle").click()
