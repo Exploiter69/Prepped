@@ -12,11 +12,12 @@
     <script src="/static/learning.js?v=phase-d-1" defer></script>
     <script src="/static/memory.js?v=phase-d-2" defer></script>
     <script src="/static/career.js?v=phase-e-1" defer></script>
+    <script src="/static/progress.js?v=phase-f-1" defer></script>
   </head>
   <body>
     <header class="site-header">
       <a class="wordmark" href="/" aria-label="Prepped home">prepped<span>.</span></a>
-      <div class="header-actions"><span class="header-note">LOCAL PRACTICE · 0.3.0</span><button id="learning-toggle" class="button button-quiet" type="button" aria-controls="learning-view" aria-expanded="false">Learning</button><button id="career-toggle" class="button button-quiet" type="button" aria-controls="career-view" aria-expanded="false">Career</button><button id="history-toggle" class="button button-quiet" type="button">History</button></div>
+      <div class="header-actions"><span class="header-note">LOCAL PRACTICE · 0.3.0</span><button id="learning-toggle" class="button button-quiet" type="button" aria-controls="learning-view" aria-expanded="false">Learning</button><button id="career-toggle" class="button button-quiet" type="button" aria-controls="career-view" aria-expanded="false">Career</button><button id="progress-toggle" class="button button-quiet" type="button" aria-controls="progress-view" aria-expanded="false">Progress</button><button id="history-toggle" class="button button-quiet" type="button">History</button></div>
     </header>
     <main>
       <section class="intro" aria-labelledby="page-title">
@@ -171,6 +172,50 @@
         </section>
         <section class="career-history" aria-labelledby="career-history-title"><div class="divider"></div><div class="learning-section-heading"><h3 id="career-history-title">Recent interview practice</h3><button id="career-refresh" class="button button-quiet" type="button">Refresh</button></div><div id="career-history-list" class="career-history-list"></div></section>
         <div class="form-actions"><button id="career-home" class="button button-quiet" type="button">Back to practice room</button></div>
+      </section>
+      <section id="progress-view" class="scenario-panel progress-panel hidden" aria-labelledby="progress-title">
+        <div class="panel-topline"><span class="eyebrow">YOUR PRACTICE / PHASE F</span><span id="progress-status" class="status" role="status" aria-live="polite">Loading your activity…</span></div>
+        <h2 id="progress-title">See the work you have put in.</h2>
+        <p class="scenario-description">A record of completed practice, lessons, interviews and reviews. These counts show activity, not proficiency, confidence, learning gains or placement readiness.</p>
+        <div id="progress-summary" class="progress-summary" aria-live="polite"></div>
+        <section class="progress-section" aria-labelledby="progress-recommendations-title">
+          <h3 id="progress-recommendations-title">Useful next steps</h3>
+          <div id="progress-recommendations" class="progress-list"></div>
+        </section>
+        <section class="progress-section" aria-labelledby="progress-goals-title">
+          <div class="learning-section-heading"><div><span class="meta-label">LEARNER-CHOSEN TARGETS</span><h3 id="progress-goals-title">My goals</h3></div><span id="goal-count" class="status"></span></div>
+          <form id="goal-form" class="goal-form">
+            <div class="goal-fields">
+              <div><label for="goal-title">Goal title</label><input id="goal-title" maxlength="100" required placeholder="e.g. Finish three English lessons"></div>
+              <div><label for="goal-type">Count activity</label><select id="goal-type"><option value="lessons_completed">Lessons completed</option><option value="practice_sessions">Project practice sessions</option><option value="interviews_completed">Interviews completed</option><option value="memory_reviews">Memory reviews</option></select></div>
+              <div><label for="goal-target">Target count</label><input id="goal-target" type="number" min="1" max="500" value="3" required></div>
+              <div><label for="goal-date">Target date (optional)</label><input id="goal-date" type="date"></div>
+            </div>
+            <label for="goal-description">Why this matters (optional)</label>
+            <input id="goal-description" maxlength="240" placeholder="A short note to yourself">
+            <p id="goal-error" class="inline-error" role="alert"></p>
+            <button class="button button-primary" type="submit">Add my goal</button>
+          </form>
+          <div id="progress-goals" class="progress-list"></div>
+        </section>
+        <section class="progress-section" aria-labelledby="progress-skills-title">
+          <h3 id="progress-skills-title">Skill evidence</h3>
+          <p class="section-help">A skill appears here only when completed curriculum lessons link to it. The percentage is lesson coverage, not a skill rating.</p>
+          <div id="progress-skills" class="progress-skills"></div>
+        </section>
+        <section class="progress-section" aria-labelledby="progress-activity-title">
+          <div class="learning-section-heading"><h3 id="progress-activity-title">Recent activity</h3><button id="progress-refresh" class="button button-quiet" type="button">Refresh</button></div>
+          <div id="progress-week" class="progress-week"></div>
+          <div id="progress-activity" class="progress-list"></div>
+        </section>
+        <section class="progress-section" aria-labelledby="progress-data-title">
+          <h3 id="progress-data-title">Your data, under your control</h3>
+          <p class="section-help">Export includes your local profile, practice answers, lesson attempts, memory notes and reviews, interview sessions, and goals. It does not include API keys, environment variables, or voice models. Backup files contain personal content; keep them private.</p>
+          <div class="form-actions progress-data-actions"><button id="data-export" class="button button-secondary" type="button">Download local backup</button><label class="button button-quiet" for="data-import">Choose backup to restore</label><input id="data-import" class="visually-hidden" type="file" accept=".json,application/json"></div>
+          <p id="data-status" class="voice-status" role="status" aria-live="polite">Backups are local JSON files. Restore replaces all current local learning data.</p>
+        </section>
+        <p class="section-help">Progress is calculated from saved records on this device. No activity is sent to a progress or analytics service.</p>
+        <div class="form-actions"><button id="progress-home" class="button button-quiet" type="button">Back to practice room</button></div>
       </section>
       <p id="global-status" class="global-status" role="status" aria-live="polite">Checking local app…</p>
       <section id="home-view" class="scenario-panel" aria-labelledby="scenario-title">
