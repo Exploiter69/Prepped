@@ -226,7 +226,7 @@ Keep the existing Python + FastAPI + plain HTML/CSS/JavaScript + SQLite modular 
 
 **Implementation in progress; automated and manual acceptance pending.** The first complete vertical slice is now in the branch:
 
-- Versioned curriculum/curriculum.v1.json defines 14 stable skill IDs, three goal-based tracks, six lessons, outcomes, prerequisites, examples, and authored exercises.
+- Versioned curriculum/curriculum.v1.json defines 14 stable skill IDs, one foundation level, six units, three goal-based tracks, six lessons, outcomes, prerequisites, examples, and authored exercises.
 - prepped/learning.py validates curriculum references and supported exercise shapes, exposes a reusable lesson-attempt API, enforces exercise order and prerequisites, withholds answer keys from catalogue responses, and produces deterministic feedback for choice/order exercises. Open responses are stored for learner self-review; they are not automatically graded.
 - Additive SQLite learning_attempts and learning_events tables preserve existing sessions, answers, and the learner profile. Attempts and responses survive application restarts.
 - Profile goal and selected focus areas now select a transparent starter route with a reason per recommended lesson. Unsupported focus areas are disclosed rather than silently mapped to unrelated content.
