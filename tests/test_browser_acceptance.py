@@ -291,6 +291,20 @@ def test_baseline_check_records_responses_without_a_proficiency_score(local_app_
     assert "Record your starting point" in page.locator("#learning-runner-title").inner_text()
 
 
+def test_lessons_with_uncompleted_prerequisites_are_still_openable(local_app_url: str, browser_page) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+    page.locator("#learning-toggle").click()
+    page.wait_for_function(
+        "() => document.querySelector('#learning-status').textContent.includes('skills')"
+    )
+    lesson = page.locator('button[data-lesson-id="speaking-opinions"]')
+    assert lesson.is_enabled()
+    lesson.click()
+    page.locator("#learning-runner").wait_for(state="visible")
+    assert "Express an opinion" in page.locator("#learning-runner-title").inner_text()
+
+
 def test_english_track_exposes_complete_phase_c_units(local_app_url: str, browser_page) -> None:
     page = browser_page
     page.goto(local_app_url)
