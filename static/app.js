@@ -438,6 +438,7 @@ async function loadHistory() {
         const resume = document.createElement("button");
         resume.type = "button";
         resume.className = "button button-secondary";
+        resume.dataset.sessionId = session.id;
         resume.textContent = "Resume";
         resume.addEventListener("click", async () => {
           try {
