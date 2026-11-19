@@ -261,7 +261,7 @@ function makeFeedbackCard(title, status, message, evidence, nextAction, meta = "
     document.dispatchEvent(new CustomEvent("prepped:memory-save", { detail: {
       item_type: "correction",
       front: evidence || title,
-      back: [message, "Next action: " + nextAction].filter(Boolean).join("\\n\\n"),
+      back: [message, "Next action: " + nextAction].filter(Boolean).join("\n\n"),
       source_type: "practice",
       source_id: activeSession?.id || "",
       source_title: "Project explanation · Attempt " + (activeFeedback?.attempt_number || ""),
