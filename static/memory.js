@@ -14,7 +14,9 @@
     if (!response.ok) {
       const detail = body.detail;
       const message = typeof detail === "string" ? detail : detail?.message || "The request could not be completed.";
-      throw new Error(message);
+      const error = new Error(message);
+      error.detail = detail;
+      throw error;
     }
     return body;
   }
@@ -58,6 +60,7 @@
       [stats.active, "Active cards"],
       [stats.due, "Due to review"],
       [stats.suspended, "Paused"],
+      [stats.dismissed, "Dismissed"],
       [stats.reviews_completed, "Reviews completed"],
     ].forEach(([value, label]) => {
       const item = node("div", undefined, "learning-progress-item");
@@ -86,23 +89,36 @@
       const card = node("article", undefined, "memory-item");
       const header = node("div", undefined, "memory-item-heading");
       header.append(node("span", typeLabels[item.item_type] || item.item_type, "meta-label"));
-      header.append(node("span", item.status === "suspended" ? "Paused" : "Active", "status"));
+      header.append(node("span", item.dismissed_at ? "Dismissed" : item.status === "suspended" ? "Paused" : "Active", "status"));
       card.append(header, node("h4", item.front), node("p", item.back));
       if (item.source_title || item.source_excerpt) {
         const source = node("p", [item.source_title, item.source_excerpt].filter(Boolean).join(" · "), "section-help");
         card.append(source);
       }
-      const due = item.status === "active"
-        ? "Next review: " + new Date(item.due_at).toLocaleDateString()
-        : "Reviews paused until resumed";
+      const due = item.dismissed_at
+        ? "Dismissed from active memory"
+        : item.status === "active"
+          ? "Next review: " + new Date(item.due_at).toLocaleDateString()
+          : "Reviews paused until resumed";
       card.append(node("p", due, "section-help"));
       const actions = node("div", undefined, "memory-actions");
       const edit = node("button", "Edit", "button button-quiet");
       edit.type = "button";
       edit.addEventListener("click", () => editItem(item));
-      const pause = node("button", item.status === "active" ? "Suspend" : "Resume", "button button-quiet");
-      pause.type = "button";
-      pause.addEventListener("click", () => changeStatus(item, item.status === "active" ? "suspended" : "active"));
+      if (item.dismissed_at) {
+        const restore = node("button", "Restore", "button button-quiet");
+        restore.type = "button";
+        restore.addEventListener("click", () => restoreItem(item));
+        actions.append(edit, restore);
+      } else {
+        const pause = node("button", item.status === "active" ? "Suspend" : "Resume", "button button-quiet");
+        pause.type = "button";
+        pause.addEventListener("click", () => changeStatus(item, item.status === "active" ? "suspended" : "active"));
+        const dismiss = node("button", "Dismiss", "button button-quiet");
+        dismiss.type = "button";
+        dismiss.addEventListener("click", () => dismissItem(item));
+        actions.append(edit, pause, dismiss);
+      }
       const history = node("button", "Review history", "button button-quiet");
       history.type = "button";
       history.addEventListener("click", async () => {
@@ -124,7 +140,7 @@
       const remove = node("button", "Delete", "button button-quiet");
       remove.type = "button";
       remove.addEventListener("click", () => deleteItem(item));
-      actions.append(edit, pause, history, remove);
+      actions.append(history, remove);
       card.append(actions);
       target.append(card);
     }
@@ -147,6 +163,22 @@
     try {
       await request("/api/memory/items/" + encodeURIComponent(item.id) + "/status?status=" + status, { method: "PATCH" });
       await load();
+    } catch (error) { setStatus(error.message, true); }
+  }
+
+  async function dismissItem(item) {
+    try {
+      await request("/api/memory/items/" + encodeURIComponent(item.id) + "/dismiss", { method: "POST" });
+      await load();
+      setStatus("Dismissed. The item and its review history remain available in your library.");
+    } catch (error) { setStatus(error.message, true); }
+  }
+
+  async function restoreItem(item) {
+    try {
+      await request("/api/memory/items/" + encodeURIComponent(item.id) + "/restore", { method: "POST" });
+      await load();
+      setStatus("Restored. The previous review schedule is preserved.");
     } catch (error) { setStatus(error.message, true); }
   }
 
@@ -230,7 +262,17 @@
       }
       resetForm();
       await load();
-    } catch (error) { setStatus(error.message, true); }
+    } catch (error) {
+      if (error.detail?.existing_id) {
+        const existing = state.items.find((item) => item.id === error.detail.existing_id);
+        if (existing) {
+          editItem(existing);
+          setStatus("That item already exists. Its editor is open so you can update it instead.", true);
+          return;
+        }
+      }
+      setStatus(error.message, true);
+    }
   });
 
   $("#memory-form-cancel").addEventListener("click", resetForm);
