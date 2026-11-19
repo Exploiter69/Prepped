@@ -1,5 +1,5 @@
 const $ = (selector) => document.querySelector(selector);
-const views = ["home-view", "practice-view", "feedback-view", "history-view", "learning-view", "career-view"];
+const views = ["home-view", "practice-view", "feedback-view", "history-view", "learning-view", "career-view", "progress-view"];
 let scenario = null;
 let activeSession = null;
 let activeFeedback = null;
@@ -17,6 +17,7 @@ function showView(viewId) {
   for (const id of views) $("#" + id).classList.toggle("hidden", id !== viewId);
   $("#learning-toggle")?.setAttribute("aria-expanded", String(viewId === "learning-view"));
   $("#career-toggle")?.setAttribute("aria-expanded", String(viewId === "career-view"));
+  $("#progress-toggle")?.setAttribute("aria-expanded", String(viewId === "progress-view"));
   setStatus("");
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
