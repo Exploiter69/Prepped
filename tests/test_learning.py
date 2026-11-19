@@ -66,6 +66,14 @@ def test_catalog_hides_answer_keys_and_exposes_profile_based_recommendations(tmp
         pronunciation = next(item for item in recommended["items"] if item["lesson_id"] == "pronunciation-self-review")
         assert "listen-and-repeat pronunciation" in pronunciation["why"]
         assert "professional communication" in speaking["why"]
+        client.put("/api/profile", json={
+            "primary_goal": "professional_communication",
+            "confidence_level": "developing",
+            "improvement_areas": ["confidence"],
+        })
+        professional_route = client.get("/api/learning/recommendations").json()
+        assert professional_route["track_id"] == "project-communication"
+        assert "confidence" in professional_route["note"]
 
 
 def test_lesson_attempt_enforces_order_persists_feedback_and_updates_progress(tmp_path: Path) -> None:
