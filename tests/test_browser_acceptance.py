@@ -195,3 +195,27 @@ def test_learning_workspace_completes_and_resumes_a_saved_lesson(local_app_url: 
     assert "saved for self review" in page.locator("#learning-feedback").inner_text().lower()
     assert "not automatically graded" in page.locator("#learning-feedback").inner_text().lower()
     assert "Lessons completed" in page.locator("#learning-progress").inner_text()
+
+
+def test_listening_lesson_has_playback_and_revealed_text_alternative(local_app_url: str, browser_page) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+    page.locator("#learning-toggle").click()
+    page.locator('button[data-lesson-id="sentence-building"]').click()
+    page.locator('input[name="learning-choice"][value="b"]').check()
+    page.locator("#learning-submit").click()
+    for position, token in enumerate(["a", "b", "c", "d"]):
+        page.locator(".learning-order-select").nth(position).select_option(token)
+    page.locator("#learning-submit").click()
+    page.locator("#learning-reflection").fill("I built a small web application.")
+    page.locator("#learning-submit").click()
+    page.locator("#learning-feedback button").click()
+
+    page.locator('button[data-lesson-id="listening-for-details"]').click()
+    page.locator(".learning-listening-controls").wait_for(state="visible")
+    transcript = page.locator(".learning-transcript")
+    assert transcript.is_hidden()
+    page.locator(".learning-listening-controls button").nth(1).click()
+    assert transcript.is_visible()
+    assert "input validation" in transcript.inner_text().lower()
+    assert "text alternative" in page.locator(".learning-listening-controls").inner_text().lower()
