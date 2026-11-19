@@ -256,6 +256,7 @@
         const button = document.createElement("button");
         button.type = "button";
         button.className = "button button-secondary";
+        button.dataset.attemptId = item.id;
         button.textContent = "Resume: " + lesson;
         button.addEventListener("click", () => resumeAttempt(item.id));
         resume.append(button);
