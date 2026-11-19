@@ -25,6 +25,24 @@ This repository does **not** claim validated speech accuracy, placement improvem
 
 **Explain your project to a placement interviewer.** The learner answers five prompts about the problem, personal contribution, a design decision, evidence, and reflection. Answers can be typed or spoken. Spoken answers are transcribed into an editable text box (locally with Vosk, or remotely with Groq when explicitly configured), then submitted through the same session API as typed answers. The UI discloses which transcription mode is active before recording. After the final answer, Prepped shows question-by-question notes and a transparent checklist, then supports retry, attempt comparison, local history, and deletion.
 
+
+
+## Learning workspace — Phase B starter engine
+
+The Learning entry in the header opens a reusable lesson workspace built on the same FastAPI + SQLite + plain JavaScript stack. The current versioned curriculum includes a stable skill map, goal-based tracks, prerequisites, examples, and six starter lessons across English foundations and project communication.
+
+The lesson runner supports:
+- Single-choice and contextual vocabulary exercises.
+- Sentence/idea ordering.
+- Listening comprehension using the configured local TTS endpoint, with a revealable text alternative.
+- Short written or spoken responses. Spoken responses use the existing STT endpoint; Groq use is disclosed before recording, and raw audio is not stored by Prepped.
+- Deterministic answer feedback for closed exercises; open responses are saved for learner self-review and are not automatically graded.
+- Ordered attempts, prerequisite enforcement, restart-safe resume, and progress events.
+
+The saved learner goal and focus areas select an explainable starter route. The progress view reports recorded activity counts, not proficiency or learning gains. The curriculum is intentionally a starter slice; broader grammar, vocabulary, listening, pronunciation, diagnostic, revision, and interview content remains on the roadmap.
+
+Learning API: GET /api/learning/catalog, GET /api/learning/recommendations, POST /api/learning/attempts, GET /api/learning/attempts/{id}, POST /api/learning/attempts/{id}/responses, and GET /api/learning/progress.
+
 ## Run locally
 
 Requires Python 3.11 or newer. The voice slice also uses `ffmpeg` to decode browser recordings and a local speech model. Text mode works without either.
