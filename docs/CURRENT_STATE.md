@@ -253,7 +253,9 @@ The user confirmed GET /api/voice/status reports groq-whisper / whisper-large-v3
 
 ## Phase D — Personal learning memory and revision (2026-11-19)
 
-**Implementation status: added on `feature/learner-profile`; automated CI and target-device acceptance pending.**
+**Implementation status: added on `feature/learner-profile`; GitHub Actions passes (79 passed, 2 skipped); target-device manual acceptance remains pending.**
+
+CI evidence: [run 44561847713](https://github.com/Exploiter69/Prepped/actions/runs/44561847713). The two skips require `espeak-ng`, which is not installed on the hosted runner.
 
 The Learning workspace now includes a local personal memory and spaced-revision area:
 
