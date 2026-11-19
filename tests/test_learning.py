@@ -443,6 +443,7 @@ def test_question_vocabulary_and_listening_content_have_authored_answer_handling
             ("past-tense", "b"), ("preposition", "a"),
             ("grammar-review", "Yesterday, I tested the form."),
             ("articles-in-context", "a"), ("future-plan", "b"),
+            ("error-correction", "Yesterday, she went to the lab and checked the results."),
         ]:
             client.post(f"/api/learning/attempts/{grammar['id']}/responses",
                         json={"exercise_id": exercise_id, "answer": answer})
