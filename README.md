@@ -31,7 +31,7 @@ This repository does **not** claim validated speech accuracy, placement improvem
 
 The Learning entry in the header opens a reusable lesson workspace built on the same FastAPI + SQLite + plain JavaScript stack. The current versioned curriculum includes 14 stable skills, one foundation stage, nine units, four tracks, 13 authored lessons plus a separate low-stakes baseline check. The English foundations track contains 11 sequenced lessons across sentence construction, grammar, vocabulary, listening, speaking, and pronunciation.
 
-The lesson runner supports:
+The lesson runner displays each lesson's learning outcomes before exercises and supports:
 - Single-choice and contextual vocabulary exercises.
 - Sentence/idea ordering.
 - Listening comprehension using the configured local TTS endpoint, with replay controls and a revealable text alternative.
