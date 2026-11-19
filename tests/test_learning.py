@@ -77,7 +77,7 @@ def test_lesson_attempt_enforces_order_persists_feedback_and_updates_progress(tm
         attempt_id = attempt["id"]
         assert attempt["status"] == "in_progress"
         assert attempt["current_exercise"]["id"] == "sentence-complete"
-        assert attempt["next_lesson"]["lesson_id"] == "grammar-in-context"
+        assert attempt["next_lesson"]["lesson_id"] == "sentence-shaping"
 
         wrong_order = client.post(f"/api/learning/attempts/{attempt_id}/responses", json={
             "exercise_id": "sentence-order", "answer": ["a", "b", "c", "d"]
