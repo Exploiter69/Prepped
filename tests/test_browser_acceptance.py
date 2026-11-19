@@ -222,7 +222,7 @@ def test_learning_workspace_completes_and_resumes_a_saved_lesson(local_app_url: 
     assert "saved for self review" in page.locator("#learning-feedback").inner_text().lower()
     assert "not automatically graded" in page.locator("#learning-feedback").inner_text().lower()
     assert "Lessons completed" in page.locator("#learning-progress").inner_text()
-    next_lesson = page.locator("#learning-feedback button").filter(has_text="Next lesson: Grammar in context")
+    next_lesson = page.locator("#learning-feedback button").filter(has_text="Next lesson: Shape a sentence for clarity")
     assert next_lesson.is_visible()
     next_lesson.click()
     page.wait_for_function(
