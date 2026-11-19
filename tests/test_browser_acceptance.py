@@ -637,10 +637,10 @@ def test_progress_goals_and_backup_restore_in_browser(local_app_url: str, browse
     download.save_as(backup_path)
     assert backup_path.stat().st_size > 0
 
+    before_reload = page.evaluate("performance.timeOrigin")
     page.once("dialog", lambda dialog: dialog.accept())
     page.locator("#data-import").set_input_files(str(backup_path))
-    page.wait_for_load_state("load")
-    page.wait_for_function("() => document.querySelector('#profile-save-status') !== null")
+    page.wait_for_function("(before) => performance.timeOrigin > before", arg=before_reload, timeout=10000)
     page.locator("#progress-toggle").click()
     page.wait_for_function("() => document.querySelector('#progress-status').textContent.startsWith('Updated')")
     assert "Complete two lessons" in page.locator("#progress-goals").inner_text()
