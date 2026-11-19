@@ -14,6 +14,7 @@ This repository does **not** claim validated speech accuracy, placement improvem
 - [ADR-003: optional Groq Whisper transcription](docs/ADR-003-GROQ-WHISPER-TRANSCRIPTION.md)
 - [Complete Product and System Blueprint](docs/PRODUCT_BLUEPRINT.md)
 - [Complete Project Roadmap](docs/COMPLETE_ROADMAP.md)
+- [Product implementation sequence and release gates](docs/PRODUCT_ROADMAP.md) · [Current build status and next actions](docs/CURRENT_STATE.md)
 - [Student usability pilot protocol](docs/PILOT_PROTOCOL.md) — future validation, not an engineering blocker
 - [Architecture Decision Record 001: text architecture](docs/ADR-001-MINIMAL-LOCAL-FIRST-ARCHITECTURE.md)
 - [Research Review and Decision Matrix](docs/RESEARCH_DECISION_MATRIX.md)
