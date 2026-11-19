@@ -2,7 +2,7 @@
   const $ = (selector, root = document) => root.querySelector(selector);
   const state = { catalog: null, progress: null, diagnostic: null, attempt: null, busy: false, voiceStatus: null,
     recorder: null, stream: null, chunks: [], recordTimer: null, discardRecording: false, transcribing: false, listeningAudio: null, audioUrl: null };
-  const viewIds = ["home-view", "practice-view", "feedback-view", "history-view", "learning-view", "career-view"];
+  const viewIds = ["home-view", "practice-view", "feedback-view", "history-view", "learning-view", "career-view", "progress-view"];
 
   async function request(url, options = {}) {
     const response = await fetch(url, {
@@ -21,6 +21,7 @@
     for (const id of viewIds) $("#" + id)?.classList.toggle("hidden", id !== "learning-view");
     $("#learning-toggle")?.setAttribute("aria-expanded", "true");
     $("#career-toggle")?.setAttribute("aria-expanded", "false");
+    $("#progress-toggle")?.setAttribute("aria-expanded", "false");
     $("#global-status")?.classList.add("hidden");
     $("#learning-view").classList.remove("hidden");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -33,6 +34,7 @@
     $("#learning-view").classList.add("hidden");
     $("#learning-toggle")?.setAttribute("aria-expanded", "false");
     $("#career-toggle")?.setAttribute("aria-expanded", "false");
+    $("#progress-toggle")?.setAttribute("aria-expanded", "false");
     $("#global-status")?.classList.remove("hidden");
     for (const id of viewIds) $("#" + id)?.classList.toggle("hidden", id !== "home-view");
     window.scrollTo({ top: 0, behavior: "smooth" });
