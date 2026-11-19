@@ -472,7 +472,7 @@ Automated API and Chromium tests have been added. This update is implementation 
 
 ## Phase D implementation update — personal learning memory and revision (2026-11-19)
 
-Phase D has been implemented on `feature/learner-profile`; automated and target-laptop acceptance must pass before the phase is called complete.
+Phase D has been implemented on `feature/learner-profile`. Automated CI passes; target-laptop manual acceptance remains before the phase can be closed.
 
 - Learners can create words, phrases, corrections, concepts, and examples manually.
 - Lesson and project-practice feedback include a **Save a learning note** action. It opens an editable prefilled form and never saves automatically.
