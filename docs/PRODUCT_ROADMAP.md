@@ -199,7 +199,8 @@ Deliver a coherent first track rather than a large empty catalogue.
 - [x] Allow edit, dismiss/restore, delete, suspend/resume, and duplicate resolution.
 - [x] Build a transparent local interval scheduler, due queue, rating controls, and review history.
 - [x] Keep uncertain automated feedback as an editable suggestion; nothing is saved without learner action.
-- [ ] Complete green CI on the final implementation commit and target-laptop manual acceptance.
+- [x] GitHub Actions passes on the final Phase D implementation (79 passed, 2 skipped; both require espeak-ng).
+- [ ] Complete target-laptop manual acceptance.
 
 **Exit gate:** learners can create/edit/dismiss/suspend/delete review items, complete due reviews, inspect history and scheduling behaviour; tests cover validation, duplicate handling, dates, retries, persistence, and legacy-data compatibility.
 
