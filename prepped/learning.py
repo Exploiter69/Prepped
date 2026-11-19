@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field, field_validator
 from prepped.database import connect_database
 
 DEFAULT_CURRICULUM_PATH = Path(__file__).resolve().parent.parent / "curriculum" / "curriculum.v1.json"
-EXERCISE_TYPES = {"choice", "ordering", "reflection", "short_response", "vocabulary", "listening"}
+EXERCISE_TYPES = {"choice", "ordering", "reflection", "short_response", "vocabulary", "listening", "pronunciation"}
 
 
 class CurriculumValidationError(ValueError):
@@ -105,8 +105,11 @@ def load_curriculum(path: Path = DEFAULT_CURRICULUM_PATH) -> dict[str, Any]:
                     raise CurriculumValidationError(f"Choice exercise {eid} has invalid options or answer.")
                 if kind == "vocabulary" and not exercise.get("context"):
                     raise CurriculumValidationError(f"Vocabulary exercise {eid} needs a context.")
-                if kind == "listening" and not exercise.get("audio_text"):
-                    raise CurriculumValidationError(f"Listening exercise {eid} needs playable audio text.")
+                if kind == "listening" and (not exercise.get("audio_text") or not exercise.get("transcript")):
+                    raise CurriculumValidationError(f"Listening exercise {eid} needs playable audio and a text alternative.")
+            elif kind == "pronunciation":
+                if not exercise.get("audio_text") or not exercise.get("transcript") or not exercise.get("guidance"):
+                    raise CurriculumValidationError(f"Pronunciation exercise {eid} needs playable audio, a text alternative, and self-review guidance.")
             elif kind == "ordering":
                 ids, answer = [token.get("id") for token in exercise.get("tokens", [])], exercise.get("answer")
                 if len(ids) < 2 or len(ids) != len(set(ids)) or not isinstance(answer, list) or sorted(answer) != sorted(ids):
@@ -207,19 +210,24 @@ def build_recommendations(curriculum: dict[str, Any], profile: dict[str, Any] | 
             matched.append("grammar")
         if "vocabulary" in areas and "english.vocabulary-context" in lesson["skill_ids"]:
             matched.append("vocabulary")
-        if ("speaking_fluency" in areas and track_id == "english-foundations"
-                and any(exercise["type"] in {"reflection", "short_response"} for exercise in lesson["exercises"])):
+        if "speaking_fluency" in areas and "english.fluency" in lesson["skill_ids"]:
             matched.append("speaking fluency practice")
+        if "pronunciation" in areas and "english.pronunciation" in lesson["skill_ids"]:
+            matched.append("listen-and-repeat pronunciation practice")
+        if "confidence" in areas and "communication.confidence" in lesson["skill_ids"]:
+            matched.append("low-pressure speaking practice")
         if "project_explanation" in areas and "communication.project-summary" in lesson["skill_ids"]:
             matched.append("project explanation")
-        if "professional_communication" in areas and "communication.clarity" in lesson["skill_ids"]:
+        if "professional_communication" in areas and (
+                "communication.clarity" in lesson["skill_ids"] or "communication.professional" in lesson["skill_ids"]):
             matched.append("professional communication")
         why = ("Matches your focus on " + ", ".join(matched) + ".") if matched else (
             f"Included in the {track['title']} path selected for your {goal.replace('_', ' ')} goal."
         )
         items.append({"lesson_id": lesson_id, "title": lesson["title"], "summary": lesson["summary"],
                       "estimated_minutes": lesson["estimated_minutes"], "skill_ids": lesson["skill_ids"], "why": why})
-    covered = {"grammar", "vocabulary", "speaking_fluency", "project_explanation"}
+    covered = {"grammar", "vocabulary", "speaking_fluency", "pronunciation", "confidence",
+               "professional_communication", "project_explanation"}
     missing = sorted(areas - covered)
     if goal == "technical_interviews":
         note = "A dedicated technical-interview question bank is planned. This route builds project-explanation foundations first."
@@ -254,6 +262,11 @@ def _feedback(exercise: dict[str, Any], answer: str | list[str], example_to_comp
                        "example_to_compare": example_to_compare,
                        "example_note": "An illustrative example only; it is not an automated correction or grade.",
                        "note": "This open response is saved as your work. Prepped does not automatically grade it."})
+        if exercise["type"] == "pronunciation":
+            result["measurement_note"] = (
+                "Listen-and-repeat practice only. Prepped does not measure pronunciation, accent, "
+                "phoneme accuracy, or speaking fluency."
+            )
     return result
 
 
