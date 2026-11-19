@@ -543,6 +543,10 @@ def test_lesson_memory_suggestion_requires_explicit_save_and_keeps_source(local_
         "() => document.querySelector('#memory-items').textContent.includes('No saved items yet')"
     )
     assert "No saved items yet" in page.locator("#memory-items").inner_text()
+    assert page.locator("#memory-form-cancel").inner_text() == "Discard suggestion"
+    page.locator("#memory-form-cancel").click()
+    assert "No saved items yet" in page.locator("#memory-items").inner_text()
+    page.locator("#learning-feedback button").filter(has_text="Save a learning note").first.click()
     page.locator("#memory-form-submit").click()
     page.wait_for_function(
         "() => document.querySelector('#memory-items').textContent.includes('Which option is a complete sentence?')"
