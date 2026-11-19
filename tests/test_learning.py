@@ -489,3 +489,17 @@ def test_curriculum_rejects_listening_or_pronunciation_without_text_alternative(
             assert expected in str(exc)
         else:
             raise AssertionError(f"{kind} exercise without a text alternative was accepted")
+
+
+def test_curriculum_rejects_a_learning_lesson_without_a_worked_example(tmp_path: Path) -> None:
+    data = load_curriculum()
+    lesson = next(item for item in data["lessons"] if item["id"] == "question-formation")
+    lesson.pop("example")
+    path = tmp_path / "missing-example.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+    try:
+        load_curriculum(path)
+    except CurriculumValidationError as exc:
+        assert "worked example" in str(exc)
+    else:
+        raise AssertionError("A learning lesson without a worked example was accepted")
