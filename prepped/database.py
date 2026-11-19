@@ -155,6 +155,7 @@ def initialize_database(db_path: Path) -> None:
                 repetitions INTEGER NOT NULL DEFAULT 0 CHECK (repetitions >= 0),
                 lapses INTEGER NOT NULL DEFAULT 0 CHECK (lapses >= 0),
                 last_reviewed_at TEXT,
+                dismissed_at TEXT,
                 last_rating TEXT CHECK (last_rating IS NULL OR last_rating IN ('again', 'hard', 'good', 'easy'))
             );
             CREATE INDEX IF NOT EXISTS idx_learning_memory_due ON learning_memory(status, due_at);
@@ -174,6 +175,11 @@ def initialize_database(db_path: Path) -> None:
                 ON learning_memory_reviews(item_id, reviewed_at DESC);
             """
         )
+        memory_columns = {
+            row["name"] for row in connection.execute("PRAGMA table_info(learning_memory)")
+        }
+        if "dismissed_at" not in memory_columns:
+            connection.execute("ALTER TABLE learning_memory ADD COLUMN dismissed_at TEXT")
 
 
 def row_to_dict(row: sqlite3.Row | None) -> dict[str, Any] | None:
