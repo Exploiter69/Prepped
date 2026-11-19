@@ -463,3 +463,22 @@ The FastAPI learning router validates the manifest and provides catalogue, recom
 Profile goal/focus preferences select a transparent route with per-lesson reasons. The browser workspace supports skill and unit browsing, recommended lessons, all seven exercise formats, local TTS listening and pronunciation playback with text alternatives, optional STT responses, next-lesson navigation, response feedback, progress counts, and resuming unfinished lessons. Choice and ordering items have deterministic answer feedback; open responses are saved for self-review without automatic grading or proficiency claims.
 
 Automated API and Chromium tests have been added. This update is implementation in progress, not a passed release gate until the latest GitHub Actions run and target-laptop browser acceptance are recorded. A low-stakes starting-point check is included. It records sentence, ordering, listening, and project-response tasks; attempts can be repeated and reviewed. It assigns no proficiency level or overall score. More advanced diagnostic interpretation, learner-controlled revision, and dedicated HR/technical interview packs remain future work.
+
+
+---
+
+## Phase D implementation update — personal learning memory and revision (2026-11-19)
+
+Phase D has been implemented on `feature/learner-profile`; automated and target-laptop acceptance must pass before the phase is called complete.
+
+- Learners can create words, phrases, corrections, concepts, and examples manually.
+- Lesson feedback includes a **Save a learning note** action. It opens an editable prefilled form and never saves automatically.
+- Saved items retain source lesson metadata and a short excerpt where available.
+- Items can be edited, suspended, resumed, or permanently deleted. Delete cascades to review history.
+- Duplicate detection normalises Unicode, case, and whitespace within each item type and returns the existing item identifier instead of overwriting it.
+- The due queue supports answer reveal and Again / Hard / Good / Easy ratings.
+- The local scheduler is a small deterministic interval schedule. It is not FSRS. New items are due immediately; rating outcomes and interval rules are described in the Product Roadmap.
+- Review history and per-item schedule state persist in additive SQLite tables. Existing practice, profile, and learning data are preserved.
+- The implementation uses the existing FastAPI + SQLite + plain JavaScript stack and introduces no paid service or infrastructure dependency.
+
+**Verification still required:** complete pytest and JavaScript checks, green CI on the final commit, browser acceptance for the complete memory/review journey, and manual target-laptop keyboard/responsive/persistence checks. Do not mark Phase D closed until those results are recorded.
