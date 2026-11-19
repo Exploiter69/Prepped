@@ -95,7 +95,7 @@ function renderProfile(result) {
   if (!profile) {
     $("#profile-summary").textContent = "Not set up yet. Add a few details to help Prepped organise relevant practice. You can skip this and start practising.";
     $("#profile-edit-toggle").textContent = "Set up profile";
-    form.classList.remove("hidden");
+    form.classList.add("hidden");
     return;
   }
 
