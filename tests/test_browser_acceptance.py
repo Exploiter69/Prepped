@@ -223,7 +223,7 @@ def test_listening_lesson_has_playback_and_revealed_text_alternative(local_app_u
     page.locator(".learning-listening-controls").wait_for(state="visible")
     transcript = page.locator(".learning-transcript")
     assert transcript.is_hidden()
-    page.locator(".learning-listening-controls button").nth(1).click()
+    page.get_by_role("button", name="Show text alternative").click()
     assert transcript.is_visible()
     assert "input validation" in transcript.inner_text().lower()
     assert "text alternative" in page.locator(".learning-listening-controls").inner_text().lower()
