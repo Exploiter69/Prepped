@@ -89,7 +89,7 @@ def test_profile_setup_edit_cancel_save_and_reload(local_app_url: str, browser_p
 
     page.reload()
     page.wait_for_function(
-        "() => document.querySelector('#profile-summary').textContent.includes('Test Learner') === false"
+        "() => document.querySelector('#profile-save-status').textContent === 'Saved locally'"
     )
     assert "English fluency" in page.locator("#profile-summary").inner_text()
     assert "Year 2" in page.locator("#profile-summary").inner_text()
@@ -127,10 +127,17 @@ def test_practice_room_is_not_gated_by_profile_and_text_flow_completes(local_app
         "I chose SQLite because the application runs locally."
     )
     page.locator("#submit-button").click()
-    assert "Question 2 of 5" in page.locator("#practice-progress").inner_text()
+    page.wait_for_function(
+        "() => document.querySelector('#practice-progress').textContent === 'Question 2 of 5'"
+    )
 
-    for _ in range(4):
+    for expected_question in range(3, 6):
         page.locator("#skip-button").click()
+        page.wait_for_function(
+            "(expected) => document.querySelector('#practice-progress').textContent === expected",
+            f"Question {expected_question} of 5",
+        )
+    page.locator("#skip-button").click()
 
     page.locator("#feedback-view").wait_for(state="visible", timeout=10000)
     assert "1 of 5 questions had non-empty answers" in page.locator("#feedback-summary").inner_text()
