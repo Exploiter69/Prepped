@@ -71,15 +71,21 @@ def load_curriculum(path: Path = DEFAULT_CURRICULUM_PATH) -> dict[str, Any]:
     skills, tracks, lessons, levels, units = (
         index_items(items, name) for items, name in zip(arrays, ("skill", "track", "lesson", "level", "unit"))
     )
+    if any(not item.get("title") or not item.get("description") for item in levels.values()):
+        raise CurriculumValidationError("Every curriculum level needs a title and description.")
     for skill in skills.values():
+        if skill.get("status", "active") not in {"active", "planned"} or not skill.get("title") or not skill.get("description") or not skill.get("outcomes"):
+            raise CurriculumValidationError(f"Skill {skill['id']} has incomplete metadata.")
         if any(item not in skills or item == skill["id"] for item in skill.get("prerequisites", [])):
             raise CurriculumValidationError(f"Skill {skill['id']} has an invalid prerequisite.")
     for lesson in lessons.values():
         if not all(lesson.get(key) for key in ("version", "title", "introduction")):
             raise CurriculumValidationError(f"Lesson {lesson['id']} is missing required metadata.")
         if (lesson.get("track_id") not in tracks or lesson.get("level_id") not in levels
-                or lesson.get("unit_id") not in units or not lesson.get("exercises")):
-            raise CurriculumValidationError(f"Lesson {lesson['id']} has an invalid track, level, unit, or no exercises.")
+                or lesson.get("unit_id") not in units or not lesson.get("exercises")
+                or not isinstance(lesson.get("estimated_minutes"), int) or lesson["estimated_minutes"] < 1
+                or not lesson.get("learning_outcomes")):
+            raise CurriculumValidationError(f"Lesson {lesson['id']} has invalid metadata or references.")
         if any(skill not in skills for skill in lesson.get("skill_ids", [])):
             raise CurriculumValidationError(f"Lesson {lesson['id']} references an unknown skill.")
         if any(prereq not in lessons or prereq == lesson["id"] for prereq in lesson.get("prerequisites", [])):
@@ -89,7 +95,7 @@ def load_curriculum(path: Path = DEFAULT_CURRICULUM_PATH) -> dict[str, Any]:
             if not isinstance(exercise, dict):
                 raise CurriculumValidationError(f"Lesson {lesson['id']} contains an invalid exercise object.")
             eid, kind = exercise.get("id"), exercise.get("type")
-            if not eid or eid in seen or kind not in EXERCISE_TYPES:
+            if not exercise.get("prompt") or not eid or eid in seen or kind not in EXERCISE_TYPES:
                 raise CurriculumValidationError(f"Lesson {lesson['id']} has an invalid exercise.")
             seen.add(eid)
             if kind in {"choice", "vocabulary", "listening"}:
@@ -125,9 +131,10 @@ def load_curriculum(path: Path = DEFAULT_CURRICULUM_PATH) -> dict[str, Any]:
     reject_cycles({key: item.get("prerequisites", []) for key, item in lessons.items()}, "Lesson")
 
     for unit in units.values():
-        if unit.get("level_id") not in levels or not unit.get("track_ids") or not unit.get("lesson_ids"):
+        if (unit.get("level_id") not in levels or not unit.get("title") or not unit.get("description")
+                or not unit.get("track_ids") or not unit.get("lesson_ids")):
             raise CurriculumValidationError(f"Unit {unit['id']} has incomplete level, track, or lesson references.")
-        if any(track_id not in tracks for track_id in unit["track_ids"]):
+        if len(unit["track_ids"]) != len(set(unit["track_ids"])) or any(track_id not in tracks for track_id in unit["track_ids"]):
             raise CurriculumValidationError(f"Unit {unit['id']} references an unknown track.")
         if len(unit["lesson_ids"]) != len(set(unit["lesson_ids"])) or any(
             lesson_id not in lessons or lessons[lesson_id].get("unit_id") != unit["id"]
@@ -138,10 +145,11 @@ def load_curriculum(path: Path = DEFAULT_CURRICULUM_PATH) -> dict[str, Any]:
 
     valid_goals = {"english_fluency", "placement_interviews", "technical_interviews", "project_communication", "professional_communication"}
     for track in tracks.values():
-        if track.get("level_id") not in levels or not track.get("unit_ids"):
+        if track.get("level_id") not in levels or not track.get("title") or not track.get("description") or not track.get("unit_ids"):
             raise CurriculumValidationError(f"Track {track['id']} has an invalid level or no units.")
         if len(track["unit_ids"]) != len(set(track["unit_ids"])) or any(
             unit_id not in units or track["id"] not in units[unit_id]["track_ids"]
+            or units[unit_id]["level_id"] != track["level_id"]
             for unit_id in track["unit_ids"]
         ):
             raise CurriculumValidationError(f"Track {track['id']} has an invalid unit reference.")
