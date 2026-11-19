@@ -1138,6 +1138,28 @@
           "explanation": "“Look into” means investigate or examine something to understand it."
         },
         {
+          "id": "phrase-review",
+          "type": "vocabulary",
+          "context": "A project update says: “I carried out the test and looked into the error reported by a classmate.”",
+          "prompt": "Review both phrases. Which meaning pair is correct?",
+          "options": [
+            {
+              "id": "a",
+              "label": "“Carried out” means performed; “looked into” means investigated."
+            },
+            {
+              "id": "b",
+              "label": "“Carried out” means cancelled; “looked into” means ignored."
+            },
+            {
+              "id": "c",
+              "label": "Both phrases mean completed without checking."
+            }
+          ],
+          "answer": "a",
+          "explanation": "“Carry out” means perform or conduct. “Look into” means investigate or examine. The surrounding context helps confirm both meanings."
+        },
+        {
           "id": "phrase-own-example",
           "type": "short_response",
           "prompt": "Choose one phrase—“carry out a test”, “look into an issue”, or “make progress”—and write a true sentence about your studies or project.",
