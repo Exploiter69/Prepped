@@ -245,9 +245,60 @@ Run these checks on a disposable database first. Keep the normal local database 
 ### Automated and data-safety checks
 
 - [ ] Run `python -m compileall -q prepped`.
-- [ ] Run `node --check static/app.js`, `node --check static/voice.js`, `node --check static/learning.js`, and `node --check static/memory.js`.
+- [ ] Run `node --check static/app.js`, `node --check static/voice.js`, `node --check static/learning.js`, and `node --check static/memory.js
+node --check static/career.js`.
 - [ ] Run `python -m pytest -q` and record exact pass/skip counts.
 - [x] Confirm GitHub Actions passes for the exact implementation commit: [run 44561847713](https://github.com/Exploiter69/Prepped/actions/runs/44561847713) — 79 passed, 2 skipped (both require `espeak-ng`).
 - [ ] Confirm legacy sessions, answers, learner profile, learning attempts, and learning events remain unchanged by the memory migration.
 - [ ] Confirm memory items and review history persist in SQLite and no external service or raw audio file is introduced.
 - [ ] Check keyboard-only operation, visible focus, screen-reader labels/status, and narrow-screen layout.
+
+
+## Phase E — Career & Interview Studios manual acceptance
+
+Use a disposable database. Automated Chromium coverage does not replace checking the real microphone, speakers, browser permissions, or target-device layout.
+
+### Studio discovery and setup
+
+- [ ] Open **Career** from the header; confirm the original practice room and Learning workspace remain reachable.
+- [ ] Confirm all three studios appear with a clear description, duration, and skill focus.
+- [ ] Select each studio and start a guided, standard, and challenging session.
+- [ ] Confirm the selected mode changes the authored follow-up wording; the main question remains readable and relevant.
+
+### Project explanation
+
+- [ ] Complete the four main questions and their follow-ups using truthful details from a disposable/sample project.
+- [ ] Explain the problem/user, personal contribution, one technical decision, and testing evidence/limitations.
+- [ ] Confirm each main question is followed by its own follow-up before the next main question.
+
+### HR and behavioural interview
+
+- [ ] Complete introduction, teamwork, challenge/setback, and motivation questions.
+- [ ] Confirm follow-ups ask for specific context, actions, outcomes, or reflection rather than repeating the main prompt.
+- [ ] Confirm the UI does not encourage inventing experience; typed answers remain available.
+
+### Technical interview
+
+- [ ] Complete the array/linked-list, HTTP/API, database-index, and process/thread questions.
+- [ ] Confirm the authored follow-ups ask for examples, trade-offs, or debugging reasoning.
+- [ ] Confirm feedback does not claim to validate technical correctness.
+
+### Voice, persistence, and review
+
+- [ ] Complete an interview entirely by typing with no microphone permission; confirm every follow-up and review works.
+- [ ] If local STT is available, record/stop an answer, edit the transcript, and submit the corrected text.
+- [ ] If Groq Whisper is configured, confirm the remote-audio disclosure appears before microphone permission is requested.
+- [ ] Play a prompt using local TTS; confirm text remains available if TTS is unavailable.
+- [ ] Leave an interview in progress, return to it from recent history, and confirm the exact next prompt is restored.
+- [ ] Complete an interview, inspect every original answer and review note, retry it, and confirm the new attempt is linked in history.
+- [ ] Delete a disposable interview and confirm it and its turns disappear; verify existing practice and learning history remain.
+- [ ] Choose **Save answer to learning memory**; confirm the memory editor is prefilled with source context and nothing is saved until submitted. Discard one suggestion and confirm no item was created.
+- [ ] Reload and restart the app; confirm completed interview history and unfinished sessions persist.
+
+### Honest feedback, accessibility, and responsive layout
+
+- [ ] Confirm there is no overall interview score, recruiter rating, technical correctness verdict, or placement prediction.
+- [ ] Confirm each heuristic signal shows its limitation and does not label a learner's ability.
+- [ ] Complete the flow with keyboard navigation and visible focus.
+- [ ] Check laptop and narrow-screen widths; confirm studio cards, transcript field, review notes, and history controls do not overflow.
+- [ ] Confirm no raw audio files are created by Prepped and text fallback works when voice is unavailable.
