@@ -437,7 +437,7 @@ A student usability pilot is useful evidence but does not block engineering. A r
 
 ## 19. Phase B — Learning Engine implementation update (2026-11-19)
 
-The first reusable learning-engine slice has been committed to feature/learner-profile. It adds a versioned local curriculum manifest, 14 stable skill definitions, one foundation level, six units, three goal-based tracks, six authored lessons, explicit outcomes and prerequisites, and six exercise formats: choice, ordering, vocabulary, listening, short response, and reflection.
+The first reusable learning-engine slice has been committed to feature/learner-profile. It adds a versioned local curriculum manifest, 14 stable skill definitions, one foundation level, seven units, four tracks, six authored lessons plus one diagnostic check, explicit outcomes and prerequisites, and six exercise formats: choice, ordering, vocabulary, listening, short response, and reflection.
 
 The FastAPI learning router validates the manifest and provides catalogue, recommendations, attempt start/read/response, and progress endpoints. The lesson runner enforces exercise order and prerequisite completion, keeps answer keys out of public catalogue/active exercise payloads, persists responses and feedback, and allows in-progress attempts to resume after restart. Additive SQLite attempt/event tables preserve all existing practice and profile records.
 
