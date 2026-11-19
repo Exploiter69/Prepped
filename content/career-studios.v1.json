@@ -1,0 +1,138 @@
+{
+  "version": "1.0.0",
+  "studios": [
+    {
+      "id": "project-explanation",
+      "title": "Project Explanation Studio",
+      "category": "Project interview",
+      "description": "Explain a project clearly, distinguish your own contribution, discuss technical decisions, and describe evidence and limitations.",
+      "estimated_minutes": 12,
+      "question_count": 4,
+      "skills": [
+        "Project framing",
+        "Personal contribution",
+        "Technical decisions",
+        "Testing and evidence",
+        "Reflection"
+      ],
+      "questions": [
+        {
+          "id": "project-overview",
+          "prompt": "Choose one project. What problem does it address, who is it for, and what does it do?",
+          "followup": {
+            "prompt": "What is one concrete user journey that shows the problem and how your project addresses it?"
+          }
+        },
+        {
+          "id": "personal-contribution",
+          "prompt": "What did you personally design, build, or verify? Be clear about your own work versus the team's work.",
+          "followup": {
+            "prompt": "Pick one part you personally implemented. What did you change, and how can someone verify it?"
+          }
+        },
+        {
+          "id": "technical-decision",
+          "prompt": "Describe one important technical decision. What alternatives or constraints did you consider?",
+          "followup": {
+            "prompt": "If the main constraint changed, what would you reconsider and why?"
+          }
+        },
+        {
+          "id": "testing-limitations",
+          "prompt": "How did you test the project, what evidence do you have, and what remains incomplete?",
+          "followup": {
+            "prompt": "Tell me about one failure or limitation you found. How did you investigate it, and what would you do next?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "hr-behavioural",
+      "title": "HR & Behavioural Interview Studio",
+      "category": "Behavioural interview",
+      "description": "Practise structured, truthful examples about teamwork, conflict, setbacks, learning, motivation, and professional judgement.",
+      "estimated_minutes": 12,
+      "question_count": 4,
+      "skills": [
+        "Situation and context",
+        "Personal action",
+        "Communication",
+        "Learning and reflection"
+      ],
+      "questions": [
+        {
+          "id": "introduction",
+          "prompt": "Tell me about yourself and the kind of role or opportunity you are preparing for.",
+          "followup": {
+            "prompt": "Which experience or project best supports that introduction, and what was your specific contribution?"
+          }
+        },
+        {
+          "id": "teamwork",
+          "prompt": "Describe a time you worked with other people toward a shared goal. What was your role?",
+          "followup": {
+            "prompt": "How did you coordinate when people had different priorities or working styles?"
+          }
+        },
+        {
+          "id": "challenge",
+          "prompt": "Tell me about a difficult problem, mistake, or setback. What did you do?",
+          "followup": {
+            "prompt": "What would the people involved say you handled well, and what would you change next time?"
+          }
+        },
+        {
+          "id": "motivation",
+          "prompt": "Why are you interested in this role, and what would you want to learn in your first few months?",
+          "followup": {
+            "prompt": "What have you done so far to understand the role or build the skills it needs?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "technical-fundamentals",
+      "title": "Technical Interview Studio",
+      "category": "Computer science fundamentals",
+      "description": "Explain core CS concepts in your own words, use examples, reason about trade-offs, and acknowledge uncertainty accurately.",
+      "estimated_minutes": 15,
+      "question_count": 4,
+      "skills": [
+        "Concept explanation",
+        "Examples",
+        "Trade-offs",
+        "Reasoning"
+      ],
+      "questions": [
+        {
+          "id": "data-structures",
+          "prompt": "Explain the difference between an array and a linked list. When might you choose each?",
+          "followup": {
+            "prompt": "What is the cost of accessing an element by index in each structure, and why?"
+          }
+        },
+        {
+          "id": "http-api",
+          "prompt": "Walk me through what happens when a browser sends an HTTP request to an API and receives a response.",
+          "followup": {
+            "prompt": "Where would you investigate first if the request returns a 500 response, and what evidence would you inspect?"
+          }
+        },
+        {
+          "id": "database",
+          "prompt": "What is a database index? Explain the benefit and one trade-off of adding an index.",
+          "followup": {
+            "prompt": "Why might an index fail to improve a particular query, or even make writes slower?"
+          }
+        },
+        {
+          "id": "operating-systems",
+          "prompt": "What is the difference between a process and a thread? Give a practical example.",
+          "followup": {
+            "prompt": "What kinds of problems can occur when threads share mutable data, and how can a program reduce that risk?"
+          }
+        }
+      ]
+    }
+  ]
+}
