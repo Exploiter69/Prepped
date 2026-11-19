@@ -63,6 +63,7 @@ def test_goals_validate_create_count_archive_restore_and_delete(tmp_path: Path) 
     try:
         invalid = client.post("/api/goals", json={"title": " ", "goal_type": "lessons_completed", "target_count": 0})
         assert invalid.status_code == 422
+        complete_sentence_lesson(client)
         created = client.post("/api/goals", json={
             "title": "  Finish three lessons  ", "description": "  Build a routine  ",
             "goal_type": "lessons_completed", "target_count": 3,
