@@ -256,6 +256,11 @@
       play.className = "button button-secondary";
       play.textContent = "Play spoken message";
       play.addEventListener("click", () => playListeningAudio(exercise.audio_text));
+      const stop = document.createElement("button");
+      stop.type = "button";
+      stop.className = "button button-quiet";
+      stop.textContent = "Stop audio";
+      stop.addEventListener("click", stopListeningAudio);
       const reveal = document.createElement("button");
       reveal.type = "button";
       reveal.className = "button button-quiet";
@@ -272,7 +277,7 @@
       const status = document.createElement("p");
       status.className = "section-help";
       status.textContent = "Audio uses the configured local text-to-speech engine when available. The text alternative is always available.";
-      controls.append(play, reveal, transcript, status);
+      controls.append(play, stop, reveal, transcript, status);
       $("#learning-exercise").append(controls);
     }
 
