@@ -225,7 +225,7 @@ Run these checks on a disposable database first. Keep the normal local database 
 - [ ] Open Learning and find the Personal learning memory section.
 - [ ] Create one word, phrase, correction, concept, and example manually; confirm each appears in the local library.
 - [ ] From a completed lesson review, choose **Save a learning note**. Confirm it only prefills the editor and does not save until submitted.
-- [ ] Confirm lesson-derived items retain source lesson title, identifier, and source excerpt.
+- [ ] Confirm lesson-derived and project-practice items retain their source title, attempt identifier, and source excerpt.
 - [ ] Edit an item's front and back; confirm its source metadata and review history remain intact.
 - [ ] Attempt a duplicate with different case and whitespace; confirm the existing item is identified and not overwritten.
 - [ ] Suspend an item; confirm it disappears from the due queue. Resume it and confirm its schedule is preserved.
