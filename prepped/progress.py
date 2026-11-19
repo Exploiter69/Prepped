@@ -63,13 +63,12 @@ class GoalPayload(BaseModel):
 
 def _goal_progress(conn: sqlite3.Connection, goal_type: str) -> int:
     queries = {
-        "lessons_completed": "SELECT COUNT(DISTINCT lesson_id) AS n FROM learning_attempts WHERE status = 'completed' AND lesson_id NOT IN (SELECT lesson_id FROM learning_attempts WHERE 0)",
         "practice_sessions": "SELECT COUNT(*) AS n FROM sessions WHERE status = 'completed'",
         "interviews_completed": "SELECT COUNT(*) AS n FROM career_sessions WHERE status = 'completed'",
         "memory_reviews": "SELECT COUNT(*) AS n FROM learning_memory_reviews",
     }
     if goal_type == "lessons_completed":
-        row = conn.execute("SELECT COUNT(DISTINCT a.lesson_id) AS n FROM learning_attempts a WHERE a.status='completed' AND a.lesson_id NOT IN (SELECT lesson_id FROM learning_attempts WHERE lesson_id LIKE '%diagnostic%')").fetchone()
+        row = conn.execute("SELECT COUNT(DISTINCT lesson_id) AS n FROM learning_attempts WHERE status='completed' AND lesson_id != 'baseline-check'").fetchone()
     else:
         row = conn.execute(queries[goal_type]).fetchone()
     return int(row["n"] or 0)
@@ -129,9 +128,12 @@ def _overview(db_path: Path, curriculum_path: Path) -> dict[str, Any]:
         review_rows = conn.execute("SELECT reviewed_at FROM learning_memory_reviews WHERE reviewed_at >= ?", (start,)).fetchall()
         active_goals = [_goal_view(conn, row) for row in conn.execute("SELECT * FROM learner_goals WHERE status='active' ORDER BY COALESCE(due_date,'9999-12-31'), created_at")]
         goals_total = int(conn.execute("SELECT COUNT(*) AS n FROM learner_goals").fetchone()["n"] or 0)
-        completed_ids = {row["lesson_id"] for row in lesson_rows if row["status"] == "completed" and "diagnostic" not in row["lesson_id"]}
+        diagnostic_ids = {lesson["id"] for lesson in curriculum["lessons"] if lesson.get("kind") == "diagnostic"}
+        completed_ids = {row["lesson_id"] for row in lesson_rows if row["status"] == "completed" and row["lesson_id"] not in diagnostic_ids}
         skill_evidence: dict[str, set[str]] = {skill["id"]: set() for skill in curriculum["skills"]}
         for event in events:
+            if event["lesson_id"] in diagnostic_ids:
+                continue
             try:
                 skill_ids = json.loads(event["skill_ids_json"])
             except (TypeError, json.JSONDecodeError):
