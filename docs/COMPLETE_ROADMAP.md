@@ -433,14 +433,33 @@ A release candidate requires all of the following:
 - [ ] Accessibility, privacy, security, and failure states are reviewed.
 - [ ] Claims and limitations match demonstrated evidence.
 
+## 20. Phase C — English and communication studio implementation update (2026-11-19)
+
+The initial Phase C curriculum has been added to the existing `feature/learner-profile` branch. It extends the Phase B lesson runner rather than introducing a separate learning system.
+
+- **Curriculum size:** 14 stable skills, one foundation stage, nine units, four tracks, 13 authored lessons plus the separate baseline diagnostic. The English foundations track contains 11 sequenced lessons.
+- **Grammar:** sentence patterns, past/future tense in context, articles, prepositions, question formation, and answer explanations.
+- **Sentence construction:** build, expand, combine, shorten, and clarify while preserving intended meaning.
+- **Vocabulary:** contextual word choice, collocations, phrase meaning, examples, and learner-authored sentences.
+- **Speaking:** describe, explain a process or feature, retell, give opinions and reasons, and respond to follow-up prompts. Typed answers remain available when speech input is unavailable.
+- **Listening:** authored spoken updates and conversations with replay, comprehension checks, and transcript alternatives.
+- **Pronunciation:** local TTS model phrases, listen/repeat, optional recording/transcription, and learner self-review. No automated pronunciation, accent, phoneme, or fluency score is produced.
+- **Confidence:** private repeatable activities without emotion inference or a confidence score.
+- **Personalisation:** profile goals and focus areas now explain matching English lessons; no ability or proficiency is inferred.
+- **Compatibility:** existing project-communication tracks and the original practice room remain in place. No new database service, paid API requirement, or database migration was introduced.
+
+Automated API and Chromium coverage has been added for curriculum inventory, profile focus routing, question/grammar/vocabulary handling, listening alternatives, and pronunciation self-review. The latest GitHub Actions run must pass before this implementation is described as automated-tested. Target-laptop browser, audio, microphone/STT disclosure, transcript-editing, keyboard, and responsive acceptance remain manual gates.
+
+The Phase C implementation does not claim certified English proficiency, pronunciation accuracy, improved learning outcomes, or hiring/placement probability. Open speaking responses are retained as learner work and are not automatically graded.
+
 A student usability pilot is useful evidence but does not block engineering. A release must not claim certified English proficiency, accurate pronunciation scoring, placement probability, or measured learning gains without separate validation.
 
 ## 19. Phase B — Learning Engine implementation update (2026-11-19)
 
-The first reusable learning-engine slice has been committed to feature/learner-profile. It adds a versioned local curriculum manifest, 14 stable skill definitions, one foundation level, seven units, four tracks, six authored lessons plus one diagnostic check, explicit outcomes and prerequisites, and six exercise formats: choice, ordering, vocabulary, listening, short response, and reflection.
+The first reusable learning-engine slice has been committed to feature/learner-profile. It adds a versioned local curriculum manifest, 14 stable skill definitions, one foundation level, nine units, four tracks, 13 authored lessons plus one diagnostic check, explicit outcomes and prerequisites, and seven exercise formats: choice, ordering, vocabulary, listening, short response, reflection, and pronunciation.
 
 The FastAPI learning router validates the manifest and provides catalogue, recommendations, attempt start/read/response, and progress endpoints. The lesson runner enforces exercise order and prerequisite completion, keeps answer keys out of public catalogue/active exercise payloads, persists responses and feedback, and allows in-progress attempts to resume after restart. Additive SQLite attempt/event tables preserve all existing practice and profile records.
 
-Profile goal/focus preferences select a transparent route with per-lesson reasons. The browser workspace supports skill and unit browsing, recommended lessons, all six exercise formats, local TTS listening with a text alternative, optional STT responses, next-lesson navigation, response feedback, progress counts, and resuming unfinished lessons. Choice and ordering items have deterministic answer feedback; open responses are saved for self-review without automatic grading or proficiency claims.
+Profile goal/focus preferences select a transparent route with per-lesson reasons. The browser workspace supports skill and unit browsing, recommended lessons, all seven exercise formats, local TTS listening and pronunciation playback with text alternatives, optional STT responses, next-lesson navigation, response feedback, progress counts, and resuming unfinished lessons. Choice and ordering items have deterministic answer feedback; open responses are saved for self-review without automatic grading or proficiency claims.
 
-Automated API and Chromium tests have been added. This update is implementation in progress, not a passed release gate until the latest GitHub Actions run and target-laptop browser acceptance are recorded. A low-stakes starting-point check is included. It records sentence, ordering, listening, and project-response tasks; attempts can be repeated and reviewed. It assigns no proficiency level or overall score. More advanced diagnostic interpretation remains future work. Broader vocabulary/listening curricula, pronunciation practice, spaced revision, and dedicated HR/technical interview packs are not part of this slice.
+Automated API and Chromium tests have been added. This update is implementation in progress, not a passed release gate until the latest GitHub Actions run and target-laptop browser acceptance are recorded. A low-stakes starting-point check is included. It records sentence, ordering, listening, and project-response tasks; attempts can be repeated and reviewed. It assigns no proficiency level or overall score. More advanced diagnostic interpretation, learner-controlled revision, and dedicated HR/technical interview packs remain future work.
