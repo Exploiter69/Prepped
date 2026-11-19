@@ -99,7 +99,6 @@
     $("#goal-count").textContent = goals.length + " active";
     if (!goals.length) {
       target.append(node("p", "progress-empty", "No active goals yet. Add a small target above; it will count saved activity, not estimate ability."));
-      return;
     }
     for (const goal of goals) {
       const row = node("article", "progress-row");
