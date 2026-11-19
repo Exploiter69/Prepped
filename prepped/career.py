@@ -248,7 +248,7 @@ def create_career_router(db_path: Path, studios_path: Path = DEFAULT_STUDIOS_PAT
     def history() -> dict[str, Any]:
         with connect_database(Path(db_path)) as connection:
             rows = connection.execute(
-                "SELECT * FROM career_sessions ORDER BY created_at DESC LIMIT 100"
+                "SELECT * FROM career_sessions ORDER BY created_at DESC, rowid DESC LIMIT 100"
             ).fetchall()
             sessions = [_session_view(connection, row) for row in rows]
         return {"sessions": sessions, "count": len(sessions)}
