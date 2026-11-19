@@ -40,7 +40,7 @@
 - Schema changes are additive and use the existing database.
 - The readiness endpoint checks SQLite quick-check, required tables, and curriculum loading.
 - Backup restore validates against a fresh staged database and preserves the active database when validation fails.
-- Backup format version 1 and database schema version 2 are explicit; incompatible versions fail closed.
+- Backup format version 1 and database schema version 3 are explicit; incompatible versions fail closed.
 
 ## Dependencies and supply chain
 
