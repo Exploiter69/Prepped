@@ -335,6 +335,7 @@ def test_pronunciation_lesson_supports_replay_text_and_unscored_self_review(
     ])
     page.get_by_role("button", name="Back to lesson list").click()
     complete_lesson_in_browser(page, "speaking-opinions", [
+        "Documentation explains the full interface; a small example reveals practical behaviour. I would try an example for a simple tool.",
         "I prefer trying a small example first because it helps me see the tool in action.",
         "Reading documentation can be useful when the tool has complex setup or safety requirements.",
         "Could you please rephrase the question?",
