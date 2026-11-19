@@ -414,6 +414,7 @@ def create_learning_router(db_path: Path, curriculum_path: Path = DEFAULT_CURRIC
                 "lesson_completions": lesson_completions,
                 "learning_events": event_count, "skills": skills,
                 "completed_lesson_ids": sorted(completed_by_lesson),
+                "active_attempts": [dict(row) for row in rows if row["status"] == "in_progress"],
                 "recent_attempts": [dict(row) for row in rows[:10]],
                 "note": "Counts show recorded activity only. They are not proficiency levels or a measure of learning gain."}
 
