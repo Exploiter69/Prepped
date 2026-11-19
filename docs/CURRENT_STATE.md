@@ -5,6 +5,14 @@
 **Product direction:** Voice-first, personalised practice and learning platform for Indian engineering students. The text practice loop is a reliable fallback and is frozen for feature development except material bugs.<br>
 **Engineering stage:** Record/stop voice slice with optional Groq Whisper and offline Vosk adapters; real browser/microphone and live-provider acceptance remain.
 
+## Foundation acceptance — automated checks and CI passing
+
+- GitHub Actions now runs on `feature/**`, including this working branch, and on pull requests targeting `main` or `feature/learner-profile`.
+- The workflow performs a clean checkout, installs `.[dev]`, compiles Python modules, checks both browser JavaScript files, and runs pytest.
+- Latest recorded run: [GitHub Actions run 44533711713](https://github.com/Exploiter69/Prepped/actions/runs/44533711713) — **38 passed, 2 skipped, 1 warning**. Both skips are voice tests requiring `espeak-ng`, which is not installed on the hosted runner. The warning is Starlette's deprecation notice for the httpx-backed TestClient.
+- A repeatable [Foundation Acceptance Checklist](ACCEPTANCE_CHECKLIST.md) now covers profile setup/edit/cancel/save/reload, existing text practice, optional voice acceptance, and data preservation.
+- Real browser profile clicks and target-machine microphone/TTS acceptance remain manual gates. Automated CI does not establish those results.
+
 ## Learner workspace — profile implemented; browser acceptance pending
 
 The `feature/learner-profile` branch now contains:
