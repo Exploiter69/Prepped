@@ -583,6 +583,16 @@ def test_career_studio_voice_optional_text_interview_feedback_and_retry(local_ap
     page.locator("#career-retry").click()
     page.locator("#career-active").wait_for(state="visible")
     assert page.locator("#career-answer").input_value() == ""
+    page.locator("#career-history-list button").filter(has_text="Open").nth(1).click()
+    page.locator("#career-review").wait_for(state="visible")
+    page.locator(".career-review-card button").first.click()
+    page.locator("#learning-view").wait_for(state="visible")
+    assert page.locator("#memory-type").input_value() == "example"
+    assert page.locator("#memory-front").input_value()
+    assert page.locator("#memory-back").input_value()
+    assert "No saved items yet" in page.locator("#memory-items").inner_text()
+    page.locator("#memory-form-cancel").click()
+    assert "No saved items yet" in page.locator("#memory-items").inner_text()
 
 
 def test_career_interview_can_resume_at_saved_followup(local_app_url: str, browser_page) -> None:
