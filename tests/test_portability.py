@@ -126,6 +126,9 @@ def test_security_headers_and_local_origin_guard(tmp_path: Path) -> None:
     try:
         response = client.get("/api/health")
         assert response.headers["x-content-type-options"] == "nosniff"
+        readiness = client.get("/api/ready")
+        assert readiness.status_code == 200
+        assert readiness.json()["status"] == "ready"
         assert response.headers["x-frame-options"] == "DENY"
         assert response.headers["cache-control"] == "no-store"
         assert "frame-ancestors 'none'" in response.headers["content-security-policy"]
