@@ -41,7 +41,7 @@ The lesson runner supports:
 
 The saved learner goal and focus areas select an explainable starter route. The optional Starting point check records a few sentence, listening, and project-response tasks for later comparison. It can be repeated and reviewed; it assigns no proficiency level or total score. The progress view reports recorded activity counts, not proficiency or learning gains. The curriculum is intentionally a starter slice; broader grammar, vocabulary, listening, pronunciation, diagnostic, revision, and interview content remains on the roadmap.
 
-Learning API: GET /api/learning/catalog, GET /api/learning/recommendations, POST /api/learning/attempts, GET /api/learning/attempts/{id}, POST /api/learning/attempts/{id}/responses, and GET /api/learning/progress.
+Learning API: GET /api/learning/catalog, GET /api/learning/recommendations, POST /api/learning/attempts, GET /api/learning/attempts/{id}, POST /api/learning/attempts/{id}/responses, GET /api/learning/progress, and GET /api/learning/diagnostic/latest.
 
 ## Run locally
 
