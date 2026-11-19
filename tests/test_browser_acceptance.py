@@ -500,11 +500,11 @@ def test_lesson_memory_suggestion_requires_explicit_save_and_keeps_source(local_
     )
     page.locator("#learning-feedback button").filter(has_text="Save a learning note").first.click()
     assert page.locator("#memory-type").input_value() == "correction"
-    assert page.locator("#memory-front").input_value() == "Choose the complete sentence."
-    assert page.locator("#memory-source-title").input_value() == "Build a complete sentence"
+    assert page.locator("#memory-front").input_value() == "Which option is a complete sentence?"
+    assert page.locator("#memory-source-title").input_value() == "Build a clear sentence"
     assert "No saved items yet" in page.locator("#memory-items").inner_text()
     page.locator("#memory-form-submit").click()
     page.wait_for_function(
-        "() => document.querySelector('#memory-items').textContent.includes('Choose the complete sentence.')"
+        "() => document.querySelector('#memory-items').textContent.includes('Which option is a complete sentence?')"
     )
-    assert "Build a complete sentence" in page.locator("#memory-items").inner_text()
+    assert "Build a clear sentence" in page.locator("#memory-items").inner_text()
