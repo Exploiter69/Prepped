@@ -120,3 +120,12 @@ footer { border-top:1px solid var(--line); border-bottom:0; color:var(--muted); 
 .learning-outcomes-panel strong { font-size:.82rem; }
 .learning-outcomes-panel ul { margin:.5rem 0 0; padding-left:1.2rem; color:var(--muted); font-size:.88rem; }
 .learning-outcomes-panel li+li { margin-top:.25rem; }
+
+.learning-track-units { display:grid; gap:.9rem; margin-top:.8rem; }
+.learning-unit { border:1px solid var(--line); border-radius:7px; padding:.85rem; min-width:0; }
+.learning-unit h5 { margin:0 0 .3rem; }
+.learning-unit-description { color:var(--muted); font-size:.84rem; margin:.3rem 0; }
+.learning-unit-outcomes { color:var(--muted); font-size:.8rem; margin:.45rem 0 .75rem; padding-left:1.1rem; }
+.learning-unit-outcomes li+li { margin-top:.2rem; }
+.learning-card h6 { margin:.5rem 0; font-size:.94rem; }
+.learning-unit .learning-card-list { margin-top:.7rem; }
