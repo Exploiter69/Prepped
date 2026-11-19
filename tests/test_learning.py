@@ -43,7 +43,9 @@ def test_catalog_hides_answer_keys_and_exposes_profile_based_recommendations(tmp
         assert response.status_code == 200
         catalog = response.json()
         assert catalog["recommendations"]["track_id"] == "placement-communication"
-        assert len(catalog["skills"]) >= 5
+        assert catalog["levels"][0]["id"] == "foundation"
+        assert len(catalog["units"]) == 6
+        assert len(catalog["skills"]) >= 14
         serialized = json.dumps(catalog)
         assert '"answer"' not in serialized
         assert '"correct_answer"' not in serialized
@@ -69,6 +71,7 @@ def test_lesson_attempt_enforces_order_persists_feedback_and_updates_progress(tm
         attempt_id = attempt["id"]
         assert attempt["status"] == "in_progress"
         assert attempt["current_exercise"]["id"] == "sentence-complete"
+        assert attempt["next_lesson"]["lesson_id"] == "grammar-in-context"
 
         wrong_order = client.post(f"/api/learning/attempts/{attempt_id}/responses", json={
             "exercise_id": "sentence-order", "answer": ["a", "b", "c", "d"]
@@ -97,6 +100,7 @@ def test_lesson_attempt_enforces_order_persists_feedback_and_updates_progress(tm
         assert complete["current_exercise"] is None
         assert complete["feedback"][2]["status"] == "saved_for_self_review"
         assert complete["feedback"][2]["original_response"].startswith("I built")
+        assert complete["feedback"][2]["example_to_compare"]
 
         reloaded = client.get(f"/api/learning/attempts/{attempt_id}")
         assert reloaded.status_code == 200
