@@ -104,7 +104,10 @@ def create_memory_router(db_path: Path) -> APIRouter:
             if status == "all":
                 rows = conn.execute("SELECT * FROM learning_memory ORDER BY updated_at DESC").fetchall()
             else:
-                rows = conn.execute("SELECT * FROM learning_memory WHERE status = ? ORDER BY due_at, updated_at DESC", (status,)).fetchall()
+                rows = conn.execute(
+                    "SELECT * FROM learning_memory WHERE status = ? AND dismissed_at IS NULL ORDER BY due_at, updated_at DESC",
+                    (status,),
+                ).fetchall()
         return {"items": [_item(row) for row in rows], "count": len(rows)}
 
     @router.post("/items", status_code=201)
@@ -199,6 +202,30 @@ def create_memory_router(db_path: Path) -> APIRouter:
             row = conn.execute("SELECT * FROM learning_memory WHERE id = ?", (item_id,)).fetchone()
         return {"item": _item(row)}
 
+    @router.post("/items/{item_id}/dismiss")
+    def dismiss_item(item_id: str) -> dict[str, Any]:
+        with connect_database(Path(db_path)) as conn:
+            cursor = conn.execute(
+                "UPDATE learning_memory SET dismissed_at = ?, updated_at = ? WHERE id = ?",
+                (_stamp(), _stamp(), item_id),
+            )
+            if cursor.rowcount == 0:
+                raise HTTPException(status_code=404, detail="Memory item not found.")
+            row = conn.execute("SELECT * FROM learning_memory WHERE id = ?", (item_id,)).fetchone()
+        return {"item": _item(row), "note": "Dismissed from active learning memory. You can restore it from the library."}
+
+    @router.post("/items/{item_id}/restore")
+    def restore_item(item_id: str) -> dict[str, Any]:
+        with connect_database(Path(db_path)) as conn:
+            cursor = conn.execute(
+                "UPDATE learning_memory SET dismissed_at = NULL, updated_at = ? WHERE id = ?",
+                (_stamp(), item_id),
+            )
+            if cursor.rowcount == 0:
+                raise HTTPException(status_code=404, detail="Memory item not found.")
+            row = conn.execute("SELECT * FROM learning_memory WHERE id = ?", (item_id,)).fetchone()
+        return {"item": _item(row), "note": "Restored to the library. Its previous review schedule is preserved."}
+
     @router.delete("/items/{item_id}", status_code=204)
     def delete_item(item_id: str) -> None:
         with connect_database(Path(db_path)) as conn:
@@ -211,7 +238,7 @@ def create_memory_router(db_path: Path) -> APIRouter:
         now = _stamp()
         with connect_database(Path(db_path)) as conn:
             rows = conn.execute(
-                """SELECT * FROM learning_memory WHERE status = 'active' AND due_at <= ?
+                """SELECT * FROM learning_memory WHERE status = 'active' AND dismissed_at IS NULL AND due_at <= ?
                    ORDER BY due_at ASC, created_at ASC LIMIT ?""",
                 (now, limit),
             ).fetchall()
@@ -227,6 +254,8 @@ def create_memory_router(db_path: Path) -> APIRouter:
                 raise HTTPException(status_code=404, detail="Memory item not found.")
             if row["status"] != "active":
                 raise HTTPException(status_code=409, detail="Resume this suspended item before reviewing it.")
+            if row["dismissed_at"] is not None:
+                raise HTTPException(status_code=409, detail="Restore this dismissed item before reviewing it.")
             repetitions, interval = _next_interval(row["repetitions"], row["interval_days"], payload.rating)
             due = now + timedelta(days=interval)
             reviewed_at, due_at = _stamp(now), _stamp(due)
@@ -259,14 +288,15 @@ def create_memory_router(db_path: Path) -> APIRouter:
             totals = conn.execute(
                 """SELECT COUNT(*) AS total,
                    SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) AS active,
-                   SUM(CASE WHEN status = 'suspended' THEN 1 ELSE 0 END) AS suspended,
-                   SUM(CASE WHEN status = 'active' AND due_at <= ? THEN 1 ELSE 0 END) AS due
+                   SUM(CASE WHEN status = 'suspended' AND dismissed_at IS NULL THEN 1 ELSE 0 END) AS suspended,
+                   SUM(CASE WHEN dismissed_at IS NOT NULL THEN 1 ELSE 0 END) AS dismissed,
+                   SUM(CASE WHEN status = 'active' AND dismissed_at IS NULL AND due_at <= ? THEN 1 ELSE 0 END) AS due
                    FROM learning_memory""", (now,)
             ).fetchone()
             reviews = conn.execute("SELECT COUNT(*) AS n FROM learning_memory_reviews").fetchone()["n"]
         return {"total": totals["total"] or 0, "active": totals["active"] or 0,
-                "suspended": totals["suspended"] or 0, "due": totals["due"] or 0,
-                "reviews_completed": reviews,
+                "suspended": totals["suspended"] or 0, "dismissed": totals["dismissed"] or 0,
+                "due": totals["due"] or 0, "reviews_completed": reviews,
                 "note": "Activity counts only; they do not represent proficiency or learning gain."}
 
     return router
