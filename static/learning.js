@@ -611,10 +611,12 @@
       const attempt = await request("/api/learning/attempts/" + encodeURIComponent(state.attempt.id) + "/responses", {
         method: "POST", body: JSON.stringify({ exercise_id: exercise.id, answer }),
       });
-      renderAttempt(attempt);
       if (attempt.status === "completed") {
-        await loadWorkspace();
-        $("#learning-feedback").classList.remove("hidden");
+        state.busy = false;
+        renderAttempt(attempt);
+        void loadWorkspace();
+      } else {
+        renderAttempt(attempt);
       }
     } catch (error) {
       $("#learning-exercise-error").textContent = error.message;
