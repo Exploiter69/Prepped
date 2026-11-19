@@ -648,7 +648,7 @@
     if (!state.attempt || state.attempt.status !== "in_progress" || state.busy) return;
     const exercise = state.attempt.current_exercise;
     let answer;
-    if (exercise.type === "choice") {
+    if (["choice", "vocabulary", "listening"].includes(exercise.type)) {
       answer = $('input[name="learning-choice"]:checked', $("#learning-exercise"))?.value || "";
     } else if (exercise.type === "ordering") {
       answer = Array.from(document.querySelectorAll(".learning-order-select")).map((select) => select.value);
