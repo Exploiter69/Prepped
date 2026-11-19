@@ -354,11 +354,12 @@ Use a disposable database. Automated Chromium coverage does not replace checking
 
 - [ ] Confirm no total proficiency score, placement prediction, learning-gain claim, technical correctness verdict, or validated speaking score appears.
 - [ ] Confirm the progress dashboard calls its measures saved activity and lesson evidence, not ability.
+- [ ] Dismiss a suggested next step, reload Progress, confirm it stays dismissed, then restore it from the dismissed-suggestions list.
 - [ ] Do not report a student pilot until it has actually been run with consent. Record sample size, method, failures, and limitations; never invent results.
 
 ### Phase F automated evidence
 
 - [ ] GitHub Actions passes on the final Phase F commit, including pip-audit, Python compilation, all JavaScript syntax checks, API tests, and Chromium browser acceptance.
-- [ ] API tests cover all progress counters/goals, baseline exclusion, recommendation reasons, complete backup table coverage, round-trip restore, invalid backup rollback, size limits, readiness, Host/Origin checks, and security headers.
+- [ ] API tests cover all progress counters/goals, baseline exclusion, recommendation reasons, complete backup table coverage including dismissed recommendation preferences, round-trip restore, invalid backup rollback, size limits, readiness, Host/Origin checks, and security headers.
 - [ ] Browser tests cover Progress navigation, goal creation, backup download/restore, and cross-workspace navigation.
 - [ ] Complete the manual target-laptop checks above. CI does not prove fresh-install operation on the user's device, microphone permission, speech recognition quality, TTS output, screen-reader behaviour, or device-specific responsive layout.
