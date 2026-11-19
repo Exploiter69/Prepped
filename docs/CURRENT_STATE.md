@@ -5,7 +5,7 @@
 **Product direction:** Voice-first, personalised practice and learning platform for Indian engineering students. The text practice loop is a reliable fallback and is frozen for feature development except material bugs.<br>
 **Engineering stage:** Record/stop voice slice with optional Groq Whisper and offline Vosk adapters; real browser/microphone and live-provider acceptance remain.
 
-## Learner workspace — implementation in progress
+## Learner workspace — profile implemented; browser acceptance pending
 
 The `feature/learner-profile` branch now contains:
 - `docs/PRODUCT_ROADMAP.md` defining the full product modules, delivery sequence, architecture constraints, and quality gates.
@@ -15,7 +15,7 @@ The `feature/learner-profile` branch now contains:
 - Profile setup/edit UI with optional name, study year, branch, target role, primary goal, confidence, and improvement areas. Profile setup can be skipped; the existing practice flow is not gated.
 - `tests/test_profile.py` covering initial state, save/read, updates, restart persistence, invalid input, and legacy session/answer preservation.
 
-**Validation status:** These changes have been committed to the remote feature branch, but have not yet been run on the user's laptop. Do not describe this milestone as tested or complete until `pytest`, JavaScript syntax checks, and a browser smoke test pass locally.
+**Validation status:** The user previously ran the full suite after syncing the profile feature: 40 passed, 1 warning; Python compilation and JavaScript syntax checks passed at that point. A subsequent profile-toggle fix and cache-busting update have since been pushed. The user confirmed the current server serves the updated JavaScript and profile API, and the DOM contains the expected button/form, but the actual click interaction has not yet been confirmed. Re-run checks against the latest commit and complete browser acceptance before marking the profile milestone fully accepted.
 
 ## What this milestone is
 
@@ -158,3 +158,46 @@ If using Groq, export `GROQ_API_KEY` in the same terminal before starting Uvicor
 ## Product boundaries
 
 Prepped is a practice prototype, not an official assessment, hiring decision, placement predictor, or validated speech-accuracy product. Feedback signals are simple text heuristics and can be wrong. Speech recognition can be wrong. There is no overall score, no pronunciation score, no emotion/personality inference, and no LLM feedback in this phase. Vosk mode stays local. Groq mode is an explicit remote transcription option. Raw audio is not retained by Prepped by default.
+
+---
+
+## Product status and next build sequence (2026-11-19)
+
+### Honest product status
+
+Prepped is **not yet a complete or market-ready learning platform**. It is a local practice application with one project-explanation scenario, a voice record/stop slice, session history, formative heuristic feedback, and a learner profile.
+
+The learner profile currently stores preferences such as goal, study year, branch, confidence and focus areas. It does not yet drive adaptive lessons, a skill curriculum, or personalised recommendations. A profile summary such as “English fluency · Year 2 · CSE” is a display of saved preferences, not proof that the learning experience is personalised.
+
+### Not implemented yet
+
+- Reusable learning engine and lesson runner.
+- Skill taxonomy and versioned curriculum catalogue.
+- Structured English units for grammar, sentence construction, vocabulary, speaking fluency and listening.
+- A complete pronunciation learning flow; no validated pronunciation scoring.
+- Profile-driven lesson recommendations and baseline diagnostic.
+- Learner-controlled vocabulary/correction memory and spaced revision.
+- HR, behavioural and technical interview studios with multi-turn follow-ups.
+- Evidence-based skill progress dashboard and goal tracking.
+- Local export, backup and restore.
+- Full release-grade accessibility, security, fresh-install and target-device acceptance.
+
+### Active implementation order
+
+Follow [PRODUCT_ROADMAP.md](PRODUCT_ROADMAP.md) and [COMPLETE_ROADMAP.md](COMPLETE_ROADMAP.md) as the detailed execution plan.
+
+1. **Foundation acceptance:** verify profile setup/edit/save/reload and the existing practice/voice flows in a real browser; rerun automated checks and CI.
+2. **Learning Engine:** skill taxonomy, versioned JSON curriculum, reusable lesson runner, deterministic exercise types, progress events and profile-driven starter paths.
+3. **English & communication studio:** grammar, sentence construction, vocabulary, speaking fluency, listening and safe listen/repeat pronunciation activities.
+4. **Personal learning memory:** learner-approved words, phrases, corrections and review cards with a transparent local scheduler.
+5. **Career & interview studios:** project, HR/behavioural and technical tracks using shared scenario infrastructure.
+6. **Progress & portability:** skill evidence, goals, explainable recommendations, export, backup and restore.
+7. **Release hardening:** accessibility, security, responsive UX, fresh install, target-device acceptance and documented limitations.
+
+### Current browser issue — profile toggle
+
+The profile toggle implementation has been changed to use an explicit open/close helper, update aria-expanded, and use cache-busted script URLs. The latest remote code is on feature/learner-profile. The API returns an unconfigured profile correctly and the served JS contains the handler. The browser DOM finds both elements and reports the form initially hidden. **The final click test is still outstanding**; do not claim the issue is fixed until clicking the button visibly opens the form and the save/edit/cancel flow succeeds.
+
+### Release rule
+
+A visible screen or saved profile is not a complete feature. Each module must have a full learner journey, persistence, validation, empty/error/retry states, automated tests, accessibility checks and manual acceptance. Keep the existing FastAPI + plain HTML/CSS/JavaScript + SQLite modular monolith, additive migrations, versioned JSON, ₹0 mandatory operating cost, and text fallback.
