@@ -476,6 +476,10 @@ def test_memory_create_edit_and_review_flow_in_browser(local_app_url: str, brows
         "() => document.querySelector('#memory-review').textContent.includes('clear for now')"
     )
     assert "Reviews completed" in page.locator("#memory-stats").inner_text()
+    page.locator("#memory-items button").filter(has_text="Review history").click()
+    page.wait_for_function(
+        "() => document.querySelector('#memory-items').textContent.includes('GOOD')"
+    )
 
     page.locator("#memory-items button").filter(has_text="Edit").click()
     page.locator("#memory-front").fill("over time")
