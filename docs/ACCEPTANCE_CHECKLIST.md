@@ -118,3 +118,39 @@ Copy this record into the release notes or issue after the checks are actually p
 | Known issues | |
 
 **Exit gate:** Automated checks and CI pass, profile and text practice browser journeys pass, and voice results/limitations are recorded. If voice hardware or models are unavailable, record that limitation; do not block text-mode development or claim voice acceptance.
+
+## Phase B — Learning Engine manual acceptance
+
+These checks complement API and Chromium automation. Record the date, browser, device, and any failure before marking a box complete.
+
+### Curriculum and profile route
+
+- [ ] Open **Learning** from the header; confirm the workspace loads without hiding or breaking the existing practice room.
+- [ ] Confirm the skill map distinguishes active and planned skills and shows outcomes/progress without a proficiency score.
+- [ ] Confirm tracks display their foundation stage, units, lessons, estimated effort, and prerequisites.
+- [ ] Change the learner profile goal to English fluency, save, reopen Learning, and confirm the recommended route changes to English foundations.
+- [ ] Select grammar, vocabulary, and speaking-fluency focus areas; confirm the route explains the matching lessons. Confirm unsupported areas are disclosed as not yet covered.
+- [ ] Confirm prerequisite lessons are disabled until the required lesson is completed; retry remains available after completion.
+
+### Lesson runner and persistence
+
+- [ ] Complete a choice exercise and confirm the selected answer, correct answer, and authored explanation are shown.
+- [ ] Complete an ordering exercise and confirm missing/duplicate items are rejected and the suggested order is shown.
+- [ ] Complete a short response; confirm the original response, self-review guidance, and illustrative example are shown without an automatic grade.
+- [ ] Reload during an unfinished lesson and resume at the exact next exercise.
+- [ ] Complete a lesson and follow the next-lesson action; confirm the next prerequisite is satisfied.
+- [ ] Reopen Learning and confirm progress counts and completed lesson state persist.
+
+### Listening and spoken response
+
+- [ ] Start a listening lesson and play the spoken message; stop playback and replay it.
+- [ ] Reveal and hide the text alternative; confirm the listening task remains usable if local TTS is unavailable.
+- [ ] If speech-to-text is available, confirm the recording disclosure is visible before microphone access. In Groq mode, confirm it explicitly says audio is sent to Groq.
+- [ ] Record a short response, stop, review/edit the transcript, and submit it. Confirm text input remains available if microphone or transcription fails.
+- [ ] Confirm no raw audio file is created or retained by Prepped. Do not treat a status endpoint alone as proof of transcription quality.
+
+### Accessibility and responsive behavior
+
+- [ ] Complete the Learning flow using keyboard navigation only; confirm visible focus and meaningful labels.
+- [ ] Check the workspace at laptop width and a narrow mobile viewport; confirm cards, controls, and feedback do not overflow.
+- [ ] Confirm status/error messages are understandable and the learner can return to the practice room at any point.
