@@ -172,6 +172,16 @@ def test_practice_room_is_not_gated_by_profile_and_text_flow_completes(local_app
     assert "1 of 5 questions had non-empty answers" in page.locator("#feedback-summary").inner_text()
     assert "There is no overall score." in page.locator("#feedback-summary").inner_text()
 
+    page.locator("#question-feedback button").filter(has_text="Save a learning note").first.click()
+    page.locator("#learning-view").wait_for(state="visible")
+    assert page.locator("#memory-source-type").input_value() == "practice"
+    assert "Attempt 1" in page.locator("#memory-source-title").input_value()
+    assert page.locator("#memory-front").input_value().strip()
+    page.locator("#memory-form-submit").click()
+    page.wait_for_function(
+        "() => document.querySelector('#memory-items').children.length > 0"
+    )
+
     page.locator("#history-toggle").click()
     page.locator("#history-view").wait_for(state="visible")
     assert "project explanation" in page.locator("#history-list").inner_text()
