@@ -332,3 +332,102 @@ Do not convert “the model ran” into “speech accuracy is good.” Do not co
 6. **Run user validation only when feasible.** It is valuable, but it is not a blocker for engineering.
 
 **Current gate:** record/stop slice and mocked Groq adapter implemented; live provider, real browser/microphone acceptance, and CI are outstanding. Speech accuracy and learning outcomes are not validated and must not be claimed.
+
+
+---
+
+## 18. Updated product completion plan (2026-11-19)
+
+This section is the active execution order for turning the current practice foundation into the complete learning product. It refines the earlier future-work phases: the learner profile now exists, so the next product milestone is to make it drive a real learning experience. The earlier Phase 5/6 ideas remain valid, but implementation must follow the gates below.
+
+### Current truth
+
+- The app has one project-explanation practice scenario, a local session/history flow, heuristic formative feedback, a bounded voice record/stop slice, and a learner profile.
+- The profile stores preferences. It does not yet generate adaptive lessons or profile-driven recommendations.
+- The app does not yet contain a structured English curriculum, general lesson runner, vocabulary revision system, spaced repetition, comprehensive progress insights, or backup/restore.
+- The profile button fix has been pushed to the feature branch, but browser acceptance must be confirmed locally.
+- Do not label this product market-ready or complete.
+
+### Build sequence
+
+| Order | Milestone | Main deliverable | Completion evidence |
+|---|---|---|---|
+| A | Foundation acceptance | Profile UI/API and current practice/voice flows verified | Browser checklist, pytest, JS/Python checks, CI |
+| B | Learning Engine | Skill taxonomy, curriculum manifest, reusable lesson runner, exercise model, progress events | End-to-end lesson path with tests and restart persistence |
+| C | English & communication studio | Grammar, sentence construction, vocabulary, fluency, listening and safe pronunciation practice | Complete tested units with feedback and text alternatives |
+| D | Personal learning memory | Learner-approved saved words, phrases, corrections and review cards | CRUD, source context, review queue and scheduler tests |
+| E | Career & interview studios | Project, HR/behavioural and technical scenarios with follow-ups | Multiple scenario families on shared infrastructure |
+| F | Progress & portability | Skill evidence, goals, recommendations, export/backup/restore | Reproducible data recovery and explainable progress |
+| G | Release hardening | Accessibility, security, performance, fresh install and usability evidence | Release checklist and documented limitations |
+
+### Milestone B — Learning Engine detailed tasks
+
+1. Define a stable skill taxonomy with skill IDs, learning outcomes, and prerequisites.
+2. Define a versioned JSON curriculum format for tracks, units, lessons, exercises, and content references.
+3. Validate curriculum files and reject unknown skill IDs, broken prerequisites, missing content, and invalid exercise schemas.
+4. Implement a reusable lesson/session runner with explicit states: introduction, example, exercise, response, feedback, retry, completion.
+5. Add deterministic exercise types first: sentence ordering/construction, grammar-in-context, vocabulary-in-context, short response, and listening comprehension.
+6. Persist attempts, completion, skill links, timestamps, and feedback evidence in SQLite using additive migrations.
+7. Connect profile goals and improvement areas to a transparent starter-path selector. Show the reason for each suggested lesson and let learners override it.
+8. Add a short baseline diagnostic only after the exercises and feedback are stable; it is formative, not a certified language level.
+9. Add automated tests for curriculum validation, state transitions, answer limits, feedback grounding, persistence, restart, and compatibility with existing sessions.
+10. Keep the existing project-explanation practice route working throughout.
+
+**Milestone B exit criteria:** a learner can open a suggested learning path, complete a lesson, receive grounded feedback, retry, resume after restart, and see completed work. Changing profile goals/focus areas changes the recommended starting path in a deterministic, explainable way.
+
+### Milestone C — English & communication studio
+
+Build a coherent initial English path:
+- Grammar in context and common sentence patterns.
+- Sentence construction, expansion, combining, clarification, and concise rewriting.
+- Vocabulary and useful phrases in context, with learner-authored examples.
+- Speaking fluency through short structured prompts: describe, explain, retell, compare, ask, and give opinions.
+- Listening comprehension with replay, captions/transcript, and a text alternative.
+- Pronunciation practice initially as listen/repeat/self-review. No numerical pronunciation accuracy or phoneme scores without a validated method.
+- Confidence-building through private repetition and learner-controlled progress; no emotion inference or automated confidence diagnosis.
+
+Every unit needs an outcome, authored examples, exercises, feedback, tests, and a completion path.
+
+### Milestone D — Personal learning memory
+
+- Save items only through learner action or explicit acceptance.
+- Store the original response/source context and why an item was suggested.
+- Support edit, delete, dismiss, suspend, and duplicate handling.
+- Add a simple local due-date scheduler only after review-card usefulness is demonstrated.
+- Test due-date boundaries, repeated reviews, persistence, and deletion.
+
+### Milestone E — Career and interview studios
+
+- Reuse the lesson/scenario runner and existing voice/session APIs.
+- Add project explanation and contribution, HR/behavioural, and technical interview tracks.
+- Add explicit multi-turn follow-up states and bounded scenario completion.
+- Keep feedback tied to submitted answers and rubric versions.
+- Add role-specific content only when authored and covered by tests.
+
+### Milestone F/G — Progress, portability, and release
+
+- Progress is based on completed work and explainable evidence, never an unexplained single score.
+- Show goals, activity, skill practice, review completion, and recommendation reasons.
+- Implement local export, backup, restore, and recovery tests.
+- Complete keyboard, responsive, focus, contrast, and screen-reader checks.
+- Review security, dependency health, local data handling, and audio upload boundaries.
+- Test a fresh clone/install on the target laptop.
+- Complete manual acceptance for onboarding, lessons, voice/text practice, review, progress, and recovery.
+- Run a small consent-based usability study when practical; report method and sample size without claiming causal learning or placement impact.
+
+### Release readiness checklist
+
+A release candidate requires all of the following:
+- [ ] Every advertised core module has a complete end-to-end learner flow.
+- [ ] Profile choices actually affect the learning path and recommendations.
+- [ ] English curriculum contains complete, tested learning units.
+- [ ] Learner memory and revision work end to end.
+- [ ] Interview scenarios reuse the common engine.
+- [ ] Progress is evidence-based and understandable.
+- [ ] Export/backup/restore has been tested.
+- [ ] Automated tests and CI pass on the release commit.
+- [ ] Fresh-install and target-device checks pass.
+- [ ] Accessibility, privacy, security, and failure states are reviewed.
+- [ ] Claims and limitations match demonstrated evidence.
+
+A student usability pilot is useful evidence but does not block engineering. A release must not claim certified English proficiency, accurate pronunciation scoring, placement probability, or measured learning gains without separate validation.
