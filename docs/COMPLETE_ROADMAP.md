@@ -474,7 +474,8 @@ Phase D has been implemented on `feature/learner-profile`; automated and target-
 - Learners can create words, phrases, corrections, concepts, and examples manually.
 - Lesson feedback includes a **Save a learning note** action. It opens an editable prefilled form and never saves automatically.
 - Saved items retain source lesson metadata and a short excerpt where available.
-- Items can be edited, suspended, resumed, or permanently deleted. Delete cascades to review history.
+- Items can be edited, suspended, resumed, dismissed/restored, or permanently deleted. Dismissal preserves the card and its history but removes it from active review; delete cascades to review history.
+- Duplicate attempts identify the existing item and open it for editing rather than overwriting it.
 - Duplicate detection normalises Unicode, case, and whitespace within each item type and returns the existing item identifier instead of overwriting it.
 - The due queue supports answer reveal and Again / Hard / Good / Easy ratings.
 - The local scheduler is a small deterministic interval schedule. It is not FSRS. New items are due immediately; rating outcomes and interval rules are described in the Product Roadmap.
