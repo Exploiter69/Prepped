@@ -144,7 +144,7 @@ def create_memory_router(db_path: Path) -> APIRouter:
                 raise HTTPException(status_code=404, detail="Memory item not found.")
             rows = conn.execute(
                 """SELECT rating, reviewed_at, previous_due_at, next_due_at, interval_days
-                   FROM learning_memory_reviews WHERE item_id = ? ORDER BY reviewed_at DESC""",
+                   FROM learning_memory_reviews WHERE item_id = ? ORDER BY reviewed_at DESC, rowid DESC""",
                 (item_id,),
             ).fetchall()
         return {"item_id": item_id, "reviews": [dict(row) for row in rows], "count": len(rows)}
@@ -245,7 +245,7 @@ def create_memory_router(db_path: Path) -> APIRouter:
             )
             updated = conn.execute("SELECT * FROM learning_memory WHERE id = ?", (item_id,)).fetchone()
             history = conn.execute(
-                "SELECT rating, reviewed_at, previous_due_at, next_due_at, interval_days FROM learning_memory_reviews WHERE item_id = ? ORDER BY reviewed_at DESC LIMIT 20",
+                "SELECT rating, reviewed_at, previous_due_at, next_due_at, interval_days FROM learning_memory_reviews WHERE item_id = ? ORDER BY reviewed_at DESC, rowid DESC LIMIT 20",
                 (item_id,),
             ).fetchall()
         return {"item": _item(updated), "review": dict(history[0]),
