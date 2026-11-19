@@ -34,12 +34,13 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function makeButton(label, lessonId, className = "button button-secondary") {
+  function makeButton(label, lessonId, className = "button button-secondary", disabled = false) {
     const button = document.createElement("button");
     button.type = "button";
     button.className = className;
     button.textContent = label;
     button.dataset.lessonId = lessonId;
+    button.disabled = disabled;
     button.addEventListener("click", () => startLesson(lessonId));
     return button;
   }
@@ -69,8 +70,10 @@
     }
   }
 
-  function renderTracks(tracks) {
+  function renderTracks(tracks, progress) {
     const container = $("#learning-track-list");
+    const completed = new Set(progress.completed_lesson_ids || []);
+    const titles = Object.fromEntries(tracks.flatMap((track) => track.lessons.map((lesson) => [lesson.id, lesson.title])));
     container.replaceChildren();
     for (const track of tracks) {
       const section = document.createElement("section");
@@ -90,12 +93,49 @@
         summary.textContent = lesson.summary;
         const meta = document.createElement("span");
         meta.className = "meta-label";
-        meta.textContent = lesson.exercise_count + " EXERCISES · " + lesson.estimated_minutes + " MIN";
-        card.append(meta, title, summary, makeButton("Open lesson", lesson.id));
+        meta.textContent = (completed.has(lesson.id) ? "COMPLETED · " : "") + lesson.exercise_count + " EXERCISES · " + lesson.estimated_minutes + " MIN";
+        const missing = (lesson.prerequisites || []).filter((id) => !completed.has(id));
+        const prerequisite = document.createElement("p");
+        prerequisite.className = "learning-prerequisite";
+        prerequisite.textContent = missing.length
+          ? "Complete first: " + missing.map((id) => titles[id] || id.replaceAll("-", " ")).join(", ")
+          : (completed.has(lesson.id) ? "You can repeat this lesson at any time." : "Ready to start.");
+        card.append(meta, title, summary, prerequisite,
+          makeButton(completed.has(lesson.id) ? "Practise again" : "Open lesson", lesson.id, "button button-secondary", missing.length > 0));
         list.append(card);
       }
       section.append(heading, description, list);
       container.append(section);
+    }
+  }
+
+  function renderSkills(skills) {
+    const container = $("#learning-skill-list");
+    container.replaceChildren();
+    for (const skill of skills) {
+      const card = document.createElement("article");
+      card.className = "learning-skill";
+      const heading = document.createElement("h4");
+      heading.textContent = skill.title;
+      const status = document.createElement("span");
+      status.className = "learning-skill-status " + skill.status;
+      status.textContent = skill.status;
+      const description = document.createElement("p");
+      description.textContent = skill.description;
+      const progress = document.createElement("p");
+      progress.className = "meta-label";
+      progress.textContent = skill.completed_lessons + " completed lesson attempts · " + skill.available_lessons + " available lessons";
+      card.append(heading, status, description, progress);
+      if (skill.outcomes?.length) {
+        const list = document.createElement("ul");
+        for (const outcome of skill.outcomes) {
+          const item = document.createElement("li");
+          item.textContent = outcome;
+          list.append(item);
+        }
+        card.append(list);
+      }
+      container.append(card);
     }
   }
 
@@ -147,7 +187,8 @@
       state.catalog = catalog;
       state.progress = progress;
       renderRecommendations(catalog.recommendations);
-      renderTracks(catalog.tracks);
+      renderTracks(catalog.tracks, progress);
+      renderSkills(progress.skills);
       const titles = {};
       for (const track of catalog.tracks) for (const lesson of track.lessons) titles[lesson.id] = lesson.title;
       progress.lesson_titles = titles;
