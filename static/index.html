@@ -6,13 +6,13 @@
     <meta name="theme-color" content="#111111">
     <meta name="description" content="Private, local-first practice for placement conversations.">
     <title>Prepped — Practice with purpose</title>
-    <link rel="stylesheet" href="/static/style.css?v=phase-f-1">
+    <link rel="stylesheet" href="/static/style.css?v=phase-f-2">
     <script src="/static/voice.js?v=profile-toggle-2" defer></script>
     <script src="/static/app.js?v=phase-f-1" defer></script>
     <script src="/static/learning.js?v=phase-f-1" defer></script>
     <script src="/static/memory.js?v=phase-d-2" defer></script>
     <script src="/static/career.js?v=phase-f-1" defer></script>
-    <script src="/static/progress.js?v=phase-f-1" defer></script>
+    <script src="/static/progress.js?v=phase-f-2" defer></script>
   </head>
   <body>
     <header class="site-header">
@@ -181,6 +181,8 @@
         <section class="progress-section" aria-labelledby="progress-recommendations-title">
           <h3 id="progress-recommendations-title">Useful next steps</h3>
           <div id="progress-recommendations" class="progress-list"></div>
+          <button id="progress-dismissed-toggle" class="button button-quiet" type="button" aria-expanded="false">Show dismissed suggestions (0)</button>
+          <div id="progress-dismissed-recommendations" class="progress-list hidden"></div>
         </section>
         <section class="progress-section" aria-labelledby="progress-goals-title">
           <div class="learning-section-heading"><div><span class="meta-label">LEARNER-CHOSEN TARGETS</span><h3 id="progress-goals-title">My goals</h3></div><span id="goal-count" class="status"></span></div>
