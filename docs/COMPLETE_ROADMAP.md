@@ -486,3 +486,21 @@ Phase D has been implemented on `feature/learner-profile`. Automated CI passes; 
 - The implementation uses the existing FastAPI + SQLite + plain JavaScript stack and introduces no paid service or infrastructure dependency.
 
 **Verification:** GitHub Actions passes on the final Phase D implementation (79 passed, 2 skipped; both require `espeak-ng`). The remaining gate is manual target-laptop keyboard, responsive-layout, persistence, and end-to-end acceptance. Do not mark Phase D closed until that device acceptance is recorded.
+
+
+---
+
+## Phase E — Career & Interview Studios implementation update (2026-11-19)
+
+The Career workspace is implemented on `feature/learner-profile`; final CI and target-laptop acceptance are verification gates, not assumed results.
+
+- Three versioned studios: project explanation, HR/behavioural interviews, and technical fundamentals.
+- Four authored main questions per studio, each followed by an authored follow-up. Guided, standard, and challenging modes choose different follow-up wording.
+- FastAPI interview session APIs with ordered turns, persisted session snapshots, resume, recent history, retry grouping, feedback, and deletion.
+- Additive `career_sessions` and `career_turns` tables; existing practice sessions, learner profile, curriculum attempts/events, and Phase D memory are preserved.
+- Browser workspace supports typed answers, record/stop transcription through the existing voice adapter, editable transcripts, and spoken prompts through existing local TTS. Text remains available when voice is unavailable.
+- Groq transcription disclosure is shown before requesting microphone permission when the configured STT engine is Groq. Raw recordings are not stored by Prepped.
+- Question-by-question reflection uses transparent text signals and exact answer evidence. It does not claim technical correctness, expert recruiter evaluation, interview success, or placement probability.
+- Learners can explicitly send an answer into the Phase D memory editor with its question/session source context. The learner must review and submit the item; no automatic memory writes occur.
+
+The automated suite covers the API state machine, all studio content, difficulty-specific follow-ups, persistence, retry, deletion cascade, legacy practice preservation, browser completion/resume/review, and the memory handoff. The final GitHub Actions result and target-laptop acceptance must be recorded before Phase E is called closed.
