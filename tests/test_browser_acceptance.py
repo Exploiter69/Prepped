@@ -141,7 +141,7 @@ def test_practice_room_is_not_gated_by_profile_and_text_flow_completes(local_app
         page.locator("#skip-button").click()
         page.wait_for_function(
             "(expected) => document.querySelector('#practice-progress').textContent === expected",
-            f"Question {expected_question} of 5",
+            arg=f"Question {expected_question} of 5",
         )
     page.locator("#skip-button").click()
 
