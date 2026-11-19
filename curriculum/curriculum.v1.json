@@ -374,8 +374,8 @@
         "sentence-building"
       ],
       "learning_outcomes": [
-        "Choose a verb form for a completed action",
-        "Use a common preposition in context",
+        "Choose a verb form for a completed action and a future plan",
+        "Use articles and common prepositions in context",
         "Review grammar without losing the intended meaning"
       ],
       "introduction": "Grammar choices depend on what you mean and when an action happened. Read the whole sentence before choosing a form. The goal is to make the meaning clear, not to memorise isolated rules.",
@@ -434,6 +434,48 @@
           "prompt": "Write a sentence about a task you completed recently. Include when you did it.",
           "placeholder": "Last week, I…",
           "guidance": "Check that the verb form matches the time you mention. This is a self-review prompt, not an automated grammar grade."
+        },
+        {
+          "id": "articles-in-context",
+          "type": "choice",
+          "prompt": "Choose the correct article: “I built ___ small dashboard for the project.”",
+          "options": [
+            {
+              "id": "a",
+              "label": "a"
+            },
+            {
+              "id": "b",
+              "label": "an"
+            },
+            {
+              "id": "c",
+              "label": "the"
+            }
+          ],
+          "answer": "a",
+          "explanation": "Use “a” before a singular countable noun beginning with a consonant sound when it is mentioned for the first time."
+        },
+        {
+          "id": "future-plan",
+          "type": "choice",
+          "prompt": "Choose the sentence that clearly describes a plan for tomorrow.",
+          "options": [
+            {
+              "id": "a",
+              "label": "Tomorrow, I shared the test results."
+            },
+            {
+              "id": "b",
+              "label": "Tomorrow, I will share the test results."
+            },
+            {
+              "id": "c",
+              "label": "Tomorrow, I sharing the test results."
+            }
+          ],
+          "answer": "b",
+          "explanation": "“Will share” is a clear way to describe a future plan. Context and intended meaning guide tense choice."
         }
       ],
       "level_id": "foundation",
@@ -1194,7 +1236,8 @@
       "learning_outcomes": [
         "Describe a task with context and action",
         "Explain a simple process in order",
-        "Retell a short update in the learner's own words"
+        "Retell a short update in the learner's own words",
+        "Explain how a feature was checked and describe the observed result"
       ],
       "introduction": "A clear spoken response can use three simple parts: context, action, and detail. You do not need complicated vocabulary. Speak at a comfortable pace, pause between ideas, and use the optional recording only if you want to review a transcript. Prepped does not grade fluency or confidence.",
       "exercises": [
@@ -1211,6 +1254,13 @@
           "prompt": "Explain a simple process you know—for example, how you test a form or prepare for a class. Describe the steps in order.",
           "placeholder": "First… Then… Finally…",
           "guidance": "Use sequence words such as first, then, after that, and finally. A listener should be able to follow the steps."
+        },
+        {
+          "id": "speaking-explanation",
+          "type": "short_response",
+          "prompt": "Explain how you checked one feature in a project and what you observed. Separate what you tested from what you have not tested yet.",
+          "placeholder": "I checked… I observed… I have not yet…",
+          "guidance": "Describe one real check and its observed result. State any important limitation; do not claim that a test proves the whole application is error-free."
         },
         {
           "id": "speaking-retell",
