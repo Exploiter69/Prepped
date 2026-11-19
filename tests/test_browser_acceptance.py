@@ -330,6 +330,12 @@ def test_pronunciation_lesson_supports_replay_text_and_unscored_self_review(
         "The first version is ready, two issues were found, and fixes are planned.",
     ])
     page.get_by_role("button", name="Back to lesson list").click()
+    complete_lesson_in_browser(page, "speaking-opinions", [
+        "I prefer trying a small example first because it helps me see the tool in action.",
+        "Reading documentation can be useful when the tool has complex setup or safety requirements.",
+        "Could you please rephrase the question?",
+    ])
+    page.get_by_role("button", name="Back to lesson list").click()
     page.locator('button[data-lesson-id="pronunciation-self-review"]').click()
     page.locator(".learning-listening-controls").wait_for(state="visible")
     assert page.get_by_role("button", name="Play model phrase").is_visible()
@@ -401,3 +407,33 @@ def test_vocabulary_lesson_submits_contextual_choices_and_learner_example(
     feedback = page.locator("#learning-feedback").inner_text()
     assert "carry out research" in feedback
     assert "I completed several tasks" in feedback
+    page.get_by_role("button", name="Back to lesson list").click()
+    complete_lesson_in_browser(page, "phrases-for-study", [
+        "a", "b", "I carried out a test of the login form."
+    ])
+    assert "carry out tests" in page.locator("#learning-feedback").inner_text()
+
+
+def test_grammar_and_question_formation_units_complete_in_the_browser(
+    local_app_url: str, browser_page
+) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+    page.locator("#learning-toggle").click()
+    page.wait_for_function(
+        "() => document.querySelector('#learning-status').textContent.includes('skills')"
+    )
+    complete_lesson_in_browser(page, "sentence-building", [
+        "b", ["a", "b", "c", "d"], "I tested the registration form."
+    ])
+    page.get_by_role("button", name="Back to lesson list").click()
+    complete_lesson_in_browser(page, "grammar-in-context", [
+        "b", "a", "Yesterday, I tested the API.", "a", "b",
+        "Yesterday, she went to the lab and checked the results.",
+    ])
+    assert "responsible for" in page.locator("#learning-feedback").inner_text()
+    page.get_by_role("button", name="Back to lesson list").click()
+    complete_lesson_in_browser(page, "question-formation", [
+        "a", "b", "Could you clarify the expected response?"
+    ])
+    assert "does" in page.locator("#learning-feedback").inner_text().lower()
