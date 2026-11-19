@@ -3,7 +3,7 @@
 **Updated:** 2026-11-19<br>
 **Source of truth:** GitHub `feature/learner-profile` (working branch; `main` remains the last synced baseline)<br>
 **Product direction:** Voice-first, personalised practice and learning platform for Indian engineering students. The text practice loop is a reliable fallback and is frozen for feature development except material bugs.<br>
-**Engineering stage:** Record/stop voice slice with optional Groq Whisper and offline Vosk adapters; real browser/microphone and live-provider acceptance remain.
+**Engineering stage:** Phase B Learning Engine starter slice added; automated validation is being corrected/confirmed. Voice has optional Groq Whisper and offline Vosk adapters; real browser/microphone and live-provider quality acceptance remain.
 
 ## Foundation acceptance — automated checks and CI passing
 
@@ -179,11 +179,8 @@ The learner profile currently stores preferences such as goal, study year, branc
 
 ### Not implemented yet
 
-- Reusable learning engine and lesson runner.
-- Skill taxonomy and versioned curriculum catalogue.
-- Structured English units for grammar, sentence construction, vocabulary, speaking fluency and listening.
-- A complete pronunciation learning flow; no validated pronunciation scoring.
-- Profile-driven lesson recommendations and baseline diagnostic.
+- Broader English curriculum beyond the current starter lessons; a complete pronunciation learning flow and any validated pronunciation scoring.
+- Baseline diagnostic (deferred until the exercise and feedback loop is stable).
 - Learner-controlled vocabulary/correction memory and spaced revision.
 - HR, behavioural and technical interview studios with multi-turn follow-ups.
 - Evidence-based skill progress dashboard and goal tracking.
@@ -195,7 +192,7 @@ The learner profile currently stores preferences such as goal, study year, branc
 Follow [PRODUCT_ROADMAP.md](PRODUCT_ROADMAP.md) and [COMPLETE_ROADMAP.md](COMPLETE_ROADMAP.md) as the detailed execution plan.
 
 1. **Foundation acceptance:** verify profile setup/edit/save/reload and the existing practice/voice flows in a real browser; rerun automated checks and CI.
-2. **Learning Engine:** skill taxonomy, versioned JSON curriculum, reusable lesson runner, deterministic exercise types, progress events and profile-driven starter paths.
+2. **Learning Engine:** complete automated and target-device acceptance of the implemented skill taxonomy, versioned JSON curriculum, reusable lesson runner, exercise types, progress events and profile-driven starter paths.
 3. **English & communication studio:** grammar, sentence construction, vocabulary, speaking fluency, listening and safe listen/repeat pronunciation activities.
 4. **Personal learning memory:** learner-approved words, phrases, corrections and review cards with a transparent local scheduler.
 5. **Career & interview studios:** project, HR/behavioural and technical tracks using shared scenario infrastructure.
