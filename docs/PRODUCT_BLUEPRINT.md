@@ -455,7 +455,7 @@ The first English and communication path is authored in the local versioned curr
 - Pronunciation: local TTS model phrases, listen-and-repeat, optional recorded response/transcription, and private self-review. There is no pronunciation or accent scoring.
 - Confidence and professional communication: repeatable low-pressure practice and useful clarification/follow-up language, without emotion inference or confidence scoring.
 
-The expanded manifest contains 14 skills, one foundation stage, nine units, four tracks, 13 authored lessons plus the separate baseline diagnostic. The English track has 11 lessons. Profile focus areas select and explain matching lessons; they do not establish proficiency or adapt difficulty.
+The expanded manifest contains 14 skills, one foundation stage, nine units, four tracks, 13 authored lessons plus the separate baseline diagnostic. Every unit and lesson has explicit learning outcomes, displayed before exercises. The English track has 11 lessons. Profile focus areas select and explain matching lessons; they do not establish proficiency or adapt difficulty.
 
 The implementation reuses the current FastAPI + SQLite + plain JavaScript architecture, existing voice services, and text-first fallback. Automated API and Chromium acceptance is being added; successful CI and target-device manual acceptance are still required before the phase is marked accepted.
 
