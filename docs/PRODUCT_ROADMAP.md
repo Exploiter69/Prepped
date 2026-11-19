@@ -143,7 +143,7 @@ The learner profile is currently a preference record. It does **not** yet power 
 - [x] Verify CI and a clean-checkout install (GitHub Actions completed successfully on the feature branch; dependency install, compilation, JavaScript syntax, and pytest all passed).
 - [x] Keep the existing practice room and saved sessions intact; regression tests cover the text-only journey and additive profile migration.
 
-**Exit gate:** profile and existing practice flows pass browser smoke tests; automated checks and CI pass; voice limitations are recorded honestly.
+**Exit gate:** automated Chromium profile and text-practice smoke tests pass; automated checks and CI pass; voice limitations are recorded honestly. The phase remains open until the target-laptop voice/microphone acceptance is performed or explicitly recorded as unavailable.
 
 ### Phase B — Learning Engine (next major product milestone)
 
