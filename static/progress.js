@@ -256,7 +256,7 @@
     const dismissedTarget = $("#progress-dismissed-recommendations");
     dismissedTarget.replaceChildren();
     dismissedTarget.classList.toggle("hidden", !state.dismissedVisible);
-    $("#progress-dismissed-toggle").textContent = state.dismissedVisible ? "Hide dismissed suggestions" : "Show dismissed suggestions (" + dismissed.length + ")";
+    $("#progress-dismissed-toggle").textContent = (state.dismissedVisible ? "Hide dismissed suggestions (" : "Show dismissed suggestions (") + dismissed.length + ")";
     $("#progress-dismissed-toggle").setAttribute("aria-expanded", String(state.dismissedVisible));
     for (const item of dismissed) {
       const row = node("div", "progress-row");
