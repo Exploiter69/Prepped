@@ -306,7 +306,7 @@ New additive SQLite tables: `career_sessions` and `career_turns`. Existing pract
 - New `/api/progress/overview` combines completed lesson evidence by curriculum skill, project-practice sessions, career interview sessions, memory review counts, due notes, active goals, seven-day activity, recent activity, and explainable next steps.
 - Skill progress is linked to completed lesson events and the curriculum's declared skill IDs. It reports lesson coverage and evidence titles only; it is not a skill-proficiency score. The baseline diagnostic is excluded from lesson completion counts.
 - Learner-owned goals support lessons completed, project practice sessions, interviews completed, and memory reviews. Create, edit, archive/restore, and delete are available. Counts start at each goal's creation timestamp; existing activity is not silently credited to a newly created goal.
-- Recommendations are deterministic and explain their source: resume an unfinished lesson, review due learner-saved notes, continue the next lesson in the profile-selected route, or work toward an active goal.
+- Recommendations are deterministic and explain their source: resume an unfinished lesson, project-practice session, or interview; review due learner-saved notes; continue the next lesson in the profile-selected route; or work toward an active goal.
 
 ### Export, backup, restore, and recovery
 
