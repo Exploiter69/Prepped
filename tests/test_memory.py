@@ -125,6 +125,13 @@ def test_memory_suspend_resume_and_delete_review_history_cascade(tmp_path: Path)
         assert restored.status_code == 200
         assert restored.json()["item"]["dismissed_at"] is None
         assert client.get("/api/memory/review/queue").json()["count"] == 0
+        due_item = create_card(client, front="another useful phrase").json()["item"]
+        assert client.get("/api/memory/review/queue").json()["count"] == 1
+        assert client.post(f"/api/memory/items/{due_item['id']}/dismiss").status_code == 200
+        assert client.get("/api/memory/review/queue").json()["count"] == 0
+        assert client.post(f"/api/memory/items/{due_item['id']}/restore").status_code == 200
+        assert client.get("/api/memory/review/queue").json()["count"] == 1
+        assert client.delete(f"/api/memory/items/{due_item['id']}").status_code == 204
         assert client.delete(f"/api/memory/items/{item['id']}").status_code == 204
         assert client.get(f"/api/memory/items/{item['id']}").status_code == 404
 
