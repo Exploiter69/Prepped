@@ -282,6 +282,7 @@ The English starter path is now expanded under Phase C. Advanced diagnostic inte
 - Hard advances the repetition count and multiplies the previous interval by 1.2 (minimum one day).
 - Easy schedules 3 days on the first review, then multiplies the prior interval by 2.5 (minimum two days).
 - Review timestamps are stored in UTC. The UI displays dates in the browser's local timezone.
+- Intervals are capped at 3,650 days (10 years) to keep dates bounded and predictable.
 - Suspended cards are excluded from the due queue. Resuming restores their existing schedule.
 
 ### Required verification before closing Phase D
