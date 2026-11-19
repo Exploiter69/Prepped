@@ -475,6 +475,13 @@
     $("#learning-runner").classList.remove("hidden");
     $("#learning-runner-title").textContent = attempt.lesson.title;
     $("#learning-runner-intro").textContent = attempt.lesson.introduction;
+    const outcomes = $("#learning-outcomes");
+    outcomes.replaceChildren();
+    for (const outcome of attempt.lesson.learning_outcomes || []) {
+      const item = document.createElement("li");
+      item.textContent = outcome;
+      outcomes.append(item);
+    }
     renderExample(attempt.lesson);
     $("#learning-feedback").classList.add("hidden");
     if (attempt.status === "completed") {
