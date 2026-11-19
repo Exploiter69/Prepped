@@ -29,7 +29,7 @@ This repository does **not** claim validated speech accuracy, placement improvem
 
 ## Learning workspace — Phase B starter engine
 
-The Learning entry in the header opens a reusable lesson workspace built on the same FastAPI + SQLite + plain JavaScript stack. The current versioned curriculum includes a stable skill map, goal-based tracks, prerequisites, examples, and six starter lessons across English foundations and project communication.
+The Learning entry in the header opens a reusable lesson workspace built on the same FastAPI + SQLite + plain JavaScript stack. The current versioned curriculum includes a stable skill map, goal-based tracks, prerequisites, examples, and six starter lessons grouped into six units across English foundations and project communication.
 
 The lesson runner supports:
 - Single-choice and contextual vocabulary exercises.
