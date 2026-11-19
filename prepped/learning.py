@@ -126,7 +126,7 @@ def load_curriculum(path: Path = DEFAULT_CURRICULUM_PATH) -> dict[str, Any]:
         if track.get("goal") not in valid_goals:
             raise CurriculumValidationError(f"Track {track['id']} has an unsupported goal.")
         if (len(track.get("lesson_ids", [])) != len(set(track.get("lesson_ids", [])))
-                or any(lesson_id not in lessons or lessons[lesson_id]["track_id"] != track["id"] for lesson_id in track.get("lesson_ids", []))):
+                or any(lesson_id not in lessons for lesson_id in track.get("lesson_ids", []))):
             raise CurriculumValidationError(f"Track {track['id']} has an invalid lesson reference.")
         if any(skill_id not in skills for skill_id in track.get("skill_ids", [])):
             raise CurriculumValidationError(f"Track {track['id']} references an unknown skill.")
