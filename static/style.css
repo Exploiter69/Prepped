@@ -92,3 +92,10 @@ footer { border-top:1px solid var(--line); border-bottom:0; color:var(--muted); 
   .learning-progress { grid-template-columns:1fr; }
   .learning-feedback .feedback-card { grid-template-columns:1fr; }
 }
+
+
+.learning-context { border-left:2px solid var(--line); padding:.75rem 1rem; color:var(--muted); background:var(--raised); }
+.learning-listening-controls,.learning-voice-controls { display:flex; flex-wrap:wrap; align-items:center; gap:.6rem; margin:.8rem 0 1rem; }
+.learning-listening-controls .section-help,.learning-voice-controls .section-help { flex-basis:100%; margin:.2rem 0; }
+.learning-transcript { flex-basis:100%; padding:1rem; border:1px solid var(--line); border-radius:6px; white-space:pre-wrap; }
+.learning-transcript.hidden { display:none; }
