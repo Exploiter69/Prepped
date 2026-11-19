@@ -336,4 +336,4 @@ New additive SQLite tables: `career_sessions` and `career_turns`. Existing pract
 
 ### Scope and limitations
 
-Prepped remains a local single-user loopback application with no authentication or multi-user isolation. Do not expose it on a LAN, public internet, reverse proxy, or tunnel. Progress is saved-activity evidence, not proficiency or learning gain. Backups are not encrypted and currently support only the version-1 schema. See [INSTALL.md](INSTALL.md), [RELEASE_HARDENING.md](RELEASE_HARDENING.md), and [ACCEPTANCE_CHECKLIST.md](ACCEPTANCE_CHECKLIST.md).
+Prepped remains a local single-user loopback application with no authentication or multi-user isolation. Do not expose it on a LAN, public internet, reverse proxy, or tunnel. Progress is saved-activity evidence, not proficiency or learning gain. Backups are not encrypted and currently support backup format version 1 with database schema version 3. See [INSTALL.md](INSTALL.md), [RELEASE_HARDENING.md](RELEASE_HARDENING.md), and [ACCEPTANCE_CHECKLIST.md](ACCEPTANCE_CHECKLIST.md).
