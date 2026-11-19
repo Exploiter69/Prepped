@@ -69,6 +69,9 @@ def create_portability_router(db_path: Path) -> APIRouter:
     def export_data() -> Response:
         with connect_database(Path(db_path)) as conn:
             schema_version = int(conn.execute("PRAGMA user_version").fetchone()[0])
+            counts = {table: int(conn.execute(f'SELECT COUNT(*) AS n FROM "{table}"').fetchone()["n"]) for table in TABLES}
+            if sum(counts.values()) > MAX_BACKUP_ROWS:
+                raise HTTPException(status_code=413, detail="The local database exceeds the 200,000-record backup limit.")
             tables = {
                 table: [dict(row) for row in conn.execute(f'SELECT * FROM "{table}"')]
                 for table in TABLES
@@ -104,9 +107,10 @@ def create_portability_router(db_path: Path) -> APIRouter:
             payload = json.loads(b"".join(chunks))
         except (UnicodeDecodeError, json.JSONDecodeError) as exc:
             raise HTTPException(status_code=400, detail="The selected file is not valid Prepped backup JSON.") from exc
-        if not isinstance(payload, dict) or payload.get("format") != BACKUP_FORMAT:
-            raise HTTPException(status_code=400, detail="This file is not a Prepped backup.")
-        if payload.get("format_version") != BACKUP_FORMAT_VERSION or payload.get("database_schema_version") != DATABASE_SCHEMA_VERSION:
+        expected_keys = {"format", "format_version", "database_schema_version", "app_version", "exported_at", "tables", "confirm_replace"}
+        if not isinstance(payload, dict) or set(payload) != expected_keys or payload.get("format") != BACKUP_FORMAT:
+            raise HTTPException(status_code=400, detail="This file is not a complete Prepped backup.")
+        if type(payload.get("format_version")) is not int or type(payload.get("database_schema_version")) is not int or payload.get("format_version") != BACKUP_FORMAT_VERSION or payload.get("database_schema_version") != DATABASE_SCHEMA_VERSION:
             raise HTTPException(status_code=409, detail="This backup format or database version is not supported by this Prepped build.")
         if payload.get("confirm_replace") is not True:
             raise HTTPException(status_code=400, detail="Explicit confirmation is required because restore replaces all current local learning data.")
