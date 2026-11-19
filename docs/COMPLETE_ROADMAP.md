@@ -54,9 +54,12 @@ The first proof is this loop working locally with voice, not an avatar, dashboar
 - Real Vosk transcription and Piper/espeak-ng playback rechecked on the target machine after the latest hardening changes.
 - Speech-recognition accuracy on representative Indian English speech.
 - Repeatable voice latency/memory benchmarks.
-- GitHub Actions result for the voice change (must run on the pushed commit before merge).
-- Fresh-checkout install/test/browser smoke test after this change.
+- Fresh-checkout install, Python compilation, JavaScript syntax checks, and automated tests now pass in GitHub Actions on the feature branch; a fresh-checkout browser smoke test on the target laptop remains outstanding.
 - Student usability or voice-specific user validation. No pilot has been run.
+
+### Foundation acceptance update (2026-11-19)
+
+The feature branch now has GitHub Actions coverage for pushes to `feature/**`. The latest clean-run result is 38 passed and 2 skipped (both require `espeak-ng`, unavailable on the hosted runner), with one Starlette/httpx TestClient deprecation warning. The [Foundation Acceptance Checklist](ACCEPTANCE_CHECKLIST.md) records the remaining real-browser profile, text-practice, and optional voice checks. Do not treat CI as browser or microphone acceptance.
 
 ### Product development and user validation are separate
 
