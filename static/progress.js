@@ -2,7 +2,7 @@
   "use strict";
   const $ = (selector) => document.querySelector(selector);
   const viewIds = ["home-view", "practice-view", "feedback-view", "history-view", "learning-view", "career-view", "progress-view"];
-  const state = { overview: null, busy: false };
+  const state = { overview: null, editingGoalId: null, archivedVisible: false };
 
   async function request(url, options = {}) {
     const response = await fetch(url, options);
@@ -88,9 +88,14 @@
     }
   }
 
-  function renderGoals(goals) {
+  function renderGoals(goals, archived = []) {
     const target = $("#progress-goals");
     target.replaceChildren();
+    const archivedTarget = $("#progress-archived-goals");
+    archivedTarget.replaceChildren();
+    archivedTarget.classList.toggle("hidden", !state.archivedVisible);
+    $("#goal-archive-toggle").textContent = state.archivedVisible ? "Hide archived goals" : "Show archived goals";
+    $("#goal-archive-toggle").setAttribute("aria-expanded", String(state.archivedVisible));
     $("#goal-count").textContent = goals.length + " active";
     if (!goals.length) {
       target.append(node("p", "progress-empty", "No active goals yet. Add a small target above; it will count saved activity, not estimate ability."));
@@ -106,6 +111,19 @@
         (goal.due_date ? " · target date " + goal.due_date : "")));
       if (goal.description) details.append(node("p", "", goal.description));
       const actions = node("div", "progress-row-actions");
+      const edit = node("button", "button button-quiet", "Edit");
+      edit.type = "button";
+      edit.addEventListener("click", () => {
+        state.editingGoalId = goal.id;
+        $("#goal-title").value = goal.title;
+        $("#goal-description").value = goal.description || "";
+        $("#goal-type").value = goal.goal_type;
+        $("#goal-target").value = String(goal.target_count);
+        $("#goal-date").value = goal.due_date || "";
+        $("#goal-form button[type='submit']").textContent = "Save goal";
+        $("#goal-cancel-edit").classList.remove("hidden");
+        $("#goal-title").focus();
+      });
       const archive = node("button", "button button-quiet", "Archive");
       archive.type = "button";
       archive.addEventListener("click", async () => {
@@ -119,10 +137,33 @@
         try { await request("/api/goals/" + encodeURIComponent(goal.id), { method: "DELETE" }); await load(); }
         catch (error) { setStatus(error.message, true); }
       });
-      actions.append(archive, remove);
+      actions.append(edit, archive, remove);
       row.append(details, actions);
       target.append(row);
     }
+    for (const goal of archived) {
+      const row = node("article", "progress-row");
+      const details = node("div");
+      details.append(node("strong", "", goal.title), node("p", "", "Archived · " + goal.current_count + " / " + goal.target_count + " " + goal.goal_type.replaceAll("_", " ")));
+      const actions = node("div", "progress-row-actions");
+      const restore = node("button", "button button-secondary", "Restore");
+      restore.type = "button";
+      restore.addEventListener("click", async () => {
+        try { await request("/api/goals/" + encodeURIComponent(goal.id) + "/restore", { method: "POST" }); await load(); }
+        catch (error) { setStatus(error.message, true); }
+      });
+      const remove = node("button", "button button-quiet", "Delete");
+      remove.type = "button";
+      remove.addEventListener("click", async () => {
+        if (!window.confirm("Permanently delete this archived goal? Activity records will not be deleted.")) return;
+        try { await request("/api/goals/" + encodeURIComponent(goal.id), { method: "DELETE" }); await load(); }
+        catch (error) { setStatus(error.message, true); }
+      });
+      actions.append(restore, remove);
+      row.append(details, actions);
+      archivedTarget.append(row);
+    }
+    if (!archived.length) archivedTarget.append(node("p", "progress-empty", "No archived goals."));
   }
 
   function renderActivity(items) {
@@ -189,13 +230,14 @@
     try {
       const [overview, goals] = await Promise.all([
         request("/api/progress/overview"),
-        request("/api/goals"),
+        request("/api/goals?include_archived=true"),
       ]);
       state.overview = overview;
       renderSummary(overview.summary);
       renderSkills(overview.skills);
       renderWeek(overview.weekly_activity);
-      renderGoals(goals.goals);
+      renderGoals(goals.goals.filter(goal => goal.status === "active"),
+        goals.goals.filter(goal => goal.status === "archived"));
       renderActivity(overview.recent_activity);
       renderRecommendations(overview.recommendations);
       setStatus("Updated " + new Date(overview.generated_at).toLocaleTimeString());
@@ -210,8 +252,8 @@
     submit.disabled = true;
     $("#goal-error").textContent = "";
     try {
-      await request("/api/goals", {
-        method: "POST",
+      await request(state.editingGoalId ? "/api/goals/" + encodeURIComponent(state.editingGoalId) : "/api/goals", {
+        method: state.editingGoalId ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: $("#goal-title").value,
@@ -223,6 +265,9 @@
       });
       $("#goal-form").reset();
       $("#goal-target").value = "3";
+      state.editingGoalId = null;
+      $("#goal-form button[type='submit']").textContent = "Add my goal";
+      $("#goal-cancel-edit").classList.add("hidden");
       await load();
     } catch (error) {
       $("#goal-error").textContent = error.message;
@@ -287,6 +332,18 @@
   $("#progress-refresh")?.addEventListener("click", load);
   $("#progress-home")?.addEventListener("click", () => { for (const id of viewIds) $("#" + id)?.classList.toggle("hidden", id !== "home-view"); $("#progress-toggle")?.setAttribute("aria-expanded", "false"); });
   $("#goal-form")?.addEventListener("submit", createGoal);
+  $("#goal-cancel-edit")?.addEventListener("click", () => {
+    state.editingGoalId = null;
+    $("#goal-form").reset();
+    $("#goal-target").value = "3";
+    $("#goal-form button[type='submit']").textContent = "Add my goal";
+    $("#goal-cancel-edit").classList.add("hidden");
+    $("#goal-error").textContent = "";
+  });
+  $("#goal-archive-toggle")?.addEventListener("click", () => {
+    state.archivedVisible = !state.archivedVisible;
+    if (state.overview) load();
+  });
   $("#data-export")?.addEventListener("click", exportBackup);
   $("#data-import")?.addEventListener("change", importBackup);
   document.addEventListener("DOMContentLoaded", () => {
