@@ -347,7 +347,7 @@ This section is the active execution order for turning the current practice foun
 
 - The app has the original project-explanation practice scenario, a local session/history flow, formative feedback, a bounded voice record/stop slice, a learner profile, and a reusable Learning Engine.
 - The profile goal and focus areas select transparent starter routes through the versioned curriculum; they do not infer ability or adapt difficulty.
-- The branch now contains the initial English and communication curriculum. Learner-controlled vocabulary/correction memory, spaced revision, dedicated HR/technical interview studios, richer progress insights, and backup/restore remain future milestones.
+- The branch now contains the initial English and communication curriculum, learner-controlled memory and spaced revision, three interview studios, and the Phase F progress/goals/backup/restore workspace. Target-device acceptance for Phases D–F remains outstanding.
 - Foundation and Learning Engine browser tests exist; latest CI and target-laptop acceptance must be confirmed before the milestones are closed.
 - Do not label this product market-ready or complete.
 
