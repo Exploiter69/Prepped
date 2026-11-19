@@ -103,27 +103,52 @@
       const description = document.createElement("p");
       description.textContent = track.description;
       const list = document.createElement("div");
-      list.className = "learning-card-list";
-      for (const lesson of track.lessons) {
-        const card = document.createElement("article");
-        card.className = "learning-card compact";
-        const title = document.createElement("h5");
-        title.textContent = lesson.title;
-        const summary = document.createElement("p");
-        summary.textContent = lesson.summary;
-        const meta = document.createElement("span");
-        meta.className = "meta-label";
-        meta.textContent = (units.get(lesson.unit_id)?.title || "LESSON") + " · " +
-          (completed.has(lesson.id) ? "COMPLETED · " : "") + lesson.exercise_count + " EXERCISES · " + lesson.estimated_minutes + " MIN";
-        const missing = (lesson.prerequisites || []).filter((id) => !completed.has(id));
-        const prerequisite = document.createElement("p");
-        prerequisite.className = "learning-prerequisite";
-        prerequisite.textContent = missing.length
-          ? "Complete first: " + missing.map((id) => titles[id] || id.replaceAll("-", " ")).join(", ")
-          : (completed.has(lesson.id) ? "You can repeat this lesson at any time." : "Ready to start.");
-        card.append(meta, title, summary, prerequisite,
-          makeButton(completed.has(lesson.id) ? "Practise again" : "Open lesson", lesson.id, "button button-secondary", missing.length > 0));
-        list.append(card);
+      list.className = "learning-track-units";
+      for (const unitId of track.unit_ids || []) {
+        const unit = units.get(unitId);
+        if (!unit) continue;
+        const lessons = track.lessons.filter((lesson) => lesson.unit_id === unitId);
+        if (!lessons.length) continue;
+        const unitSection = document.createElement("section");
+        unitSection.className = "learning-unit";
+        const unitHeading = document.createElement("h5");
+        unitHeading.textContent = unit.title;
+        const unitDescription = document.createElement("p");
+        unitDescription.className = "learning-unit-description";
+        unitDescription.textContent = unit.description;
+        const outcomes = document.createElement("ul");
+        outcomes.className = "learning-unit-outcomes";
+        outcomes.setAttribute("aria-label", unit.title + " outcomes");
+        for (const outcome of unit.learning_outcomes || []) {
+          const item = document.createElement("li");
+          item.textContent = outcome;
+          outcomes.append(item);
+        }
+        const cards = document.createElement("div");
+        cards.className = "learning-card-list";
+        for (const lesson of lessons) {
+          const card = document.createElement("article");
+          card.className = "learning-card compact";
+          const title = document.createElement("h6");
+          title.textContent = lesson.title;
+          const summary = document.createElement("p");
+          summary.textContent = lesson.summary;
+          const meta = document.createElement("span");
+          meta.className = "meta-label";
+          meta.textContent = (completed.has(lesson.id) ? "COMPLETED · " : "") +
+            lesson.exercise_count + " EXERCISES · " + lesson.estimated_minutes + " MIN";
+          const missing = (lesson.prerequisites || []).filter((id) => !completed.has(id));
+          const prerequisite = document.createElement("p");
+          prerequisite.className = "learning-prerequisite";
+          prerequisite.textContent = missing.length
+            ? "Complete first: " + missing.map((id) => titles[id] || id.replaceAll("-", " ")).join(", ")
+            : (completed.has(lesson.id) ? "You can repeat this lesson at any time." : "Ready to start.");
+          card.append(meta, title, summary, prerequisite,
+            makeButton(completed.has(lesson.id) ? "Practise again" : "Open lesson", lesson.id, "button button-secondary", missing.length > 0));
+          cards.append(card);
+        }
+        unitSection.append(unitHeading, unitDescription, outcomes, cards);
+        list.append(unitSection);
       }
       section.append(heading, level, description, list);
       container.append(section);
