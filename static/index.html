@@ -21,6 +21,35 @@
         <h1 id="page-title">Get better at explaining<br>the work you do.</h1>
         <p class="intro-copy">A private practice space for engineering students preparing for real placement conversations. Speak or type your answer, review and edit the transcript, then try again. Text always remains available.</p>
       </section>
+      <section id="profile-panel" class="scenario-panel profile-panel" aria-labelledby="profile-title">
+        <div class="panel-topline"><span class="eyebrow">YOUR LEARNING PROFILE</span><span id="profile-save-status" class="status">Stored on this device</span></div>
+        <h2 id="profile-title">Make practice relevant to you.</h2>
+        <p id="profile-summary" class="scenario-description">Set your goals and focus areas. This profile stays in your local Prepped database.</p>
+        <button id="profile-edit-toggle" class="button button-secondary" type="button">Set up profile</button>
+        <form id="profile-form" class="profile-form hidden">
+          <div class="profile-fields">
+            <div><label for="profile-name">Name (optional)</label><input id="profile-name" name="display_name" maxlength="80" autocomplete="given-name" placeholder="What should Prepped call you?"></div>
+            <div><label for="profile-year">Current study year</label><select id="profile-year" name="study_year"><option value="">Select year</option><option value="1">1st year</option><option value="2">2nd year</option><option value="3">3rd year</option><option value="4">4th year</option><option value="5">5th year</option><option value="6">6th year</option></select></div>
+            <div><label for="profile-branch">Branch / discipline</label><input id="profile-branch" name="branch" maxlength="100" placeholder="e.g. Computer Science and Engineering"></div>
+            <div><label for="profile-role">Target role (optional)</label><input id="profile-role" name="target_role" maxlength="120" placeholder="e.g. Software Engineer"></div>
+            <div><label for="profile-goal">Primary learning goal</label><select id="profile-goal" name="primary_goal"><option value="english_fluency">English fluency</option><option value="placement_interviews" selected>Placement interviews</option><option value="technical_interviews">Technical interviews</option><option value="project_communication">Explaining my projects</option><option value="professional_communication">Professional communication</option></select></div>
+            <div><label for="profile-confidence">How confident do you feel today?</label><select id="profile-confidence" name="confidence_level"><option value="beginner">I am just getting started</option><option value="developing" selected>I can do some of this, but need practice</option><option value="confident">I feel mostly confident</option></select></div>
+          </div>
+          <fieldset class="profile-areas"><legend>What would you most like to improve?</legend>
+            <label><input type="checkbox" name="improvement_areas" value="speaking_fluency"> Speaking fluency</label>
+            <label><input type="checkbox" name="improvement_areas" value="grammar"> Grammar and sentence construction</label>
+            <label><input type="checkbox" name="improvement_areas" value="vocabulary"> Vocabulary</label>
+            <label><input type="checkbox" name="improvement_areas" value="pronunciation"> Pronunciation and listening</label>
+            <label><input type="checkbox" name="improvement_areas" value="project_explanation"> Project explanation</label>
+            <label><input type="checkbox" name="improvement_areas" value="technical_interviews"> Technical interviews</label>
+            <label><input type="checkbox" name="improvement_areas" value="hr_interviews"> HR and behavioural interviews</label>
+            <label><input type="checkbox" name="improvement_areas" value="professional_communication"> Professional communication</label>
+            <label><input type="checkbox" name="improvement_areas" value="confidence"> Confidence while speaking</label>
+          </fieldset>
+          <p id="profile-error" class="inline-error" role="alert"></p>
+          <div class="form-actions"><button id="profile-cancel" class="button button-quiet" type="button">Cancel</button><button class="button button-primary" type="submit">Save my profile</button></div>
+        </form>
+      </section>
       <p id="global-status" class="global-status" role="status" aria-live="polite">Checking local app…</p>
       <section id="home-view" class="scenario-panel" aria-labelledby="scenario-title">
         <div class="panel-topline"><span class="eyebrow">FIRST SCENARIO</span><span class="status" id="system-status">Loading scenario…</span></div>
