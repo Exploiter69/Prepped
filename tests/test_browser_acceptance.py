@@ -73,7 +73,7 @@ def complete_lesson_in_browser(page, lesson_id: str, answers: list[str | list[st
         if index < len(answers):
             page.wait_for_function(
                 "(expected) => document.querySelector('#learning-exercise-count').textContent === expected",
-                f"Exercise {index + 1} of {len(answers)}",
+                arg=f"Exercise {index + 1} of {len(answers)}",
             )
         else:
             page.wait_for_function(
