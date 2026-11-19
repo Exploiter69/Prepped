@@ -376,7 +376,8 @@
       "learning_outcomes": [
         "Choose a verb form for a completed action and a future plan",
         "Use articles and common prepositions in context",
-        "Review grammar without losing the intended meaning"
+        "Review grammar without losing the intended meaning",
+        "Notice and revise a common tense error in a sentence"
       ],
       "introduction": "Grammar choices depend on what you mean and when an action happened. Read the whole sentence before choosing a form. The goal is to make the meaning clear, not to memorise isolated rules.",
       "example": {
@@ -476,6 +477,13 @@
           ],
           "answer": "b",
           "explanation": "“Will share” is a clear way to describe a future plan. Context and intended meaning guide tense choice."
+        },
+        {
+          "id": "error-correction",
+          "type": "short_response",
+          "prompt": "Correct the tense in this sentence while keeping its meaning: “Yesterday, she go to the lab and check the results.”",
+          "placeholder": "Yesterday, she…",
+          "guidance": "Look for the time word “yesterday”. Use past-tense forms for both actions. This open response is saved for self-review; Prepped does not automatically mark grammar corrections."
         }
       ],
       "level_id": "foundation",
