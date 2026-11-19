@@ -85,7 +85,9 @@ def test_complete_interview_feedback_retry_history_and_restart_persistence(tmp_p
         assert retry.json()["attempt_number"] == 2
         assert retry.json()["attempt_group_id"] == finished["attempt_group_id"]
         assert retry.json()["current_prompt"]["prompt"] == created["current_prompt"]["prompt"]
-        assert client.get("/api/career/sessions").json()["count"] == 2
+        history = client.get("/api/career/sessions").json()
+        assert history["count"] == 2
+        assert history["sessions"][0]["id"] == retry.json()["id"]
 
     with TestClient(create_app(db_path=db)) as restarted:
         restored = restarted.get(f"/api/career/sessions/{session_id}").json()
