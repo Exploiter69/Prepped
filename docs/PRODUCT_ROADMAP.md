@@ -263,7 +263,7 @@ Keep the existing Python + FastAPI + plain HTML/CSS/JavaScript + SQLite modular 
 
 **Remaining Phase B gates:** successful latest CI run; target-laptop browser check for navigation, all seven exercise formats, listening text alternatives, optional voice controls, next-lesson navigation, reload/resume, and responsive layout; review of lesson wording and learning usefulness. A short, low-stakes starting-point check is now included after the exercise loop was implemented. It stores observable responses and task completion, can be repeated/reviewed, and assigns no proficiency level or overall score. More advanced diagnostic interpretation remains deferred.
 
-The English starter path is now expanded under Phase C. Advanced diagnostic interpretation, learner-controlled vocabulary/correction memory and spaced revision, and dedicated HR/technical interview packs remain later roadmap work.
+The English starter path is expanded under Phase C. Advanced diagnostic interpretation remains deferred; learner-controlled revision is implemented under Phase D; dedicated HR, project, and technical interview studios are implemented under Phase E.
 
 
 ---
