@@ -224,7 +224,7 @@ async function submitCurrentAnswer(answerText) {
   }
 }
 
-function makeFeedbackCard(title, status, message, evidence, nextAction, meta = "") {
+function makeFeedbackCard(title, status, message, evidence, nextAction, meta = "", sourceResponse = "") {
   const card = document.createElement("article");
   card.className = "feedback-card";
   const heading = document.createElement("div");
@@ -265,7 +265,7 @@ function makeFeedbackCard(title, status, message, evidence, nextAction, meta = "
       source_type: "practice",
       source_id: activeSession?.id || "",
       source_title: "Project explanation · Attempt " + (activeFeedback?.attempt_number || ""),
-      source_excerpt: (evidence || "").slice(0, 6000),
+      source_excerpt: (sourceResponse || evidence || "").slice(0, 6000),
     }}));
   });
   card.append(save);
@@ -292,7 +292,11 @@ function renderFeedback(feedback) {
   const questionTarget = $("#question-feedback");
   questionTarget.replaceChildren();
   for (const item of feedback.question_feedback) {
-    questionTarget.append(makeFeedbackCard(item.prompt, item.status, item.message, item.evidence, item.next_action, item.word_count + " words"));
+    const sourceResponse = activeSession?.answers?.find((answer) => answer.question_id === item.question_id)?.answer_text || "";
+    questionTarget.append(makeFeedbackCard(
+      item.prompt, item.status, item.message, item.evidence, item.next_action,
+      item.word_count + " words", sourceResponse
+    ));
   }
   const rubricTarget = $("#rubric-feedback");
   rubricTarget.replaceChildren();
