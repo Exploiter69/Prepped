@@ -53,13 +53,15 @@ def test_catalog_hides_answer_keys_and_exposes_profile_based_recommendations(tmp
         saved = client.put("/api/profile", json={
             "primary_goal": "english_fluency",
             "confidence_level": "beginner",
-            "improvement_areas": ["grammar"],
+            "improvement_areas": ["grammar", "speaking_fluency", "vocabulary"],
         })
         assert saved.status_code == 200
         recommended = client.get("/api/learning/recommendations").json()
         assert recommended["track_id"] == "english-foundations"
         grammar = next(item for item in recommended["items"] if item["lesson_id"] == "grammar-in-context")
         assert "grammar" in grammar["why"]
+        speaking = next(item for item in recommended["items"] if item["lesson_id"] == "sentence-building")
+        assert "speaking fluency" in speaking["why"]
 
 
 def test_lesson_attempt_enforces_order_persists_feedback_and_updates_progress(tmp_path: Path) -> None:
