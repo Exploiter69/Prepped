@@ -68,6 +68,28 @@ def initialize_database(db_path: Path) -> None:
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL
             );
+
+            CREATE TABLE IF NOT EXISTS learning_attempts (
+                id TEXT PRIMARY KEY,
+                lesson_id TEXT NOT NULL,
+                lesson_version TEXT NOT NULL,
+                track_id TEXT NOT NULL,
+                status TEXT NOT NULL CHECK (status IN ('in_progress', 'completed')),
+                responses_json TEXT NOT NULL DEFAULT '[]',
+                feedback_json TEXT,
+                started_at TEXT NOT NULL,
+                completed_at TEXT
+            );
+
+            CREATE TABLE IF NOT EXISTS learning_events (
+                id TEXT PRIMARY KEY,
+                event_type TEXT NOT NULL CHECK (event_type IN ('lesson_started', 'response_submitted', 'lesson_completed')),
+                attempt_id TEXT NOT NULL REFERENCES learning_attempts(id) ON DELETE CASCADE,
+                lesson_id TEXT NOT NULL,
+                skill_ids_json TEXT NOT NULL DEFAULT '[]',
+                occurred_at TEXT NOT NULL,
+                detail_json TEXT NOT NULL DEFAULT '{}'
+            );
             """
         )
 
@@ -95,6 +117,15 @@ def initialize_database(db_path: Path) -> None:
         )
         connection.execute(
             "CREATE INDEX IF NOT EXISTS idx_sessions_attempt_group ON sessions(attempt_group_id, attempt_number)"
+        )
+        connection.execute(
+            "CREATE INDEX IF NOT EXISTS idx_learning_attempts_lesson_status ON learning_attempts(lesson_id, status)"
+        )
+        connection.execute(
+            "CREATE INDEX IF NOT EXISTS idx_learning_attempts_started_at ON learning_attempts(started_at DESC)"
+        )
+        connection.execute(
+            "CREATE INDEX IF NOT EXISTS idx_learning_events_attempt_time ON learning_events(attempt_id, occurred_at)"
         )
 
 
