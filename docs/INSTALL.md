@@ -87,7 +87,7 @@ Backups contain personal text. They are unencrypted JSON; protect them as you wo
 
 Restore replaces all current local learner data with the backup. It is not a merge. Prepped validates the format, schema version, table/column set, record types, SQLite constraints, and foreign-key relationships in a temporary database before replacing the active database. A failed validation leaves the current database untouched.
 
-The current backup format and database schema version are both version 1. A backup from a future or incompatible schema is rejected rather than guessed or partially imported. Keep a copy of the original file before attempting migration between future releases.
+The current backup format version is 1 and database schema version is 2. A backup from a future or incompatible schema is rejected rather than guessed or partially imported. Keep a copy of the original file before attempting migration between future releases.
 
 ## Supported environment and boundaries
 
