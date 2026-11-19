@@ -481,6 +481,14 @@ def test_memory_create_edit_and_review_flow_in_browser(local_app_url: str, brows
         "() => document.querySelector('#memory-items').textContent.includes('in the long run')"
     )
     assert "Active cards" in page.locator("#memory-stats").inner_text()
+    page.locator("#memory-front").fill("  IN   THE LONG RUN ")
+    page.locator("#memory-back").fill("A duplicate attempt.")
+    page.locator("#memory-form-submit").click()
+    page.wait_for_function(
+        "() => document.querySelector('#memory-form-title').textContent === 'Edit saved item'"
+    )
+    assert "already exists" in page.locator("#memory-status").inner_text()
+    page.locator("#memory-form-cancel").click()
     page.locator("#memory-review button").filter(has_text="Show answer").click()
     assert "Over a long period of time." in page.locator("#memory-review").inner_text()
     page.locator("#memory-review button").filter(has_text="Good").click()
