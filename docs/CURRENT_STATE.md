@@ -316,7 +316,7 @@ New additive SQLite tables: `career_sessions` and `career_turns`. Existing pract
 - It does not include source code, environment variables, API keys, or voice models.
 - Restore requires an explicit confirmation and replaces all current learner data; it is not a merge. Request size is capped at 25 MiB and records at 200,000.
 - Restore first rebuilds the data in a temporary database using the current additive schema, validates exact tables/columns and scalar fields, checks constraints, SQLite integrity, and foreign keys, then copies the validated database into place. Invalid backups leave the current database unchanged.
-- Backup format version and database schema version are explicit (both currently version 1). Incompatible versions fail closed.
+- Backup format version and database schema version are explicit (format version 1, database schema version 2). Incompatible versions fail closed.
 - Backups are unencrypted JSON and contain personal answers and notes; users must keep them private.
 
 ### Release hardening
