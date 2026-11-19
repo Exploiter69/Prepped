@@ -108,7 +108,7 @@ These checks require a real browser on the target laptop. Mark each item only af
 ### Curriculum and profile recommendations
 
 - [ ] Open Learning and confirm the English foundations path shows all 11 lessons across sentence, grammar, vocabulary, listening, speaking, and pronunciation units.
-- [ ] Confirm every unit has clear outcomes and every lesson displays its outcomes, estimated time, summary, exercise count, prerequisite state, and a working start/retry action.
+- [ ] Confirm every unit has clear outcomes and every lesson displays its outcomes, estimated time, summary, exercise count, prerequisite guidance, and a working start/retry action.
 - [ ] Set the profile goal to English fluency and focus areas to grammar, vocabulary, speaking fluency, pronunciation, confidence, and professional communication; save and reopen Learning.
 - [ ] Confirm recommendation explanations point to the relevant lessons and that the route does not claim to infer ability or proficiency.
 - [ ] Confirm the project-communication and placement-communication tracks and the original practice room remain available.
@@ -183,7 +183,7 @@ These checks complement API and Chromium automation. Record the date, browser, d
 - [ ] Confirm tracks display their foundation stage, units, lessons, estimated effort, and prerequisites.
 - [ ] Change the learner profile goal to English fluency, save, reopen Learning, and confirm the recommended route changes to English foundations.
 - [ ] Select grammar, vocabulary, and speaking-fluency focus areas; confirm the route explains the matching lessons. Confirm unsupported areas are disclosed as not yet covered.
-- [ ] Confirm prerequisite lessons are disabled until the required lesson is completed; retry remains available after completion.
+- [ ] Confirm lessons remain openable even when suggested prerequisites are incomplete; prerequisite guidance recommends an order without locking lessons.
 
 ### Low-stakes starting point check
 
