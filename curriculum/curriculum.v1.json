@@ -239,6 +239,20 @@
         "project-structure",
         "evidence-clarity"
       ]
+    },
+    {
+      "id": "starting-point-check",
+      "title": "Starting point check",
+      "description": "A short, low-stakes snapshot of current sentence, listening, and project-explanation responses. It does not assign a level or score.",
+      "goal": "professional_communication",
+      "level_id": "foundation",
+      "skill_ids": [],
+      "unit_ids": [
+        "starting-point-unit"
+      ],
+      "lesson_ids": [
+        "baseline-check"
+      ]
     }
   ],
   "lessons": [
@@ -733,6 +747,103 @@
       ],
       "level_id": "foundation",
       "unit_id": "listening-practice"
+    },
+    {
+      "id": "baseline-check",
+      "version": "1.0.0",
+      "kind": "diagnostic",
+      "track_id": "starting-point-check",
+      "unit_id": "starting-point-unit",
+      "level_id": "foundation",
+      "title": "Record your starting point",
+      "summary": "Complete four short tasks. Your responses are saved as a baseline; no proficiency level or total score is assigned.",
+      "estimated_minutes": 7,
+      "skill_ids": [],
+      "prerequisites": [],
+      "learning_outcomes": [
+        "Record a current sentence-structure response",
+        "Record a current listening-comprehension response",
+        "Save a short project explanation for later comparison"
+      ],
+      "introduction": "This is a low-stakes starting-point check, not an exam. Answer using what you can do today. Prepped stores your responses and task completion so you can revisit them later; it does not certify an English level or predict placement outcomes.",
+      "exercises": [
+        {
+          "id": "baseline-sentence",
+          "type": "choice",
+          "prompt": "Which option is a complete sentence?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Although I tested the API."
+            },
+            {
+              "id": "b",
+              "label": "I tested the API."
+            },
+            {
+              "id": "c",
+              "label": "After the API test."
+            }
+          ],
+          "answer": "b",
+          "explanation": "A complete sentence communicates a full thought. This check records the response; it does not assign a proficiency level."
+        },
+        {
+          "id": "baseline-summary-order",
+          "type": "ordering",
+          "prompt": "Arrange these parts into a clear project explanation.",
+          "tokens": [
+            {
+              "id": "a",
+              "label": "The problem or need"
+            },
+            {
+              "id": "b",
+              "label": "What I built or did"
+            },
+            {
+              "id": "c",
+              "label": "How I checked the work"
+            }
+          ],
+          "answer": [
+            "a",
+            "b",
+            "c"
+          ],
+          "explanation": "A useful explanation starts with the need, describes your action, then gives evidence or a check."
+        },
+        {
+          "id": "baseline-listening",
+          "type": "listening",
+          "audio_text": "I completed the login form validation yesterday. Today I am checking the error messages. Next, I plan to test the form with a classmate.",
+          "transcript": "I completed the login form validation yesterday. Today I am checking the error messages. Next, I plan to test the form with a classmate.",
+          "prompt": "What did the speaker complete yesterday?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Testing the form with a classmate"
+            },
+            {
+              "id": "b",
+              "label": "Checking the error messages"
+            },
+            {
+              "id": "c",
+              "label": "Login form validation"
+            }
+          ],
+          "answer": "c",
+          "explanation": "The completed task was login form validation. Error-message checks are happening today; the classmate test is planned next."
+        },
+        {
+          "id": "baseline-project-response",
+          "type": "short_response",
+          "prompt": "Describe one project or technical task you have worked on. Include the problem, what you did, and how you checked it.",
+          "placeholder": "The problem was… I worked on… I checked it by…",
+          "guidance": "Use your own current ability. If you have not measured a result, say what you checked and what remains unknown. You may type or record a response."
+        }
+      ]
     }
   ],
   "levels": [
@@ -815,6 +926,18 @@
       ],
       "lesson_ids": [
         "specific-explanations"
+      ]
+    },
+    {
+      "id": "starting-point-unit",
+      "title": "Starting point snapshot",
+      "description": "Record a few current responses before choosing what to practise next.",
+      "level_id": "foundation",
+      "track_ids": [
+        "starting-point-check"
+      ],
+      "lesson_ids": [
+        "baseline-check"
       ]
     }
   ]
