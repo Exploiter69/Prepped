@@ -70,7 +70,7 @@ def test_export_and_restore_round_trip_all_local_user_tables(tmp_path: Path) -> 
         assert status["counts"]["career_sessions"] == 1
         assert status["counts"]["career_turns"] == 1
         assert status["counts"]["learner_goals"] == 1
-        assert status["database_schema_version"] == 1
+        assert status["database_schema_version"] == 2
     finally:
         source.__exit__(None, None, None)
         target.__exit__(None, None, None)
