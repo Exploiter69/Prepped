@@ -108,7 +108,7 @@ def _recent_activity(conn: sqlite3.Connection, limit: int = 30) -> list[dict[str
                 except (TypeError, json.JSONDecodeError):
                     pass
             items.append({"id": row["id"], "type": "lesson", "title": "Completed: " + title, "occurred_at": row["occurred_at"]})
-    for row in conn.execute("undefined ORDER BY COALESCE(completed_at, created_at) DESC LIMIT 100"):
+    for row in conn.execute("SELECT id, status, created_at, completed_at FROM sessions ORDER BY COALESCE(completed_at, created_at) DESC, rowid DESC LIMIT 100"):
         items.append({"id": row["id"], "type": "practice", "title": "Project practice " + ("completed" if row["status"] == "completed" else "started"), "occurred_at": row["completed_at"] or row["created_at"]})
     names = {"project-explanation": "Project explanation", "hr-behavioural": "HR & behavioural", "technical-fundamentals": "Technical fundamentals"}
     for row in conn.execute("SELECT id, studio_id, status, created_at, completed_at FROM career_sessions ORDER BY COALESCE(completed_at, created_at) DESC LIMIT 100"):
