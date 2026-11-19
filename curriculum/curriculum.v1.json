@@ -85,10 +85,12 @@
       "title": "English fluency",
       "description": "Express ideas in connected, understandable spoken or written language.",
       "outcomes": [
-        "Produce a short connected response"
+        "Give a short connected response with a clear beginning and ending",
+        "Retell a short update in the learner's own words",
+        "Describe a process and give a supported opinion"
       ],
       "category": "english",
-      "status": "planned"
+      "status": "active"
     },
     {
       "id": "english.listening",
@@ -105,30 +107,35 @@
       "title": "Pronunciation and sound awareness",
       "description": "Listen to and practise speech sounds with self-review.",
       "outcomes": [
-        "Use listen-and-repeat practice"
+        "Listen to a clear model phrase",
+        "Repeat at a comfortable pace",
+        "Use a private self-review checklist without an accuracy score"
       ],
       "category": "english",
-      "status": "planned"
+      "status": "active"
     },
     {
       "id": "communication.confidence",
       "title": "Communication confidence",
       "description": "Build familiarity through private, repeatable low-pressure practice.",
       "outcomes": [
-        "Complete a low-pressure practice activity"
+        "Complete private, repeatable speaking practice",
+        "Choose one aspect to practise again without receiving a confidence score"
       ],
       "category": "communication",
-      "status": "planned"
+      "status": "active"
     },
     {
       "id": "communication.professional",
       "title": "Professional communication",
       "description": "Communicate clearly and appropriately in study and work contexts.",
       "outcomes": [
-        "Use clear, specific professional wording"
+        "Give a concise study or project update",
+        "Ask and answer a relevant follow-up question",
+        "Use clear, appropriate wording in a team context"
       ],
       "category": "communication",
-      "status": "planned"
+      "status": "active"
     },
     {
       "id": "interview.readiness",
@@ -168,7 +175,7 @@
     {
       "id": "english-foundations",
       "title": "English foundations",
-      "description": "Build clear sentences and use grammar in everyday and study-related contexts.",
+      "description": "A practical English path covering clear sentences, grammar, useful vocabulary, listening, structured speaking, and private listen-and-repeat practice.",
       "goal": "english_fluency",
       "skill_ids": [
         "english.sentence-structure",
@@ -176,20 +183,31 @@
         "english.vocabulary-context",
         "english.fluency",
         "english.listening",
-        "english.pronunciation"
+        "english.pronunciation",
+        "communication.confidence",
+        "communication.professional"
       ],
       "lesson_ids": [
         "sentence-building",
+        "sentence-shaping",
         "grammar-in-context",
+        "question-formation",
         "vocabulary-in-context",
-        "listening-for-details"
+        "phrases-for-study",
+        "listening-for-details",
+        "listening-conversations",
+        "speaking-structured",
+        "speaking-opinions",
+        "pronunciation-self-review"
       ],
       "level_id": "foundation",
       "unit_ids": [
         "sentence-foundations",
         "grammar-practice",
         "vocabulary-practice",
-        "listening-practice"
+        "listening-practice",
+        "speaking-practice",
+        "pronunciation-practice"
       ]
     },
     {
@@ -844,6 +862,461 @@
           "guidance": "Use your own current ability. If you have not measured a result, say what you checked and what remains unknown. You may type or record a response."
         }
       ]
+    },
+    {
+      "id": "sentence-shaping",
+      "version": "1.0.0",
+      "track_id": "english-foundations",
+      "unit_id": "sentence-foundations",
+      "level_id": "foundation",
+      "title": "Shape a sentence for clarity",
+      "summary": "Expand, combine, shorten, and clarify sentences without changing the intended meaning.",
+      "estimated_minutes": 9,
+      "skill_ids": [
+        "english.sentence-structure"
+      ],
+      "prerequisites": [
+        "sentence-building"
+      ],
+      "learning_outcomes": [
+        "Add relevant detail to a basic sentence",
+        "Combine related ideas clearly",
+        "Shorten a sentence without losing its key meaning"
+      ],
+      "introduction": "A sentence can be expanded with useful detail, combined with a related idea, or shortened to remove repetition. Keep the main meaning intact. Prefer concrete information over extra words.",
+      "example": {
+        "label": "Example",
+        "before": "I made the app better by doing many things.",
+        "after": "I added form validation and tested three invalid inputs.",
+        "explanation": "The revision replaces a vague claim with a specific action and check."
+      },
+      "exercises": [
+        {
+          "id": "expand-sentence",
+          "type": "choice",
+          "prompt": "Which revision adds useful detail without changing the original fact? Original: “I tested the form.”",
+          "options": [
+            {
+              "id": "a",
+              "label": "I tested the form with three invalid email inputs."
+            },
+            {
+              "id": "b",
+              "label": "I tested the form perfectly and proved it has no bugs."
+            },
+            {
+              "id": "c",
+              "label": "I tested everything in the entire application."
+            }
+          ],
+          "answer": "a",
+          "explanation": "It adds a specific test detail. The other options make claims that the original sentence does not support."
+        },
+        {
+          "id": "combine-ideas",
+          "type": "ordering",
+          "prompt": "Arrange the parts into one clear sentence using “because”.",
+          "tokens": [
+            {
+              "id": "a",
+              "label": "The request was rejected"
+            },
+            {
+              "id": "b",
+              "label": "because"
+            },
+            {
+              "id": "c",
+              "label": "the email address was invalid"
+            }
+          ],
+          "answer": [
+            "a",
+            "b",
+            "c"
+          ],
+          "explanation": "The reason follows the result and is joined with “because”."
+        },
+        {
+          "id": "clarify-sentence",
+          "type": "short_response",
+          "prompt": "Rewrite this sentence to make it shorter and clearer without changing its meaning: “Due to the fact that the server was not responding, I was unable to access the page.”",
+          "placeholder": "Because…",
+          "guidance": "Keep the cause and result. A possible direction is to replace “due to the fact that” with “because”. This is self-review, not an automatic writing grade."
+        }
+      ]
+    },
+    {
+      "id": "question-formation",
+      "version": "1.0.0",
+      "track_id": "english-foundations",
+      "unit_id": "grammar-practice",
+      "level_id": "foundation",
+      "title": "Ask clear questions",
+      "summary": "Form useful yes/no and information questions for study, teamwork, and clarification.",
+      "estimated_minutes": 8,
+      "skill_ids": [
+        "english.grammar-in-context",
+        "communication.professional"
+      ],
+      "prerequisites": [
+        "grammar-in-context"
+      ],
+      "learning_outcomes": [
+        "Choose a clear question form",
+        "Use do, does, and did with the base verb",
+        "Ask a polite clarification question"
+      ],
+      "introduction": "Questions help you check meaning, ask for missing information, and keep a conversation moving. In many present-simple questions use do or does; for past questions use did and the base form of the main verb. Wh-words such as what, when, where, why, and how identify the information you need.",
+      "exercises": [
+        {
+          "id": "question-does",
+          "type": "choice",
+          "prompt": "Choose the correct question about a teammate's daily task.",
+          "options": [
+            {
+              "id": "a",
+              "label": "What does she work on each morning?"
+            },
+            {
+              "id": "b",
+              "label": "What she does work on each morning?"
+            },
+            {
+              "id": "c",
+              "label": "What do she works on each morning?"
+            }
+          ],
+          "answer": "a",
+          "explanation": "Use “does” with “she”, followed by the base verb “work”."
+        },
+        {
+          "id": "question-past",
+          "type": "choice",
+          "prompt": "Choose the correct question about yesterday's test.",
+          "options": [
+            {
+              "id": "a",
+              "label": "Where did you tested the API?"
+            },
+            {
+              "id": "b",
+              "label": "Where did you test the API?"
+            },
+            {
+              "id": "c",
+              "label": "Where you did test the API?"
+            }
+          ],
+          "answer": "b",
+          "explanation": "After “did”, use the base form “test”."
+        },
+        {
+          "id": "question-clarify",
+          "type": "short_response",
+          "prompt": "Write one polite question you could ask when a project requirement is unclear.",
+          "placeholder": "Could you clarify…?",
+          "guidance": "Ask about one specific missing detail. Keep the tone respectful and the question easy to answer."
+        }
+      ]
+    },
+    {
+      "id": "phrases-for-study",
+      "version": "1.0.0",
+      "track_id": "english-foundations",
+      "unit_id": "vocabulary-practice",
+      "level_id": "foundation",
+      "title": "Use useful study and project phrases",
+      "summary": "Learn collocations and practical phrases, then create an example from your own work.",
+      "estimated_minutes": 9,
+      "skill_ids": [
+        "english.vocabulary-context",
+        "communication.professional"
+      ],
+      "prerequisites": [
+        "vocabulary-in-context"
+      ],
+      "learning_outcomes": [
+        "Recognise common study and project collocations",
+        "Choose phrases that fit a professional context",
+        "Create and review a learner-authored example"
+      ],
+      "introduction": "Some English words commonly appear together. Learning a phrase as a unit can make communication more natural. Notice the situation, meaning, and grammar around the phrase. Adapt examples to work you have actually done.",
+      "exercises": [
+        {
+          "id": "phrase-collocation",
+          "type": "vocabulary",
+          "context": "You are describing how you checked a software feature before sharing it.",
+          "prompt": "Choose the natural collocation: “I ___ a series of tests before the demo.”",
+          "options": [
+            {
+              "id": "a",
+              "label": "carried out"
+            },
+            {
+              "id": "b",
+              "label": "did out"
+            },
+            {
+              "id": "c",
+              "label": "made out"
+            }
+          ],
+          "answer": "a",
+          "explanation": "“Carry out tests” is a natural collocation meaning to perform tests."
+        },
+        {
+          "id": "phrase-meaning",
+          "type": "vocabulary",
+          "context": "A teammate says, “I will look into the error and update you.”",
+          "prompt": "What does “look into the error” mean here?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Ignore the error"
+            },
+            {
+              "id": "b",
+              "label": "Investigate the error"
+            },
+            {
+              "id": "c",
+              "label": "Delete the error without checking"
+            }
+          ],
+          "answer": "b",
+          "explanation": "“Look into” means investigate or examine something to understand it."
+        },
+        {
+          "id": "phrase-own-example",
+          "type": "short_response",
+          "prompt": "Choose one phrase—“carry out a test”, “look into an issue”, or “make progress”—and write a true sentence about your studies or project.",
+          "placeholder": "I…",
+          "guidance": "Use the phrase naturally and keep the example factual. You can save a useful phrase later when the revision feature is available; this response remains part of this lesson attempt for now."
+        }
+      ]
+    },
+    {
+      "id": "listening-conversations",
+      "version": "1.0.0",
+      "track_id": "english-foundations",
+      "unit_id": "listening-practice",
+      "level_id": "foundation",
+      "title": "Follow a short conversation",
+      "summary": "Listen for the request, the response, and the next action in a brief team conversation.",
+      "estimated_minutes": 8,
+      "skill_ids": [
+        "english.listening",
+        "english.fluency"
+      ],
+      "prerequisites": [
+        "listening-for-details"
+      ],
+      "learning_outcomes": [
+        "Identify a speaker's request",
+        "Distinguish a response from a future action",
+        "Summarise the agreed next step"
+      ],
+      "introduction": "In a conversation, listen for who is speaking, what they need, and what happens next. Replay the message if useful. You can reveal the transcript at any time; the text alternative is equivalent learning content, not a penalty.",
+      "exercises": [
+        {
+          "id": "conversation-request",
+          "type": "listening",
+          "audio_text": "Riya: The search page works, but the results take too long to appear. Arjun: I will check the database query first. Riya: Great. Please share what you find before our afternoon review.",
+          "transcript": "Riya: The search page works, but the results take too long to appear. Arjun: I will check the database query first. Riya: Great. Please share what you find before our afternoon review.",
+          "prompt": "What does Riya ask Arjun to do before the review?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Rewrite the entire search page"
+            },
+            {
+              "id": "b",
+              "label": "Share what he finds after checking the query"
+            },
+            {
+              "id": "c",
+              "label": "Cancel the afternoon review"
+            }
+          ],
+          "answer": "b",
+          "explanation": "Arjun will check the query, then share what he finds before the afternoon review."
+        },
+        {
+          "id": "conversation-next-step",
+          "type": "listening",
+          "audio_text": "Meena: Have you finished the login tests? Dev: The valid-login cases pass. I still need to test expired passwords. Meena: Please add that result to the test notes when it is done.",
+          "transcript": "Meena: Have you finished the login tests? Dev: The valid-login cases pass. I still need to test expired passwords. Meena: Please add that result to the test notes when it is done.",
+          "prompt": "Which test is still pending?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Valid-login cases"
+            },
+            {
+              "id": "b",
+              "label": "Expired-password cases"
+            },
+            {
+              "id": "c",
+              "label": "All login tests are complete"
+            }
+          ],
+          "answer": "b",
+          "explanation": "Dev says valid-login cases pass, but expired-password testing remains."
+        },
+        {
+          "id": "conversation-summary",
+          "type": "short_response",
+          "prompt": "Summarise the agreed next action from either conversation in one or two sentences.",
+          "placeholder": "The next action is…",
+          "guidance": "Mention the person, action, and timing if the audio provides them. Reveal the transcript if you need the text alternative."
+        }
+      ]
+    },
+    {
+      "id": "speaking-structured",
+      "version": "1.0.0",
+      "track_id": "english-foundations",
+      "unit_id": "speaking-practice",
+      "level_id": "foundation",
+      "title": "Give a clear short response",
+      "summary": "Practise describing a task, explaining a process, and retelling a short update in your own words.",
+      "estimated_minutes": 10,
+      "skill_ids": [
+        "english.fluency",
+        "communication.confidence",
+        "communication.professional"
+      ],
+      "prerequisites": [
+        "sentence-shaping"
+      ],
+      "learning_outcomes": [
+        "Describe a task with context and action",
+        "Explain a simple process in order",
+        "Retell a short update in the learner's own words"
+      ],
+      "introduction": "A clear spoken response can use three simple parts: context, action, and detail. You do not need complicated vocabulary. Speak at a comfortable pace, pause between ideas, and use the optional recording only if you want to review a transcript. Prepped does not grade fluency or confidence.",
+      "exercises": [
+        {
+          "id": "speaking-description",
+          "type": "short_response",
+          "prompt": "Describe a task you completed recently. Include the context, what you did, and one specific detail.",
+          "placeholder": "I was working on… I… One detail is…",
+          "guidance": "You may type or record. Keep the response to three or four sentences. Use only details that are true for you."
+        },
+        {
+          "id": "speaking-process",
+          "type": "short_response",
+          "prompt": "Explain a simple process you know—for example, how you test a form or prepare for a class. Describe the steps in order.",
+          "placeholder": "First… Then… Finally…",
+          "guidance": "Use sequence words such as first, then, after that, and finally. A listener should be able to follow the steps."
+        },
+        {
+          "id": "speaking-retell",
+          "type": "short_response",
+          "prompt": "Retell this update in your own words: “The first version is ready. The team found two issues during testing. We will fix them before sharing the next version.”",
+          "placeholder": "The update says…",
+          "guidance": "Keep the three facts: first version ready, two issues found, fixes planned before sharing. Do not add an outcome that was not stated."
+        }
+      ]
+    },
+    {
+      "id": "speaking-opinions",
+      "version": "1.0.0",
+      "track_id": "english-foundations",
+      "unit_id": "speaking-practice",
+      "level_id": "foundation",
+      "title": "Express an opinion and handle a follow-up",
+      "summary": "Practise giving a reason, an example, and a relevant response to a follow-up question.",
+      "estimated_minutes": 9,
+      "skill_ids": [
+        "english.fluency",
+        "communication.confidence",
+        "communication.professional"
+      ],
+      "prerequisites": [
+        "speaking-structured"
+      ],
+      "learning_outcomes": [
+        "State an opinion and support it with a reason",
+        "Add a relevant example",
+        "Respond to a follow-up without changing the original point"
+      ],
+      "introduction": "A useful opinion response states your view, gives a reason, and adds an example. A follow-up may ask you to explain a choice or consider another option. It is fine to pause and clarify the question before answering.",
+      "exercises": [
+        {
+          "id": "opinion-response",
+          "type": "short_response",
+          "prompt": "Which is more useful when learning a new programming tool: reading documentation first or trying a small example first? Give your opinion and one reason.",
+          "placeholder": "I think… because… For example…",
+          "guidance": "There is no single correct opinion. State your preference and support it with a relevant reason or example."
+        },
+        {
+          "id": "opinion-followup",
+          "type": "short_response",
+          "prompt": "Follow-up: Someone prefers the other approach. How would you acknowledge their view and explain when it might be useful?",
+          "placeholder": "That approach can be useful when… I prefer… because…",
+          "guidance": "Acknowledge the alternative fairly. Explain a situation where it helps, then restate your own reason without dismissing the other person."
+        },
+        {
+          "id": "clarification-request",
+          "type": "short_response",
+          "prompt": "Write a polite sentence you could use if you did not understand a follow-up question.",
+          "placeholder": "Could you please rephrase…?",
+          "guidance": "Ask for clarification directly and respectfully. You are practising a communication strategy, not being graded."
+        }
+      ]
+    },
+    {
+      "id": "pronunciation-self-review",
+      "version": "1.0.0",
+      "track_id": "english-foundations",
+      "unit_id": "pronunciation-practice",
+      "level_id": "foundation",
+      "title": "Listen, repeat, and self-review",
+      "summary": "Practise a model phrase at a comfortable pace and review what you can hear clearly.",
+      "estimated_minutes": 7,
+      "skill_ids": [
+        "english.pronunciation",
+        "english.fluency"
+      ],
+      "prerequisites": [
+        "speaking-structured"
+      ],
+      "learning_outcomes": [
+        "Listen to a model phrase and use the text alternative",
+        "Repeat a short phrase at a comfortable pace",
+        "Choose one self-review focus without receiving an automated pronunciation score"
+      ],
+      "introduction": "Listen to the model phrase, then repeat it at a comfortable pace. You may record a spoken version if you want a transcript to edit, but speech recognition can make mistakes. Compare your attempt with the written phrase and choose one small thing to practise. Prepped does not calculate pronunciation, accent, phoneme, or fluency scores.",
+      "exercises": [
+        {
+          "id": "repeat-project-update",
+          "type": "pronunciation",
+          "audio_text": "I tested the application, corrected the error, and explained the result to my teammate.",
+          "transcript": "I tested the application, corrected the error, and explained the result to my teammate.",
+          "prompt": "Listen to the phrase, then repeat it once or twice at a comfortable pace. Focus on finishing each word clearly.",
+          "placeholder": "Optional note about your attempt…",
+          "guidance": "Use Play spoken message, then repeat the phrase. You can record and edit a transcript or simply practise privately. Notice word endings and pauses; do not try to imitate an accent or force a faster pace."
+        },
+        {
+          "id": "repeat-clarification",
+          "type": "pronunciation",
+          "audio_text": "Could you explain that step again, please?",
+          "transcript": "Could you explain that step again, please?",
+          "prompt": "Listen and repeat this polite clarification question. Try pausing naturally before “please”.",
+          "placeholder": "Optional note about your attempt…",
+          "guidance": "Listen, repeat, and compare with the text. Choose one thing to practise again, such as a comfortable pace or a clear final word. No pronunciation score is produced."
+        },
+        {
+          "id": "pronunciation-self-review",
+          "type": "reflection",
+          "prompt": "What one part of the phrase would you like to practise again: pace, pauses, word endings, or a particular word?",
+          "placeholder": "I would like to practise…",
+          "guidance": "This is a private self-review choice. It is not an assessment of your accent, pronunciation accuracy, or confidence."
+        }
+      ]
     }
   ],
   "levels": [
@@ -857,49 +1330,53 @@
     {
       "id": "sentence-foundations",
       "title": "Sentence foundations",
-      "description": "Build and order complete sentences.",
+      "description": "Build, expand, combine, shorten, and clarify complete sentences.",
       "level_id": "foundation",
       "track_ids": [
         "english-foundations"
       ],
       "lesson_ids": [
-        "sentence-building"
+        "sentence-building",
+        "sentence-shaping"
       ]
     },
     {
       "id": "grammar-practice",
       "title": "Grammar in context",
-      "description": "Apply grammar choices in complete sentences.",
+      "description": "Use verb tense, articles, prepositions, and question forms in context.",
       "level_id": "foundation",
       "track_ids": [
         "english-foundations"
       ],
       "lesson_ids": [
-        "grammar-in-context"
+        "grammar-in-context",
+        "question-formation"
       ]
     },
     {
       "id": "vocabulary-practice",
       "title": "Vocabulary in context",
-      "description": "Choose precise words for study and project contexts.",
+      "description": "Learn precise words, useful collocations, definitions, and phrases in study contexts.",
       "level_id": "foundation",
       "track_ids": [
         "english-foundations"
       ],
       "lesson_ids": [
-        "vocabulary-in-context"
+        "vocabulary-in-context",
+        "phrases-for-study"
       ]
     },
     {
       "id": "listening-practice",
       "title": "Listening for details",
-      "description": "Identify completed tasks and future plans in short speech.",
+      "description": "Follow short spoken updates and conversations using replay and accessible text alternatives.",
       "level_id": "foundation",
       "track_ids": [
         "english-foundations"
       ],
       "lesson_ids": [
-        "listening-for-details"
+        "listening-for-details",
+        "listening-conversations"
       ]
     },
     {
@@ -938,6 +1415,31 @@
       ],
       "lesson_ids": [
         "baseline-check"
+      ]
+    },
+    {
+      "id": "speaking-practice",
+      "title": "Speaking with structure",
+      "description": "Practise short descriptions, explanations, retelling, opinions, and follow-up responses.",
+      "level_id": "foundation",
+      "track_ids": [
+        "english-foundations"
+      ],
+      "lesson_ids": [
+        "speaking-structured",
+        "speaking-opinions"
+      ]
+    },
+    {
+      "id": "pronunciation-practice",
+      "title": "Listen, repeat, and self-review",
+      "description": "Practise clear model phrases at a comfortable pace and reflect on what is easy to understand. No pronunciation score is generated.",
+      "level_id": "foundation",
+      "track_ids": [
+        "english-foundations"
+      ],
+      "lesson_ids": [
+        "pronunciation-self-review"
       ]
     }
   ]
