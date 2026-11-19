@@ -64,7 +64,7 @@ footer { border-top:1px solid var(--line); border-bottom:0; color:var(--muted); 
 .learning-card.compact { display:flex; flex-direction:column; align-items:flex-start; }
 .learning-track-list { display:grid; gap:1rem; }
 .learning-track .learning-card-list { margin-top:.8rem; }
-.learning-progress { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.7rem; margin:.8rem 0; }
+.learning-progress { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:.7rem; margin:.8rem 0; }
 .learning-progress-item { border:1px solid var(--line); border-radius:8px; padding:.85rem; display:grid; gap:.2rem; }
 .learning-progress-item strong { font-size:1.35rem; font-variant-numeric:tabular-nums; }
 .learning-progress-item span { color:var(--muted); font-size:.8rem; }
