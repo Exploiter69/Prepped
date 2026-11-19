@@ -237,6 +237,9 @@
   $("#memory-refresh").addEventListener("click", load);
   document.addEventListener("prepped:memory-save", (event) => {
     const detail = event.detail || {};
+    if ($("#learning-view")?.classList.contains("hidden")) {
+      $("#learning-toggle")?.click();
+    }
     resetForm();
     $("#memory-type").value = detail.item_type || "correction";
     $("#memory-front").value = detail.front || "";
