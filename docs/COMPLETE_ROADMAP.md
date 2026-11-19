@@ -475,8 +475,8 @@ Automated API and Chromium tests have been added. This update is implementation 
 Phase D has been implemented on `feature/learner-profile`; automated and target-laptop acceptance must pass before the phase is called complete.
 
 - Learners can create words, phrases, corrections, concepts, and examples manually.
-- Lesson feedback includes a **Save a learning note** action. It opens an editable prefilled form and never saves automatically.
-- Saved items retain source lesson metadata and a short excerpt where available.
+- Lesson and project-practice feedback include a **Save a learning note** action. It opens an editable prefilled form and never saves automatically.
+- Saved items retain source lesson or project-practice metadata, original response/evidence, and a short excerpt where available.
 - Items can be edited, suspended, resumed, dismissed/restored, or permanently deleted. Dismissal preserves the card and its history but removes it from active review; delete cascades to review history.
 - Duplicate attempts identify the existing item and open it for editing rather than overwriting it.
 - Duplicate detection normalises Unicode, case, and whitespace within each item type and returns the existing item identifier instead of overwriting it.
