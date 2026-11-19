@@ -8,12 +8,12 @@
 ## Foundation acceptance — automated checks and CI passing
 
 - GitHub Actions now runs on `feature/**`, including this working branch, and on pull requests targeting `main` or `feature/learner-profile`.
-- The workflow performs a clean checkout, installs `.[dev]`, compiles Python modules, checks both browser JavaScript files, and runs pytest.
-- Latest recorded run: [GitHub Actions run 44533711713](https://github.com/Exploiter69/Prepped/actions/runs/44533711713) — **41 passed, 2 skipped, 1 warning**. Both skips are voice tests requiring `espeak-ng`, which is not installed on the hosted runner. The warning is Starlette's deprecation notice for the httpx-backed TestClient.
+- The workflow performs a clean checkout, installs `.[dev,browser-test]`, compiles Python modules, checks both browser JavaScript files, installs Chromium, and runs pytest including the Playwright browser journeys.
+- Latest recorded run: [GitHub Actions run 44534499386](https://github.com/Exploiter69/Prepped/actions/runs/44534499386) — **41 passed, 2 skipped, 1 warning**. Both skips are voice tests requiring `espeak-ng`, which is not installed on the hosted runner. The warning is Starlette's deprecation notice for the httpx-backed TestClient.
 - A repeatable [Foundation Acceptance Checklist](ACCEPTANCE_CHECKLIST.md) now covers profile setup/edit/cancel/save/reload, existing text practice, optional voice acceptance, and data preservation. Playwright/Chromium browser tests now exercise profile open, save, edit, cancel, reload and persistence, plus the complete text-only practice flow without a profile. These tests passed in CI. The target-laptop browser and voice/microphone checks remain separate manual acceptance.
-- Real browser profile clicks and target-machine microphone/TTS acceptance remain manual gates. Automated CI does not establish those results.
+- Headless Chromium confirms the profile and text-practice interactions in CI. A manual spot check on the target Omarchy laptop and microphone/STT/TTS acceptance remain outstanding; CI does not establish hardware or device acceptance.
 
-## Learner workspace — profile implemented; browser acceptance pending
+## Learner workspace — profile implemented; automated browser acceptance passing
 
 The `feature/learner-profile` branch now contains:
 - `docs/PRODUCT_ROADMAP.md` defining the full product modules, delivery sequence, architecture constraints, and quality gates.
@@ -23,7 +23,7 @@ The `feature/learner-profile` branch now contains:
 - Profile setup/edit UI with optional name, study year, branch, target role, primary goal, confidence, and improvement areas. Profile setup can be skipped; the existing practice flow is not gated.
 - `tests/test_profile.py` covering initial state, save/read, updates, restart persistence, invalid input, and legacy session/answer preservation.
 
-**Validation status:** The user previously ran the full suite after syncing the profile feature: 40 passed, 1 warning; Python compilation and JavaScript syntax checks passed at that point. A subsequent profile-toggle fix and cache-busting update have since been pushed. The user confirmed the current server serves the updated JavaScript and profile API, and the DOM contains the expected button/form, but the actual click interaction has not yet been confirmed. Re-run checks against the latest commit and complete browser acceptance before marking the profile milestone fully accepted.
+**Validation status:** The latest GitHub Actions run completed successfully: 41 passed, 2 skipped, 1 warning. The two skips require `espeak-ng`, unavailable on the hosted runner. Playwright/Chromium exercised profile setup, open/close, save, edit, cancel, reload/persistence, and the full text-only practice flow without a profile. The profile milestone has automated browser acceptance; a target-laptop manual spot check is still outstanding.
 
 ## What this milestone is
 
