@@ -105,6 +105,8 @@ def test_lesson_attempt_enforces_order_persists_feedback_and_updates_progress(tm
         assert progress["lessons_completed"] == 1
         assert progress["attempts_started"] == 1
         assert progress["learning_events"] == 5
+        assert "sentence-building" in progress["completed_lesson_ids"]
+        assert any(skill["status"] == "planned" for skill in progress["skills"])
         assert "not proficiency levels" in progress["note"]
 
     with TestClient(create_app(db_path=db)) as restarted:
@@ -268,3 +270,24 @@ def test_curriculum_rejects_prerequisite_cycles(tmp_path: Path) -> None:
         assert "prerequisite cycle" in str(exc)
     else:
         raise AssertionError("Prerequisite cycle was accepted")
+
+
+def test_learning_migration_adds_lesson_snapshot_to_existing_phase_b_database(tmp_path: Path) -> None:
+    import sqlite3
+    from prepped.database import initialize_database
+
+    db = tmp_path / "previous-phase-b.sqlite3"
+    connection = sqlite3.connect(db)
+    connection.execute("""CREATE TABLE learning_attempts (
+        id TEXT PRIMARY KEY, lesson_id TEXT NOT NULL, lesson_version TEXT NOT NULL,
+        track_id TEXT NOT NULL, status TEXT NOT NULL, responses_json TEXT NOT NULL DEFAULT '[]',
+        feedback_json TEXT, started_at TEXT NOT NULL, completed_at TEXT
+    )""")
+    connection.commit()
+    connection.close()
+
+    initialize_database(db)
+    connection = sqlite3.connect(db)
+    columns = {row[1] for row in connection.execute("PRAGMA table_info(learning_attempts)")}
+    assert "lesson_json" in columns
+    connection.close()
