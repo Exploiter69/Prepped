@@ -87,7 +87,7 @@ def _next_interval(repetitions: int, interval_days: int, rating: Rating) -> tupl
     if rating == "easy":
         if repetitions == 0:
             return 1, 3
-        return repetitions + 1, min(MAX_INTERVAL_DAYS, max(2, round(max(interval_days, 1) * 2.5)))
+        return repetitions + 1, min(MAX_INTERVAL_DAYS, max(2, int(max(interval_days, 1) * 2.5 + 0.5)))
     if repetitions == 0:
         return 1, 1
     if repetitions == 1:
