@@ -387,6 +387,7 @@ def test_pronunciation_attempt_is_private_self_review_not_an_accuracy_score(tmp_
         for exercise_id, answer in [
             ("past-tense", "b"), ("preposition", "a"),
             ("grammar-review", "Yesterday, I tested the form."),
+            ("articles-in-context", "a"), ("future-plan", "b"),
         ]:
             assert client.post(f"/api/learning/attempts/{grammar['id']}/responses",
                                json={"exercise_id": exercise_id, "answer": answer}).status_code == 200
@@ -403,6 +404,7 @@ def test_pronunciation_attempt_is_private_self_review_not_an_accuracy_score(tmp_
         for exercise_id, answer in [
             ("speaking-description", "I worked on a form and added input validation."),
             ("speaking-process", "First I opened the form, then I checked the inputs."),
+            ("speaking-explanation", "I checked the form with invalid inputs and observed the validation message."),
             ("speaking-retell", "The first version is ready, two issues were found, and fixes are planned."),
         ]:
             assert client.post(f"/api/learning/attempts/{speaking['id']}/responses",
@@ -439,6 +441,7 @@ def test_question_vocabulary_and_listening_content_have_authored_answer_handling
         for exercise_id, answer in [
             ("past-tense", "b"), ("preposition", "a"),
             ("grammar-review", "Yesterday, I tested the form."),
+            ("articles-in-context", "a"), ("future-plan", "b"),
         ]:
             client.post(f"/api/learning/attempts/{grammar['id']}/responses",
                         json={"exercise_id": exercise_id, "answer": answer})
