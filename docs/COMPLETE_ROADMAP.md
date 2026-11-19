@@ -59,7 +59,7 @@ The first proof is this loop working locally with voice, not an avatar, dashboar
 
 ### Foundation acceptance update (2026-11-19)
 
-The feature branch now has GitHub Actions coverage for pushes to `feature/**`. The latest clean-run result is 41 passed and 2 skipped (both require `espeak-ng`, unavailable on the hosted runner), with one Starlette/httpx TestClient deprecation warning. Playwright/Chromium browser tests passed for profile setup/edit/cancel/save/reload and the full text-only practice journey. The [Foundation Acceptance Checklist](ACCEPTANCE_CHECKLIST.md) records the remaining target-laptop and optional voice checks. Do not treat headless CI as microphone or device acceptance.
+The feature branch now has GitHub Actions coverage for pushes to `feature/**`. The [latest clean-run result](https://github.com/Exploiter69/Prepped/actions/runs/44534499386) is 41 passed and 2 skipped (both require `espeak-ng`, unavailable on the hosted runner), with one Starlette/httpx TestClient deprecation warning. Playwright/Chromium browser tests passed for profile setup/edit/cancel/save/reload and the full text-only practice journey. The [Foundation Acceptance Checklist](ACCEPTANCE_CHECKLIST.md) records the remaining target-laptop and optional voice checks. Do not treat headless CI as microphone or device acceptance.
 
 ### Product development and user validation are separate
 
