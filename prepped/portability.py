@@ -159,9 +159,14 @@ def create_portability_router(db_path: Path) -> APIRouter:
                     integrity = staged.execute("PRAGMA integrity_check").fetchone()[0]
                     if integrity != "ok":
                         raise ValueError("Restored database failed its SQLite integrity check.")
-                with sqlite3.connect(staged_path) as source, sqlite3.connect(target_path) as destination:
+                source = sqlite3.connect(staged_path)
+                destination = sqlite3.connect(target_path)
+                try:
                     source.backup(destination)
                     destination.commit()
+                finally:
+                    destination.close()
+                    source.close()
         except HTTPException:
             raise
         except (sqlite3.Error, ValueError, KeyError, TypeError) as exc:
