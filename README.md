@@ -187,7 +187,7 @@ The Progress workspace combines saved lesson completions and linked skill eviden
 
 Learners can create, edit, archive, restore, and delete goals for completed lessons, project-practice sessions, interviews, and memory reviews. Goal counts begin when the goal is created. Recommendations explain whether they are based on a saved profile route, an unfinished lesson, due memory notes, or an active goal.
 
-The same workspace can export a local JSON backup and restore it after explicit confirmation. It includes the learner profile, practice answers, lesson attempts/events, memory notes/reviews, interview sessions/turns, and goals. Restore is a full replacement, not a merge; the app validates the backup in a temporary database before replacing current data. Backups are unencrypted and contain personal content; keep them private. Current limit: 25 MiB / 200,000 records, backup/schema version 1.
+The same workspace can export a local JSON backup and restore it after explicit confirmation. It includes the learner profile, practice answers, lesson attempts/events, memory notes/reviews, interview sessions/turns, and goals. Restore is a full replacement, not a merge; the app validates the backup in a temporary database before replacing current data. Backups are unencrypted and contain personal content; keep them private. Current limit: 25 MiB / 200,000 records, backup format version 1 and database schema version 2.
 
 The app is designed for single-user loopback use. Run it on 127.0.0.1 only; it has no authentication or multi-user isolation and must not be exposed to a LAN or public internet. See [the release hardening record](docs/RELEASE_HARDENING.md) and [the clean install/recovery guide](docs/INSTALL.md).
 
