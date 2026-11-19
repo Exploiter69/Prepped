@@ -227,3 +227,33 @@ def test_listening_lesson_has_playback_and_revealed_text_alternative(local_app_u
     assert transcript.is_visible()
     assert "input validation" in transcript.inner_text().lower()
     assert "text alternative" in page.locator(".learning-listening-controls").inner_text().lower()
+
+
+def test_baseline_check_records_responses_without_a_proficiency_score(local_app_url: str, browser_page) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+    page.locator("#learning-toggle").click()
+    page.locator("#learning-diagnostic-start").click()
+    assert "Record your starting point" in page.locator("#learning-runner-title").inner_text()
+
+    page.locator('input[name="learning-choice"][value="b"]').check()
+    page.locator("#learning-submit").click()
+    for position, token in enumerate(["a", "b", "c"]):
+        page.locator(".learning-order-select").nth(position).select_option(token)
+    page.locator("#learning-submit").click()
+    page.get_by_role("button", name="Show text alternative").click()
+    page.locator('input[name="learning-choice"][value="c"]').check()
+    page.locator("#learning-submit").click()
+    page.locator("#learning-reflection").fill("I built a small task tracker and checked the form with test inputs.")
+    page.locator("#learning-submit").click()
+
+    page.wait_for_function(
+        "() => document.querySelector('#learning-diagnostic-status').textContent.includes('Completed')"
+    )
+    feedback = page.locator("#learning-feedback").inner_text().lower()
+    assert "not automatically graded" in feedback
+    assert "score" not in feedback
+    assert "Baseline checks completed" in page.locator("#learning-progress").inner_text()
+    assert page.locator("#learning-diagnostic-history button").count() == 1
+    page.locator("#learning-diagnostic-history button").click()
+    assert "Record your starting point" in page.locator("#learning-runner-title").inner_text()
