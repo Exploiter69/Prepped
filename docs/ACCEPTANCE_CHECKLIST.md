@@ -132,6 +132,13 @@ These checks complement API and Chromium automation. Record the date, browser, d
 - [ ] Select grammar, vocabulary, and speaking-fluency focus areas; confirm the route explains the matching lessons. Confirm unsupported areas are disclosed as not yet covered.
 - [ ] Confirm prerequisite lessons are disabled until the required lesson is completed; retry remains available after completion.
 
+### Low-stakes starting point check
+
+- [ ] Start the optional Starting point check and complete sentence, ordering, listening, and project-response tasks.
+- [ ] Confirm it records the responses without displaying a total score, proficiency level, CEFR label, or placement prediction.
+- [ ] Repeat the check and confirm both attempts remain available in saved diagnostic history for later comparison.
+- [ ] Confirm diagnostic completions are counted separately and do not inflate normal lesson or skill completion.
+
 ### Lesson runner and persistence
 
 - [ ] Complete a choice exercise and confirm the selected answer, correct answer, and authored explanation are shown.
