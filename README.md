@@ -9,6 +9,7 @@ This repository does **not** claim validated speech accuracy, placement improvem
 ## Start here
 
 - [Current implementation and verification status](docs/CURRENT_STATE.md)
+- [Foundation browser and data acceptance checklist](docs/ACCEPTANCE_CHECKLIST.md)
 - [Voice setup, privacy, and troubleshooting](docs/VOICE.md)
 - [ADR-002: local voice slice](docs/ADR-002-LOCAL-VOICE-SLICE.md)
 - [ADR-003: optional Groq Whisper transcription](docs/ADR-003-GROQ-WHISPER-TRANSCRIPTION.md)
