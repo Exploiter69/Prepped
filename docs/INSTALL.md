@@ -74,7 +74,7 @@ The browser-test extra and Chromium are needed for the Playwright tests. GitHub 
 2. Choose **Download local backup**.
 3. Keep the downloaded JSON file somewhere private and separate from the repository.
 
-The backup contains the local profile, practice sessions and answers, lesson attempts and events, learning-memory items and review history, career sessions and turns, and learner goals. It does not contain environment variables, API keys, speech models, or application source code.
+The backup contains the local profile, practice sessions and answers, lesson attempts and events, learning-memory items and review history, career sessions and turns, learner goals, and dismissed recommendation preferences. It does not contain environment variables, API keys, speech models, or application source code.
 
 Backups contain personal text. They are unencrypted JSON; protect them as you would protect your private notes. Do not upload them to public repositories, paste them into public issue trackers, or share them with other people unless you intentionally want to disclose the contents.
 
@@ -87,7 +87,7 @@ Backups contain personal text. They are unencrypted JSON; protect them as you wo
 
 Restore replaces all current local learner data with the backup. It is not a merge. Prepped validates the format, schema version, table/column set, record types, SQLite constraints, and foreign-key relationships in a temporary database before replacing the active database. A failed validation leaves the current database untouched.
 
-The current backup format version is 1 and database schema version is 2. A backup from a future or incompatible schema is rejected rather than guessed or partially imported. Keep a copy of the original file before attempting migration between future releases.
+The current backup format version is 1 and database schema version is 3. A backup from a future or incompatible schema is rejected rather than guessed or partially imported. Keep a copy of the original file before attempting migration between future releases.
 
 ## Supported environment and boundaries
 
