@@ -1072,7 +1072,7 @@
     },
     {
       "id": "phrases-for-study",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "track_id": "english-foundations",
       "unit_id": "vocabulary-practice",
       "level_id": "foundation",
@@ -1248,7 +1248,7 @@
     },
     {
       "id": "speaking-structured",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "track_id": "english-foundations",
       "unit_id": "speaking-practice",
       "level_id": "foundation",
