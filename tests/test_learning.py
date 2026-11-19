@@ -297,3 +297,40 @@ def test_learning_migration_adds_lesson_snapshot_to_existing_phase_b_database(tm
     columns = {row[1] for row in connection.execute("PRAGMA table_info(learning_attempts)")}
     assert "lesson_json" in columns
     connection.close()
+
+
+def test_baseline_diagnostic_records_observable_tasks_without_level_or_score(tmp_path: Path) -> None:
+    with client_for(tmp_path) as client:
+        before = client.get("/api/learning/diagnostic/latest").json()
+        assert before["configured"] is True
+        assert before["latest"] is None
+
+        started = client.post("/api/learning/attempts", json={"lesson_id": "baseline-check"})
+        assert started.status_code == 201
+        attempt = started.json()
+        assert attempt["lesson"]["kind"] == "diagnostic"
+        assert attempt["current_exercise"]["id"] == "baseline-sentence"
+
+        for exercise_id, answer in [
+            ("baseline-sentence", "b"),
+            ("baseline-summary-order", ["a", "b", "c"]),
+            ("baseline-listening", "c"),
+            ("baseline-project-response", "I built a small library app and tested the search form."),
+        ]:
+            result = client.post(f"/api/learning/attempts/{attempt['id']}/responses",
+                                 json={"exercise_id": exercise_id, "answer": answer})
+            assert result.status_code == 200
+
+        completed = client.get(f"/api/learning/attempts/{attempt['id']}").json()
+        assert completed["status"] == "completed"
+        assert completed["next_lesson"] is None
+        assert all("score" not in item for item in completed["feedback"])
+        latest = client.get("/api/learning/diagnostic/latest").json()
+        assert latest["latest"]["id"] == attempt["id"]
+        assert latest["latest"]["status"] == "completed"
+        progress = client.get("/api/learning/progress").json()
+        assert progress["diagnostics_completed"] == 1
+        assert progress["diagnostic_attempts_started"] == 1
+        assert progress["lessons_completed"] == 0
+        assert all(skill["completed_lessons"] == 0 for skill in progress["skills"])
+        assert "No proficiency level" in latest["note"]
