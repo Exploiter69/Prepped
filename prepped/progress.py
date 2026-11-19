@@ -61,9 +61,17 @@ class RecommendationDismissPayload(BaseModel):
     title: str = Field(min_length=1, max_length=160)
     reason: str = Field(default="", max_length=500)
 
-    @field_validator("target_id", "title", "reason")
+    @field_validator("target_id", "title")
     @classmethod
-    def clean_recommendation_text(cls, value: str) -> str:
+    def clean_required_recommendation_text(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("Recommendation text cannot be blank.")
+        return value
+
+    @field_validator("reason")
+    @classmethod
+    def clean_recommendation_reason(cls, value: str) -> str:
         return value.strip()
 
 
