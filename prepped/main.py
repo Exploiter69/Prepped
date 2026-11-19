@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field
 from prepped.database import connect_database, initialize_database
 from prepped.feedback import build_feedback
 from prepped.profile import create_profile_router
+from prepped.learning import DEFAULT_CURRICULUM_PATH, create_learning_router, load_curriculum
 from prepped.scenarios import DEFAULT_SCENARIO_PATH, ScenarioValidationError, load_scenario
 from prepped.voice import VoiceService, build_voice_service
 from prepped.voice.routes import create_voice_router
@@ -88,12 +89,14 @@ def create_app(
     db_path: Path = DEFAULT_DB_PATH,
     scenario_path: Path = DEFAULT_SCENARIO_PATH,
     voice_service: VoiceService | None = None,
+    curriculum_path: Path = DEFAULT_CURRICULUM_PATH,
 ) -> FastAPI:
     """Build an app with injectable local paths and voice engines for tests."""
 
     @asynccontextmanager
     async def lifespan(_: FastAPI):
         initialize_database(Path(db_path))
+        load_curriculum(Path(curriculum_path))
         yield
 
     application = FastAPI(
@@ -105,6 +108,7 @@ def create_app(
     application.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")
     application.include_router(create_voice_router(voice_service or build_voice_service()))
     application.include_router(create_profile_router(Path(db_path)))
+    application.include_router(create_learning_router(Path(db_path), Path(curriculum_path)))
 
     @application.get("/", include_in_schema=False)
     def home() -> FileResponse:
