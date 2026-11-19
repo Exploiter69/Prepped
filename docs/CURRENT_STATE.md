@@ -3,7 +3,7 @@
 **Updated:** 2026-11-19<br>
 **Source of truth:** GitHub `feature/learner-profile` (working branch; `main` remains the last synced baseline)<br>
 **Product direction:** Voice-first, personalised practice and learning platform for Indian engineering students. The text practice loop is a reliable fallback and is frozen for feature development except material bugs.<br>
-**Engineering stage:** Phase B Learning Engine starter slice added; automated validation is being corrected/confirmed. Voice has optional Groq Whisper and offline Vosk adapters; real browser/microphone and live-provider quality acceptance remain.
+**Engineering stage:** Phase B Learning Engine and Phase C English/Communication curriculum implementations are on the working branch; the latest automated validation must pass before those milestones are called automated-tested. Target-laptop browser, microphone, and live-provider acceptance remain.
 
 ## Foundation acceptance — automated checks and CI passing
 
@@ -175,11 +175,11 @@ Prepped is a practice prototype, not an official assessment, hiring decision, pl
 
 Prepped is **not yet a complete or market-ready learning platform**. It is a local practice application with one project-explanation scenario, a voice record/stop slice, session history, formative heuristic feedback, and a learner profile.
 
-The learner profile currently stores preferences such as goal, study year, branch, confidence and focus areas. It does not yet drive adaptive lessons, a skill curriculum, or personalised recommendations. A profile summary such as “English fluency · Year 2 · CSE” is a display of saved preferences, not proof that the learning experience is personalised.
+The learner profile stores preferences such as goal, study year, branch, confidence, and focus areas. The goal and focus areas now select an explainable starter route through the Learning Engine and English curriculum. They do not infer ability, adapt difficulty, or certify proficiency.
 
 ### Not implemented yet
 
-- Broader English curriculum beyond the current starter lessons; a complete pronunciation learning flow and any validated pronunciation scoring.
+
 
 - Learner-controlled vocabulary/correction memory and spaced revision.
 - HR, behavioural and technical interview studios with multi-turn follow-ups.
@@ -193,7 +193,7 @@ Follow [PRODUCT_ROADMAP.md](PRODUCT_ROADMAP.md) and [COMPLETE_ROADMAP.md](COMPLE
 
 1. **Foundation acceptance:** verify profile setup/edit/save/reload and the existing practice/voice flows in a real browser; rerun automated checks and CI.
 2. **Learning Engine:** complete automated and target-device acceptance of the implemented skill taxonomy, versioned JSON curriculum, reusable lesson runner, exercise types, progress events and profile-driven starter paths.
-3. **English & communication studio:** grammar, sentence construction, vocabulary, speaking fluency, listening and safe listen/repeat pronunciation activities.
+3. **English & communication studio:** implementation is on the branch; complete CI and target-laptop acceptance before closing Phase C.
 4. **Personal learning memory:** learner-approved words, phrases, corrections and review cards with a transparent local scheduler.
 5. **Career & interview studios:** project, HR/behavioural and technical tracks using shared scenario infrastructure.
 6. **Progress & portability:** skill evidence, goals, explainable recommendations, export, backup and restore.
@@ -211,19 +211,41 @@ A visible screen or saved profile is not a complete feature. Each module must ha
 
 The feature/learner-profile branch now includes the first Phase B implementation:
 
-- Versioned local curriculum manifest at curriculum/curriculum.v1.json: 14 stable skills, one foundation level, seven units, four tracks, six lessons plus one diagnostic check, explicit learning outcomes, lesson prerequisites, examples, and six exercise formats (choice, ordering, vocabulary, listening, short response, reflection).
+- Versioned local curriculum manifest at curriculum/curriculum.v1.json: 14 stable skills, one foundation level, nine units, four tracks, 13 authored lessons plus one diagnostic check, explicit learning outcomes, lesson prerequisites, examples, and seven exercise formats (choice, ordering, vocabulary, listening, short response, reflection, pronunciation).
 - Curriculum validation for unique IDs, supported exercise types, answer/token integrity, and skill/track/lesson references. Invalid curriculum fails application startup rather than silently serving partial content.
 - Reusable learning API: GET /api/learning/catalog (skill map, tracks, lessons, and profile-based route); GET /api/learning/recommendations; POST /api/learning/attempts; GET /api/learning/attempts/{id}; POST /api/learning/attempts/{id}/responses; and GET /api/learning/progress; GET /api/learning/diagnostic/latest (repeatable baseline snapshot and history).
 - Additive learning_attempts and learning_events tables. Existing sessions, answers, and profile data are preserved.
 - Profile-driven starting routes for English fluency, placement interviews, project communication, and professional communication. Technical-interview goals currently route through project-explanation foundations and disclose that the dedicated technical question bank is planned.
-- Learning workspace UI for the skill map, levels/units, recommended tracks, the optional baseline check/history, all six exercise formats, local TTS listening with a revealable transcript, optional STT spoken responses, feedback, next-lesson navigation, progress, and resuming unfinished lessons.
+- Learning workspace UI for the skill map, levels/units, recommended tracks, the optional baseline check/history, all seven exercise formats, local TTS listening/pronunciation playback with revealable text alternatives, optional STT spoken responses, feedback, next-lesson navigation, progress, and resuming unfinished lessons.
 - Choice, vocabulary, listening, and ordering feedback compares a response to authored answer keys. Short responses are saved for learner self-review with an illustrative example and are never automatically graded. No overall or proficiency score is generated.
 
 **Validation in progress:** API tests and a Chromium end-to-end learning journey have been added, including reload/resume. The latest CI run must pass before this milestone is marked automated-tested. Target-laptop browser/responsive acceptance remains a separate manual check.
 
 ### Phase B boundaries
 
-This is the reusable learning foundation and starter vertical slice, not the complete English curriculum. Broader vocabulary and listening curricula, pronunciation activities, learner memory/revision, advanced adaptive routing, and career/interview scenario packs remain planned. A short starting-point check is now available. It stores choice, ordering, listening, and short-response evidence, supports repeat/review, and does not assign a proficiency level or score.
+Phase B provides the reusable learning foundation, not advanced adaptive instruction or a validated assessment. The expanded initial English path is documented separately under Phase C. The low-stakes starting-point check stores choice, ordering, listening, and short-response evidence, supports repeat/review, and does not assign a proficiency level or score.
+
+## Phase C — English and communication studio implementation update
+
+**Implementation added; CI and manual target-device acceptance are pending.**
+
+The English foundations path now contains 11 sequenced lessons across six units. The complete curriculum manifest has 14 stable skills, one foundation stage, nine units, four tracks, 13 authored lessons, and the separate baseline diagnostic.
+
+Implemented content:
+
+- **Sentence construction:** build complete sentences, expand, combine, shorten, and clarify without changing intended meaning.
+- **Grammar in context:** past and future tense, articles, common prepositions, question formation, and authored explanations for answer choices.
+- **Vocabulary:** precise word choice, collocations, phrase meaning, contextual examples, and learner-authored sentences.
+- **Speaking fluency:** structured descriptions, process explanations, technical/project explanations, retelling, opinions, reasons, and follow-up responses. Text entry is always available; recording/transcription is optional.
+- **Listening:** authored updates and short conversations with play/stop/replay controls, comprehension questions, and revealable transcript alternatives.
+- **Pronunciation:** local TTS model phrases, listen-and-repeat activities, optional recording/transcription, and private self-review. There is no pronunciation, accent, phoneme, or fluency score.
+- **Confidence and professional communication:** private repeatable practice and practical clarification/follow-up language. No emotion inference or automated confidence diagnosis.
+
+The work reuses the existing versioned JSON curriculum, FastAPI lesson runner, SQLite attempt/event persistence, and plain JavaScript UI. No new paid service or infrastructure dependency was introduced. The original practice room and text-only route remain available.
+
+**Automated coverage added:** curriculum coverage and validation, profile-focus recommendation reasons, article/tense/question/vocabulary answer handling, listening text alternatives, pronunciation self-review feedback, and Chromium flows for the expanded track, listening conversations, and pronunciation. These tests still require a successful latest CI run before they can be reported as passing.
+
+**Manual acceptance still required:** target-laptop browser review of all units, TTS replay, microphone permission and optional STT disclosure, transcript correction, text fallback, keyboard use, and narrow-screen layout. No speech-recognition accuracy or learning-outcome claim is made.
 
 ### Voice configuration observation (2026-11-19)
 
