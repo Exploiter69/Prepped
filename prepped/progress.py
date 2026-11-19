@@ -126,7 +126,7 @@ def _overview(db_path: Path, curriculum_path: Path) -> dict[str, Any]:
         profile = _profile(conn)
         lesson_rows = conn.execute("SELECT id, lesson_id, status, lesson_json, started_at, completed_at FROM learning_attempts ORDER BY started_at DESC").fetchall()
         events = conn.execute("SELECT lesson_id, skill_ids_json, occurred_at FROM learning_events WHERE event_type='lesson_completed' ORDER BY occurred_at DESC").fetchall()
-        practice = conn.execute("SELECT status, created_at, completed_at FROM sessions").fetchall()
+        practice = conn.execute("SELECT id, status, created_at, completed_at FROM sessions").fetchall()
         interviews = conn.execute("SELECT status, created_at, completed_at, studio_id FROM career_sessions").fetchall()
         memory = conn.execute("SELECT COUNT(*) AS total, SUM(CASE WHEN status='active' AND dismissed_at IS NULL AND due_at<=? THEN 1 ELSE 0 END) AS due FROM learning_memory", (_stamp(now),)).fetchone()
         review_total = int(conn.execute("SELECT COUNT(*) AS n FROM learning_memory_reviews").fetchone()["n"] or 0)
@@ -184,6 +184,9 @@ def _overview(db_path: Path, curriculum_path: Path) -> dict[str, Any]:
         in_progress = next((row for row in lesson_rows if row["status"] == "in_progress"), None)
         if in_progress:
             recommendations.append({"kind": "resume_lesson", "title": "Resume your lesson", "reason": "You have a saved lesson attempt that has not been completed.", "target_id": in_progress["id"]})
+        in_progress_practice = next((row for row in practice if row["status"] == "in_progress"), None)
+        if in_progress_practice:
+            recommendations.append({"kind": "resume_practice", "title": "Resume project practice", "reason": "You have a saved project-practice session with unanswered prompts.", "target_id": in_progress_practice["id"]})
         in_progress_interview = next((row for row in interviews if row["status"] == "in_progress"), None)
         if in_progress_interview:
             studio_title = {"project-explanation": "Project explanation", "hr-behavioural": "HR & behavioural", "technical-fundamentals": "Technical fundamentals"}.get(in_progress_interview["studio_id"], "Career")
