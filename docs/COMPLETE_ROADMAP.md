@@ -434,3 +434,13 @@ A release candidate requires all of the following:
 - [ ] Claims and limitations match demonstrated evidence.
 
 A student usability pilot is useful evidence but does not block engineering. A release must not claim certified English proficiency, accurate pronunciation scoring, placement probability, or measured learning gains without separate validation.
+
+## 19. Phase B — Learning Engine implementation update (2026-11-19)
+
+The first reusable learning-engine slice has been committed to feature/learner-profile. It adds a versioned local curriculum manifest, six stable skill definitions, three goal-based tracks, four authored lessons, explicit outcomes and prerequisites, and choice/ordering/reflection exercises.
+
+The FastAPI learning router validates the manifest and provides catalogue, recommendations, attempt start/read/response, and progress endpoints. The lesson runner enforces exercise order and prerequisite completion, keeps answer keys out of public catalogue/active exercise payloads, persists responses and feedback, and allows in-progress attempts to resume after restart. Additive SQLite attempt/event tables preserve all existing practice and profile records.
+
+Profile goal/focus preferences select a transparent route with per-lesson reasons. The browser workspace supports track browsing, recommended lessons, all three exercise types, response feedback, progress counts, and resuming unfinished lessons. Choice and ordering items have deterministic answer feedback; open responses are saved for self-review without automatic grading or proficiency claims.
+
+Automated API and Chromium tests have been added. This update is implementation in progress, not a passed release gate until the latest GitHub Actions run and target-laptop browser acceptance are recorded. The baseline diagnostic remains deferred until the exercise and feedback loop is stable. Vocabulary, listening, pronunciation, spaced revision, and dedicated HR/technical interview packs are not part of this slice.
