@@ -7,10 +7,11 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
@@ -20,6 +21,8 @@ from prepped.feedback import build_feedback
 from prepped.profile import create_profile_router
 from prepped.learning import DEFAULT_CURRICULUM_PATH, create_learning_router, load_curriculum
 from prepped.memory import create_memory_router
+from prepped.progress import create_progress_router, initialize_progress_database
+from prepped.portability import create_portability_router
 from prepped.scenarios import DEFAULT_SCENARIO_PATH, ScenarioValidationError, load_scenario
 from prepped.voice import VoiceService, build_voice_service
 from prepped.voice.routes import create_voice_router
@@ -99,6 +102,7 @@ def create_app(
     async def lifespan(_: FastAPI):
         initialize_database(Path(db_path))
         initialize_career_database(Path(db_path))
+        initialize_progress_database(Path(db_path))
         load_curriculum(Path(curriculum_path))
         yield
 
@@ -108,11 +112,37 @@ def create_app(
         version="0.3.0",
         lifespan=lifespan,
     )
+    @application.middleware("http")
+    async def local_security_headers(request, call_next):
+        host_header = request.headers.get("host", "")
+        hostname = urlsplit("//" + host_header).hostname
+        if hostname not in {"127.0.0.1", "localhost", "::1", "testserver"}:
+            return PlainTextResponse("Prepped accepts local connections only.", status_code=400)
+        if request.method in {"POST", "PUT", "PATCH", "DELETE"}:
+            origin = request.headers.get("origin")
+            if origin:
+                parsed_origin = urlsplit(origin)
+                if parsed_origin.scheme not in {"http", "https"} or parsed_origin.netloc.lower() != host_header.lower():
+                    return PlainTextResponse("Cross-origin state changes are not allowed.", status_code=403)
+        response = await call_next(request)
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("X-Frame-Options", "DENY")
+        response.headers.setdefault("Referrer-Policy", "no-referrer")
+        response.headers.setdefault("Permissions-Policy", "camera=(), microphone=(self), geolocation=()")
+        response.headers.setdefault("Cross-Origin-Resource-Policy", "same-origin")
+        response.headers.setdefault("Cross-Origin-Opener-Policy", "same-origin")
+        response.headers.setdefault("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'")
+        if request.url.path.startswith("/api/"):
+            response.headers["Cache-Control"] = "no-store"
+        return response
+
     application.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")
     application.include_router(create_voice_router(voice_service or build_voice_service()))
     application.include_router(create_profile_router(Path(db_path)))
     application.include_router(create_learning_router(Path(db_path), Path(curriculum_path)))
     application.include_router(create_memory_router(Path(db_path)))
+    application.include_router(create_progress_router(Path(db_path), Path(curriculum_path)))
+    application.include_router(create_portability_router(Path(db_path)))
     application.include_router(create_career_router(Path(db_path)))
 
     @application.get("/", include_in_schema=False)
