@@ -1303,7 +1303,7 @@
     },
     {
       "id": "speaking-opinions",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "track_id": "english-foundations",
       "unit_id": "speaking-practice",
       "level_id": "foundation",
@@ -1321,10 +1321,18 @@
       "learning_outcomes": [
         "State an opinion and support it with a reason",
         "Add a relevant example",
-        "Respond to a follow-up without changing the original point"
+        "Respond to a follow-up without changing the original point",
+        "Compare two options fairly before stating a preference"
       ],
       "introduction": "A useful opinion response states your view, gives a reason, and adds an example. A follow-up may ask you to explain a choice or consider another option. It is fine to pause and clarify the question before answering.",
       "exercises": [
+        {
+          "id": "speaking-compare",
+          "type": "short_response",
+          "prompt": "Compare reading documentation first with trying a small example first. Give one advantage of each approach, then say when you would choose one.",
+          "placeholder": "Reading documentation first can… Trying a small example can… I would choose… when…",
+          "guidance": "Represent both options fairly. Give a real advantage for each and connect your choice to the situation. There is no single correct preference."
+        },
         {
           "id": "opinion-response",
           "type": "short_response",
