@@ -82,6 +82,13 @@ def load_curriculum(path: Path = DEFAULT_CURRICULUM_PATH) -> dict[str, Any]:
         if (not all(lesson.get(key) for key in ("version", "title", "introduction"))
                 or lesson.get("kind", "lesson") not in {"lesson", "diagnostic"}):
             raise CurriculumValidationError(f"Lesson {lesson['id']} is missing required metadata.")
+        if lesson.get("kind", "lesson") == "lesson":
+            example = lesson.get("example")
+            if not isinstance(example, dict) or any(
+                not isinstance(example.get(key), str) or not example[key].strip()
+                for key in ("label", "before", "after", "explanation")
+            ):
+                raise CurriculumValidationError(f"Lesson {lesson['id']} needs a complete worked example.")
         if (lesson.get("track_id") not in tracks or lesson.get("level_id") not in levels
                 or lesson.get("unit_id") not in units or not lesson.get("exercises")
                 or not isinstance(lesson.get("estimated_minutes"), int) or lesson["estimated_minutes"] < 1
