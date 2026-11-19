@@ -485,4 +485,4 @@ Phase D has been implemented on `feature/learner-profile`; automated and target-
 - Review history and per-item schedule state persist in additive SQLite tables. Existing practice, profile, and learning data are preserved.
 - The implementation uses the existing FastAPI + SQLite + plain JavaScript stack and introduces no paid service or infrastructure dependency.
 
-**Verification still required:** complete pytest and JavaScript checks, green CI on the final commit, browser acceptance for the complete memory/review journey, and manual target-laptop keyboard/responsive/persistence checks. Do not mark Phase D closed until those results are recorded.
+**Verification:** GitHub Actions passes on the final Phase D implementation (79 passed, 2 skipped; both require `espeak-ng`). The remaining gate is manual target-laptop keyboard, responsive-layout, persistence, and end-to-end acceptance. Do not mark Phase D closed until that device acceptance is recorded.
