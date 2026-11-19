@@ -361,6 +361,7 @@ def test_phase_c_english_path_covers_all_requested_units_and_has_audio_text_alte
     assert all(lessons[item]["exercises"] for item in track["lesson_ids"])
     assert all(unit.get("learning_outcomes") for unit in data["units"])
     assert all(lessons[item]["learning_outcomes"] for item in track["lesson_ids"])
+    assert all(lessons[item].get("example") for item in track["lesson_ids"])
     listening = [
         exercise for lesson_id in track["lesson_ids"] for exercise in lessons[lesson_id]["exercises"]
         if exercise["type"] == "listening"
