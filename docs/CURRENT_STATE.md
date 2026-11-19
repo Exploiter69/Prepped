@@ -223,7 +223,7 @@ The feature/learner-profile branch now includes the first Phase B implementation
 
 ### Phase B boundaries
 
-This is the reusable learning foundation and starter vertical slice, not the complete English curriculum. Broader vocabulary and listening curricula, pronunciation activities, diagnostic baseline, learner memory/revision, advanced adaptive routing, and career/interview scenario packs remain planned. A short starting-point check is now available. It stores choice, ordering, listening, and short-response evidence, supports repeat/review, and does not assign a proficiency level or score.
+This is the reusable learning foundation and starter vertical slice, not the complete English curriculum. Broader vocabulary and listening curricula, pronunciation activities, learner memory/revision, advanced adaptive routing, and career/interview scenario packs remain planned. A short starting-point check is now available. It stores choice, ordering, listening, and short-response evidence, supports repeat/review, and does not assign a proficiency level or score.
 
 ### Voice configuration observation (2026-11-19)
 
