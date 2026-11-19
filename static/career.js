@@ -171,6 +171,7 @@
       row.append(info);
       const open = make("button", "Open", "button button-quiet");
       open.type = "button";
+      open.dataset.sessionId = session.id;
       open.addEventListener("click", () => openSession(session.id));
       row.append(open);
       const remove = make("button", "Delete", "button button-quiet");
