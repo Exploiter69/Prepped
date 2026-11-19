@@ -181,6 +181,8 @@ footer { border-top:1px solid var(--line); border-bottom:0; color:var(--muted); 
 .career-history-row button { flex-shrink:0; }
 #career-next-steps ul { margin:.4rem 0 0; padding-left:1.2rem; color:var(--muted); }
 @media (max-width:680px) {
+  .site-header { flex-wrap:wrap; }
+  .header-actions { flex-wrap:wrap; justify-content:flex-end; gap:.45rem; }
   .career-studio-list,.career-setup-row { grid-template-columns:1fr; }
   .career-history-row { align-items:flex-start; flex-wrap:wrap; }
   .career-history-row > div { flex-basis:100%; }
