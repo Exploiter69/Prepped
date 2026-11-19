@@ -136,12 +136,12 @@ The learner profile is currently a preference record. It does **not** yet power 
 
 ### Phase A — Stabilise the current foundation
 
-- [ ] Confirm profile setup, edit, cancel, save, reload, and persistence in a real browser.
-- [ ] Confirm the profile toggle works with the latest cache-busted assets; record the result.
-- [x] Run the complete pytest suite, Python compilation, and JavaScript syntax checks (GitHub Actions: 39 passed, 2 skipped because espeak-ng is not installed in the runner; one Starlette/httpx deprecation warning).
+- [x] Confirm profile setup, edit, cancel, save, reload, and persistence in automated Chromium browser tests in CI; target-laptop manual spot check remains.
+- [x] Confirm the profile toggle opens/closes, updates `aria-expanded`, and persists edits in automated Chromium; target-laptop manual spot check remains.
+- [x] Run the complete pytest suite, Python compilation, and JavaScript syntax checks (GitHub Actions: 41 passed, 2 skipped because espeak-ng is not installed in the runner; one Starlette/httpx deprecation warning).
 - [ ] Complete the outstanding voice browser acceptance checklist and document microphone, transcription, transcript correction, submission, TTS, and text fallback results.
 - [x] Verify CI and a clean-checkout install (GitHub Actions completed successfully on the feature branch; dependency install, compilation, JavaScript syntax, and pytest all passed).
-- [ ] Keep the existing practice room and saved sessions intact.
+- [x] Keep the existing practice room and saved sessions intact; regression tests cover the text-only journey and additive profile migration.
 
 **Exit gate:** profile and existing practice flows pass browser smoke tests; automated checks and CI pass; voice limitations are recorded honestly.
 
