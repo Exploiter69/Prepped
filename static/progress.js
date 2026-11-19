@@ -189,7 +189,7 @@
       $("#learning-toggle").click();
       await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       if (item.kind === "resume_lesson") {
-        const button = [...document.querySelectorAll("#learning-resume-list button")].find(el => el.textContent.startsWith("Resume:"));
+        const button = [...document.querySelectorAll("#learning-resume-list button")].find(el => el.dataset.attemptId === item.target_id);
         if (button) button.click();
       } else if (item.kind === "lesson") {
         const button = [...document.querySelectorAll("[data-lesson-id]")].find(el => el.dataset.lessonId === item.target_id);
