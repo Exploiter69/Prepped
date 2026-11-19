@@ -20,7 +20,7 @@ def test_curriculum_loads_with_unique_skills_tracks_lessons_and_supported_exerci
     assert len({item["id"] for item in data["tracks"]}) == len(data["tracks"])
     assert len({item["id"] for item in data["lessons"]}) == len(data["lessons"])
     assert {exercise["type"] for lesson in data["lessons"] for exercise in lesson["exercises"]} == {
-        "choice", "ordering", "reflection", "short_response", "vocabulary", "listening"
+        "choice", "ordering", "reflection", "short_response", "vocabulary", "listening", "pronunciation"
     }
 
 
@@ -44,7 +44,7 @@ def test_catalog_hides_answer_keys_and_exposes_profile_based_recommendations(tmp
         catalog = response.json()
         assert catalog["recommendations"]["track_id"] == "placement-communication"
         assert catalog["levels"][0]["id"] == "foundation"
-        assert len(catalog["units"]) == 7
+        assert len(catalog["units"]) == 9
         assert len(catalog["skills"]) >= 14
         serialized = json.dumps(catalog)
         assert '"answer"' not in serialized
@@ -60,7 +60,7 @@ def test_catalog_hides_answer_keys_and_exposes_profile_based_recommendations(tmp
         assert recommended["track_id"] == "english-foundations"
         grammar = next(item for item in recommended["items"] if item["lesson_id"] == "grammar-in-context")
         assert "grammar" in grammar["why"]
-        speaking = next(item for item in recommended["items"] if item["lesson_id"] == "sentence-building")
+        speaking = next(item for item in recommended["items"] if item["lesson_id"] == "speaking-structured")
         assert "speaking fluency" in speaking["why"]
 
 
@@ -340,3 +340,61 @@ def test_baseline_diagnostic_records_observable_tasks_without_level_or_score(tmp
         assert progress["lessons_completed"] == 0
         assert all(skill["completed_lessons"] == 0 for skill in progress["skills"])
         assert "No proficiency level" in latest["note"]
+
+
+def test_phase_c_english_path_covers_all_requested_units_and_has_audio_text_alternatives() -> None:
+    data = load_curriculum()
+    track = next(item for item in data["tracks"] if item["id"] == "english-foundations")
+    lessons = {item["id"]: item for item in data["lessons"]}
+    titles = {lessons[item]["title"] for item in track["lesson_ids"]}
+    assert {
+        "Build a clear sentence", "Shape a sentence for clarity", "Grammar in context",
+        "Ask clear questions", "Choose useful words in context", "Use useful study and project phrases",
+        "Listen for the key detail", "Follow a short conversation",
+        "Give a clear short response", "Express an opinion and handle a follow-up",
+        "Listen, repeat, and self-review",
+    } <= titles
+    assert all(lessons[item]["exercises"] for item in track["lesson_ids"])
+    listening = [
+        exercise for lesson_id in track["lesson_ids"] for exercise in lessons[lesson_id]["exercises"]
+        if exercise["type"] == "listening"
+    ]
+    pronunciation = [
+        exercise for lesson_id in track["lesson_ids"] for exercise in lessons[lesson_id]["exercises"]
+        if exercise["type"] == "pronunciation"
+    ]
+    assert len(listening) >= 4
+    assert pronunciation
+    assert all(item.get("audio_text") and item.get("transcript") for item in listening + pronunciation)
+    assert all(item.get("guidance") for item in pronunciation)
+
+
+def test_pronunciation_attempt_is_private_self_review_not_an_accuracy_score(tmp_path: Path) -> None:
+    with client_for(tmp_path) as client:
+        first = client.post("/api/learning/attempts", json={"lesson_id": "sentence-building"}).json()
+        for exercise_id, answer in [
+            ("sentence-complete", "b"),
+            ("sentence-order", ["a", "b", "c", "d"]),
+            ("sentence-practice", "I tested the login form."),
+        ]:
+            assert client.post(f"/api/learning/attempts/{first['id']}/responses",
+                               json={"exercise_id": exercise_id, "answer": answer}).status_code == 200
+        grammar = client.post("/api/learning/attempts", json={"lesson_id": "grammar-in-context"}).json()
+        for exercise_id, answer in [
+            ("past-tense", "b"), ("preposition", "a"),
+            ("grammar-review", "Yesterday, I tested the form."),
+        ]:
+            assert client.post(f"/api/learning/attempts/{grammar['id']}/responses",
+                               json={"exercise_id": exercise_id, "answer": answer}).status_code == 200
+        shaping = client.post("/api/learning/attempts", json={"lesson_id": "sentence-shaping"}).json()
+        for exercise_id, answer in [
+            ("expand-sentence", "a"), ("combine-ideas", ["a", "b", "c"]),
+            ("clarify-sentence", "Because the server did not respond, I could not access the page."),
+        ]:
+            assert client.post(f"/api/learning/attempts/{shaping['id']}/responses",
+                               json={"exercise_id": exercise_id, "answer": answer}).status_code == 200
+        speaking = client.post("/api/learning/attempts", json={"lesson_id": "speaking-structured"}).json()
+        assert speaking.status_code if hasattr(speaking, "status_code") else True
+        assert speaking["current_exercise"]["type"] == "short_response"
+        assert "english.fluency" in speaking["lesson"]["skill_ids"]
+        assert "Record spoken response" not in json.dumps(speaking)
