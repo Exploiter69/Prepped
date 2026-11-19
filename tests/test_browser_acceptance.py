@@ -161,7 +161,7 @@ def test_learning_workspace_completes_and_resumes_a_saved_lesson(local_app_url: 
     page.wait_for_function(
         "() => document.querySelector('#learning-status').textContent.includes('skills')"
     )
-    assert "Project communication" in page.locator("#learning-route-title").inner_text()
+    assert "Placement communication" in page.locator("#learning-route-title").inner_text()
 
     page.locator('button[data-lesson-id="sentence-building"]').click()
     page.locator("#learning-runner").wait_for(state="visible")
