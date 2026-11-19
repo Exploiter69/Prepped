@@ -108,7 +108,7 @@ def _recent_activity(conn: sqlite3.Connection, limit: int = 30) -> list[dict[str
                 except (TypeError, json.JSONDecodeError):
                     pass
             items.append({"id": row["id"], "type": "lesson", "title": "Completed: " + title, "occurred_at": row["occurred_at"]})
-    for row in conn.execute("SELECT id, status, created_at, completed_at FROM sessions ORDER BY COALESCE(completed_at, created_at) DESC LIMIT 100"):
+    for row in conn.execute("undefined ORDER BY COALESCE(completed_at, created_at) DESC LIMIT 100"):
         items.append({"id": row["id"], "type": "practice", "title": "Project practice " + ("completed" if row["status"] == "completed" else "started"), "occurred_at": row["completed_at"] or row["created_at"]})
     names = {"project-explanation": "Project explanation", "hr-behavioural": "HR & behavioural", "technical-fundamentals": "Technical fundamentals"}
     for row in conn.execute("SELECT id, studio_id, status, created_at, completed_at FROM career_sessions ORDER BY COALESCE(completed_at, created_at) DESC LIMIT 100"):
@@ -124,10 +124,10 @@ def _overview(db_path: Path, curriculum_path: Path) -> dict[str, Any]:
     start = (now.date() - timedelta(days=6)).isoformat()
     with connect_database(Path(db_path)) as conn:
         profile = _profile(conn)
-        lesson_rows = conn.execute("SELECT id, lesson_id, status, lesson_json, started_at, completed_at FROM learning_attempts ORDER BY started_at DESC").fetchall()
+        lesson_rows = conn.execute("SELECT id, lesson_id, status, lesson_json, started_at, completed_at FROM learning_attempts ORDER BY started_at DESC, rowid DESC").fetchall()
         events = conn.execute("SELECT lesson_id, skill_ids_json, occurred_at FROM learning_events WHERE event_type='lesson_completed' ORDER BY occurred_at DESC").fetchall()
         practice = conn.execute("SELECT id, status, created_at, completed_at FROM sessions").fetchall()
-        interviews = conn.execute("SELECT status, created_at, completed_at, studio_id FROM career_sessions").fetchall()
+        interviews = conn.execute("SELECT status, created_at, completed_at, studio_id FROM career_sessions ORDER BY COALESCE(completed_at,created_at) DESC, rowid DESC").fetchall()
         memory = conn.execute("SELECT COUNT(*) AS total, SUM(CASE WHEN status='active' AND dismissed_at IS NULL AND due_at<=? THEN 1 ELSE 0 END) AS due FROM learning_memory", (_stamp(now),)).fetchone()
         review_total = int(conn.execute("SELECT COUNT(*) AS n FROM learning_memory_reviews").fetchone()["n"] or 0)
         review_rows = conn.execute("SELECT reviewed_at FROM learning_memory_reviews WHERE reviewed_at >= ?", (start,)).fetchall()
