@@ -8,12 +8,13 @@
     <title>Prepped — Practice with purpose</title>
     <link rel="stylesheet" href="/static/style.css">
     <script src="/static/voice.js?v=profile-toggle-2" defer></script>
-    <script src="/static/app.js?v=profile-toggle-2" defer></script>
+    <script src="/static/app.js?v=phase-b-1" defer></script>
+    <script src="/static/learning.js?v=phase-b-1" defer></script>
   </head>
   <body>
     <header class="site-header">
       <a class="wordmark" href="/" aria-label="Prepped home">prepped<span>.</span></a>
-      <div class="header-actions"><span class="header-note">LOCAL PRACTICE · 0.3.0</span><button id="history-toggle" class="button button-quiet" type="button">History</button></div>
+      <div class="header-actions"><span class="header-note">LOCAL PRACTICE · 0.3.0</span><button id="learning-toggle" class="button button-quiet" type="button">Learning</button><button id="history-toggle" class="button button-quiet" type="button">History</button></div>
     </header>
     <main>
       <section class="intro" aria-labelledby="page-title">
@@ -49,6 +50,41 @@
           <p id="profile-error" class="inline-error" role="alert"></p>
           <div class="form-actions"><button id="profile-cancel" class="button button-quiet" type="button">Cancel</button><button class="button button-primary" type="submit">Save my profile</button></div>
         </form>
+      </section>
+      <section id="learning-view" class="scenario-panel learning-panel hidden" aria-labelledby="learning-title">
+        <div class="panel-topline"><span class="eyebrow">LEARNING ENGINE / PHASE B</span><span id="learning-status" class="status">Loading curriculum…</span></div>
+        <h2 id="learning-title">Build skills through practice.</h2>
+        <p class="scenario-description">Short, structured lessons with examples, exercises, saved attempts, and clear next steps. Your route is based on your stated learning goal, not an inferred ability score.</p>
+        <section class="learning-recommendation" aria-labelledby="learning-route-title">
+          <div class="learning-section-heading"><div><span class="meta-label">YOUR STARTING ROUTE</span><h3 id="learning-route-title">Recommended path</h3></div><span id="learning-route-goal" class="status"></span></div>
+          <p id="learning-route-description" class="section-help"></p>
+          <div id="learning-recommendations" class="learning-card-list"></div>
+          <p id="learning-route-note" class="section-help"></p>
+        </section>
+        <div class="divider"></div>
+        <section aria-labelledby="learning-all-title">
+          <div class="learning-section-heading"><div><span class="meta-label">CURRICULUM</span><h3 id="learning-all-title">Available lessons</h3></div></div>
+          <div id="learning-track-list" class="learning-track-list"></div>
+        </section>
+        <div class="divider"></div>
+        <section aria-labelledby="learning-progress-title">
+          <div class="learning-section-heading"><div><span class="meta-label">RECORDED ACTIVITY</span><h3 id="learning-progress-title">Your progress</h3></div></div>
+          <p id="learning-progress-note" class="section-help">Progress counts completed activities. It is not a proficiency score.</p>
+          <div id="learning-progress" class="learning-progress"></div>
+          <div id="learning-resume-list" class="learning-resume-list"></div>
+        </section>
+        <section id="learning-runner" class="learning-runner hidden" aria-labelledby="learning-runner-title">
+          <div class="divider"></div>
+          <div class="panel-topline"><span class="eyebrow">LESSON IN PROGRESS</span><span id="learning-exercise-count" class="status"></span></div>
+          <h3 id="learning-runner-title"></h3>
+          <p id="learning-runner-intro" class="scenario-description"></p>
+          <div id="learning-example" class="learning-example"></div>
+          <div id="learning-exercise" class="learning-exercise"></div>
+          <p id="learning-exercise-error" class="inline-error" role="alert"></p>
+          <div class="form-actions"><button id="learning-exit" class="button button-quiet" type="button">Back to lessons</button><button id="learning-submit" class="button button-primary" type="button">Check and continue →</button></div>
+          <div id="learning-feedback" class="learning-feedback hidden"></div>
+        </section>
+        <div class="form-actions"><button id="learning-home" class="button button-quiet" type="button">Back to practice room</button></div>
       </section>
       <p id="global-status" class="global-status" role="status" aria-live="polite">Checking local app…</p>
       <section id="home-view" class="scenario-panel" aria-labelledby="scenario-title">
