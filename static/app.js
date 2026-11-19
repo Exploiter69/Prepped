@@ -265,7 +265,7 @@ function makeFeedbackCard(title, status, message, evidence, nextAction, meta = "
       source_type: "practice",
       source_id: activeSession?.id || "",
       source_title: "Project explanation · Attempt " + (activeFeedback?.attempt_number || ""),
-      source_excerpt: (evidence || "").slice(0, 1000),
+      source_excerpt: (evidence || "").slice(0, 6000),
     }}));
   });
   card.append(save);
