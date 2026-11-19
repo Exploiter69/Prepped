@@ -23,7 +23,7 @@ Expected:
 - The complete test suite passes. The optional Playwright browser tests exercise profile open/save/edit/cancel/reload and the text-only practice journey in Chromium. The profile unit tests also assert the served page's accessible toggle/form contract. CI installs the optional browser-test extra and Chromium; the application itself does not require Playwright. Record the exact pass/skip count and any warnings.
 - A skipped real-model integration test is recorded as skipped, not passed.
 
-CI must run on pushes to `feature/learner-profile` and pull requests targeting that branch or `main`. A green CI run is evidence for the checked commit only.
+Latest recorded Chromium CI acceptance: [run 44534499386](https://github.com/Exploiter69/Prepped/actions/runs/44534499386) — 41 passed, 2 skipped, 1 warning. The skips require `espeak-ng`, unavailable on the hosted runner. CI runs on pushes to `feature/**` and pull requests targeting `feature/learner-profile` or `main`. A green CI run is evidence for the checked commit only.
 
 ## 2. Learner profile — browser acceptance
 
