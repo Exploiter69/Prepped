@@ -226,16 +226,24 @@ Deliver a coherent first track rather than a large empty catalogue.
 
 ### Phase F — Progress, portability, and release hardening
 
-- Skill-level progress based on completed activities and observable evidence, not a single opaque score.
-- Goals, activity history, review completion, and explainable recommendations.
-- Local export, backup, restore, and recovery tests.
-- Responsive layout, keyboard and screen-reader checks, contrast, focus, and empty/loading/error states.
-- Security review: local binding, input validation, upload limits, secrets, dependency review, and safe data handling.
-- Fresh-install test on the target Omarchy laptop and documented supported environment.
-- Manual acceptance checklist for all core journeys.
-- Small consent-based usability study when feasible; report sample size and limitations. It is not a substitute for engineering tests.
+**Implementation added on `feature/learner-profile`; automated CI and target-laptop acceptance are verification gates.**
 
-**Exit gate:** reproducible clean install, automated suite and CI pass, core journeys accepted manually, data backup/restore works, known limitations are documented, and no unsupported product claims remain.
+- [x] Skill-level progress derived from completed lesson events and linked curriculum skills; no single ability score.
+- [x] Local progress overview combines lesson evidence, project practice, interview completions, memory reviews, weekly activity, and recent activity.
+- [x] Learner-owned goals for completed lessons, project practice sessions, completed interviews, and memory reviews. Goals can be created, edited, archived/restored, and deleted; progress counts only activity recorded after the goal was created.
+- [x] Explainable next-step recommendations use saved profile preferences, unfinished lesson attempts, due memory reviews, and active goals.
+- [x] Local JSON export covers profile, sessions/answers, lesson attempts/events, memory items/reviews, career sessions/turns, and goals.
+- [x] Restore is explicit full replacement, not merge. It is size/row bounded, validates the backup in a staged database, checks SQLite integrity and foreign keys, and only then replaces the active database.
+- [x] Additive `learner_goals` migration and explicit backup format/database schema versions.
+- [x] Local-only Host/Origin guard, restrictive security headers/CSP, no-store API responses, and a database/curriculum readiness endpoint.
+- [x] Clean-install and recovery documentation for Linux/Omarchy, plus a release-hardening record.
+- [x] CI checks Python compilation, all browser JavaScript syntax, automated API/Chromium tests, and a Python dependency vulnerability audit.
+- [ ] Complete target-Omarchy fresh-install and manual end-to-end acceptance for progress, goals, backup/restore, keyboard/screen-reader use, contrast, and responsive layout.
+- [ ] Run the optional consent-based usability study only when participants are available; record method, sample size, failures, and limitations. No pilot results are claimed.
+
+**Known boundaries:** backups are unencrypted JSON and contain personal answers; the current 25 MiB / 200,000-record limits and version-1 compatibility are deliberate. Restore replaces all current local data. Prepped remains a single-user loopback application, not a public or multi-user deployment.
+
+**Exit gate:** reproducible clean install, automated suite and CI pass, core journeys accepted manually, data backup/restore works, known limitations are documented, and no unsupported product claims remain. Manual target-device acceptance is not claimed until recorded.
 
 ### Definition of done for every feature
 
