@@ -127,7 +127,7 @@ def _overview(db_path: Path, curriculum_path: Path) -> dict[str, Any]:
         lesson_rows = conn.execute("SELECT id, lesson_id, status, lesson_json, started_at, completed_at FROM learning_attempts ORDER BY started_at DESC, rowid DESC").fetchall()
         events = conn.execute("SELECT lesson_id, skill_ids_json, occurred_at FROM learning_events WHERE event_type='lesson_completed' ORDER BY occurred_at DESC").fetchall()
         practice = conn.execute("SELECT id, status, created_at, completed_at FROM sessions ORDER BY COALESCE(completed_at,created_at) DESC, rowid DESC").fetchall()
-        interviews = conn.execute("SELECT status, created_at, completed_at, studio_id FROM career_sessions ORDER BY COALESCE(completed_at,created_at) DESC, rowid DESC").fetchall()
+        interviews = conn.execute("SELECT id, status, created_at, completed_at, studio_id FROM career_sessions ORDER BY COALESCE(completed_at,created_at) DESC, rowid DESC").fetchall()
         memory = conn.execute("SELECT COUNT(*) AS total, SUM(CASE WHEN status='active' AND dismissed_at IS NULL AND due_at<=? THEN 1 ELSE 0 END) AS due FROM learning_memory", (_stamp(now),)).fetchone()
         review_total = int(conn.execute("SELECT COUNT(*) AS n FROM learning_memory_reviews").fetchone()["n"] or 0)
         review_rows = conn.execute("SELECT reviewed_at FROM learning_memory_reviews WHERE reviewed_at >= ?", (start,)).fetchall()
