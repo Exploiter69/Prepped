@@ -223,7 +223,7 @@ The feature/learner-profile branch now includes the first Phase B implementation
 
 ### Phase B boundaries
 
-This is the reusable learning foundation and starter vertical slice, not the complete English curriculum. Vocabulary lessons, listening/pronunciation activities, diagnostic baseline, learner memory/revision, advanced adaptive routing, and career/interview scenario packs remain planned. The baseline diagnostic is deferred until exercise and feedback quality are stable.
+This is the reusable learning foundation and starter vertical slice, not the complete English curriculum. Broader vocabulary and listening curricula, pronunciation activities, diagnostic baseline, learner memory/revision, advanced adaptive routing, and career/interview scenario packs remain planned. The baseline diagnostic is deferred until exercise and feedback quality are stable.
 
 ### Voice configuration observation (2026-11-19)
 
