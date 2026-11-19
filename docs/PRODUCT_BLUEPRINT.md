@@ -444,3 +444,16 @@ Use [PRODUCT_ROADMAP.md](PRODUCT_ROADMAP.md) for the product-level phases, and [
 7. Complete accessibility, privacy/security, responsive UX, fresh-install, target-device, and release acceptance checks.
 
 Each phase must preserve the existing FastAPI + plain HTML/CSS/JavaScript + SQLite modular monolith, additive database migrations, versioned JSON content, zero mandatory operating cost, and usable text fallback. A feature is complete only after its end-to-end flow, tests, failure states, documentation, and manual acceptance are evidenced. Do not claim certified proficiency, accurate pronunciation grading, placement probability, or measured learning gains without separate validation.
+
+## 16. Learning Engine — implemented slice and boundaries (2026-11-19)
+
+The first Phase B implementation adds a reusable local lesson engine on the existing stack:
+
+- A versioned JSON curriculum with six skills, three goal-based tracks, four lessons, prerequisites, outcomes, examples, and deterministic choice, ordering, and reflection exercises.
+- A validator that rejects duplicate identifiers, broken references, unsupported exercise types, and malformed answer/token definitions.
+- APIs for catalogue/recommendations, attempt creation and retrieval, ordered response submission, and progress.
+- Additive SQLite learning-attempt and learning-event persistence, including restart-safe resume.
+- Profile goal/focus-based recommendations with an explanation for each lesson.
+- A browser learning workspace with route, catalogue, exercise runner, feedback, progress, and resume UI.
+
+This slice does not automatically grade open responses, infer learner proficiency, or claim learning gains. The diagnostic, broader English curriculum, personal revision memory, listening/pronunciation curriculum, and dedicated career/interview packs remain planned. Automated and target-device acceptance must be recorded before calling this phase complete.
