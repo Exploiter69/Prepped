@@ -153,6 +153,7 @@
     $("#memory-back").value = item.back;
     $("#memory-form-title").textContent = "Edit saved item";
     $("#memory-form-submit").textContent = "Save changes";
+    $("#memory-form-cancel").textContent = "Cancel edit";
     $("#memory-form-cancel").classList.remove("hidden");
     $("#memory-source-note").textContent = "Editing preserves the original source and review history.";
     $("#memory-front").focus();
@@ -284,6 +285,8 @@
     }
     resetForm();
     $("#memory-type").value = detail.item_type || "correction";
+    $("#memory-form-cancel").textContent = "Discard suggestion";
+    $("#memory-form-cancel").classList.remove("hidden");
     $("#memory-front").value = detail.front || "";
     $("#memory-back").value = detail.back || "";
     $("#memory-source-type").value = detail.source_type || "lesson";
