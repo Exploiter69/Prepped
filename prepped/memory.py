@@ -165,6 +165,8 @@ def create_memory_router(db_path: Path) -> APIRouter:
         changes = payload.model_dump(exclude_unset=True)
         if not changes:
             raise HTTPException(status_code=422, detail="Provide at least one field to update.")
+        if any(value is None for value in changes.values()):
+            raise HTTPException(status_code=422, detail="Updated fields cannot be null.")
         with connect_database(Path(db_path)) as conn:
             row = conn.execute("SELECT * FROM learning_memory WHERE id = ?", (item_id,)).fetchone()
             if row is None:
