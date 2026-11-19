@@ -15,6 +15,7 @@
   }
   function showCareer() {
     stopRecording(true);
+    if (state.audio) state.audio.pause();
     window.PreppedVoice?.stopAll();
     for (const id of viewIds) $("#" + id)?.classList.toggle("hidden", id !== "career-view");
     $("#career-toggle")?.setAttribute("aria-expanded", "true");
