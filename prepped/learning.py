@@ -136,7 +136,9 @@ def load_curriculum(path: Path = DEFAULT_CURRICULUM_PATH) -> dict[str, Any]:
 
     for unit in units.values():
         if (unit.get("level_id") not in levels or not unit.get("title") or not unit.get("description")
-                or not unit.get("track_ids") or not unit.get("lesson_ids")):
+                or not unit.get("track_ids") or not unit.get("lesson_ids")
+                or not isinstance(unit.get("learning_outcomes"), list) or not unit["learning_outcomes"]
+                or any(not isinstance(outcome, str) or not outcome.strip() for outcome in unit["learning_outcomes"])):
             raise CurriculumValidationError(f"Unit {unit['id']} has incomplete level, track, or lesson references.")
         if len(unit["track_ids"]) != len(set(unit["track_ids"])) or any(track_id not in tracks for track_id in unit["track_ids"]):
             raise CurriculumValidationError(f"Unit {unit['id']} references an unknown track.")
