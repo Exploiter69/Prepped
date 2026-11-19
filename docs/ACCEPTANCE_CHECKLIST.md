@@ -320,7 +320,7 @@ Use a disposable database. Automated Chromium coverage does not replace checking
 - [ ] Complete a normal lesson; confirm only the linked skill evidence changes. Complete the baseline diagnostic; confirm it is not counted as a completed curriculum lesson.
 - [ ] Confirm skill coverage shows completed lesson evidence and explicitly does not present a proficiency rating.
 - [ ] Confirm the seven-day activity view uses saved completion/review timestamps and has a useful empty state on a new database.
-- [ ] Confirm recommendations explain why they are shown: unfinished lesson, due memory notes, profile-selected next lesson, or active learner goal.
+- [ ] Confirm recommendations explain why they are shown: unfinished lesson, project-practice session, or interview; due memory notes; profile-selected next lesson; or active learner goal.
 - [ ] Create one goal for each supported counter: lessons, project practice sessions, interviews, and memory reviews.
 - [ ] Confirm each goal counts only activity after its creation; confirm target count and remaining count update after the corresponding activity.
 - [ ] Edit a goal; archive it; show archived goals; restore it; permanently delete it. Confirm deleting a goal does not delete any activity.
