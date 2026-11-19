@@ -288,13 +288,14 @@
       context.textContent = exercise.context;
       $("#learning-exercise").append(context);
     }
-    if (exercise.type === "listening") {
+    if (["listening", "pronunciation"].includes(exercise.type)) {
+      const pronunciation = exercise.type === "pronunciation";
       const controls = document.createElement("div");
       controls.className = "learning-listening-controls";
       const play = document.createElement("button");
       play.type = "button";
       play.className = "button button-secondary";
-      play.textContent = "Play spoken message";
+      play.textContent = pronunciation ? "Play model phrase" : "Play spoken message";
       play.addEventListener("click", () => playListeningAudio(exercise.audio_text));
       const stop = document.createElement("button");
       stop.type = "button";
@@ -304,7 +305,7 @@
       const reveal = document.createElement("button");
       reveal.type = "button";
       reveal.className = "button button-quiet";
-      reveal.textContent = "Show text alternative";
+      reveal.textContent = pronunciation ? "Show phrase text" : "Show text alternative";
       const transcript = document.createElement("p");
       transcript.className = "learning-transcript hidden";
       transcript.textContent = exercise.transcript || exercise.audio_text;
@@ -312,11 +313,15 @@
       reveal.addEventListener("click", () => {
         const open = transcript.classList.toggle("hidden") === false;
         reveal.setAttribute("aria-expanded", String(open));
-        reveal.textContent = open ? "Hide text alternative" : "Show text alternative";
+        reveal.textContent = open
+          ? (pronunciation ? "Hide phrase text" : "Hide text alternative")
+          : (pronunciation ? "Show phrase text" : "Show text alternative");
       });
       const status = document.createElement("p");
       status.className = "section-help";
-      status.textContent = "Audio uses the configured local text-to-speech engine when available. The text alternative is always available.";
+      status.textContent = pronunciation
+        ? "Listen-and-repeat practice uses the configured local text-to-speech engine when available. The phrase text is always available; no pronunciation score is calculated."
+        : "Audio uses the configured local text-to-speech engine when available. The text alternative is always available.";
       controls.append(play, stop, reveal, transcript, status);
       $("#learning-exercise").append(controls);
     }
@@ -429,7 +434,7 @@
       status.textContent = item.status.replaceAll("_", " ");
       card.append(title, status);
       const detail = document.createElement("p");
-      if (["reflection", "short_response"].includes(item.type)) {
+      if (["reflection", "short_response", "pronunciation"].includes(item.type)) {
         detail.textContent = "Your response: " + (item.original_response || "(empty)");
       } else if (["choice", "vocabulary", "listening"].includes(item.type)) {
         detail.textContent = "Your choice: " + item.selected + ". Suggested answer: " + item.correct_answer + ". " + item.explanation;
@@ -441,6 +446,12 @@
         const guidance = document.createElement("p");
         guidance.textContent = item.guidance;
         card.append(guidance);
+      }
+      if (item.measurement_note) {
+        const measurement = document.createElement("p");
+        measurement.className = "section-help";
+        measurement.textContent = item.measurement_note;
+        card.append(measurement);
       }
       if (item.example_to_compare) {
         const example = document.createElement("p");
