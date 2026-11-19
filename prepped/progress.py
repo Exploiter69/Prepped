@@ -82,7 +82,10 @@ class RecommendationKeyPayload(BaseModel):
     @field_validator("target_id")
     @classmethod
     def clean_target_id(cls, value: str) -> str:
-        return value.strip()
+        value = value.strip()
+        if not value:
+            raise ValueError("Recommendation target cannot be blank.")
+        return value
 
 
 class GoalPayload(BaseModel):
