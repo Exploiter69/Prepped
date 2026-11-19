@@ -4,6 +4,7 @@ let scenario = null;
 let activeSession = null;
 let activeFeedback = null;
 let busy = false;
+let profileConfigured = false;
 
 function setStatus(message, isError = false) {
   const element = $("#global-status");
@@ -88,6 +89,7 @@ const areaLabels = {
 };
 
 function renderProfile(result) {
+  profileConfigured = result.configured;
   const profile = result.profile;
   const form = $("#profile-form");
   if (!profile) {
@@ -435,7 +437,8 @@ $("#profile-edit-toggle").addEventListener("click", () => {
   if (!form.classList.contains("hidden")) $("#profile-name").focus();
 });
 $("#profile-cancel").addEventListener("click", async () => {
-  await loadProfile();
+  if (profileConfigured) await loadProfile();
+  else $("#profile-form").classList.add("hidden");
 });
 $("#profile-form").addEventListener("submit", saveProfile);
 $("#start-button").addEventListener("click", startPractice);
