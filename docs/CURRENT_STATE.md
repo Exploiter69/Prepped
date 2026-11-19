@@ -173,13 +173,11 @@ Prepped is a practice prototype, not an official assessment, hiring decision, pl
 
 ### Honest product status
 
-Prepped is **not yet a complete or market-ready learning platform**. It is a local practice application with one project-explanation scenario, a voice record/stop slice, session history, formative heuristic feedback, and a learner profile.
+Prepped is **not yet a complete or market-ready learning platform**. It is a local-first practice and learning application with a project-explanation scenario, an English curriculum, a voice record/stop slice, session history, formative feedback, and a learner profile.
 
 The learner profile stores preferences such as goal, study year, branch, confidence, and focus areas. The goal and focus areas now select an explainable starter route through the Learning Engine and English curriculum. They do not infer ability, adapt difficulty, or certify proficiency.
 
 ### Not implemented yet
-
-
 
 - Learner-controlled vocabulary/correction memory and spaced revision.
 - HR, behavioural and technical interview studios with multi-turn follow-ups.
