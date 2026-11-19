@@ -393,11 +393,14 @@ Every unit needs an outcome, authored examples, exercises, feedback, tests, and 
 
 ### Milestone D — Personal learning memory
 
-- Save items only through learner action or explicit acceptance.
-- Store the original response/source context and why an item was suggested.
-- Support edit, delete, dismiss, suspend, and duplicate handling.
-- Add a simple local due-date scheduler only after review-card usefulness is demonstrated.
-- Test due-date boundaries, repeated reviews, persistence, and deletion.
+**Implementation added; automated and target-laptop acceptance pending.**
+
+- [x] Save items only through learner action or explicit acceptance.
+- [x] Store original response/source evidence and lesson or practice context.
+- [x] Support edit, delete, dismiss/restore, suspend/resume, and duplicate resolution.
+- [x] Add a transparent local due-date scheduler and dedicated due-review queue.
+- [x] Test due-date boundaries, repeated reviews, history, persistence, deletion, and legacy-data preservation.
+- [ ] Complete green CI on the final implementation commit and manual target-laptop acceptance.
 
 ### Milestone E — Career and interview studios
 
@@ -462,7 +465,7 @@ The FastAPI learning router validates the manifest and provides catalogue, recom
 
 Profile goal/focus preferences select a transparent route with per-lesson reasons. The browser workspace supports skill and unit browsing, recommended lessons, all seven exercise formats, local TTS listening and pronunciation playback with text alternatives, optional STT responses, next-lesson navigation, response feedback, progress counts, and resuming unfinished lessons. Choice and ordering items have deterministic answer feedback; open responses are saved for self-review without automatic grading or proficiency claims.
 
-Automated API and Chromium tests have been added. This update is implementation in progress, not a passed release gate until the latest GitHub Actions run and target-laptop browser acceptance are recorded. A low-stakes starting-point check is included. It records sentence, ordering, listening, and project-response tasks; attempts can be repeated and reviewed. It assigns no proficiency level or overall score. More advanced diagnostic interpretation, learner-controlled revision, and dedicated HR/technical interview packs remain future work.
+Automated API and Chromium tests have been added. This update is implementation in progress, not a passed release gate until the latest GitHub Actions run and target-laptop browser acceptance are recorded. A low-stakes starting-point check is included. It records sentence, ordering, listening, and project-response tasks; attempts can be repeated and reviewed. It assigns no proficiency level or overall score. More advanced diagnostic interpretation and dedicated HR/technical interview packs remain future work. Learner-controlled revision is implemented under Phase D; its automated and target-laptop acceptance gates remain open.
 
 
 ---
