@@ -212,7 +212,7 @@
       const prompt = node("p", "How well did you recall it?", "section-help");
       card.append(prompt);
       const ratings = node("div", undefined, "memory-ratings");
-      [["again", "Again · forgot"], ["hard", "Hard"], ["good", "Good"], ["easy", "Easy"]].forEach(([rating, label]) => {
+      [["again", "Again"], ["hard", "Hard"], ["good", "Good"], ["easy", "Easy"]].forEach(([rating, label]) => {
         const button = node("button", label, "button button-secondary");
         button.type = "button";
         button.addEventListener("click", () => submitReview(item, rating));
