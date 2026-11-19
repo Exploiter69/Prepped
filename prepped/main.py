@@ -162,7 +162,7 @@ def create_app(
                 integrity = connection.execute("PRAGMA quick_check").fetchone()[0]
                 required = {"sessions", "answers", "learner_profile", "learning_attempts",
                             "learning_events", "learning_memory", "learning_memory_reviews",
-                            "career_sessions", "career_turns", "learner_goals"}
+                            "career_sessions", "career_turns", "learner_goals", "recommendation_dismissals"}
                 existing = {row["name"] for row in connection.execute(
                     "SELECT name FROM sqlite_master WHERE type='table'"
                 )}
