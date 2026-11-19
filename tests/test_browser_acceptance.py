@@ -456,3 +456,34 @@ def test_grammar_and_question_formation_units_complete_in_the_browser(
         "a", "b", "Could you clarify the expected response?"
     ])
     assert "does" in page.locator("#learning-feedback").inner_text().lower()
+
+
+def test_memory_create_edit_and_review_flow_in_browser(local_app_url: str, browser_page) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+    page.locator("#learning-toggle").click()
+    page.locator("#memory-front").fill("in the long run")
+    page.locator("#memory-back").fill("Over a long period of time.")
+    page.locator("#memory-form button[type='submit']").click()
+    page.wait_for_function(
+        "() => document.querySelector('#memory-items').textContent.includes('in the long run')"
+    )
+    assert "Active cards" in page.locator("#memory-stats").inner_text()
+    page.locator("#memory-review button").filter(has_text="Show answer").click()
+    assert "Over a long period of time." in page.locator("#memory-review").inner_text()
+    page.locator("#memory-review button").filter(has_text="Good").click()
+    page.wait_for_function(
+        "() => document.querySelector('#memory-review').textContent.includes('clear for now')"
+    )
+    assert "Reviews completed" in page.locator("#memory-stats").inner_text()
+
+    page.locator("#memory-items button").filter(has_text="Edit").click()
+    page.locator("#memory-front").fill("over time")
+    page.locator("#memory-form-submit").click()
+    page.wait_for_function(
+        "() => document.querySelector('#memory-items').textContent.includes('over time')"
+    )
+    page.locator("#memory-items button").filter(has_text="Suspend").click()
+    page.wait_for_function(
+        "() => document.querySelector('#memory-items').textContent.includes('Paused')"
+    )
