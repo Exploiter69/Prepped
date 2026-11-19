@@ -328,9 +328,15 @@ def test_baseline_diagnostic_records_observable_tasks_without_level_or_score(tmp
         latest = client.get("/api/learning/diagnostic/latest").json()
         assert latest["latest"]["id"] == attempt["id"]
         assert latest["latest"]["status"] == "completed"
+        assert len(latest["history"]) == 1
+        repeated = client.post("/api/learning/attempts", json={"lesson_id": "baseline-check"})
+        assert repeated.status_code == 201
+        history = client.get("/api/learning/diagnostic/latest").json()
+        assert history["latest"]["status"] == "in_progress"
+        assert len(history["history"]) == 2
         progress = client.get("/api/learning/progress").json()
         assert progress["diagnostics_completed"] == 1
-        assert progress["diagnostic_attempts_started"] == 1
+        assert progress["diagnostic_attempts_started"] == 2
         assert progress["lessons_completed"] == 0
         assert all(skill["completed_lessons"] == 0 for skill in progress["skills"])
         assert "No proficiency level" in latest["note"]
