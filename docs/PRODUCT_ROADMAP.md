@@ -138,7 +138,7 @@ The learner profile is currently a preference record. It does **not** yet power 
 
 - [ ] Confirm profile setup, edit, cancel, save, reload, and persistence in a real browser.
 - [ ] Confirm the profile toggle works with the latest cache-busted assets; record the result.
-- [x] Run the complete pytest suite, Python compilation, and JavaScript syntax checks (GitHub Actions: 38 passed, 2 skipped because espeak-ng is not installed in the runner; one Starlette/httpx deprecation warning).
+- [x] Run the complete pytest suite, Python compilation, and JavaScript syntax checks (GitHub Actions: 39 passed, 2 skipped because espeak-ng is not installed in the runner; one Starlette/httpx deprecation warning).
 - [ ] Complete the outstanding voice browser acceptance checklist and document microphone, transcription, transcript correction, submission, TTS, and text fallback results.
 - [x] Verify CI and a clean-checkout install (GitHub Actions completed successfully on the feature branch; dependency install, compilation, JavaScript syntax, and pytest all passed).
 - [ ] Keep the existing practice room and saved sessions intact.
