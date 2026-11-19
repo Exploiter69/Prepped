@@ -1,0 +1,297 @@
+(() => {
+  "use strict";
+  const $ = (selector) => document.querySelector(selector);
+  const viewIds = ["home-view", "practice-view", "feedback-view", "history-view", "learning-view", "career-view", "progress-view"];
+  const state = { overview: null, busy: false };
+
+  async function request(url, options = {}) {
+    const response = await fetch(url, options);
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(typeof body.detail === "string" ? body.detail : "The request could not be completed.");
+    return body;
+  }
+
+  function showProgress() {
+    for (const id of viewIds) $("#" + id)?.classList.toggle("hidden", id !== "progress-view");
+    $("#progress-toggle")?.setAttribute("aria-expanded", "true");
+    $("#learning-toggle")?.setAttribute("aria-expanded", "false");
+    $("#career-toggle")?.setAttribute("aria-expanded", "false");
+    window.PreppedVoice?.stopAll();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    load();
+  }
+
+  function node(tag, className, text) {
+    const element = document.createElement(tag);
+    if (className) element.className = className;
+    if (text !== undefined) element.textContent = String(text);
+    return element;
+  }
+
+  function renderSummary(summary) {
+    const target = $("#progress-summary");
+    target.replaceChildren();
+    const stats = [
+      [summary.lessons_completed, "Lessons completed"],
+      [summary.practice_sessions_completed, "Project sessions"],
+      [summary.interviews_completed, "Interviews completed"],
+      [summary.memory_reviews_completed, "Memory reviews"],
+      [summary.due_memory_items, "Notes due"],
+      [summary.active_goals, "Active goals"],
+    ];
+    for (const [value, label] of stats) {
+      const card = node("div", "progress-stat");
+      card.append(node("strong", "", value), node("span", "", label));
+      target.append(card);
+    }
+  }
+
+  function renderSkills(skills) {
+    const target = $("#progress-skills");
+    target.replaceChildren();
+    for (const skill of skills) {
+      const card = node("article", "progress-skill");
+      const title = node("h4", "", skill.title);
+      const description = node("p", "", skill.description);
+      const count = node("p", "", skill.completed_lessons + " of " + skill.available_lessons + " linked lessons completed");
+      const track = node("div", "progress-track-small");
+      track.setAttribute("role", "progressbar");
+      track.setAttribute("aria-label", skill.title + " lesson coverage");
+      track.setAttribute("aria-valuemin", "0");
+      track.setAttribute("aria-valuemax", "100");
+      track.setAttribute("aria-valuenow", String(skill.completion_percent));
+      const fill = node("span");
+      fill.style.width = skill.completion_percent + "%";
+      track.append(fill);
+      const evidence = node("p", "", skill.evidence.length
+        ? "Evidence: " + skill.evidence.map(item => item.title).join(", ")
+        : "No completed lesson evidence yet.");
+      card.append(title, description, count, track, evidence);
+      target.append(card);
+    }
+  }
+
+  function renderWeek(days) {
+    const target = $("#progress-week");
+    target.replaceChildren();
+    const max = Math.max(1, ...days.map(item => item.count));
+    for (const day of days) {
+      const cell = node("div", "progress-day");
+      const bar = node("div", "progress-day-bar");
+      const fill = node("span");
+      fill.style.height = (day.count ? Math.max(8, (day.count / max) * 100) : 0) + "%";
+      bar.append(fill);
+      const label = node("small", "", new Date(day.date + "T12:00:00").toLocaleDateString(undefined, { weekday: "short" }));
+      label.title = day.date + " · " + day.count + " completed activities";
+      cell.append(bar, label);
+      target.append(cell);
+    }
+  }
+
+  function renderGoals(goals) {
+    const target = $("#progress-goals");
+    target.replaceChildren();
+    $("#goal-count").textContent = goals.length + " active";
+    if (!goals.length) {
+      target.append(node("p", "progress-empty", "No active goals yet. Add a small target above; it will count saved activity, not estimate ability."));
+      return;
+    }
+    for (const goal of goals) {
+      const row = node("article", "progress-row");
+      const details = node("div");
+      details.append(node("strong", "", goal.title));
+      const type = goal.goal_type.replaceAll("_", " ");
+      details.append(node("p", "", goal.current_count + " / " + goal.target_count + " " + type +
+        (goal.reached_target ? " · target reached" : " · " + goal.remaining + " to go") +
+        (goal.due_date ? " · target date " + goal.due_date : "")));
+      if (goal.description) details.append(node("p", "", goal.description));
+      const actions = node("div", "progress-row-actions");
+      const archive = node("button", "button button-quiet", "Archive");
+      archive.type = "button";
+      archive.addEventListener("click", async () => {
+        try { await request("/api/goals/" + encodeURIComponent(goal.id) + "/archive", { method: "POST" }); await load(); }
+        catch (error) { setStatus(error.message, true); }
+      });
+      const remove = node("button", "button button-quiet", "Delete");
+      remove.type = "button";
+      remove.addEventListener("click", async () => {
+        if (!window.confirm("Permanently delete this goal? Activity records will not be deleted.")) return;
+        try { await request("/api/goals/" + encodeURIComponent(goal.id), { method: "DELETE" }); await load(); }
+        catch (error) { setStatus(error.message, true); }
+      });
+      actions.append(archive, remove);
+      row.append(details, actions);
+      target.append(row);
+    }
+  }
+
+  function renderActivity(items) {
+    const target = $("#progress-activity");
+    target.replaceChildren();
+    if (!items.length) {
+      target.append(node("p", "progress-empty", "Your completed lessons, practice, interviews and memory reviews will appear here."));
+      return;
+    }
+    for (const item of items) {
+      const row = node("div", "progress-row");
+      const date = item.occurred_at ? new Date(item.occurred_at).toLocaleString() : "Date unavailable";
+      row.append(node("strong", "", item.title), node("p", "", date));
+      target.append(row);
+    }
+  }
+
+  async function openRecommendation(item) {
+    if (item.kind === "goal" || item.kind === "choose_goal") {
+      $("#goal-title").focus();
+      return;
+    }
+    if (item.kind === "resume_lesson" || item.kind === "lesson" || item.kind === "review_memory") {
+      $("#learning-toggle").click();
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      if (item.kind === "resume_lesson") {
+        const button = [...document.querySelectorAll("#learning-resume-list button")].find(el => el.textContent.startsWith("Resume:"));
+        if (button) button.click();
+      } else if (item.kind === "lesson") {
+        const button = [...document.querySelectorAll("[data-lesson-id]")].find(el => el.dataset.lessonId === item.target_id);
+        if (button) button.click();
+      } else {
+        $("#memory-view")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      return;
+    }
+    if (item.kind === "practice") $("#start-button")?.click();
+    if (item.kind === "career") $("#career-toggle")?.click();
+  }
+
+  function renderRecommendations(items) {
+    const target = $("#progress-recommendations");
+    target.replaceChildren();
+    for (const item of items) {
+      const row = node("div", "progress-row");
+      const details = node("div");
+      details.append(node("strong", "", item.title), node("p", "", item.reason));
+      const action = node("button", "button button-secondary", "Open");
+      action.type = "button";
+      action.addEventListener("click", () => openRecommendation(item));
+      row.append(details, node("div", "progress-row-actions"));
+      row.lastChild.append(action);
+      target.append(row);
+    }
+  }
+
+  function setStatus(message, isError = false) {
+    $("#progress-status").textContent = message;
+    $("#progress-status").classList.toggle("error", isError);
+  }
+
+  async function load() {
+    setStatus("Updating saved activity…");
+    try {
+      const [overview, goals] = await Promise.all([
+        request("/api/progress/overview"),
+        request("/api/goals"),
+      ]);
+      state.overview = overview;
+      renderSummary(overview.summary);
+      renderSkills(overview.skills);
+      renderWeek(overview.weekly_activity);
+      renderGoals(goals.goals);
+      renderActivity(overview.recent_activity);
+      renderRecommendations(overview.recommendations);
+      setStatus("Updated " + new Date(overview.generated_at).toLocaleTimeString());
+    } catch (error) {
+      setStatus(error.message, true);
+    }
+  }
+
+  async function createGoal(event) {
+    event.preventDefault();
+    const submit = $("#goal-form button[type='submit']");
+    submit.disabled = true;
+    $("#goal-error").textContent = "";
+    try {
+      await request("/api/goals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: $("#goal-title").value,
+          description: $("#goal-description").value,
+          goal_type: $("#goal-type").value,
+          target_count: Number($("#goal-target").value),
+          due_date: $("#goal-date").value || null,
+        }),
+      });
+      $("#goal-form").reset();
+      $("#goal-target").value = "3";
+      await load();
+    } catch (error) {
+      $("#goal-error").textContent = error.message;
+    } finally {
+      submit.disabled = false;
+    }
+  }
+
+  async function exportBackup() {
+    const button = $("#data-export");
+    button.disabled = true;
+    $("#data-status").textContent = "Preparing a local backup…";
+    try {
+      const response = await fetch("/api/data/export");
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        throw new Error(body.detail || "Backup export failed.");
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "prepped-backup-" + new Date().toISOString().replaceAll(":", "-").slice(0, 19) + ".json";
+      document.body.append(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      $("#data-status").textContent = "Backup downloaded. Keep it private: it contains your saved answers and learning notes.";
+    } catch (error) {
+      $("#data-status").textContent = error.message;
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  async function importBackup(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    event.target.value = "";
+    if (file.size > 25 * 1024 * 1024) {
+      $("#data-status").textContent = "This file exceeds the 25 MB restore limit.";
+      return;
+    }
+    if (!window.confirm("Restore this Prepped backup? This replaces ALL current local profile, practice, lesson, memory, interview and goal data. Export a backup of the current database first if you may need it.")) return;
+    $("#data-status").textContent = "Validating backup before replacing local data…";
+    try {
+      const backup = JSON.parse(await file.text());
+      backup.confirm_replace = true;
+      const result = await request("/api/data/restore", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(backup),
+      });
+      $("#data-status").textContent = "Restored " + result.records_restored + " records. Reloading Prepped…";
+      window.setTimeout(() => window.location.reload(), 700);
+    } catch (error) {
+      $("#data-status").textContent = error instanceof SyntaxError ? "The selected file is not valid JSON." : error.message;
+    }
+  }
+
+  $("#progress-toggle")?.addEventListener("click", showProgress);
+  $("#progress-refresh")?.addEventListener("click", load);
+  $("#progress-home")?.addEventListener("click", () => { for (const id of viewIds) $("#" + id)?.classList.toggle("hidden", id !== "home-view"); $("#progress-toggle")?.setAttribute("aria-expanded", "false"); });
+  $("#goal-form")?.addEventListener("submit", createGoal);
+  $("#data-export")?.addEventListener("click", exportBackup);
+  $("#data-import")?.addEventListener("change", importBackup);
+  document.addEventListener("DOMContentLoaded", () => {
+    if ($("#progress-view")) {
+      $("#progress-view").addEventListener("focusin", () => {});
+    }
+  });
+})();
