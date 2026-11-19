@@ -6,6 +6,7 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 
 from prepped.main import create_app
+from prepped.memory import MAX_INTERVAL_DAYS, _next_interval
 
 
 def client_for(tmp_path: Path) -> TestClient:
@@ -141,3 +142,8 @@ def test_memory_migration_preserves_existing_practice_and_learning_data(tmp_path
         assert client.get(f"/api/learning/attempts/{started['id']}").status_code == 200
         assert client.get("/api/profile").json()["profile"]["primary_goal"] == "english_fluency"
         assert client.get(f"/api/memory/items/{item['id']}").status_code == 200
+
+
+def test_review_scheduler_caps_long_intervals() -> None:
+    assert _next_interval(12, 3000, "good") == (13, MAX_INTERVAL_DAYS)
+    assert _next_interval(12, 3000, "easy") == (13, MAX_INTERVAL_DAYS)
