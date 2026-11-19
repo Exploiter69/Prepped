@@ -233,6 +233,14 @@
     } catch (error) { $("#career-voice-status").textContent = error.message; }
   }
   async function startRecording() {
+    if (!state.stt) {
+      try { state.stt = (await api("/api/voice/status")).stt || null; }
+      catch (error) { $("#career-voice-status").textContent = error.message + " Type your answer instead."; return; }
+    }
+    if (state.stt && !state.stt.available) {
+      $("#career-voice-status").textContent = (state.stt.detail || "Speech transcription is unavailable.") + " Type your answer instead.";
+      return;
+    }
     if (state.stt?.engine === "groq-whisper") {
       $("#career-voice-status").textContent = "Remote transcription is enabled: after recording, audio is sent to Groq Whisper. Prepped does not retain the raw recording. Continue only with a non-sensitive answer; text entry is available instead.";
     } else {
