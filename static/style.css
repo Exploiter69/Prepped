@@ -48,3 +48,47 @@ textarea { width:100%; resize:vertical; min-height:150px; border:1px solid #4848
 .principles { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1.2rem; padding:3rem 0 4rem; } .principles article { border-top:1px solid var(--line); padding-top:1rem; } .principle-index { color:var(--accent); font-size:.75rem; } .principles h3 { margin-top:.7rem; } .principles p { font-size:.9rem; }
 footer { border-top:1px solid var(--line); border-bottom:0; color:var(--muted); }
 @media (max-width:600px) { .profile-fields,.profile-areas { grid-template-columns:1fr; } .header-note { display:none; } .scenario-meta { grid-template-columns:1fr; gap:.8rem; } .principles { grid-template-columns:1fr; gap:1.5rem; } footer { align-items:flex-start; flex-direction:column; } .form-actions,.history-item { align-items:stretch; } .form-actions { flex-direction:column; } .form-actions>*,.action-group { width:100%; } .action-group>.button { flex:1; } .comparison-table { font-size:.76rem; } }
+
+
+/* Learning Engine */
+.learning-panel { margin-top: 1.5rem; }
+.learning-recommendation { margin-top: 1.5rem; }
+.learning-section-heading { display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+.learning-section-heading h3 { margin:.35rem 0 .6rem; }
+.learning-card-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.8rem; }
+.learning-card,.learning-track { border:1px solid var(--line); border-radius:8px; background:var(--raised); padding:1rem; min-width:0; }
+.learning-card h4,.learning-card h5,.learning-track h4 { margin:.5rem 0; }
+.learning-card p,.learning-track>p { color:var(--muted); font-size:.88rem; margin:.45rem 0 .8rem; }
+.learning-card .learning-why { color:var(--accent); font-size:.82rem; }
+.learning-card .button { margin-top:.3rem; }
+.learning-card.compact { display:flex; flex-direction:column; align-items:flex-start; }
+.learning-track-list { display:grid; gap:1rem; }
+.learning-track .learning-card-list { margin-top:.8rem; }
+.learning-progress { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.7rem; margin:.8rem 0; }
+.learning-progress-item { border:1px solid var(--line); border-radius:8px; padding:.85rem; display:grid; gap:.2rem; }
+.learning-progress-item strong { font-size:1.35rem; font-variant-numeric:tabular-nums; }
+.learning-progress-item span { color:var(--muted); font-size:.8rem; }
+.learning-resume-list { display:flex; gap:.6rem; align-items:center; flex-wrap:wrap; margin-top:.8rem; }
+.learning-resume-list h4 { width:100%; margin:.3rem 0; }
+.learning-runner { margin-top:2rem; padding-top:.5rem; }
+.learning-runner>h3 { font-size:1.45rem; }
+.learning-example { background:var(--raised); border-left:2px solid var(--accent); padding:1rem; margin:1rem 0; }
+.learning-example p { margin:.45rem 0; color:var(--muted); }
+.learning-exercise { margin:1.2rem 0; }
+.learning-exercise h4 { margin-bottom:.8rem; }
+.learning-choice-list { border:1px solid var(--line); border-radius:8px; padding:1rem; display:grid; gap:.75rem; }
+.learning-choice-list legend { padding:0 .35rem; color:var(--muted); }
+.learning-choice-list label { display:flex; gap:.65rem; align-items:flex-start; }
+.learning-choice-list input { margin-top:.25rem; accent-color:var(--accent); }
+.learning-order-list { display:grid; gap:.7rem; }
+.learning-order-list label { display:grid; gap:.35rem; color:var(--muted); font-size:.85rem; }
+.learning-exercise textarea,.learning-order-list select { width:100%; background:var(--raised); color:var(--text); border:1px solid var(--line); border-radius:6px; padding:.75rem; font:inherit; }
+.learning-feedback { margin:1.2rem 0; }
+.learning-feedback .feedback-card { display:grid; grid-template-columns:1fr auto; gap:.4rem 1rem; margin:.7rem 0; }
+.learning-feedback .feedback-card p { grid-column:1/-1; }
+.learning-feedback .feedback-status { align-self:start; }
+@media (max-width:600px) {
+  .learning-card-list { grid-template-columns:1fr; }
+  .learning-progress { grid-template-columns:1fr; }
+  .learning-feedback .feedback-card { grid-template-columns:1fr; }
+}
