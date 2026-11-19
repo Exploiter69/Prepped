@@ -72,12 +72,12 @@
       const lesson = lessons.get(item.lesson_id);
       const missing = (lesson?.prerequisites || []).filter((id) => !completed.has(id));
       const action = makeButton(completed.has(item.lesson_id) ? "Practise again →" : "Start lesson →",
-        item.lesson_id, "button button-primary", missing.length > 0);
+        item.lesson_id, "button button-primary");
       card.append(meta, heading, description, why, action);
       if (missing.length) {
         const prerequisite = document.createElement("p");
         prerequisite.className = "learning-prerequisite";
-        prerequisite.textContent = "Complete the earlier lesson in this path first.";
+        prerequisite.textContent = "Suggested first: " + missing.map((id) => lessons.get(id)?.title || id.replaceAll("-", " ")).join(", ") + ". You can still open this lesson now.";
         card.append(prerequisite);
       }
       container.append(card);
@@ -141,10 +141,10 @@
           const prerequisite = document.createElement("p");
           prerequisite.className = "learning-prerequisite";
           prerequisite.textContent = missing.length
-            ? "Complete first: " + missing.map((id) => titles[id] || id.replaceAll("-", " ")).join(", ")
+            ? "Suggested first: " + missing.map((id) => titles[id] || id.replaceAll("-", " ")).join(", ") + ". This lesson is still open."
             : (completed.has(lesson.id) ? "You can repeat this lesson at any time." : "Ready to start.");
           card.append(meta, title, summary, prerequisite,
-            makeButton(completed.has(lesson.id) ? "Practise again" : "Open lesson", lesson.id, "button button-secondary", missing.length > 0));
+            makeButton(completed.has(lesson.id) ? "Practise again" : "Open lesson", lesson.id, "button button-secondary"));
           cards.append(card);
         }
         unitSection.append(unitHeading, unitDescription, outcomes, cards);
