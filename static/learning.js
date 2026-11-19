@@ -419,6 +419,7 @@
   }
 
   function renderAttempt(attempt) {
+    stopListeningAudio();
     state.attempt = attempt;
     $("#learning-runner").classList.remove("hidden");
     $("#learning-runner-title").textContent = attempt.lesson.title;
