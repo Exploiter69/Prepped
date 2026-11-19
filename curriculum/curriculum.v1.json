@@ -998,7 +998,7 @@
     },
     {
       "id": "question-formation",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "track_id": "english-foundations",
       "unit_id": "grammar-practice",
       "level_id": "foundation",
@@ -1068,7 +1068,13 @@
           "placeholder": "Could you clarify…?",
           "guidance": "Ask about one specific missing detail. Keep the tone respectful and the question easy to answer."
         }
-      ]
+      ],
+      "example": {
+        "label": "Example",
+        "before": "She works on the API.",
+        "after": "What does she work on?",
+        "explanation": "Use “does” with “she”, then use the base verb “work” in the question."
+      }
     },
     {
       "id": "phrases-for-study",
@@ -1166,11 +1172,17 @@
           "placeholder": "I…",
           "guidance": "Use the phrase naturally and keep the example factual. You can save a useful phrase later when the revision feature is available; this response remains part of this lesson attempt for now."
         }
-      ]
+      ],
+      "example": {
+        "label": "Example",
+        "before": "I did a test before the demo.",
+        "after": "I carried out a test before the demo.",
+        "explanation": "“Carry out a test” is a natural collocation meaning to perform a test."
+      }
     },
     {
       "id": "listening-conversations",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "track_id": "english-foundations",
       "unit_id": "listening-practice",
       "level_id": "foundation",
@@ -1244,7 +1256,13 @@
           "placeholder": "The next action is…",
           "guidance": "Mention the person, action, and timing if the audio provides them. Reveal the transcript if you need the text alternative."
         }
-      ]
+      ],
+      "example": {
+        "label": "Listening strategy",
+        "before": "Listen only for individual words.",
+        "after": "Listen for the request, the response, and the next action.",
+        "explanation": "These three parts help you follow a short team conversation."
+      }
     },
     {
       "id": "speaking-structured",
@@ -1299,7 +1317,13 @@
           "placeholder": "The update says…",
           "guidance": "Keep the three facts: first version ready, two issues found, fixes planned before sharing. Do not add an outcome that was not stated."
         }
-      ]
+      ],
+      "example": {
+        "label": "Example",
+        "before": "I did some work on the form.",
+        "after": "I added validation to the form and checked three invalid inputs.",
+        "explanation": "The second version gives a concrete action and an observable detail."
+      }
     },
     {
       "id": "speaking-opinions",
@@ -1354,11 +1378,17 @@
           "placeholder": "Could you please rephrase…?",
           "guidance": "Ask for clarification directly and respectfully. You are practising a communication strategy, not being graded."
         }
-      ]
+      ],
+      "example": {
+        "label": "Example",
+        "before": "This way is better.",
+        "after": "I prefer a small example first because it lets me test the basic workflow quickly.",
+        "explanation": "A clear opinion states a preference and supports it with a reason."
+      }
     },
     {
       "id": "pronunciation-self-review",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "track_id": "english-foundations",
       "unit_id": "pronunciation-practice",
       "level_id": "foundation",
@@ -1404,7 +1434,13 @@
           "placeholder": "I would like to practise…",
           "guidance": "This is a private self-review choice. It is not an assessment of your accent, pronunciation accuracy, or confidence."
         }
-      ]
+      ],
+      "example": {
+        "label": "Self-review example",
+        "before": "Repeat the whole phrase as quickly as possible.",
+        "after": "Listen once, repeat at a comfortable pace, and choose one word ending or pause to notice.",
+        "explanation": "The aim is understandable, comfortable practice—not accent imitation or a speed target."
+      }
     }
   ],
   "levels": [
