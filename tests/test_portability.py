@@ -35,6 +35,10 @@ def test_export_and_restore_round_trip_all_local_user_tables(tmp_path: Path) -> 
         source.post("/api/goals", json={
             "title": "Complete lessons", "goal_type": "lessons_completed", "target_count": 2,
         })
+        source.post("/api/progress/recommendations/dismiss", json={
+            "kind": "choose_goal", "target_id": "goals", "title": "Choose a small practice goal",
+            "reason": "A short, learner-chosen target makes the next action clear.",
+        })
         exported = source.get("/api/data/export")
         assert exported.status_code == 200
         assert exported.headers["content-type"].startswith("application/json")
@@ -42,7 +46,7 @@ def test_export_and_restore_round_trip_all_local_user_tables(tmp_path: Path) -> 
         assert backup["format"] == "prepped-local-backup"
         assert set(backup["tables"]) == {
             "learner_profile", "sessions", "answers", "learning_attempts", "learning_events",
-            "learning_memory", "learning_memory_reviews", "career_sessions", "career_turns", "learner_goals",
+            "learning_memory", "learning_memory_reviews", "career_sessions", "career_turns", "learner_goals", "recommendation_dismissals",
         }
         assert backup["tables"]["sessions"]
         assert backup["tables"]["answers"]
@@ -70,7 +74,8 @@ def test_export_and_restore_round_trip_all_local_user_tables(tmp_path: Path) -> 
         assert status["counts"]["career_sessions"] == 1
         assert status["counts"]["career_turns"] == 1
         assert status["counts"]["learner_goals"] == 1
-        assert status["database_schema_version"] == 2
+        assert status["counts"]["recommendation_dismissals"] == 1
+        assert status["database_schema_version"] == 3
     finally:
         source.__exit__(None, None, None)
         target.__exit__(None, None, None)
