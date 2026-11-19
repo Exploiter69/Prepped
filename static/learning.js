@@ -659,7 +659,7 @@
     } else {
       answer = $("#learning-reflection")?.value || "";
     }
-    if (!answer || (typeof answer === "string" && !answer.trim())) {
+    if ((!answer || (typeof answer === "string" && !answer.trim())) && exercise.type !== "pronunciation") {
       $("#learning-exercise-error").textContent = "Add your answer before continuing.";
       return;
     }
