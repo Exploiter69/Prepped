@@ -394,7 +394,29 @@ def test_pronunciation_attempt_is_private_self_review_not_an_accuracy_score(tmp_
             assert client.post(f"/api/learning/attempts/{shaping['id']}/responses",
                                json={"exercise_id": exercise_id, "answer": answer}).status_code == 200
         speaking = client.post("/api/learning/attempts", json={"lesson_id": "speaking-structured"}).json()
-        assert speaking.status_code if hasattr(speaking, "status_code") else True
         assert speaking["current_exercise"]["type"] == "short_response"
         assert "english.fluency" in speaking["lesson"]["skill_ids"]
-        assert "Record spoken response" not in json.dumps(speaking)
+        for exercise_id, answer in [
+            ("speaking-description", "I worked on a form and added input validation."),
+            ("speaking-process", "First I opened the form, then I checked the inputs."),
+            ("speaking-retell", "The first version is ready, two issues were found, and fixes are planned."),
+        ]:
+            assert client.post(f"/api/learning/attempts/{speaking['id']}/responses",
+                               json={"exercise_id": exercise_id, "answer": answer}).status_code == 200
+
+        pronunciation = client.post(
+            "/api/learning/attempts", json={"lesson_id": "pronunciation-self-review"}
+        ).json()
+        exercise = pronunciation["current_exercise"]
+        assert exercise["type"] == "pronunciation"
+        assert exercise["audio_text"] == exercise["transcript"]
+        assert "answer" not in exercise
+        response = client.post(
+            f"/api/learning/attempts/{pronunciation['id']}/responses",
+            json={"exercise_id": "repeat-project-update", "answer": "I tested the application."},
+        )
+        assert response.status_code == 200
+        feedback = response.json()["feedback"][0]
+        assert feedback["status"] == "saved_for_self_review"
+        assert "does not measure pronunciation" in feedback["measurement_note"]
+        assert "score" not in json.dumps(feedback).lower()
