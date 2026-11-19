@@ -118,6 +118,9 @@ def test_memory_suspend_resume_and_delete_review_history_cascade(tmp_path: Path)
         dismissed = client.post(f"/api/memory/items/{item['id']}/dismiss")
         assert dismissed.status_code == 200
         assert dismissed.json()["item"]["dismissed_at"]
+        dismissed_stats = client.get("/api/memory/stats").json()
+        assert dismissed_stats["dismissed"] == 1
+        assert dismissed_stats["active"] == 0
         assert client.get("/api/memory/review/queue").json()["count"] == 0
         blocked_dismissed = client.post(f"/api/memory/items/{item['id']}/review", json={"rating": "good"})
         assert blocked_dismissed.status_code == 409
