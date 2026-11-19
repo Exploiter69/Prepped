@@ -227,7 +227,7 @@ Phase B provides the reusable learning foundation, not advanced adaptive instruc
 
 **Implementation added; CI and manual target-device acceptance are pending.**
 
-The English foundations path now contains 11 sequenced lessons across six units. The complete curriculum manifest has 14 stable skills, one foundation stage, nine units, four tracks, 13 authored lessons, and the separate baseline diagnostic.
+The English foundations path now contains 11 sequenced lessons across six units. The complete curriculum manifest has 14 stable skills, one foundation stage, nine units, four tracks, 13 authored lessons, and the separate baseline diagnostic. Every unit and lesson has explicit learning outcomes, and the lesson runner displays lesson outcomes before exercises.
 
 Implemented content:
 
