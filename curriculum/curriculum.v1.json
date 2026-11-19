@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "skills": [
     {
       "id": "english.sentence-structure",
@@ -362,7 +362,7 @@
     },
     {
       "id": "grammar-in-context",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "track_id": "english-foundations",
       "title": "Grammar in context",
       "summary": "Choose verb forms and prepositions that fit the meaning of a sentence.",
