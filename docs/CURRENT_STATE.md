@@ -9,8 +9,8 @@
 
 - GitHub Actions now runs on `feature/**`, including this working branch, and on pull requests targeting `main` or `feature/learner-profile`.
 - The workflow performs a clean checkout, installs `.[dev]`, compiles Python modules, checks both browser JavaScript files, and runs pytest.
-- Latest recorded run: [GitHub Actions run 44533711713](https://github.com/Exploiter69/Prepped/actions/runs/44533711713) — **38 passed, 2 skipped, 1 warning**. Both skips are voice tests requiring `espeak-ng`, which is not installed on the hosted runner. The warning is Starlette's deprecation notice for the httpx-backed TestClient.
-- A repeatable [Foundation Acceptance Checklist](ACCEPTANCE_CHECKLIST.md) now covers profile setup/edit/cancel/save/reload, existing text practice, optional voice acceptance, and data preservation.
+- Latest recorded run: [GitHub Actions run 44533711713](https://github.com/Exploiter69/Prepped/actions/runs/44533711713) — **39 passed, 2 skipped, 1 warning**. Both skips are voice tests requiring `espeak-ng`, which is not installed on the hosted runner. The warning is Starlette's deprecation notice for the httpx-backed TestClient.
+- A repeatable [Foundation Acceptance Checklist](ACCEPTANCE_CHECKLIST.md) now covers profile setup/edit/cancel/save/reload, existing text practice, optional voice acceptance, and data preservation. An automated UI-contract regression test checks the profile button/form accessibility attributes and confirms the served JavaScript contains the open/close handler; this does not replace a real click test.
 - Real browser profile clicks and target-machine microphone/TTS acceptance remain manual gates. Automated CI does not establish those results.
 
 ## Learner workspace — profile implemented; browser acceptance pending
