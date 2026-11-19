@@ -226,7 +226,7 @@ def test_learning_workspace_completes_and_resumes_a_saved_lesson(local_app_url: 
     assert next_lesson.is_visible()
     next_lesson.click()
     page.wait_for_function(
-        "() => document.querySelector('#learning-runner-title').textContent.includes('Grammar in context')"
+        "() => document.querySelector('#learning-runner-title').textContent.includes('Shape a sentence for clarity')"
     )
 
 
@@ -307,7 +307,7 @@ def test_english_track_exposes_complete_phase_c_units(local_app_url: str, browse
         "Listen for the key detail", "Follow a short conversation", "Give a clear short response",
         "Express an opinion and handle a follow-up", "Listen, repeat, and self-review",
     ]:
-        assert track.get_by_role("heading", name=title).is_visible()
+        assert track.locator(".learning-card h6", has_text=title).is_visible()
 
 
 def test_pronunciation_lesson_supports_replay_text_and_unscored_self_review(
