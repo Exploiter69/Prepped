@@ -10,6 +10,7 @@
     <script src="/static/voice.js?v=profile-toggle-2" defer></script>
     <script src="/static/app.js?v=phase-b-1" defer></script>
     <script src="/static/learning.js?v=phase-c-4" defer></script>
+    <script src="/static/memory.js?v=phase-d-1" defer></script>
   </head>
   <body>
     <header class="site-header">
@@ -66,6 +67,41 @@
           <p class="section-help">A few short sentence, listening, and project-response tasks. Your answers are saved as a baseline for later comparison; this does not assign an English level, proficiency score, or placement prediction.</p>
           <button id="learning-diagnostic-start" class="button button-secondary" type="button">Start starting-point check →</button>
           <div id="learning-diagnostic-history" class="learning-diagnostic-history"></div>
+        </section>
+        <section id="memory-view" class="learning-memory" aria-labelledby="memory-title">
+          <div class="divider"></div>
+          <div class="learning-section-heading">
+            <div><span class="meta-label">PHASE D · YOUR PERSONAL LEARNING MEMORY</span><h3 id="memory-title">Remember what matters.</h3></div>
+            <span id="memory-status" class="status" role="status" aria-live="polite">Loading saved items…</span>
+          </div>
+          <p class="section-help">Save only the words, phrases, corrections, examples, and concepts you choose to keep. Every lesson suggestion is editable before saving. Items stay in this local database.</p>
+          <div id="memory-stats" class="learning-progress" aria-label="Memory and revision summary"></div>
+          <section class="memory-review-section" aria-labelledby="memory-review-title">
+            <div class="learning-section-heading"><div><span class="meta-label">SPACED REVISION</span><h4 id="memory-review-title">Due for review</h4></div><button id="memory-refresh" class="button button-quiet" type="button">Refresh</button></div>
+            <p class="section-help">Reveal the answer, then choose how well you remembered it. The schedule is simple and transparent; it is not FSRS.</p>
+            <div id="memory-review"></div>
+          </section>
+          <section class="memory-editor" aria-labelledby="memory-form-title">
+            <h4 id="memory-form-title">Save something worth remembering</h4>
+            <form id="memory-form">
+              <div class="memory-form-grid">
+                <div><label for="memory-type">Item type</label><select id="memory-type" required><option value="word">Word</option><option value="phrase">Phrase</option><option value="correction">Correction</option><option value="concept">Concept</option><option value="example">Example</option></select></div>
+                <div><label for="memory-front">Front / prompt</label><input id="memory-front" maxlength="240" required placeholder="A word, phrase, question, or original wording"></div>
+              </div>
+              <label for="memory-back">Meaning / answer / improved example</label>
+              <textarea id="memory-back" rows="3" maxlength="2000" required placeholder="Write the explanation or answer you want to remember."></textarea>
+              <input id="memory-source-type" type="hidden" value="manual">
+              <input id="memory-source-id" type="hidden">
+              <input id="memory-source-title" type="hidden">
+              <input id="memory-source-excerpt" type="hidden">
+              <p id="memory-source-note" class="section-help">Manual items stay local. Lesson items keep a link to their source context.</p>
+              <div class="form-actions"><button id="memory-form-cancel" class="button button-quiet hidden" type="button">Cancel edit</button><button id="memory-form-submit" class="button button-primary" type="submit">Save to memory</button></div>
+            </form>
+          </section>
+          <section aria-labelledby="memory-items-title">
+            <div class="learning-section-heading"><div><span class="meta-label">YOUR LIBRARY</span><h4 id="memory-items-title">Saved items</h4></div></div>
+            <div id="memory-items" class="memory-item-list"></div>
+          </section>
         </section>
         <div class="divider"></div>
         <section aria-labelledby="learning-all-title">
