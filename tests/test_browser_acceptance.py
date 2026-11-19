@@ -61,6 +61,9 @@ def browser_page():
 def test_profile_setup_edit_cancel_save_and_reload(local_app_url: str, browser_page) -> None:
     page = browser_page
     page.goto(local_app_url)
+    page.wait_for_function(
+        "() => document.querySelector('#profile-save-status').textContent === 'Not set up'"
+    )
     page.locator("#profile-edit-toggle").click()
 
     form = page.locator("#profile-form")
@@ -118,6 +121,9 @@ def test_profile_setup_edit_cancel_save_and_reload(local_app_url: str, browser_p
 def test_practice_room_is_not_gated_by_profile_and_text_flow_completes(local_app_url: str, browser_page) -> None:
     page = browser_page
     page.goto(local_app_url)
+    page.wait_for_function(
+        "() => document.querySelector('#profile-save-status').textContent === 'Not set up'"
+    )
     assert page.locator("#profile-form").is_hidden()
     page.locator("#start-button").click()
     page.locator("#practice-view").wait_for(state="visible")
