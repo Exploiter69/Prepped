@@ -1,7 +1,7 @@
 (() => {
   const $ = (selector, root = document) => root.querySelector(selector);
   const state = { catalog: null, progress: null, attempt: null, busy: false, voiceStatus: null,
-    recorder: null, stream: null, chunks: [], recordTimer: null, discardRecording: false, listeningAudio: null, audioUrl: null };
+    recorder: null, stream: null, chunks: [], recordTimer: null, discardRecording: false, transcribing: false, listeningAudio: null, audioUrl: null };
   const viewIds = ["home-view", "practice-view", "feedback-view", "history-view", "learning-view"];
 
   async function request(url, options = {}) {
@@ -456,7 +456,7 @@
   }
 
   async function startLearningRecording() {
-    if (state.recorder || !state.voiceStatus?.stt?.available) return;
+    if (state.recorder || state.transcribing || !state.voiceStatus?.stt?.available) return;
     const status = $("#learning-voice-status");
     const record = $("#learning-exercise button");
     try {
@@ -487,6 +487,8 @@
           status.textContent = "No audio was captured. Type your response instead.";
           return;
         }
+        state.transcribing = true;
+        $("#learning-submit").disabled = true;
         status.textContent = state.voiceStatus?.stt?.engine === "groq-whisper"
           ? "Sending recording to Groq for transcription…"
           : "Transcribing locally…";
@@ -503,6 +505,9 @@
             : "No speech was recognised. Type your response instead.";
         } catch (error) {
           status.textContent = error.message + " You can type your response instead.";
+        } finally {
+          state.transcribing = false;
+          if (state.attempt?.status === "in_progress") $("#learning-submit").disabled = false;
         }
         const stopButton = $("#learning-exercise button:nth-of-type(2)");
         if (stopButton) stopButton.disabled = true;
