@@ -192,14 +192,16 @@ Deliver a coherent first track rather than a large empty catalogue.
 
 ### Phase D — Personal learning memory and revision
 
-- Let learners explicitly save a word, phrase, correction, or useful example.
-- Preserve source context and the learner's original response.
-- Allow edit, dismiss, delete, suspend, and duplicate resolution.
-- Build a simple transparent local review scheduler only after card quality is demonstrated.
-- Integrate due cards into lessons and a dedicated review session.
-- Never silently convert uncertain automated feedback into a permanent learner weakness.
+**Implementation added; automated and target-laptop acceptance pending.**
 
-**Exit gate:** learners can create/edit/delete review items, complete due reviews, and see scheduling behaviour; tests cover dates, retries, and persistence.
+- [x] Let learners explicitly save a word, phrase, correction, concept, or useful example manually or from lesson/project-practice feedback.
+- [x] Preserve original response/evidence, source title, identifier, and excerpt where available.
+- [x] Allow edit, dismiss/restore, delete, suspend/resume, and duplicate resolution.
+- [x] Build a transparent local interval scheduler, due queue, rating controls, and review history.
+- [x] Keep uncertain automated feedback as an editable suggestion; nothing is saved without learner action.
+- [ ] Complete green CI on the final implementation commit and target-laptop manual acceptance.
+
+**Exit gate:** learners can create/edit/dismiss/suspend/delete review items, complete due reviews, inspect history and scheduling behaviour; tests cover validation, duplicate handling, dates, retries, persistence, and legacy-data compatibility.
 
 ### Phase E — Career and interview studios
 
