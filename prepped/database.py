@@ -74,6 +74,7 @@ def initialize_database(db_path: Path) -> None:
                 lesson_id TEXT NOT NULL,
                 lesson_version TEXT NOT NULL,
                 track_id TEXT NOT NULL,
+                lesson_json TEXT NOT NULL DEFAULT '{}',
                 status TEXT NOT NULL CHECK (status IN ('in_progress', 'completed')),
                 responses_json TEXT NOT NULL DEFAULT '[]',
                 feedback_json TEXT,
@@ -118,6 +119,12 @@ def initialize_database(db_path: Path) -> None:
         connection.execute(
             "CREATE INDEX IF NOT EXISTS idx_sessions_attempt_group ON sessions(attempt_group_id, attempt_number)"
         )
+        learning_columns = {
+            row["name"] for row in connection.execute("PRAGMA table_info(learning_attempts)")
+        }
+        if "lesson_json" not in learning_columns:
+            connection.execute("ALTER TABLE learning_attempts ADD COLUMN lesson_json TEXT NOT NULL DEFAULT '{}'")
+
         connection.execute(
             "CREATE INDEX IF NOT EXISTS idx_learning_attempts_lesson_status ON learning_attempts(lesson_id, status)"
         )
