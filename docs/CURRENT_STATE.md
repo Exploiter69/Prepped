@@ -267,6 +267,6 @@ The Learning workspace now includes a local personal memory and spaced-revision 
 - A small transparent local interval scheduler with review history, lapse/repetition counts, and persisted due dates. It is not FSRS.
 - Additive `learning_memory` and `learning_memory_reviews` tables. Existing session, answer, profile, and learning attempt/event tables are preserved.
 
-The current branch includes API tests for CRUD, validation, duplicate detection, source retention, scheduler behaviour, history, deletion, restart persistence, and legacy data, plus a Chromium memory journey test. These are coverage added, not proof of passing until CI completes on the final Phase D commit.
+GitHub Actions passes on the final Phase D implementation: 79 passed, 2 skipped (both require `espeak-ng`), including API coverage for CRUD, validation, duplicate detection, source retention, scheduler behaviour, history, deletion, restart persistence, legacy data, and Chromium memory journeys.
 
 No mandatory paid service, external model, raw audio storage, login, or new infrastructure was added. Target-laptop manual acceptance remains outstanding.
