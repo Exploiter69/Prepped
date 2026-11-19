@@ -209,3 +209,25 @@ The explicit open/close helper, `aria-expanded` updates, and cache-busted assets
 ### Release rule
 
 A visible screen or saved profile is not a complete feature. Each module must have a full learner journey, persistence, validation, empty/error/retry states, automated tests, accessibility checks and manual acceptance. Keep the existing FastAPI + plain HTML/CSS/JavaScript + SQLite modular monolith, additive migrations, versioned JSON, ₹0 mandatory operating cost, and text fallback.
+
+## Learning Engine — first vertical slice implemented; acceptance pending
+
+The feature/learner-profile branch now includes the first Phase B implementation:
+
+- Versioned local curriculum manifest at curriculum/curriculum.v1.json: six stable skills, three tracks, four lessons, explicit learning outcomes, lesson prerequisites, examples, and three deterministic exercise formats (choice, ordering, reflection).
+- Curriculum validation for unique IDs, supported exercise types, answer/token integrity, and skill/track/lesson references. Invalid curriculum fails application startup rather than silently serving partial content.
+- Reusable learning API: GET /api/learning/catalog (skill map, tracks, lessons, and profile-based route); GET /api/learning/recommendations; POST /api/learning/attempts; GET /api/learning/attempts/{id}; POST /api/learning/attempts/{id}/responses; and GET /api/learning/progress.
+- Additive learning_attempts and learning_events tables. Existing sessions, answers, and profile data are preserved.
+- Profile-driven starting routes for English fluency, placement interviews, project communication, and professional communication. Technical-interview goals currently route through project-explanation foundations and disclose that the dedicated technical question bank is planned.
+- Learning workspace UI for recommended lessons, curriculum browsing, choice/order/reflection exercises, feedback, progress, and resuming unfinished lessons.
+- Choice and ordering feedback compares a response to authored answer keys. Reflection responses are saved for learner self-review and are never automatically graded. No overall or proficiency score is generated.
+
+**Validation in progress:** API tests and a Chromium end-to-end learning journey have been added, including reload/resume. The latest CI run must pass before this milestone is marked automated-tested. Target-laptop browser/responsive acceptance remains a separate manual check.
+
+### Phase B boundaries
+
+This is the reusable learning foundation and starter vertical slice, not the complete English curriculum. Vocabulary lessons, listening/pronunciation activities, diagnostic baseline, learner memory/revision, advanced adaptive routing, and career/interview scenario packs remain planned. The baseline diagnostic is deferred until exercise and feedback quality are stable.
+
+### Voice configuration observation (2026-11-19)
+
+The user confirmed GET /api/voice/status reports groq-whisper / whisper-large-v3 available and local Piper en_US-lessac-medium available. This verifies configuration visibility, not live transcription quality or a measured Indian-English word-error rate. Audio sent to Groq leaves the device; Prepped does not persist raw audio by default.
