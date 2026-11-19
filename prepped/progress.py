@@ -149,7 +149,8 @@ def _overview(db_path: Path, curriculum_path: Path) -> dict[str, Any]:
         lessons = {lesson["id"]: lesson for lesson in curriculum["lessons"]}
         skills = []
         for skill in curriculum["skills"]:
-            linked = [lesson for lesson in curriculum["lessons"] if skill["id"] in lesson["skill_ids"]]
+            linked = [lesson for lesson in curriculum["lessons"]
+                      if lesson.get("kind") != "diagnostic" and skill["id"] in lesson["skill_ids"]]
             done = sorted(skill_evidence[skill["id"]])
             skills.append({
                 "skill_id": skill["id"], "title": skill["title"], "category": skill.get("category", "general"),
