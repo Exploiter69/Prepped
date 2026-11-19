@@ -467,6 +467,26 @@
         detail.textContent = "Your order: " + item.your_order.join(" → ") + ". Suggested order: " + item.suggested_order.join(" → ") + ". " + item.explanation;
       }
       card.append(detail);
+      const save = document.createElement("button");
+      save.type = "button";
+      save.className = "button button-quiet memory-save-suggestion";
+      save.textContent = "Save a learning note…";
+      save.addEventListener("click", () => {
+        const openResponse = ["reflection", "short_response", "pronunciation"].includes(item.type);
+        const back = openResponse
+          ? [item.guidance, item.example_to_compare ? "Example to compare: " + item.example_to_compare : ""].filter(Boolean).join("\\n\\n")
+          : ["Suggested answer: " + (item.correct_answer || (item.suggested_order || []).join(" → ")), item.explanation].filter(Boolean).join("\\n\\n");
+        document.dispatchEvent(new CustomEvent("prepped:memory-save", { detail: {
+          item_type: openResponse ? "example" : "correction",
+          front: openResponse ? (item.original_response || item.prompt) : item.prompt,
+          back: back || "Review this response and add your own explanation.",
+          source_type: "lesson",
+          source_id: state.attempt?.lesson_id || "",
+          source_title: state.attempt?.lesson?.title || "Learning lesson",
+          source_excerpt: item.prompt || "",
+        }}));
+      });
+      card.append(save);
       if (item.guidance) {
         const guidance = document.createElement("p");
         guidance.textContent = item.guidance;
