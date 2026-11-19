@@ -129,3 +129,27 @@ footer { border-top:1px solid var(--line); border-bottom:0; color:var(--muted); 
 .learning-unit-outcomes li+li { margin-top:.2rem; }
 .learning-card h6 { margin:.5rem 0; font-size:.94rem; }
 .learning-unit .learning-card-list { margin-top:.7rem; }
+
+
+/* Phase D — learner-controlled memory and revision */
+.learning-memory { margin-top:1.5rem; }
+.memory-review-section,.memory-editor { margin:1.4rem 0; padding:1rem 0; border-top:1px solid var(--line); }
+.memory-review-section h4,.memory-editor h4 { margin:.35rem 0 .7rem; }
+.memory-form-grid { display:grid; grid-template-columns:minmax(150px,.65fr) minmax(0,1.35fr); gap:1rem; }
+.memory-form-grid input,.memory-form-grid select { width:100%; min-height:44px; border:1px solid #484848; background:#101010; border-radius:8px; color:var(--text); padding:.65rem .8rem; font:inherit; }
+.memory-editor textarea { min-height:90px; margin-bottom:.5rem; }
+.memory-item-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.8rem; }
+.memory-item,.memory-review-card { border:1px solid var(--line); border-radius:8px; background:var(--raised); padding:1rem; min-width:0; }
+.memory-item h4,.memory-review-card h3 { margin:.5rem 0; overflow-wrap:anywhere; }
+.memory-item p,.memory-review-card p { white-space:pre-wrap; overflow-wrap:anywhere; }
+.memory-item-heading { display:flex; justify-content:space-between; align-items:center; gap:.5rem; }
+.memory-actions,.memory-ratings { display:flex; flex-wrap:wrap; align-items:center; gap:.45rem; margin-top:.8rem; }
+.memory-review-card { max-width:720px; margin-top:.8rem; }
+.memory-review-answer { border-left:2px solid var(--accent); padding:.7rem 1rem; background:#171717; }
+.memory-ratings .button { flex:1 1 110px; }
+.memory-save-suggestion { display:block; margin-top:.5rem; }
+#memory-status.error { color:var(--danger); }
+@media (max-width:600px) {
+  .memory-form-grid,.memory-item-list { grid-template-columns:1fr; }
+  .memory-ratings .button { flex:1 1 calc(50% - .5rem); }
+}
