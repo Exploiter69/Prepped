@@ -214,3 +214,40 @@ These checks complement API and Chromium automation. Record the date, browser, d
 - [ ] Complete the Learning flow using keyboard navigation only; confirm visible focus and meaningful labels.
 - [ ] Check the workspace at laptop width and a narrow mobile viewport; confirm cards, controls, and feedback do not overflow.
 - [ ] Confirm status/error messages are understandable and the learner can return to the practice room at any point.
+
+
+## Phase D — Personal learning memory and spaced revision
+
+Run these checks on a disposable database first. Keep the normal local database intact.
+
+### Manual capture and item management
+
+- [ ] Open Learning and find the Personal learning memory section.
+- [ ] Create one word, phrase, correction, concept, and example manually; confirm each appears in the local library.
+- [ ] From a completed lesson review, choose **Save a learning note**. Confirm it only prefills the editor and does not save until submitted.
+- [ ] Confirm lesson-derived items retain source lesson title, identifier, and source excerpt.
+- [ ] Edit an item's front and back; confirm its source metadata and review history remain intact.
+- [ ] Attempt a duplicate with different case and whitespace; confirm the existing item is identified and not overwritten.
+- [ ] Suspend an item; confirm it disappears from the due queue. Resume it and confirm its schedule is preserved.
+- [ ] Delete an item; confirm it and its review history are permanently removed after confirmation.
+
+### Review and scheduling
+
+- [ ] Confirm a newly saved active item is due immediately.
+- [ ] Reveal a card's answer before rating it.
+- [ ] Test Again, Hard, Good, and Easy on separate disposable cards and confirm the next due date and interval are visible/consistent with the documented schedule.
+- [ ] Confirm Again increments lapses and resets the repetition step.
+- [ ] Confirm a successful review removes the card from the due queue until its next due date.
+- [ ] Confirm review history and schedule survive browser reload and application restart.
+- [ ] Confirm suspended cards cannot be reviewed until resumed.
+- [ ] Confirm the UI and documentation call this a simple local scheduler, not FSRS.
+
+### Automated and data-safety checks
+
+- [ ] Run `python -m compileall -q prepped`.
+- [ ] Run `node --check static/app.js`, `node --check static/voice.js`, `node --check static/learning.js`, and `node --check static/memory.js`.
+- [ ] Run `python -m pytest -q` and record exact pass/skip counts.
+- [ ] Confirm GitHub Actions passes for the exact commit.
+- [ ] Confirm legacy sessions, answers, learner profile, learning attempts, and learning events remain unchanged by the memory migration.
+- [ ] Confirm memory items and review history persist in SQLite and no external service or raw audio file is introduced.
+- [ ] Check keyboard-only operation, visible focus, screen-reader labels/status, and narrow-screen layout.
