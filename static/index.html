@@ -194,9 +194,11 @@
             <label for="goal-description">Why this matters (optional)</label>
             <input id="goal-description" maxlength="240" placeholder="A short note to yourself">
             <p id="goal-error" class="inline-error" role="alert"></p>
-            <button class="button button-primary" type="submit">Add my goal</button>
+            <div class="form-actions"><button class="button button-primary" type="submit">Add my goal</button><button id="goal-cancel-edit" class="button button-quiet hidden" type="button">Cancel edit</button></div>
           </form>
           <div id="progress-goals" class="progress-list"></div>
+          <button id="goal-archive-toggle" class="button button-quiet" type="button" aria-expanded="false">Show archived goals</button>
+          <div id="progress-archived-goals" class="progress-list hidden"></div>
         </section>
         <section class="progress-section" aria-labelledby="progress-skills-title">
           <h3 id="progress-skills-title">Skill evidence</h3>
