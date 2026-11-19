@@ -16,7 +16,7 @@ It is a practice and learning tool, not a hiring assessment, placement predictor
 - One private local learner profile; no account or login requirement.
 - Onboarding: current study year, branch, learning goals, confidence/starting level, target role, and focus areas.
 - Editable preferences and goals.
-- A baseline diagnostic that records what the learner can currently do; it must not claim validated proficiency.
+- [Implemented] A low-stakes baseline diagnostic that records observable responses and completed tasks without claiming validated proficiency.
 - Practice recommendations derived transparently from goals, recent activity, and observed evidence.
 - Learner can skip onboarding and continue to the existing practice room.
 
@@ -75,7 +75,7 @@ It is a practice and learning tool, not a hiring assessment, placement predictor
 ### Learning foundation
 1. Skill taxonomy and versioned content manifest.
 2. Scenario catalogue and reusable scenario runner.
-3. Learner baseline diagnostic with transparent, non-certified output.
+3. [Implemented] Learner baseline diagnostic with transparent, non-certified output.
 4. Rule-based recommendations connected to profile and practice history.
 
 ### Communication and interview studios
@@ -156,7 +156,7 @@ Build the reusable learning foundation before adding many disconnected screens.
 5. **Evidence-based feedback:** explain a correction, show the learner's original text, offer a better example, and state uncertainty. Do not infer proficiency from a single response or fabricate speech/pronunciation measurements.
 6. **Progress events:** persist lesson attempts, completion, skill links, timestamps, and feedback references additively in SQLite.
 7. **Profile-driven starting route:** map the learner's stated goal and focus areas to a transparent starter path. For example, English fluency plus speaking fluency/grammar/vocabulary should prioritise those units. Show why each recommendation appears and allow the learner to change the route.
-8. **Diagnostic:** add a short, low-stakes baseline only after exercises and feedback are stable. Store observable responses and completed tasks, not a certified level.
+8. **Diagnostic — implemented:** a short, low-stakes baseline follows the exercise loop. It stores observable responses and completed tasks, not a certified level.
 
 **Exit gate:** a learner can choose a track, complete a sequence of lessons, receive grounded feedback, retry, resume after restart, and see progress. Profile choices demonstrably affect the suggested starting path. Text mode works without speech models.
 
