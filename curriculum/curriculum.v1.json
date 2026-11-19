@@ -10,7 +10,8 @@
         "Arrange words into a clear sentence",
         "Write one focused sentence"
       ],
-      "category": "english"
+      "category": "english",
+      "status": "active"
     },
     {
       "id": "english.grammar-in-context",
@@ -24,7 +25,8 @@
       "category": "english",
       "prerequisites": [
         "english.sentence-structure"
-      ]
+      ],
+      "status": "active"
     },
     {
       "id": "english.vocabulary-context",
@@ -34,7 +36,8 @@
         "Use a word from context clues",
         "Distinguish general and precise wording"
       ],
-      "category": "english"
+      "category": "english",
+      "status": "active"
     },
     {
       "id": "communication.project-summary",
@@ -45,7 +48,8 @@
         "Describe the implemented approach",
         "Identify who the work is for"
       ],
-      "category": "communication"
+      "category": "communication",
+      "status": "active"
     },
     {
       "id": "communication.clarity",
@@ -56,7 +60,11 @@
         "Organise an explanation",
         "Separate verified results from intended outcomes"
       ],
-      "category": "communication"
+      "category": "communication",
+      "status": "active",
+      "prerequisites": [
+        "communication.project-summary"
+      ]
     },
     {
       "id": "interview.project-explanation",
@@ -66,7 +74,11 @@
         "Explain a technical project",
         "Describe personal contribution"
       ],
-      "category": "interview"
+      "category": "interview",
+      "status": "active",
+      "prerequisites": [
+        "communication.project-summary"
+      ]
     },
     {
       "id": "english.fluency",
@@ -126,7 +138,10 @@
         "Structure a project explanation"
       ],
       "category": "interview",
-      "status": "active"
+      "status": "active",
+      "prerequisites": [
+        "communication.project-summary"
+      ]
     },
     {
       "id": "interview.hr-behavioural",
@@ -683,7 +698,7 @@
         },
         {
           "id": "listening-response",
-          "type": "reflection",
+          "type": "short_response",
           "prompt": "In one or two sentences, summarise the difference between a completed task and a planned task in the audio.",
           "placeholder": "The speaker completed… The next planned task is…",
           "guidance": "Use details from the spoken message. You may reveal the transcript if you need the text alternative."
