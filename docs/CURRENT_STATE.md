@@ -211,7 +211,7 @@ A visible screen or saved profile is not a complete feature. Each module must ha
 
 The feature/learner-profile branch now includes the first Phase B implementation:
 
-- Versioned local curriculum manifest at curriculum/curriculum.v1.json: 14 stable skills, three tracks, six lessons, explicit learning outcomes, lesson prerequisites, examples, and six exercise formats (choice, ordering, vocabulary, listening, short response, reflection).
+- Versioned local curriculum manifest at curriculum/curriculum.v1.json: 14 stable skills, one foundation level, six units, three tracks, six lessons, explicit learning outcomes, lesson prerequisites, examples, and six exercise formats (choice, ordering, vocabulary, listening, short response, reflection).
 - Curriculum validation for unique IDs, supported exercise types, answer/token integrity, and skill/track/lesson references. Invalid curriculum fails application startup rather than silently serving partial content.
 - Reusable learning API: GET /api/learning/catalog (skill map, tracks, lessons, and profile-based route); GET /api/learning/recommendations; POST /api/learning/attempts; GET /api/learning/attempts/{id}; POST /api/learning/attempts/{id}/responses; and GET /api/learning/progress.
 - Additive learning_attempts and learning_events tables. Existing sessions, answers, and profile data are preserved.
