@@ -65,7 +65,7 @@ def test_memory_validation_and_update_preserve_source_and_schedule(tmp_path: Pat
         assert item["source_id"] == "vocabulary-in-context"
         assert item["interval_days"] == 0
         other = create_card(client, front="another phrase").json()["item"]
-        duplicate_update = client.put(f"/api/memory/items/{other['id']}", json={"front": "in the long run"})
+        duplicate_update = client.put(f"/api/memory/items/{other['id']}", json={"front": "over time"})
         assert duplicate_update.status_code == 409
         assert duplicate_update.json()["detail"]["existing_id"] == created["id"]
         assert client.put(f"/api/memory/items/{created['id']}", json={}).status_code == 422
