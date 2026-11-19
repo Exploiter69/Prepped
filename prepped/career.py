@@ -280,7 +280,9 @@ def create_career_router(db_path: Path, studios_path: Path = DEFAULT_STUDIOS_PAT
             question_index = row["current_question_index"]
             if current["turn_type"] == "primary":
                 authored = studio["questions"][question_index]["followup"]
-                pending = {"question_id": current["question_id"], "turn_type": "followup", "prompt": authored["prompt"]}
+                variants = authored.get("prompts", {})
+                followup_prompt = variants.get(row["difficulty"], authored["prompt"])
+                pending = {"question_id": current["question_id"], "turn_type": "followup", "prompt": followup_prompt}
             else:
                 question_index += 1
             completed_at = None
