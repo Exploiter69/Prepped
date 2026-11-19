@@ -264,7 +264,7 @@ The English starter path is now expanded under Phase C. Advanced diagnostic inte
 
 - A dedicated local memory API and Learning workspace section.
 - Explicit item types: word, phrase, correction, concept, and example.
-- Manual item creation plus optional lesson-feedback suggestions. A suggestion only prefills the editor; the learner must review and submit it before anything is saved.
+- Manual item creation plus optional lesson and project-practice feedback suggestions. A suggestion only prefills the editor; the learner must review and submit it before anything is saved.
 - Source provenance: source type, lesson/attempt identifier, lesson title, and a short source excerpt are retained when available.
 - Edit, suspend/resume, and permanent delete controls. Deleting an item also deletes its review history.
 - Duplicate detection uses Unicode-normalised, case-folded, whitespace-collapsed text within the same item type. Existing items are not silently overwritten.
