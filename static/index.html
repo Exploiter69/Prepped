@@ -11,11 +11,12 @@
     <script src="/static/app.js?v=phase-d-1" defer></script>
     <script src="/static/learning.js?v=phase-d-1" defer></script>
     <script src="/static/memory.js?v=phase-d-2" defer></script>
+    <script src="/static/career.js?v=phase-e-1" defer></script>
   </head>
   <body>
     <header class="site-header">
       <a class="wordmark" href="/" aria-label="Prepped home">prepped<span>.</span></a>
-      <div class="header-actions"><span class="header-note">LOCAL PRACTICE · 0.3.0</span><button id="learning-toggle" class="button button-quiet" type="button" aria-controls="learning-view" aria-expanded="false">Learning</button><button id="history-toggle" class="button button-quiet" type="button">History</button></div>
+      <div class="header-actions"><span class="header-note">LOCAL PRACTICE · 0.3.0</span><button id="learning-toggle" class="button button-quiet" type="button" aria-controls="learning-view" aria-expanded="false">Learning</button><button id="career-toggle" class="button button-quiet" type="button" aria-controls="career-view" aria-expanded="false">Career</button><button id="history-toggle" class="button button-quiet" type="button">History</button></div>
     </header>
     <main>
       <section class="intro" aria-labelledby="page-title">
@@ -133,6 +134,41 @@
           <div id="learning-feedback" class="learning-feedback hidden"></div>
         </section>
         <div class="form-actions"><button id="learning-home" class="button button-quiet" type="button">Back to practice room</button></div>
+      </section>
+      <section id="career-view" class="scenario-panel career-panel hidden" aria-labelledby="career-title">
+        <div class="panel-topline"><span class="eyebrow">CAREER STUDIO / PHASE E</span><span id="career-status" class="status" role="status" aria-live="polite">Loading studios…</span></div>
+        <h2 id="career-title">Practise the conversation, not just the answer.</h2>
+        <p class="scenario-description">Choose a studio, answer by voice or text, and work through an authored follow-up after every main question. Your interview history stays in this local database.</p>
+        <div id="career-studio-list" class="career-studio-list"></div>
+        <section id="career-setup" class="career-setup hidden" aria-label="Interview setup">
+          <div class="career-setup-row"><div><span class="meta-label">SELECTED STUDIO</span><h3 id="career-selected-title"></h3><p id="career-selected-description" class="section-help"></p></div>
+          <div><label for="career-difficulty">Practice style</label><select id="career-difficulty"><option value="guided">Guided · take your time</option><option value="standard" selected>Standard · realistic pace</option><option value="challenging">Challenging · stretch yourself</option></select></div></div>
+          <button id="career-start" class="button button-primary" type="button">Start interview →</button>
+        </section>
+        <section id="career-active" class="career-active hidden" aria-labelledby="career-prompt-title">
+          <div class="panel-topline"><span id="career-turn-label" class="eyebrow">QUESTION 1</span><span id="career-progress" class="status"></span></div>
+          <h3 id="career-prompt-title" class="career-prompt"></h3>
+          <div class="voice-actions career-voice-actions">
+            <button id="career-speak" class="button button-secondary" type="button">Play question aloud</button>
+            <button id="career-record" class="button button-secondary" type="button">Record answer</button>
+            <button id="career-stop-record" class="button button-quiet" type="button" disabled>Stop recording</button>
+          </div>
+          <audio id="career-audio" class="hidden" controls></audio>
+          <p id="career-voice-status" class="voice-status" role="status" aria-live="polite">Text answers are always available.</p>
+          <label for="career-answer">Your answer</label>
+          <textarea id="career-answer" rows="6" maxlength="6000" placeholder="Answer in your own words. You can edit a transcript before submitting."></textarea>
+          <p id="career-answer-error" class="inline-error" role="alert"></p>
+          <div class="form-actions"><button id="career-exit" class="button button-quiet" type="button">Leave interview</button><button id="career-submit" class="button button-primary" type="button">Submit answer →</button></div>
+        </section>
+        <section id="career-review" class="career-review hidden" aria-labelledby="career-review-title">
+          <div class="divider"></div><span class="eyebrow">SESSION COMPLETE</span><h3 id="career-review-title">Review your interview</h3>
+          <p id="career-review-disclaimer" class="section-help"></p>
+          <div id="career-review-notes" class="career-review-notes"></div>
+          <div id="career-next-steps" class="notice"></div>
+          <div class="form-actions"><button id="career-back" class="button button-quiet" type="button">Back to studios</button><button id="career-retry" class="button button-primary" type="button">Try this studio again →</button></div>
+        </section>
+        <section class="career-history" aria-labelledby="career-history-title"><div class="divider"></div><div class="learning-section-heading"><h3 id="career-history-title">Recent interview practice</h3><button id="career-refresh" class="button button-quiet" type="button">Refresh</button></div><div id="career-history-list" class="career-history-list"></div></section>
+        <div class="form-actions"><button id="career-home" class="button button-quiet" type="button">Back to practice room</button></div>
       </section>
       <p id="global-status" class="global-status" role="status" aria-live="polite">Checking local app…</p>
       <section id="home-view" class="scenario-panel" aria-labelledby="scenario-title">
