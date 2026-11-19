@@ -142,7 +142,7 @@
       description.textContent = skill.description;
       const progress = document.createElement("p");
       progress.className = "meta-label";
-      progress.textContent = skill.completed_lessons + " completed lesson attempts · " + skill.available_lessons + " available lessons";
+      progress.textContent = skill.completed_lessons + " completed lessons · " + skill.available_lessons + " available lessons";
       card.append(heading, status, description, progress);
       if (skill.outcomes?.length) {
         const list = document.createElement("ul");
