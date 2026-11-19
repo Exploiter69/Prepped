@@ -43,7 +43,7 @@ class SubmitResponse(BaseModel):
 
 
 def _now() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+    return datetime.now(timezone.utc).isoformat(timespec="microseconds")
 
 
 def load_curriculum(path: Path = DEFAULT_CURRICULUM_PATH) -> dict[str, Any]:
