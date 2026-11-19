@@ -109,8 +109,11 @@ def test_progress_recommendations_follow_profile_and_saved_activity(tmp_path: Pa
         goal = client.post("/api/goals", json={
             "title": "Review notes", "goal_type": "memory_reviews", "target_count": 5,
         }).json()["goal"]
+        studios = client.get("/api/career/studios").json()["studios"]
+        interview = client.post("/api/career/sessions", json={"studio_id": studios[0]["id"]}).json()
         updated = client.get("/api/progress/overview").json()
         assert any(item["kind"] == "goal" and item["target_id"] == goal["id"] for item in updated["recommendations"])
+        assert any(item["kind"] == "resume_interview" and item["target_id"] == interview["id"] for item in updated["recommendations"])
     finally:
         client.__exit__(None, None, None)
 
