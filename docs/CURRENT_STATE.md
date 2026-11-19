@@ -202,9 +202,9 @@ Follow [PRODUCT_ROADMAP.md](PRODUCT_ROADMAP.md) and [COMPLETE_ROADMAP.md](COMPLE
 6. **Progress & portability:** skill evidence, goals, explainable recommendations, export, backup and restore.
 7. **Release hardening:** accessibility, security, responsive UX, fresh install, target-device acceptance and documented limitations.
 
-### Current browser issue — profile toggle
+### Profile toggle — automated browser acceptance passing
 
-The profile toggle implementation has been changed to use an explicit open/close helper, update aria-expanded, and use cache-busted script URLs. The latest remote code is on feature/learner-profile. The API returns an unconfigured profile correctly and the served JS contains the handler. The browser DOM finds both elements and reports the form initially hidden. **The final click test is still outstanding**; do not claim the issue is fixed until clicking the button visibly opens the form and the save/edit/cancel flow succeeds.
+The explicit open/close helper, `aria-expanded` updates, and cache-busted assets are covered by Playwright/Chromium browser tests. The tests confirm setup opens, save closes, edit restores values, cancel discards unsaved changes, and saved preferences persist after reload. A manual spot check in the target browser is still outstanding; do not describe that device-specific check as complete.
 
 ### Release rule
 
