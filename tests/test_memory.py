@@ -69,6 +69,7 @@ def test_memory_validation_and_update_preserve_source_and_schedule(tmp_path: Pat
         assert duplicate_update.status_code == 409
         assert duplicate_update.json()["detail"]["existing_id"] == created["id"]
         assert client.put(f"/api/memory/items/{created['id']}", json={}).status_code == 422
+        assert client.put(f"/api/memory/items/{created['id']}", json={"front": None}).status_code == 422
 
 
 def test_memory_review_scheduler_ratings_are_transparent_and_persist(tmp_path: Path) -> None:
