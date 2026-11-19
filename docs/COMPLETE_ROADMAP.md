@@ -372,7 +372,7 @@ This section is the active execution order for turning the current practice foun
 5. Add deterministic exercise types first: sentence ordering/construction, grammar-in-context, vocabulary-in-context, short response, and listening comprehension.
 6. Persist attempts, completion, skill links, timestamps, and feedback evidence in SQLite using additive migrations.
 7. Connect profile goals and improvement areas to a transparent starter-path selector. Show the reason for each suggested lesson and let learners override it.
-8. Add a short baseline diagnostic only after the exercises and feedback are stable; it is formative, not a certified language level.
+8. [Implemented] Add a short baseline diagnostic after the exercises and feedback are stable; it is formative, not a certified language level.
 9. Add automated tests for curriculum validation, state transitions, answer limits, feedback grounding, persistence, restart, and compatibility with existing sessions.
 10. Keep the existing project-explanation practice route working throughout.
 
