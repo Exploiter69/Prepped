@@ -22,7 +22,7 @@ def complete_sentence_lesson(client: TestClient, lesson_id: str = "sentence-buil
     attempt = client.post("/api/learning/attempts", json={"lesson_id": lesson_id}).json()
     curriculum = json.loads(DEFAULT_CURRICULUM_PATH.read_text(encoding="utf-8"))
     lesson = next(item for item in curriculum["lessons"] if item["id"] == lesson_id)
-    for exercise in lesson["exercises"]
+    for exercise in lesson["exercises"]:
         if exercise["type"] in {"choice", "vocabulary", "listening"}:
             answer = exercise["answer"]
         elif exercise["type"] == "ordering":
