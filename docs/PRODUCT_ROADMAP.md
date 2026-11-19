@@ -252,3 +252,45 @@ Keep the existing Python + FastAPI + plain HTML/CSS/JavaScript + SQLite modular 
 **Remaining Phase B gates:** successful latest CI run; target-laptop browser check for navigation, all seven exercise formats, listening text alternatives, optional voice controls, next-lesson navigation, reload/resume, and responsive layout; review of lesson wording and learning usefulness. A short, low-stakes starting-point check is now included after the exercise loop was implemented. It stores observable responses and task completion, can be repeated/reviewed, and assigns no proficiency level or overall score. More advanced diagnostic interpretation remains deferred.
 
 The English starter path is now expanded under Phase C. Advanced diagnostic interpretation, learner-controlled vocabulary/correction memory and spaced revision, and dedicated HR/technical interview packs remain later roadmap work.
+
+
+---
+
+## Phase D — Personal learning memory and revision (implementation added; acceptance pending)
+
+**Purpose:** let the learner deliberately retain useful learning from lessons and practise it again later. Memory is user-owned, editable, local, and evidence-linked. No uncertain automated signal becomes a permanent learner trait.
+
+### Delivered in the implementation
+
+- A dedicated local memory API and Learning workspace section.
+- Explicit item types: word, phrase, correction, concept, and example.
+- Manual item creation plus optional lesson-feedback suggestions. A suggestion only prefills the editor; the learner must review and submit it before anything is saved.
+- Source provenance: source type, lesson/attempt identifier, lesson title, and a short source excerpt are retained when available.
+- Edit, suspend/resume, and permanent delete controls. Deleting an item also deletes its review history.
+- Duplicate detection uses Unicode-normalised, case-folded, whitespace-collapsed text within the same item type. Existing items are not silently overwritten.
+- A due-review queue with answer reveal and Again / Hard / Good / Easy ratings.
+- A deterministic, transparent interval scheduler implemented locally. It is deliberately a small custom schedule, not FSRS and not claimed to be FSRS-compatible.
+- Review history, interval, repetition and lapse counts, next due date, and library statistics.
+- Additive SQLite tables and indexes; no existing profile, session, answer, learning attempt, or event data is dropped or rewritten.
+- No raw audio, cloud model, paid service, account, hosted database, or new runtime infrastructure is required.
+
+### Scheduler behaviour
+
+- New cards are due immediately.
+- Again resets the repetition step and schedules one day later.
+- Good schedules 1 day for the first successful review, 3 days for the second, then doubles the prior interval.
+- Hard advances the repetition count and multiplies the previous interval by 1.2 (minimum one day).
+- Easy schedules 3 days on the first review, then multiplies the prior interval by 2.5 (minimum two days).
+- Review timestamps are stored in UTC. The UI displays dates in the browser's local timezone.
+- Suspended cards are excluded from the due queue. Resuming restores their existing schedule.
+
+### Required verification before closing Phase D
+
+- [ ] Full pytest suite and JavaScript syntax checks pass on the final Phase D commit.
+- [ ] GitHub Actions is green for that exact commit.
+- [ ] Browser test covers create, due queue, reveal, rating, edit, and suspend.
+- [ ] API tests cover validation, duplicate detection, edit/source preservation, schedule intervals, review history, suspend/resume, deletion cascade, restart persistence, and legacy-data preservation.
+- [ ] Manual target-laptop check confirms the complete memory and review journey, keyboard operation, narrow-screen layout, and persistence.
+- [ ] Review wording and scheduler behaviour are documented honestly; no FSRS or learning-gain claims.
+
+**Exit gate:** a learner can intentionally create or capture an item, edit it, resolve duplicates, suspend/resume/delete it, complete a due review, and inspect the next schedule; all data survives restart and tests protect existing Prepped data.
