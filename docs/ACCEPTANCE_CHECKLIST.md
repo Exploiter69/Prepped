@@ -99,6 +99,59 @@ Record the provider used, local tool/model availability, browser, operating syst
 - [ ] Confirm no raw audio files are created by the application.
 - [ ] Confirm local database/model files and secrets remain ignored and are not committed.
 
+
+
+## Phase C — English and communication studio manual acceptance
+
+These checks require a real browser on the target laptop. Mark each item only after performing it; automated tests do not prove microphone, speaker, or learning-content usability.
+
+### Curriculum and profile recommendations
+
+- [ ] Open Learning and confirm the English foundations path shows all 11 lessons across sentence, grammar, vocabulary, listening, speaking, and pronunciation units.
+- [ ] Confirm every lesson shows its estimated time, outcomes/summary, exercise count, prerequisite state, and a working start/retry action.
+- [ ] Set the profile goal to English fluency and focus areas to grammar, vocabulary, speaking fluency, pronunciation, confidence, and professional communication; save and reopen Learning.
+- [ ] Confirm recommendation explanations point to the relevant lessons and that the route does not claim to infer ability or proficiency.
+- [ ] Confirm the project-communication and placement-communication tracks and the original practice room remain available.
+
+### Sentence and grammar practice
+
+- [ ] Complete sentence construction and sentence shaping: build, expand, combine, shorten, and clarify while preserving intended meaning.
+- [ ] Complete grammar exercises for past/future tense, articles, and common prepositions; confirm authored explanations appear for selected answers.
+- [ ] Complete question formation for present-simple and past-simple questions and write a polite clarification question.
+- [ ] Confirm open responses are retained for self-review and are not automatically graded.
+
+### Vocabulary and useful phrases
+
+- [ ] Complete contextual word-choice and collocation exercises.
+- [ ] Review the meaning of a phrase in its scenario context.
+- [ ] Write a learner-authored example using one of the taught phrases; confirm the original response is visible in lesson review.
+- [ ] Confirm no vocabulary card is silently created or stored as permanent learner memory; learner-controlled saving belongs to Phase D.
+
+### Speaking fluency and confidence
+
+- [ ] Complete structured description, process explanation, technical/feature explanation, and retelling prompts.
+- [ ] Complete an opinion prompt and its follow-up; confirm the activity accepts a typed response without microphone access.
+- [ ] If recording is available, confirm the disclosure appears before microphone permission. In Groq mode, confirm it says the recording is sent to Groq.
+- [ ] Confirm the transcript can be reviewed and edited before submission, and text entry remains usable if recording/transcription fails.
+- [ ] Confirm feedback does not assign a fluency, confidence, personality, or emotion score.
+
+### Listening and pronunciation
+
+- [ ] Play, stop, and replay each listening message; reveal and hide its transcript alternative.
+- [ ] Complete both listening-for-details and short-conversation comprehension activities.
+- [ ] Open each pronunciation model phrase, play/replay it, and reveal the phrase text alternative.
+- [ ] Repeat each phrase at a comfortable pace and submit an optional self-review note or editable spoken transcript.
+- [ ] Confirm pronunciation feedback explicitly states that no pronunciation, accent, phoneme, or fluency score is measured.
+- [ ] Confirm listening and pronunciation remain understandable when TTS is unavailable by using their text alternatives.
+
+### Accessibility, privacy, and responsive behavior
+
+- [ ] Complete a lesson using keyboard-only navigation and confirm visible focus and meaningful control labels.
+- [ ] Check the Learning workspace at laptop width and a narrow mobile viewport; confirm no card, prompt, transcript, or control overflows.
+- [ ] Confirm audio playback stops when leaving a lesson or switching workspaces.
+- [ ] Confirm no raw audio is saved by Prepped. Treat any Groq transcription as remote processing, not local-only processing.
+- [ ] Confirm the existing practice room, history, profile, and saved learning attempts remain intact after reload.
+
 ## 6. Acceptance record
 
 Copy this record into the release notes or issue after the checks are actually performed:
