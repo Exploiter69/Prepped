@@ -248,6 +248,9 @@ def test_baseline_check_records_responses_without_a_proficiency_score(local_app_
     page.get_by_role("button", name="Show text alternative").click()
     page.locator('input[name="learning-choice"][value="c"]').check()
     page.locator("#learning-submit").click()
+    page.wait_for_function(
+        "() => document.querySelector('#learning-exercise-count').textContent === 'Exercise 4 of 4'"
+    )
     page.locator("#learning-reflection").fill("I built a small task tracker and checked the form with test inputs.")
     page.locator("#learning-submit").click()
 
