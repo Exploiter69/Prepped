@@ -55,6 +55,19 @@ def initialize_database(db_path: Path) -> None:
                 UNIQUE (session_id, position),
                 UNIQUE (session_id, question_id)
             );
+
+            CREATE TABLE IF NOT EXISTS learner_profile (
+                id INTEGER PRIMARY KEY CHECK (id = 1),
+                display_name TEXT,
+                study_year INTEGER CHECK (study_year IS NULL OR study_year BETWEEN 1 AND 6),
+                branch TEXT,
+                primary_goal TEXT NOT NULL,
+                confidence_level TEXT NOT NULL,
+                target_role TEXT,
+                improvement_areas_json TEXT NOT NULL DEFAULT '[]',
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL
+            );
             """
         )
 
