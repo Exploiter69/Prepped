@@ -219,7 +219,7 @@ def build_recommendations(curriculum: dict[str, Any], profile: dict[str, Any] | 
             "track_title": track["title"], "track_description": track["description"], "items": items, "note": note}
 
 
-def _feedback(exercise: dict[str, Any], answer: str | list[str]) -> dict[str, Any]:
+def _feedback(exercise: dict[str, Any], answer: str | list[str], example_to_compare: str | None = None) -> dict[str, Any]:
     result: dict[str, Any] = {"exercise_id": exercise["id"], "type": exercise["type"], "prompt": exercise["prompt"]}
     if exercise["type"] in {"choice", "vocabulary", "listening"}:
         selected = answer if isinstance(answer, str) else ""
@@ -239,6 +239,8 @@ def _feedback(exercise: dict[str, Any], answer: str | list[str]) -> dict[str, An
         text = answer if isinstance(answer, str) else ""
         result.update({"status": "saved_for_self_review", "original_response": text,
                        "guidance": exercise["guidance"],
+                       "example_to_compare": example_to_compare,
+                       "example_note": "An illustrative example only; it is not an automated correction or grade.",
                        "note": "This open response is saved as your work. Prepped does not automatically grade it."})
     return result
 
@@ -269,11 +271,17 @@ def create_learning_router(db_path: Path, curriculum_path: Path = DEFAULT_CURRIC
             raise HTTPException(status_code=410, detail="This lesson is no longer in the installed curriculum.")
         index = len(attempt["responses"])
         current = lesson["exercises"][index] if attempt["status"] == "in_progress" and index < len(lesson["exercises"]) else None
+        track = next((item for item in data["tracks"] if item["id"] == lesson["track_id"]), None)
+        ordered_lessons = track.get("lesson_ids", []) if track else []
+        next_id = ordered_lessons[ordered_lessons.index(lesson["id"]) + 1] if lesson["id"] in ordered_lessons and ordered_lessons.index(lesson["id"]) + 1 < len(ordered_lessons) else None
+        next_lesson = next(({"lesson_id": item["id"], "title": item["title"]}
+                            for item in data["lessons"] if item["id"] == next_id), None)
         return {"id": attempt["id"], "lesson_id": attempt["lesson_id"], "lesson_version": attempt["lesson_version"],
                 "track_id": attempt["track_id"], "status": attempt["status"], "started_at": attempt["started_at"],
                 "completed_at": attempt["completed_at"], "response_count": len(attempt["responses"]),
                 "exercise_count": len(lesson["exercises"]), "lesson": _public_lesson(lesson),
-                "current_exercise": _public_exercise(current) if current else None, "feedback": attempt["feedback"]}
+                "current_exercise": _public_exercise(current) if current else None,
+                "next_lesson": next_lesson, "feedback": attempt["feedback"]}
 
     @router.get("/catalog")
     def catalog() -> dict[str, Any]:
@@ -355,7 +363,8 @@ def create_learning_router(db_path: Path, curriculum_path: Path = DEFAULT_CURRIC
             elif not isinstance(payload.answer, str):
                 raise HTTPException(status_code=422, detail="Enter a written response for this reflection.")
             responses = [*attempt["responses"], {"exercise_id": exercise["id"], "answer": payload.answer}]
-            feedback = [*attempt["feedback"], _feedback(exercise, payload.answer)]
+            example = lesson.get("example", {}).get("after")
+            feedback = [*attempt["feedback"], _feedback(exercise, payload.answer, example)]
             now = _now()
             conn.execute("UPDATE learning_attempts SET responses_json = ?, feedback_json = ? WHERE id = ?",
                          (json.dumps(responses, ensure_ascii=False), json.dumps(feedback, ensure_ascii=False), attempt_id))
