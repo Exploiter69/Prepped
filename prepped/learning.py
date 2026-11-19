@@ -402,15 +402,16 @@ def create_learning_router(db_path: Path, curriculum_path: Path = DEFAULT_CURRIC
         if diagnostic is None:
             return {"configured": False, "latest": None}
         with connect_database(Path(db_path)) as conn:
-            row = conn.execute(
-                "SELECT id FROM learning_attempts WHERE lesson_id = ? ORDER BY started_at DESC LIMIT 1",
+            rows = conn.execute(
+                "SELECT id, status, started_at, completed_at FROM learning_attempts WHERE lesson_id = ? ORDER BY started_at DESC",
                 (diagnostic["id"],),
-            ).fetchone()
-            if row is None:
-                return {"configured": True, "latest": None,
+            ).fetchall()
+            if not rows:
+                return {"configured": True, "latest": None, "history": [],
                         "note": "This is a low-stakes snapshot of responses, not a proficiency test."}
-            attempt = get_attempt(conn, row["id"])
+            attempt = get_attempt(conn, rows[0]["id"])
         return {"configured": True, "latest": view(attempt, data),
+                "history": [dict(row) for row in rows],
                 "note": "Responses are stored for later comparison. No proficiency level or overall score is assigned."}
 
     @router.get("/progress")
