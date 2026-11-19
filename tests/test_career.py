@@ -130,3 +130,20 @@ def test_career_schema_is_additive_and_preserves_existing_practice(tmp_path: Pat
         assert client.get(f"/api/career/sessions/{career.json()['id']}").status_code == 200
         assert client.delete(f"/api/career/sessions/{career.json()['id']}").status_code == 204
         assert client.get(f"/api/sessions/{practice_id}").status_code == 200
+
+
+def test_difficulty_modes_select_distinct_authored_followups(tmp_path: Path) -> None:
+    prompts = {}
+    with client_for(tmp_path) as client:
+        for difficulty in ("guided", "standard", "challenging"):
+            session = start(client, difficulty=difficulty).json()
+            response = client.post(
+                f"/api/career/sessions/{session['id']}/answers",
+                json={"answer_text": "I built a student project and tested the main feature."},
+            )
+            assert response.status_code == 200
+            prompts[difficulty] = response.json()["current_prompt"]["prompt"]
+    assert len(set(prompts.values())) == 3
+    assert "What problem were you trying to solve?" in prompts["guided"]
+    assert "user journey" in prompts["standard"].lower() or "concrete user journey" in prompts["standard"].lower()
+    assert "evidence" in prompts["challenging"].lower()
