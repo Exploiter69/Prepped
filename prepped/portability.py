@@ -17,7 +17,7 @@ from prepped.progress import initialize_progress_database
 
 BACKUP_FORMAT = "prepped-local-backup"
 BACKUP_FORMAT_VERSION = 1
-DATABASE_SCHEMA_VERSION = 1
+DATABASE_SCHEMA_VERSION = 2
 MAX_BACKUP_BYTES = 25 * 1024 * 1024
 MAX_BACKUP_ROWS = 200_000
 TABLES = (
