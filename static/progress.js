@@ -77,7 +77,10 @@
     const max = Math.max(1, ...days.map(item => item.count));
     for (const day of days) {
       const cell = node("div", "progress-day");
+      cell.setAttribute("role", "img");
+      cell.setAttribute("aria-label", day.date + ": " + day.count + " completed activities");
       const bar = node("div", "progress-day-bar");
+      bar.setAttribute("aria-hidden", "true");
       const fill = node("span");
       fill.style.height = (day.count ? Math.max(8, (day.count / max) * 100) : 0) + "%";
       bar.append(fill);
