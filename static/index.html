@@ -7,8 +7,8 @@
     <meta name="description" content="Private, local-first practice for placement conversations.">
     <title>Prepped — Practice with purpose</title>
     <link rel="stylesheet" href="/static/style.css">
-    <script src="/static/voice.js" defer></script>
-    <script src="/static/app.js" defer></script>
+    <script src="/static/voice.js?v=profile-toggle-2" defer></script>
+    <script src="/static/app.js?v=profile-toggle-2" defer></script>
   </head>
   <body>
     <header class="site-header">
@@ -25,7 +25,7 @@
         <div class="panel-topline"><span class="eyebrow">YOUR LEARNING PROFILE</span><span id="profile-save-status" class="status">Stored on this device</span></div>
         <h2 id="profile-title">Make practice relevant to you.</h2>
         <p id="profile-summary" class="scenario-description">Set your goals and focus areas. This profile stays in your local Prepped database.</p>
-        <button id="profile-edit-toggle" class="button button-secondary" type="button">Set up profile</button>
+        <button id="profile-edit-toggle" class="button button-secondary" type="button" aria-controls="profile-form" aria-expanded="false">Set up profile</button>
         <form id="profile-form" class="profile-form hidden">
           <div class="profile-fields">
             <div><label for="profile-name">Name (optional)</label><input id="profile-name" name="display_name" maxlength="80" autocomplete="given-name" placeholder="What should Prepped call you?"></div>
