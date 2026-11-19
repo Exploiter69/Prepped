@@ -429,7 +429,7 @@ Speech accuracy, latency, and learning outcomes are not validated. No LLM feedba
 
 The blueprint describes the destination, not the current feature set. The current application is a local practice foundation with one project-explanation scenario, a bounded voice record/stop slice, formative heuristic feedback, history, and a learner profile. It is not yet a complete or market-ready learning platform.
 
-The learner profile stores preferences; it does not yet drive adaptive lessons or personalised recommendations. The following capabilities remain future implementation: reusable lesson engine, skill taxonomy, versioned curriculum, English grammar/sentence/vocabulary/fluency/listening units, learner-controlled revision memory, spaced repetition, HR and technical interview studios, evidence-based progress, data export/backup/restore, and full release hardening.
+The learner profile stores preferences and now selects transparent starter routes through the reusable Learning Engine and English curriculum. It does not infer ability or adapt lesson difficulty. Remaining future work includes learner-controlled revision memory, spaced repetition, HR and technical interview studios, richer evidence-based progress, data export/backup/restore, and full release hardening.
 
 Use [PRODUCT_ROADMAP.md](PRODUCT_ROADMAP.md) for the product-level phases, and [COMPLETE_ROADMAP.md](COMPLETE_ROADMAP.md) for milestone tasks, exit criteria, and release readiness. [CURRENT_STATE.md](CURRENT_STATE.md) records what is actually implemented and verified.
 
@@ -443,17 +443,33 @@ Use [PRODUCT_ROADMAP.md](PRODUCT_ROADMAP.md) for the product-level phases, and [
 6. Add evidence-based progress, goals, explainable recommendations, and local export/backup/restore.
 7. Complete accessibility, privacy/security, responsive UX, fresh-install, target-device, and release acceptance checks.
 
+## 17. Phase C — English and communication curriculum (2026-11-19)
+
+The first English and communication path is authored in the local versioned curriculum and runs through the existing Learning Engine:
+
+- Sentence construction and clarity: build complete sentences, expand, combine, shorten, and clarify.
+- Grammar: past/future tense in context, articles, prepositions, and question formation.
+- Vocabulary: precise words, collocations, phrase meanings, contextual use, and learner-created examples.
+- Speaking: structured descriptions, process and feature explanations, retelling, opinions, reasons, and follow-up prompts.
+- Listening: authored spoken updates and short conversations, comprehension questions, replay, and text alternatives.
+- Pronunciation: local TTS model phrases, listen-and-repeat, optional recorded response/transcription, and private self-review. There is no pronunciation or accent scoring.
+- Confidence and professional communication: repeatable low-pressure practice and useful clarification/follow-up language, without emotion inference or confidence scoring.
+
+The expanded manifest contains 14 skills, one foundation stage, nine units, four tracks, 13 authored lessons plus the separate baseline diagnostic. The English track has 11 lessons. Profile focus areas select and explain matching lessons; they do not establish proficiency or adapt difficulty.
+
+The implementation reuses the current FastAPI + SQLite + plain JavaScript architecture, existing voice services, and text-first fallback. Automated API and Chromium acceptance is being added; successful CI and target-device manual acceptance are still required before the phase is marked accepted.
+
 Each phase must preserve the existing FastAPI + plain HTML/CSS/JavaScript + SQLite modular monolith, additive database migrations, versioned JSON content, zero mandatory operating cost, and usable text fallback. A feature is complete only after its end-to-end flow, tests, failure states, documentation, and manual acceptance are evidenced. Do not claim certified proficiency, accurate pronunciation grading, placement probability, or measured learning gains without separate validation.
 
 ## 16. Learning Engine — implemented slice and boundaries (2026-11-19)
 
 The first Phase B implementation adds a reusable local lesson engine on the existing stack:
 
-- A versioned JSON curriculum with 14 skills, one foundation level, seven units, four tracks, six lessons plus one diagnostic check, prerequisites, outcomes, examples, and deterministic choice, ordering, vocabulary, listening, short-response, and reflection exercises.
+- A versioned JSON curriculum with 14 skills, one foundation level, nine units, four tracks, 13 authored lessons plus one diagnostic check, prerequisites, outcomes, examples, and seven exercise formats including pronunciation self-review.
 - A validator that rejects duplicate identifiers, broken references, unsupported exercise types, and malformed answer/token definitions.
 - APIs for catalogue/recommendations, attempt creation and retrieval, ordered response submission, and progress.
 - Additive SQLite learning-attempt and learning-event persistence, including restart-safe resume.
 - Profile goal/focus-based recommendations with an explanation for each lesson.
 - A browser learning workspace with route, catalogue, exercise runner, feedback, progress, and resume UI.
 
-This slice does not automatically grade open responses, infer learner proficiency, or claim learning gains. A short low-stakes baseline check is implemented; it stores observable responses without assigning a level or score. Advanced diagnostic interpretation, broader English curriculum, personal revision memory, broader listening and pronunciation curriculum, and dedicated career/interview packs remain planned. Automated and target-device acceptance must be recorded before calling this phase complete.
+This slice does not automatically grade open responses, infer learner proficiency, or claim learning gains. A short low-stakes baseline check is implemented; it stores observable responses without assigning a level or score. Phase C now adds the initial English curriculum described below. Advanced diagnostic interpretation, personal revision memory, and dedicated career/interview packs remain planned. Automated and target-device acceptance must be recorded before calling these phases complete.
