@@ -293,7 +293,7 @@
       document.body.append(link);
       link.click();
       link.remove();
-      URL.revokeObjectURL(url);
+      window.setTimeout(() => URL.revokeObjectURL(url), 1500);
       $("#data-status").textContent = "Backup downloaded. Keep it private: it contains your saved answers and learning notes.";
     } catch (error) {
       $("#data-status").textContent = error.message;
