@@ -61,7 +61,7 @@ def test_complete_interview_feedback_retry_history_and_restart_persistence(tmp_p
         session_id = created["id"]
         for index in range(4):
             primary = client.post(f"/api/career/sessions/{session_id}/answers", json={
-                "answer_text": f"I would explain the concept with a concrete example. Because the trade-off matters, I would test it. Example {index}."
+                "answer_text": f"I would explain the concept with a concrete example. Because the trade-off matters, I would test it. I would also describe the expected result and compare it with a measured baseline before making a conclusion. Example {index}."
             })
             assert primary.status_code == 200
             assert primary.json()["current_prompt"]["turn_type"] == "followup"
