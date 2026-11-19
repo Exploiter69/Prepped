@@ -178,7 +178,7 @@ Deliver a coherent first track rather than a large empty catalogue.
 
 **Implementation added; automated CI and target-laptop acceptance are pending.** The initial English path is now authored in the versioned curriculum and uses the existing Phase B lesson runner.
 
-- The curriculum contains 14 stable skills, one foundation stage, nine units, four tracks, 13 authored lessons plus the separate low-stakes baseline check. The English foundations track contains 11 sequenced lessons across sentence construction, grammar, vocabulary, listening, speaking, and pronunciation.
+- The curriculum contains 14 stable skills, one foundation stage, nine units, four tracks, 13 authored lessons plus the separate low-stakes baseline check. Every unit and lesson has explicit learning outcomes; the lesson runner displays the outcomes before exercises. The English foundations track contains 11 sequenced lessons across sentence construction, grammar, vocabulary, listening, speaking, and pronunciation.
 - Grammar and sentence work covers complete sentences; expansion, combining, shortening, and clarification; past and future tense in context; articles; prepositions; question formation; and authored error explanations.
 - Vocabulary work covers precise words, collocations, phrase meaning, contextual use, and a learner-authored example.
 - Speaking work includes structured descriptions, process explanations, project checks, retelling, opinions, reasons, and follow-up responses. Responses can be typed or recorded and transcribed when the configured STT service is available.
