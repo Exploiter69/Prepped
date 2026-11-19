@@ -437,7 +437,7 @@ A release candidate requires all of the following:
 
 The initial Phase C curriculum has been added to the existing `feature/learner-profile` branch. It extends the Phase B lesson runner rather than introducing a separate learning system.
 
-- **Curriculum size:** 14 stable skills, one foundation stage, nine units, four tracks, 13 authored lessons plus the separate baseline diagnostic. The English foundations track contains 11 sequenced lessons.
+- **Curriculum size:** 14 stable skills, one foundation stage, nine units, four tracks, 13 authored lessons plus the separate baseline diagnostic. Every unit and lesson has explicit learning outcomes, displayed by the lesson runner. The English foundations track contains 11 sequenced lessons.
 - **Grammar:** sentence patterns, past/future tense in context, articles, prepositions, question formation, and answer explanations.
 - **Sentence construction:** build, expand, combine, shorten, and clarify while preserving intended meaning.
 - **Vocabulary:** contextual word choice, collocations, phrase meaning, examples, and learner-authored sentences.
