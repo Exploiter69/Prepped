@@ -622,6 +622,14 @@ def test_progress_goals_and_backup_restore_in_browser(local_app_url: str, browse
     page.locator("#progress-status").wait_for()
     page.wait_for_function("() => document.querySelector('#progress-status').textContent.startsWith('Updated')")
     assert page.locator("#progress-summary .progress-stat").count() == 6
+    recommendation = page.locator("#progress-recommendations .progress-row").first
+    if recommendation.count():
+        recommendation.get_by_role("button", name="Dismiss").click()
+        page.wait_for_function("() => document.querySelector('#progress-dismissed-toggle').textContent.includes('(1)')")
+        page.locator("#progress-dismissed-toggle").click()
+        assert page.locator("#progress-dismissed-recommendations").is_visible()
+        page.locator("#progress-dismissed-recommendations").get_by_role("button", name="Restore suggestion").first.click()
+        page.wait_for_function("() => document.querySelector('#progress-dismissed-toggle').textContent.includes('(0)')")
 
     page.locator("#goal-title").fill("Complete two lessons")
     page.locator("#goal-type").select_option("lessons_completed")
