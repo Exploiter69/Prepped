@@ -86,12 +86,17 @@
     const container = $("#learning-track-list");
     const completed = new Set(progress.completed_lesson_ids || []);
     const titles = Object.fromEntries(tracks.flatMap((track) => track.lessons.map((lesson) => [lesson.id, lesson.title])));
+    const units = new Map((state.catalog?.units || []).map((unit) => [unit.id, unit]));
+    const levels = new Map((state.catalog?.levels || []).map((level) => [level.id, level]));
     container.replaceChildren();
     for (const track of tracks) {
       const section = document.createElement("section");
       section.className = "learning-track";
       const heading = document.createElement("h4");
       heading.textContent = track.title;
+      const level = document.createElement("span");
+      level.className = "meta-label";
+      level.textContent = levels.get(track.level_id)?.title || "Curriculum";
       const description = document.createElement("p");
       description.textContent = track.description;
       const list = document.createElement("div");
@@ -105,7 +110,8 @@
         summary.textContent = lesson.summary;
         const meta = document.createElement("span");
         meta.className = "meta-label";
-        meta.textContent = (completed.has(lesson.id) ? "COMPLETED · " : "") + lesson.exercise_count + " EXERCISES · " + lesson.estimated_minutes + " MIN";
+        meta.textContent = (units.get(lesson.unit_id)?.title || "LESSON") + " · " +
+          (completed.has(lesson.id) ? "COMPLETED · " : "") + lesson.exercise_count + " EXERCISES · " + lesson.estimated_minutes + " MIN";
         const missing = (lesson.prerequisites || []).filter((id) => !completed.has(id));
         const prerequisite = document.createElement("p");
         prerequisite.className = "learning-prerequisite";
@@ -116,7 +122,7 @@
           makeButton(completed.has(lesson.id) ? "Practise again" : "Open lesson", lesson.id, "button button-secondary", missing.length > 0));
         list.append(card);
       }
-      section.append(heading, description, list);
+      section.append(heading, level, description, list);
       container.append(section);
     }
   }
@@ -389,6 +395,11 @@
         guidance.textContent = item.guidance;
         card.append(guidance);
       }
+      if (item.example_to_compare) {
+        const example = document.createElement("p");
+        example.textContent = "Example to compare (not a correction): " + item.example_to_compare;
+        card.append(example);
+      }
       container.append(card);
     }
     const back = document.createElement("button");
@@ -413,6 +424,14 @@
       $("#learning-submit").disabled = true;
       $("#learning-submit").textContent = "Lesson completed";
       renderFeedback(attempt.feedback);
+      if (attempt.next_lesson) {
+        const next = document.createElement("button");
+        next.type = "button";
+        next.className = "button button-primary";
+        next.textContent = "Next lesson: " + attempt.next_lesson.title + " →";
+        next.addEventListener("click", () => startLesson(attempt.next_lesson.lesson_id));
+        $("#learning-feedback").append(next);
+      }
     } else {
       renderExercise(attempt.current_exercise, attempt.response_count, attempt.exercise_count);
     }
