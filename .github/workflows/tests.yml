@@ -33,6 +33,7 @@ jobs:
         run: |
           node --check static/app.js
           node --check static/voice.js
+          node --check static/learning.js
       - name: Install project and test dependencies
         run: python -m pip install -e ".[dev,browser-test]"
       - name: Install Chromium for browser acceptance tests
