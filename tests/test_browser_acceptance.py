@@ -233,6 +233,9 @@ def test_baseline_check_records_responses_without_a_proficiency_score(local_app_
     page = browser_page
     page.goto(local_app_url)
     page.locator("#learning-toggle").click()
+    page.wait_for_function(
+        "() => document.querySelector('#learning-diagnostic-status').textContent === 'Not started'"
+    )
     page.locator("#learning-diagnostic-start").click()
     assert "Record your starting point" in page.locator("#learning-runner-title").inner_text()
 
