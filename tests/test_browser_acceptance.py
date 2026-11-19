@@ -613,3 +613,50 @@ def test_career_interview_can_resume_at_saved_followup(local_app_url: str, brows
         "() => document.querySelector('#career-turn-label').textContent.includes('FOLLOW-UP')"
     )
     assert "which experience or project" in page.locator("#career-prompt-title").inner_text().lower()
+
+
+def test_progress_goals_and_backup_restore_in_browser(local_app_url: str, browser_page, tmp_path: Path) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+    page.locator("#progress-toggle").click()
+    page.locator("#progress-status").wait_for()
+    page.wait_for_function("() => document.querySelector('#progress-status').textContent.startsWith('Updated')")
+    assert page.locator("#progress-summary .progress-stat").count() == 6
+
+    page.locator("#goal-title").fill("Complete two lessons")
+    page.locator("#goal-type").select_option("lessons_completed")
+    page.locator("#goal-target").fill("2")
+    page.locator("#goal-form button[type='submit']").click()
+    assert "Complete two lessons" in page.locator("#progress-goals").inner_text()
+    assert "0 / 2" in page.locator("#progress-goals").inner_text()
+
+    with page.expect_download() as download_info:
+        page.locator("#data-export").click()
+    download = download_info.value
+    backup_path = tmp_path / "prepped-backup.json"
+    download.save_as(backup_path)
+    assert backup_path.stat().st_size > 0
+
+    page.once("dialog", lambda dialog: dialog.accept())
+    page.locator("#data-import").set_input_files(str(backup_path))
+    page.wait_for_load_state("load")
+    page.wait_for_function("() => document.querySelector('#profile-save-status') !== null")
+    page.locator("#progress-toggle").click()
+    page.wait_for_function("() => document.querySelector('#progress-status').textContent.startsWith('Updated')")
+    assert "Complete two lessons" in page.locator("#progress-goals").inner_text()
+
+
+def test_progress_navigation_and_security_headers_are_accessible(local_app_url: str, browser_page) -> None:
+    page = browser_page
+    response = page.goto(local_app_url)
+    assert response is not None
+    assert response.headers.get("content-security-policy")
+    assert response.headers.get("x-content-type-options") == "nosniff"
+    toggle = page.locator("#progress-toggle")
+    assert toggle.get_attribute("aria-controls") == "progress-view"
+    toggle.click()
+    assert toggle.get_attribute("aria-expanded") == "true"
+    assert page.locator("#progress-view").is_visible()
+    page.locator("#learning-toggle").click()
+    assert toggle.get_attribute("aria-expanded") == "false"
+    assert page.locator("#learning-view").is_visible()
