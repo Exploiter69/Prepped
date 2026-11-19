@@ -427,7 +427,7 @@ def test_pronunciation_attempt_is_private_self_review_not_an_accuracy_score(tmp_
         assert response.status_code == 200
         feedback = response.json()["feedback"][0]
         assert feedback["status"] == "saved_for_self_review"
-        assert "practised privately" in feedback["original_response"].lower()
+        assert "practice completed privately" in feedback["original_response"].lower()
         assert "does not measure pronunciation" in feedback["measurement_note"]
         assert "score" not in json.dumps(feedback).lower()
 
