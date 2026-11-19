@@ -1,5 +1,5 @@
 const $ = (selector) => document.querySelector(selector);
-const views = ["home-view", "practice-view", "feedback-view", "history-view"];
+const views = ["home-view", "practice-view", "feedback-view", "history-view", "learning-view"];
 let scenario = null;
 let activeSession = null;
 let activeFeedback = null;
