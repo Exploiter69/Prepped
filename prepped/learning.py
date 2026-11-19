@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field, field_validator
 from prepped.database import connect_database
 
 DEFAULT_CURRICULUM_PATH = Path(__file__).resolve().parent.parent / "curriculum" / "curriculum.v1.json"
-EXERCISE_TYPES = {"choice", "ordering", "reflection"}
+EXERCISE_TYPES = {"choice", "ordering", "reflection", "vocabulary", "listening"}
 
 
 class CurriculumValidationError(ValueError):
@@ -84,10 +84,14 @@ def load_curriculum(path: Path = DEFAULT_CURRICULUM_PATH) -> dict[str, Any]:
             if not eid or eid in seen or kind not in EXERCISE_TYPES:
                 raise CurriculumValidationError(f"Lesson {lesson['id']} has an invalid exercise.")
             seen.add(eid)
-            if kind == "choice":
+            if kind in {"choice", "vocabulary", "listening"}:
                 ids = [option.get("id") for option in exercise.get("options", [])]
                 if len(ids) < 2 or len(ids) != len(set(ids)) or exercise.get("answer") not in ids:
                     raise CurriculumValidationError(f"Choice exercise {eid} has invalid options or answer.")
+                if kind == "vocabulary" and not exercise.get("context"):
+                    raise CurriculumValidationError(f"Vocabulary exercise {eid} needs a context.")
+                if kind == "listening" and not exercise.get("audio_text"):
+                    raise CurriculumValidationError(f"Listening exercise {eid} needs playable audio text.")
             elif kind == "ordering":
                 ids, answer = [token.get("id") for token in exercise.get("tokens", [])], exercise.get("answer")
                 if len(ids) < 2 or len(ids) != len(set(ids)) or not isinstance(answer, list) or sorted(answer) != sorted(ids):
@@ -146,6 +150,8 @@ def build_recommendations(curriculum: dict[str, Any], profile: dict[str, Any] | 
         matched = []
         if "grammar" in areas and "english.grammar-in-context" in lesson["skill_ids"]:
             matched.append("grammar")
+        if "vocabulary" in areas and "english.vocabulary-context" in lesson["skill_ids"]:
+            matched.append("vocabulary")
         if "project_explanation" in areas and "communication.project-summary" in lesson["skill_ids"]:
             matched.append("project explanation")
         if "professional_communication" in areas and "communication.clarity" in lesson["skill_ids"]:
@@ -155,7 +161,7 @@ def build_recommendations(curriculum: dict[str, Any], profile: dict[str, Any] | 
         )
         items.append({"lesson_id": lesson_id, "title": lesson["title"], "summary": lesson["summary"],
                       "estimated_minutes": lesson["estimated_minutes"], "skill_ids": lesson["skill_ids"], "why": why})
-    covered = {"grammar", "project_explanation", "professional_communication", "speaking_fluency", "confidence"}
+    covered = {"grammar", "vocabulary", "project_explanation"}
     missing = sorted(areas - covered)
     if goal == "technical_interviews":
         note = "A dedicated technical-interview question bank is planned. This route builds project-explanation foundations first."
@@ -169,7 +175,7 @@ def build_recommendations(curriculum: dict[str, Any], profile: dict[str, Any] | 
 
 def _feedback(exercise: dict[str, Any], answer: str | list[str]) -> dict[str, Any]:
     result: dict[str, Any] = {"exercise_id": exercise["id"], "type": exercise["type"], "prompt": exercise["prompt"]}
-    if exercise["type"] == "choice":
+    if exercise["type"] in {"choice", "vocabulary", "listening"}:
         selected = answer if isinstance(answer, str) else ""
         option = next((item for item in exercise["options"] if item["id"] == selected), None)
         correct = next(item for item in exercise["options"] if item["id"] == exercise["answer"])
@@ -289,7 +295,7 @@ def create_learning_router(db_path: Path, curriculum_path: Path = DEFAULT_CURRIC
                 raise HTTPException(status_code=409, detail="Complete the current exercise before moving on.")
             if isinstance(payload.answer, str) and not payload.answer:
                 raise HTTPException(status_code=422, detail="Enter a response before continuing.")
-            if exercise["type"] == "choice":
+            if exercise["type"] in {"choice", "vocabulary", "listening"}:
                 valid = {item["id"] for item in exercise["options"]}
                 if not isinstance(payload.answer, str) or payload.answer not in valid:
                     raise HTTPException(status_code=422, detail="Choose one of the available options.")
