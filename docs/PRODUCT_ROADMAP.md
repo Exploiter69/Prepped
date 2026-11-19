@@ -235,4 +235,4 @@ Keep the existing Python + FastAPI + plain HTML/CSS/JavaScript + SQLite modular 
 
 **Remaining Phase B gates:** successful latest CI run; target-laptop browser check for navigation, choice/order/reflection exercises, reload/resume, and responsive layout; review of lesson wording and learning usefulness. The baseline diagnostic remains deliberately deferred until exercises and feedback are stable. No proficiency score is produced.
 
-The starter curriculum is deliberately small. Vocabulary, listening, pronunciation activities, HR/technical interview packs, diagnostic assessment, and spaced revision remain later roadmap work.
+The starter curriculum is deliberately small. Broader vocabulary and listening curricula, pronunciation activities, HR/technical interview packs, diagnostic assessment, and spaced revision remain later roadmap work.
