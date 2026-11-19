@@ -45,7 +45,9 @@
     return button;
   }
 
-  function renderRecommendations(recommendations) {
+  function renderRecommendations(recommendations, progress) {
+    const completed = new Set(progress.completed_lesson_ids || []);
+    const lessons = new Map((state.catalog?.tracks || []).flatMap((track) => track.lessons.map((lesson) => [lesson.id, lesson])));
     $("#learning-route-title").textContent = recommendations.track_title;
     $("#learning-route-goal").textContent = recommendations.goal.replaceAll("_", " ");
     $("#learning-route-description").textContent = recommendations.track_description;
@@ -65,7 +67,17 @@
       const meta = document.createElement("span");
       meta.className = "meta-label";
       meta.textContent = "ABOUT " + item.estimated_minutes + " MINUTES";
-      card.append(meta, heading, description, why, makeButton("Start lesson →", item.lesson_id, "button button-primary"));
+      const lesson = lessons.get(item.lesson_id);
+      const missing = (lesson?.prerequisites || []).filter((id) => !completed.has(id));
+      const action = makeButton(completed.has(item.lesson_id) ? "Practise again →" : "Start lesson →",
+        item.lesson_id, "button button-primary", missing.length > 0);
+      card.append(meta, heading, description, why, action);
+      if (missing.length) {
+        const prerequisite = document.createElement("p");
+        prerequisite.className = "learning-prerequisite";
+        prerequisite.textContent = "Complete the earlier lesson in this path first.";
+        card.append(prerequisite);
+      }
       container.append(card);
     }
   }
@@ -186,7 +198,7 @@
       state.voiceStatus = await request("/api/voice/status").catch(() => null);
       state.catalog = catalog;
       state.progress = progress;
-      renderRecommendations(catalog.recommendations);
+      renderRecommendations(catalog.recommendations, progress);
       renderTracks(catalog.tracks, progress);
       renderSkills(progress.skills);
       const titles = {};
