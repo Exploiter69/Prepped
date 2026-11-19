@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field, field_validator
 from prepped.database import connect_database
 
 DEFAULT_CURRICULUM_PATH = Path(__file__).resolve().parent.parent / "curriculum" / "curriculum.v1.json"
-EXERCISE_TYPES = {"choice", "ordering", "reflection", "vocabulary", "listening"}
+EXERCISE_TYPES = {"choice", "ordering", "reflection", "short_response", "vocabulary", "listening"}
 
 
 class CurriculumValidationError(ValueError):
@@ -69,6 +69,9 @@ def load_curriculum(path: Path = DEFAULT_CURRICULUM_PATH) -> dict[str, Any]:
         return index
 
     skills, tracks, lessons = (index_items(items, name) for items, name in zip(arrays, ("skill", "track", "lesson")))
+    for skill in skills.values():
+        if any(item not in skills or item == skill["id"] for item in skill.get("prerequisites", [])):
+            raise CurriculumValidationError(f"Skill {skill['id']} has an invalid prerequisite.")
     for lesson in lessons.values():
         if not all(lesson.get(key) for key in ("version", "title", "introduction")):
             raise CurriculumValidationError(f"Lesson {lesson['id']} is missing required metadata.")
@@ -80,6 +83,8 @@ def load_curriculum(path: Path = DEFAULT_CURRICULUM_PATH) -> dict[str, Any]:
             raise CurriculumValidationError(f"Lesson {lesson['id']} has an invalid prerequisite.")
         seen: set[str] = set()
         for exercise in lesson["exercises"]:
+            if not isinstance(exercise, dict):
+                raise CurriculumValidationError(f"Lesson {lesson['id']} contains an invalid exercise object.")
             eid, kind = exercise.get("id"), exercise.get("type")
             if not eid or eid in seen or kind not in EXERCISE_TYPES:
                 raise CurriculumValidationError(f"Lesson {lesson['id']} has an invalid exercise.")
@@ -98,11 +103,30 @@ def load_curriculum(path: Path = DEFAULT_CURRICULUM_PATH) -> dict[str, Any]:
                     raise CurriculumValidationError(f"Ordering exercise {eid} has invalid tokens or answer.")
             elif not exercise.get("guidance"):
                 raise CurriculumValidationError(f"Reflection exercise {eid} needs self-review guidance.")
+    def reject_cycles(graph: dict[str, list[str]], label: str) -> None:
+        visiting: set[str] = set()
+        visited: set[str] = set()
+        def visit(node: str) -> None:
+            if node in visiting:
+                raise CurriculumValidationError(f"{label} prerequisite cycle includes {node}.")
+            if node in visited:
+                return
+            visiting.add(node)
+            for parent in graph.get(node, []):
+                visit(parent)
+            visiting.remove(node)
+            visited.add(node)
+        for node in graph:
+            visit(node)
+    reject_cycles({key: item.get("prerequisites", []) for key, item in skills.items()}, "Skill")
+    reject_cycles({key: item.get("prerequisites", []) for key, item in lessons.items()}, "Lesson")
+
     valid_goals = {"english_fluency", "placement_interviews", "technical_interviews", "project_communication", "professional_communication"}
     for track in tracks.values():
         if track.get("goal") not in valid_goals:
             raise CurriculumValidationError(f"Track {track['id']} has an unsupported goal.")
-        if any(lesson_id not in lessons or lessons[lesson_id]["track_id"] != track["id"] for lesson_id in track.get("lesson_ids", [])):
+        if (len(track.get("lesson_ids", [])) != len(set(track.get("lesson_ids", [])))
+                or any(lesson_id not in lessons or lessons[lesson_id]["track_id"] != track["id"] for lesson_id in track.get("lesson_ids", []))):
             raise CurriculumValidationError(f"Track {track['id']} has an invalid lesson reference.")
         if any(skill_id not in skills for skill_id in track.get("skill_ids", [])):
             raise CurriculumValidationError(f"Track {track['id']} references an unknown skill.")
@@ -212,12 +236,13 @@ def create_learning_router(db_path: Path, curriculum_path: Path = DEFAULT_CURRIC
             raise HTTPException(status_code=404, detail="Learning attempt not found.")
         item = dict(row)
         item["responses"] = json.loads(item.pop("responses_json"))
+        item["lesson_snapshot"] = json.loads(item.pop("lesson_json") or "{}")
         item["feedback"] = json.loads(item.pop("feedback_json")) if item["feedback_json"] else []
         item.pop("feedback_json", None)
         return item
 
     def view(attempt: dict[str, Any], data: dict[str, Any]) -> dict[str, Any]:
-        lesson = next((item for item in data["lessons"] if item["id"] == attempt["lesson_id"]), None)
+        lesson = attempt.get("lesson_snapshot") or next((item for item in data["lessons"] if item["id"] == attempt["lesson_id"]), None)
         if lesson is None:
             raise HTTPException(status_code=410, detail="This lesson is no longer in the installed curriculum.")
         index = len(attempt["responses"])
@@ -260,9 +285,10 @@ def create_learning_router(db_path: Path, curriculum_path: Path = DEFAULT_CURRIC
                 raise HTTPException(status_code=409, detail="Complete the prerequisite lesson first: " + ", ".join(missing))
             attempt_id, started = str(uuid4()), _now()
             conn.execute("""INSERT INTO learning_attempts
-                (id, lesson_id, lesson_version, track_id, status, responses_json, feedback_json, started_at, completed_at)
-                VALUES (?, ?, ?, ?, 'in_progress', '[]', NULL, ?, NULL)""",
-                (attempt_id, lesson["id"], lesson["version"], lesson["track_id"], started))
+                (id, lesson_id, lesson_version, track_id, lesson_json, status, responses_json, feedback_json, started_at, completed_at)
+                VALUES (?, ?, ?, ?, ?, 'in_progress', '[]', NULL, ?, NULL)""",
+                (attempt_id, lesson["id"], lesson["version"], lesson["track_id"],
+                 json.dumps(lesson, ensure_ascii=False), started))
             conn.execute("""INSERT INTO learning_events
                 (id, event_type, attempt_id, lesson_id, skill_ids_json, occurred_at, detail_json)
                 VALUES (?, 'lesson_started', ?, ?, ?, ?, '{}')""",
@@ -284,7 +310,7 @@ def create_learning_router(db_path: Path, curriculum_path: Path = DEFAULT_CURRIC
             attempt = get_attempt(conn, attempt_id)
             if attempt["status"] != "in_progress":
                 raise HTTPException(status_code=409, detail="This lesson attempt is already complete.")
-            lesson = next((item for item in data["lessons"] if item["id"] == attempt["lesson_id"]), None)
+            lesson = attempt.get("lesson_snapshot") or next((item for item in data["lessons"] if item["id"] == attempt["lesson_id"]), None)
             if lesson is None:
                 raise HTTPException(status_code=410, detail="This lesson is no longer in the installed curriculum.")
             index = len(attempt["responses"])
