@@ -465,3 +465,22 @@ def test_question_vocabulary_and_listening_content_have_authored_answer_handling
         assert any(item["type"] == "vocabulary" and item.get("context")
                    for item in phrase_lesson["exercises"])
         assert any(item["type"] == "short_response" for item in phrase_lesson["exercises"])
+
+
+def test_curriculum_rejects_listening_or_pronunciation_without_text_alternative(tmp_path: Path) -> None:
+    for kind, lesson_id, expected in [
+        ("listening", "listening-for-details", "text alternative"),
+        ("pronunciation", "pronunciation-self-review", "text alternative"),
+    ]:
+        data = load_curriculum()
+        lesson = next(item for item in data["lessons"] if item["id"] == lesson_id)
+        exercise = next(item for item in lesson["exercises"] if item["type"] == kind)
+        exercise.pop("transcript")
+        path = tmp_path / f"{kind}-without-transcript.json"
+        path.write_text(json.dumps(data), encoding="utf-8")
+        try:
+            load_curriculum(path)
+        except CurriculumValidationError as exc:
+            assert expected in str(exc)
+        else:
+            raise AssertionError(f"{kind} exercise without a text alternative was accepted")
