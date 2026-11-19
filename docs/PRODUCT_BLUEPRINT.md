@@ -422,3 +422,25 @@ Do not use AI-generated research as proof of implementation. Do not present the 
 **Keep the implemented text loop as a stable fallback. Build the voice-first product on the same simple app: record/stop microphone input, opt-in Groq Whisper or offline Vosk STT with an editable transcript, local TTS prompt playback, and submission through the existing session backend. Harden the browser/device experience next; user validation is valuable but is not an engineering blocker.**
 
 Speech accuracy, latency, and learning outcomes are not validated. No LLM feedback, adaptive intelligence, pronunciation scoring, or overall score is added in this phase. Everything beyond the first voice slice remains a conditional expansion, not a prerequisite.
+
+---
+
+## 15. Product completion status and implementation plan (2026-11-19)
+
+The blueprint describes the destination, not the current feature set. The current application is a local practice foundation with one project-explanation scenario, a bounded voice record/stop slice, formative heuristic feedback, history, and a learner profile. It is not yet a complete or market-ready learning platform.
+
+The learner profile stores preferences; it does not yet drive adaptive lessons or personalised recommendations. The following capabilities remain future implementation: reusable lesson engine, skill taxonomy, versioned curriculum, English grammar/sentence/vocabulary/fluency/listening units, learner-controlled revision memory, spaced repetition, HR and technical interview studios, evidence-based progress, data export/backup/restore, and full release hardening.
+
+Use [PRODUCT_ROADMAP.md](PRODUCT_ROADMAP.md) for the product-level phases, and [COMPLETE_ROADMAP.md](COMPLETE_ROADMAP.md) for milestone tasks, exit criteria, and release readiness. [CURRENT_STATE.md](CURRENT_STATE.md) records what is actually implemented and verified.
+
+### Active build order
+
+1. Stabilise and manually accept the existing profile, practice, and voice flows.
+2. Build the Learning Engine: skill taxonomy, versioned local JSON curriculum, reusable lesson runner, deterministic exercise types, progress events, and transparent profile-driven starter paths.
+3. Deliver the first coherent English and communication curriculum: grammar in context, sentence construction, vocabulary, speaking fluency, listening comprehension, and listen/repeat pronunciation practice.
+4. Add learner-approved learning memory and revision cards, then a simple transparent local review scheduler.
+5. Add project, HR/behavioural, and technical interview studios on shared scenario infrastructure.
+6. Add evidence-based progress, goals, explainable recommendations, and local export/backup/restore.
+7. Complete accessibility, privacy/security, responsive UX, fresh-install, target-device, and release acceptance checks.
+
+Each phase must preserve the existing FastAPI + plain HTML/CSS/JavaScript + SQLite modular monolith, additive database migrations, versioned JSON content, zero mandatory operating cost, and usable text fallback. A feature is complete only after its end-to-end flow, tests, failure states, documentation, and manual acceptance are evidenced. Do not claim certified proficiency, accurate pronunciation grading, placement probability, or measured learning gains without separate validation.
