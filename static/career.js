@@ -1,6 +1,6 @@
 (() => {
   const $ = (selector, root = document) => root.querySelector(selector);
-  const state = { studios: [], selected: null, session: null, recorder: null, stream: null, chunks: [], timer: null, audioUrl: null, audio: null };
+  const state = { studios: [], selected: null, session: null, recorder: null, stream: null, chunks: [], timer: null, audioUrl: null, audio: null, stt: null };
   const viewIds = ["home-view", "practice-view", "feedback-view", "history-view", "learning-view", "career-view"];
   async function api(url, options = {}) {
     const response = await fetch(url, { ...options, headers: { "Content-Type": "application/json", ...(options.headers || {}) } });
@@ -211,6 +211,11 @@
     } catch (error) { $("#career-voice-status").textContent = error.message; }
   }
   async function startRecording() {
+    if (state.stt?.engine === "groq-whisper") {
+      $("#career-voice-status").textContent = "Remote transcription is enabled: after recording, audio is sent to Groq Whisper. Prepped does not retain the raw recording. Continue only with a non-sensitive answer; text entry is available instead.";
+    } else {
+      $("#career-voice-status").textContent = "Local speech transcription is selected. Prepped does not retain the raw recording. Text entry is available instead.";
+    }
     if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
       $("#career-voice-status").textContent = "Microphone recording is unavailable in this browser. Type your answer instead.";
       return;
@@ -264,6 +269,7 @@
   async function refreshVoiceStatus() {
     try {
       const result = await api("/api/voice/status");
+      state.stt = result.stt || null;
       const detail = result.stt?.detail || "Text answers are available.";
       $("#career-voice-status").textContent = detail + " Transcript text can be edited before submission.";
     } catch (_) { /* text entry remains available */ }
