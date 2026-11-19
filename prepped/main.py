@@ -116,7 +116,9 @@ def create_app(
     async def local_security_headers(request, call_next):
         host_header = request.headers.get("host", "")
         hostname = urlsplit("//" + host_header).hostname
-        if hostname not in {"127.0.0.1", "localhost", "::1", "testserver"}:
+        loopback_host = hostname in {"127.0.0.1", "localhost", "::1"}
+        in_process_test = hostname == "testserver" and request.client is not None and request.client.host == "testclient"
+        if not loopback_host and not in_process_test:
             return PlainTextResponse("Prepped accepts local connections only.", status_code=400)
         if request.method in {"POST", "PUT", "PATCH", "DELETE"}:
             origin = request.headers.get("origin")
