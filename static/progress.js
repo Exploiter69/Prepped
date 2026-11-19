@@ -188,6 +188,13 @@
       $("#goal-title").focus();
       return;
     }
+    if (item.kind === "resume_practice") {
+      $("#history-toggle").click();
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      const button = [...document.querySelectorAll("#history-list button[data-session-id]")].find(el => el.dataset.sessionId === item.target_id);
+      if (button) button.click();
+      return;
+    }
     if (item.kind === "resume_interview") {
       $("#career-toggle").click();
       await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
