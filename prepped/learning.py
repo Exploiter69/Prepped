@@ -52,7 +52,7 @@ def load_curriculum(path: Path = DEFAULT_CURRICULUM_PATH) -> dict[str, Any]:
         data = json.loads(Path(path).read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise CurriculumValidationError(f"Cannot read curriculum JSON: {exc}") from exc
-    if not isinstance(data, dict) or data.get("schema_version") != "1.0.0":
+    if not isinstance(data, dict) or data.get("schema_version") != "1.1.0":
         raise CurriculumValidationError("Unsupported or missing curriculum schema_version.")
     arrays = [data.get(name) for name in ("skills", "tracks", "lessons", "levels", "units")]
     if not all(isinstance(items, list) for items in arrays):
