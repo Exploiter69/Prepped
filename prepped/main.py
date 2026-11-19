@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field
 
 from prepped.database import connect_database, initialize_database
 from prepped.feedback import build_feedback
+from prepped.profile import create_profile_router
 from prepped.scenarios import DEFAULT_SCENARIO_PATH, ScenarioValidationError, load_scenario
 from prepped.voice import VoiceService, build_voice_service
 from prepped.voice.routes import create_voice_router
@@ -103,6 +104,7 @@ def create_app(
     )
     application.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")
     application.include_router(create_voice_router(voice_service or build_voice_service()))
+    application.include_router(create_profile_router(Path(db_path)))
 
     @application.get("/", include_in_schema=False)
     def home() -> FileResponse:
