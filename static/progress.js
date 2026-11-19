@@ -2,7 +2,7 @@
   "use strict";
   const $ = (selector) => document.querySelector(selector);
   const viewIds = ["home-view", "practice-view", "feedback-view", "history-view", "learning-view", "career-view", "progress-view"];
-  const state = { overview: null, editingGoalId: null, archivedVisible: false };
+  const state = { overview: null, editingGoalId: null, archivedVisible: false, dismissedVisible: false };
 
   async function request(url, options = {}) {
     const response = await fetch(url, options);
