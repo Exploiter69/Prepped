@@ -122,3 +122,102 @@ Every module must have:
 ## Explicitly not claimed
 
 Until separately implemented and validated, Prepped does not claim expert-level AI tutoring, certified CEFR/IELTS proficiency, accurate pronunciation grading, emotion/personality detection, placement probability, or measured learning outcomes. Optional generative AI must not be a mandatory dependency or fabricate feedback evidence.
+
+
+---
+
+## Build plan — from foundation to a release candidate
+
+This section turns the product direction into an implementation sequence. It is the active build order; update the status only when code, tests, and acceptance evidence exist.
+
+### Release principle
+
+The learner profile is currently a preference record. It does **not** yet power adaptive lessons, recommendations, or an English curriculum. Do not describe the app as a complete personalised learning platform until the learning loop below is implemented end to end.
+
+### Phase A — Stabilise the current foundation
+
+- [ ] Confirm profile setup, edit, cancel, save, reload, and persistence in a real browser.
+- [ ] Confirm the profile toggle works with the latest cache-busted assets; record the result.
+- [ ] Run the complete pytest suite, Python compilation, and JavaScript syntax checks.
+- [ ] Complete the outstanding voice browser acceptance checklist and document microphone, transcription, transcript correction, submission, TTS, and text fallback results.
+- [ ] Verify CI and a clean-checkout install.
+- [ ] Keep the existing practice room and saved sessions intact.
+
+**Exit gate:** profile and existing practice flows pass browser smoke tests; automated checks and CI pass; voice limitations are recorded honestly.
+
+### Phase B — Learning Engine (next major product milestone)
+
+Build the reusable learning foundation before adding many disconnected screens.
+
+1. **Skill taxonomy:** define stable skill IDs, descriptions, observable learning outcomes, and links between English fluency, grammar, sentence construction, vocabulary, listening, pronunciation, confidence, professional communication, project explanation, and interview skills.
+2. **Versioned curriculum manifest:** define tracks, levels, units, lessons, prerequisites, estimated effort, and exercise references in reviewed local JSON. Content must be versioned and validated at startup/test time.
+3. **Reusable lesson runner:** support lesson introduction, example, learner exercise, response, feedback, retry, completion, and next-step navigation. Keep scenario/lesson state controlled by application code.
+4. **Exercise types:** start with deterministic, testable formats: sentence ordering/construction, grammar-in-context, vocabulary in context, short written/spoken response, listening comprehension using available audio, and explain/describe/compare prompts.
+5. **Evidence-based feedback:** explain a correction, show the learner's original text, offer a better example, and state uncertainty. Do not infer proficiency from a single response or fabricate speech/pronunciation measurements.
+6. **Progress events:** persist lesson attempts, completion, skill links, timestamps, and feedback references additively in SQLite.
+7. **Profile-driven starting route:** map the learner's stated goal and focus areas to a transparent starter path. For example, English fluency plus speaking fluency/grammar/vocabulary should prioritise those units. Show why each recommendation appears and allow the learner to change the route.
+8. **Diagnostic:** add a short, low-stakes baseline only after exercises and feedback are stable. Store observable responses and completed tasks, not a certified level.
+
+**Exit gate:** a learner can choose a track, complete a sequence of lessons, receive grounded feedback, retry, resume after restart, and see progress. Profile choices demonstrably affect the suggested starting path. Text mode works without speech models.
+
+### Phase C — English and communication curriculum
+
+Deliver a coherent first track rather than a large empty catalogue.
+
+- English foundations: sentence structure, common grammar patterns, question formation, tense in context, articles/prepositions where useful, and error correction.
+- Sentence construction: build, expand, combine, shorten, and clarify sentences; preserve intended meaning.
+- Vocabulary: useful words and phrases in context, collocations, definitions, example use, learner-created examples, and review.
+- Speaking fluency: structured short responses, retelling, describing, explaining, opinions, and follow-up prompts.
+- Listening: short locally available or authored audio, transcript/caption support, comprehension questions, replay, and text alternative.
+- Pronunciation: begin with listen-and-repeat/self-review activities. Do not expose phoneme accuracy scores unless a separate validated implementation supports them.
+- Confidence: private, repeatable low-pressure practice and visible completion evidence; do not infer emotion or assign a confidence score.
+
+**Exit gate:** each unit has authored content, clear outcomes, exercises, answer handling, feedback, tests, and a complete learner flow. Every audio activity has an accessible text alternative.
+
+### Phase D — Personal learning memory and revision
+
+- Let learners explicitly save a word, phrase, correction, or useful example.
+- Preserve source context and the learner's original response.
+- Allow edit, dismiss, delete, suspend, and duplicate resolution.
+- Build a simple transparent local review scheduler only after card quality is demonstrated.
+- Integrate due cards into lessons and a dedicated review session.
+- Never silently convert uncertain automated feedback into a permanent learner weakness.
+
+**Exit gate:** learners can create/edit/delete review items, complete due reviews, and see scheduling behaviour; tests cover dates, retries, and persistence.
+
+### Phase E — Career and interview studios
+
+- Add project explanation and personal contribution tracks.
+- Add HR/behavioural and technical interview scenario packs.
+- Add follow-up turns using explicit scenario state and validated transitions.
+- Reuse the same session, voice, feedback, and history infrastructure.
+- Add role-specific paths only when the content is authored and tested.
+
+**Exit gate:** at least two distinct scenario families run through the same reusable infrastructure without breaking the English learning path.
+
+### Phase F — Progress, portability, and release hardening
+
+- Skill-level progress based on completed activities and observable evidence, not a single opaque score.
+- Goals, activity history, review completion, and explainable recommendations.
+- Local export, backup, restore, and recovery tests.
+- Responsive layout, keyboard and screen-reader checks, contrast, focus, and empty/loading/error states.
+- Security review: local binding, input validation, upload limits, secrets, dependency review, and safe data handling.
+- Fresh-install test on the target Omarchy laptop and documented supported environment.
+- Manual acceptance checklist for all core journeys.
+- Small consent-based usability study when feasible; report sample size and limitations. It is not a substitute for engineering tests.
+
+**Exit gate:** reproducible clean install, automated suite and CI pass, core journeys accepted manually, data backup/restore works, known limitations are documented, and no unsupported product claims remain.
+
+### Definition of done for every feature
+
+A feature is not complete because its screen exists. It is done only when:
+- The learner outcome and end-to-end flow are defined.
+- UI, API, validation, and persistence work together where needed.
+- Loading, empty, error, retry, and offline/text-fallback states are handled.
+- Automated tests cover normal, invalid, boundary, failure, and legacy-data behaviour.
+- Accessibility and responsive behaviour are checked.
+- Documentation says whether it is proposed, implemented, automated-tested, or manually accepted.
+
+### Scope and architecture guardrails
+
+Keep the existing Python + FastAPI + plain HTML/CSS/JavaScript + SQLite modular monolith and versioned JSON content. Use additive migrations. No mandatory paid services, hosted dependencies, login, React/Vue/Svelte rewrite, Redis, Kafka, Celery, Kubernetes, microservices, vector database, or second workflow system. Optional AI must be replaceable, explicitly configured, disclosed, and never required for core lessons. Do not store raw audio by default.
