@@ -413,7 +413,7 @@ def test_vocabulary_lesson_submits_contextual_choices_and_learner_example(
     assert "I completed several tasks" in feedback
     page.get_by_role("button", name="Back to lesson list").click()
     complete_lesson_in_browser(page, "phrases-for-study", [
-        "a", "b", "I carried out a test of the login form."
+        "a", "b", "a", "I carried out a test of the login form."
     ])
     assert "carry out tests" in page.locator("#learning-feedback").inner_text().lower()
 
