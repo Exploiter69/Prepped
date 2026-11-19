@@ -1,6 +1,6 @@
 (() => {
   const $ = (selector, root = document) => root.querySelector(selector);
-  const state = { catalog: null, progress: null, attempt: null, busy: false, voiceStatus: null,
+  const state = { catalog: null, progress: null, diagnostic: null, attempt: null, busy: false, voiceStatus: null,
     recorder: null, stream: null, chunks: [], recordTimer: null, discardRecording: false, transcribing: false, listeningAudio: null, audioUrl: null };
   const viewIds = ["home-view", "practice-view", "feedback-view", "history-view", "learning-view"];
 
@@ -85,6 +85,7 @@
   }
 
   function renderTracks(tracks, progress) {
+    tracks = tracks.filter((track) => track.id !== "starting-point-check");
     const container = $("#learning-track-list");
     const completed = new Set(progress.completed_lesson_ids || []);
     const titles = Object.fromEntries(tracks.flatMap((track) => track.lessons.map((lesson) => [lesson.id, lesson.title])));
@@ -159,10 +160,36 @@
     }
   }
 
+  function renderDiagnostic(diagnostic) {
+    state.diagnostic = diagnostic;
+    const button = $("#learning-diagnostic-start");
+    if (!diagnostic?.configured) {
+      $("#learning-diagnostic-status").textContent = "Unavailable";
+      button.disabled = true;
+      return;
+    }
+    const latest = diagnostic.latest;
+    if (latest?.status === "in_progress") {
+      $("#learning-diagnostic-status").textContent = "In progress";
+      button.textContent = "Resume starting-point check →";
+      button.onclick = () => resumeAttempt(latest.id);
+    } else if (latest?.status === "completed") {
+      $("#learning-diagnostic-status").textContent = "Completed · no level assigned";
+      button.textContent = "Repeat starting-point check →";
+      button.onclick = () => startLesson("baseline-check");
+    } else {
+      $("#learning-diagnostic-status").textContent = "Not started";
+      button.textContent = "Start starting-point check →";
+      button.onclick = () => startLesson("baseline-check");
+    }
+    button.disabled = false;
+  }
+
   function renderProgress(progress) {
     $("#learning-progress").replaceChildren();
     const facts = [
       ["Lessons completed", progress.lessons_completed],
+      ["Baseline checks completed", progress.diagnostics_completed || 0],
       ["Attempts started", progress.attempts_started],
       ["Recorded events", progress.learning_events],
     ];
@@ -199,9 +226,10 @@
   async function loadWorkspace() {
     $("#learning-status").textContent = "Loading curriculum…";
     try {
-      const [catalog, progress] = await Promise.all([
+      const [catalog, progress, diagnostic] = await Promise.all([
         request("/api/learning/catalog"),
         request("/api/learning/progress"),
+        request("/api/learning/diagnostic/latest"),
       ]);
       state.voiceStatus = await request("/api/voice/status").catch(() => null);
       state.catalog = catalog;
@@ -209,6 +237,7 @@
       renderRecommendations(catalog.recommendations, progress);
       renderTracks(catalog.tracks, progress);
       renderSkills(progress.skills);
+      renderDiagnostic(diagnostic);
       const titles = {};
       for (const track of catalog.tracks) for (const lesson of track.lessons) titles[lesson.id] = lesson.title;
       progress.lesson_titles = titles;
