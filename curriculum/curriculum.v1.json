@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0.0",
+  "skills": [
+    {"id":"english.sentence-structure","title":"Sentence structure","description":"Build clear, complete sentences and arrange ideas in a useful order.","outcomes":["Identify a complete sentence","Arrange words into a clear sentence","Write one focused sentence"],"category":"english"},
+    {"id":"english.grammar-in-context","title":"Grammar in context","description":"Choose grammatical forms that fit the meaning and context.","outcomes":["Recognise context-appropriate verb forms","Choose articles and prepositions in a sentence","Review a sentence for meaning"],"category":"english","prerequisites":["english.sentence-structure"]},
+    {"id":"english.vocabulary-context","title":"Vocabulary in context","description":"Choose precise words and phrases for a specific situation.","outcomes":["Use a word from context clues","Distinguish general and precise wording"],"category":"english"},
+    {"id":"communication.project-summary","title":"Project summary","description":"Explain a project through its problem, approach, and intended users.","outcomes":["State the problem","Describe the implemented approach","Identify who the work is for"],"category":"communication"},
+    {"id":"communication.clarity","title":"Clarity and specificity","description":"Make explanations concrete, concise, and easy to follow.","outcomes":["Replace vague claims with specific details","Organise an explanation","Separate verified results from intended outcomes"],"category":"communication"},
+    {"id":"interview.project-explanation","title":"Project explanation","description":"Practise explaining technical work in placement conversations.","outcomes":["Explain a technical project","Describe personal contribution"],"category":"interview"}
+  ],
+  "tracks": [
+    {
+      "id":"english-foundations",
+      "title":"English foundations",
+      "description":"Build clear sentences and use grammar in everyday and study-related contexts.",
+      "goal":"english_fluency",
+      "skill_ids":["english.sentence-structure","english.grammar-in-context","english.vocabulary-context"],
+      "lesson_ids":["sentence-building","grammar-in-context"]
+    },
+    {
+      "id":"project-communication",
+      "title":"Project communication",
+      "description":"Practise explaining technical work with a clear structure and specific evidence.",
+      "goal":"project_communication",
+      "skill_ids":["communication.project-summary","communication.clarity","interview.project-explanation"],
+      "lesson_ids":["structured-project-summary","specific-explanations"]
+    },
+    {
+      "id":"placement-communication",
+      "title":"Placement communication",
+      "description":"Start with clear project explanations, then continue to the existing interview practice room.",
+      "goal":"placement_interviews",
+      "skill_ids":["communication.project-summary","communication.clarity","interview.project-explanation"],
+      "lesson_ids":["structured-project-summary","specific-explanations"]
+    }
+  ],
+  "lessons": [
+    {
+      "id":"sentence-building",
+      "version":"1.0.0",
+      "track_id":"english-foundations",
+      "title":"Build a clear sentence",
+      "summary":"Practise the basic shape of a sentence and put an idea in a useful order.",
+      "estimated_minutes":8,
+      "skill_ids":["english.sentence-structure"],
+      "prerequisites":[],
+      "learning_outcomes":["Recognise a complete sentence","Arrange words into a clear sentence","Write one focused sentence"],
+      "introduction":"A clear sentence usually communicates one main idea. In English, a common starting pattern is subject + verb + object or complement. Longer details can follow once the core idea is clear.",
+      "example":{"label":"Example","before":"Built I an attendance app.","after":"I built an attendance app.","explanation":"The subject comes before the verb. The object tells the reader what was built."},
+      "exercises":[
+        {"id":"sentence-complete","type":"choice","prompt":"Which option is a complete sentence?","options":[{"id":"a","label":"Because the team tested the feature."},{"id":"b","label":"The team tested the feature."},{"id":"c","label":"After testing the feature."}],"answer":"b","explanation":"This option has a subject (the team) and a verb (tested), and it expresses a complete thought."},
+        {"id":"sentence-order","type":"ordering","prompt":"Arrange these parts into a clear sentence.","tokens":[{"id":"a","label":"I"},{"id":"b","label":"built"},{"id":"c","label":"a small portfolio website"},{"id":"d","label":"for my college project"}],"answer":["a","b","c","d"],"explanation":"Start with the subject, follow with the action, then add what was built and the context."},
+        {"id":"sentence-practice","type":"reflection","prompt":"Write one clear sentence about something you built, learned, or practised.","placeholder":"I built… / I learned…","guidance":"Keep one main idea. Include a specific action or subject. This response is saved for your review; it is not automatically graded."}
+      ]
+    },
+    {
+      "id":"grammar-in-context",
+      "version":"1.0.0",
+      "track_id":"english-foundations",
+      "title":"Grammar in context",
+      "summary":"Choose verb forms and prepositions that fit the meaning of a sentence.",
+      "estimated_minutes":9,
+      "skill_ids":["english.grammar-in-context"],
+      "prerequisites":["sentence-building"],
+      "learning_outcomes":["Choose a verb form for a completed action","Use a common preposition in context","Review grammar without losing the intended meaning"],
+      "introduction":"Grammar choices depend on what you mean and when an action happened. Read the whole sentence before choosing a form. The goal is to make the meaning clear, not to memorise isolated rules.",
+      "example":{"label":"Example","before":"Yesterday, I build a login page.","after":"Yesterday, I built a login page.","explanation":"“Yesterday” places the action in the past, so “built” fits the sentence."},
+      "exercises":[
+        {"id":"past-tense","type":"choice","prompt":"Choose the sentence that correctly describes a completed action yesterday.","options":[{"id":"a","label":"Yesterday, I test the application."},{"id":"b","label":"Yesterday, I tested the application."},{"id":"c","label":"Yesterday, I testing the application."}],"answer":"b","explanation":"“Tested” is the simple past form and matches the time marker “yesterday”."},
+        {"id":"preposition","type":"choice","prompt":"Choose the most natural preposition: “I am responsible ___ testing the API.”","options":[{"id":"a","label":"for"},{"id":"b","label":"at"},{"id":"c","label":"on"}],"answer":"a","explanation":"The usual construction is “responsible for” followed by a noun or an -ing verb."},
+        {"id":"grammar-review","type":"reflection","prompt":"Write a sentence about a task you completed recently. Include when you did it.","placeholder":"Last week, I…","guidance":"Check that the verb form matches the time you mention. This is a self-review prompt, not an automated grammar grade."}
+      ]
+    },
+    {
+      "id":"structured-project-summary",
+      "version":"1.0.0",
+      "track_id":"project-communication",
+      "title":"Structure a project summary",
+      "summary":"Explain what problem a project addresses, what you built, and who it is for.",
+      "estimated_minutes":8,
+      "skill_ids":["communication.project-summary"],
+      "prerequisites":[],
+      "learning_outcomes":["State the problem in one sentence","Describe a concrete feature or approach","Identify the intended users"],
+      "introduction":"A useful project summary gives the listener a map: the problem, your approach, and the people the work is intended to help. Avoid claiming impact that you have not measured.",
+      "example":{"label":"Example","before":"It is an app with many useful features.","after":"The app brings campus notices and student discussions into one place so students can find updates more easily.","explanation":"The revised example names the product's purpose and intended users without claiming a measured outcome."},
+      "exercises":[
+        {"id":"summary-problem","type":"choice","prompt":"Which opening gives the clearest problem statement?","options":[{"id":"a","label":"My project is very innovative and useful."},{"id":"b","label":"Students may need to check several channels to find campus updates."},{"id":"c","label":"I used Python and SQLite."}],"answer":"b","explanation":"It describes a concrete user problem. Technologies belong in the approach, not the problem statement."},
+        {"id":"summary-order","type":"ordering","prompt":"Arrange these parts into a useful project-summary sequence.","tokens":[{"id":"a","label":"The problem users face"},{"id":"b","label":"The approach or feature I built"},{"id":"c","label":"Who the project is intended for"}],"answer":["a","b","c"],"explanation":"Start with the problem, explain the approach, then identify the intended users."},
+        {"id":"summary-practice","type":"reflection","prompt":"Write a three-part project summary: problem, what you built, and intended users.","placeholder":"The problem is… I built… It is intended for…","guidance":"Use only facts you can support. If you have not measured an outcome, describe the intended benefit rather than claiming success."}
+      ]
+    },
+    {
+      "id":"specific-explanations",
+      "version":"1.0.0",
+      "track_id":"project-communication",
+      "title":"Make explanations specific",
+      "summary":"Replace vague claims with a concrete example and distinguish implementation from measured results.",
+      "estimated_minutes":8,
+      "skill_ids":["communication.clarity"],
+      "prerequisites":["structured-project-summary"],
+      "learning_outcomes":["Replace vague wording with a specific detail","Give a concrete example","Avoid presenting an unmeasured outcome as fact"],
+      "introduction":"Words such as “good”, “fast”, and “useful” can be unclear without context. A specific explanation names the feature, action, test, or observation. Keep intended outcomes separate from results you have actually measured.",
+      "example":{"label":"Example","before":"The application is very reliable and helps everyone.","after":"I added input validation and tested the session API with the automated test suite. I have not yet measured usage with students.","explanation":"The revised version names implementation and test evidence, and clearly states what has not been measured."},
+      "exercises":[
+        {"id":"specific-claim","type":"choice","prompt":"Which statement is most specific and appropriately cautious?","options":[{"id":"a","label":"My application is the best solution for all students."},{"id":"b","label":"I added input validation and tested the profile API with automated tests."},{"id":"c","label":"Everyone will use my application."}],"answer":"b","explanation":"It identifies concrete work and a verifiable check without claiming universal impact."},
+        {"id":"specific-order","type":"ordering","prompt":"Arrange the explanation from implementation to evidence to limitation.","tokens":[{"id":"a","label":"I added input validation to the endpoint."},{"id":"b","label":"The automated tests cover valid and invalid input."},{"id":"c","label":"I have not yet tested the flow with a group of students."}],"answer":["a","b","c"],"explanation":"Describe what you implemented, what you checked, and what remains unverified."},
+        {"id":"specific-practice","type":"reflection","prompt":"Describe one feature you worked on, how you checked it, and one limitation that remains.","placeholder":"I implemented… I checked it by… I have not yet…","guidance":"Name a real feature and a real check. Do not invent test results, user feedback, or impact."}
+      ]
+    }
+  ]
+}
