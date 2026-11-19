@@ -211,6 +211,13 @@
       await loadHistory();
     } catch (error) { status(error.message, true); }
   }
+  function stopPrompt() {
+    if (state.audio) {
+      state.audio.pause();
+      state.audio.currentTime = 0;
+    }
+    $("#career-voice-status").textContent = "Prompt playback stopped.";
+  }
   async function playPrompt() {
     const text = $("#career-prompt-title").textContent;
     try {
@@ -245,7 +252,7 @@
       state.recorder.start();
       $("#career-record").disabled = true;
       $("#career-stop-record").disabled = false;
-      $("#career-voice-status").textContent = "Recording… stop when you are ready. Raw audio is not saved by Prepped.";
+      $("#career-voice-status").textContent = "Recording… up to 60 seconds. Stop when you are ready. Raw audio is not saved by Prepped.";
       state.timer = window.setTimeout(() => stopRecording(false), 60000);
     } catch (error) { releaseStream(); $("#career-voice-status").textContent = (error.message || "Microphone permission was not available.") + " You can type instead."; }
   }
@@ -294,6 +301,8 @@
     $("#career-start").addEventListener("click", startInterview);
     $("#career-submit").addEventListener("click", submitAnswer);
     $("#career-speak").addEventListener("click", playPrompt);
+    $("#career-replay").addEventListener("click", playPrompt);
+    $("#career-stop-speak").addEventListener("click", stopPrompt);
     $("#career-record").addEventListener("click", startRecording);
     $("#career-stop-record").addEventListener("click", () => stopRecording(false));
     $("#career-exit").addEventListener("click", async () => {
