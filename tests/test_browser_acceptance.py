@@ -152,3 +152,46 @@ def test_practice_room_is_not_gated_by_profile_and_text_flow_completes(local_app
     page.locator("#history-toggle").click()
     page.locator("#history-view").wait_for(state="visible")
     assert "project explanation" in page.locator("#history-list").inner_text()
+
+
+def test_learning_workspace_completes_and_resumes_a_saved_lesson(local_app_url: str, browser_page) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+    page.locator("#learning-toggle").click()
+    page.wait_for_function(
+        "() => document.querySelector('#learning-status').textContent.includes('skills')"
+    )
+    assert "Project communication" in page.locator("#learning-route-title").inner_text()
+
+    page.locator('button[data-lesson-id="sentence-building"]').click()
+    page.locator("#learning-runner").wait_for(state="visible")
+    page.locator('input[name="learning-choice"][value="b"]').check()
+    page.locator("#learning-submit").click()
+    page.wait_for_function(
+        "() => document.querySelector('#learning-exercise-count').textContent === 'Exercise 2 of 3'"
+    )
+
+    # The attempt is durable: reload, find it in the resume area, and continue.
+    page.reload()
+    page.locator("#learning-toggle").click()
+    page.wait_for_function(
+        "() => document.querySelector('#learning-resume-list').textContent.includes('Resume:')"
+    )
+    page.locator("#learning-resume-list button").click()
+    page.locator("#learning-runner").wait_for(state="visible")
+    assert "Exercise 2 of 3" in page.locator("#learning-exercise-count").inner_text()
+
+    for position, token in enumerate(["a", "b", "c", "d"]):
+        page.locator(".learning-order-select").nth(position).select_option(token)
+    page.locator("#learning-submit").click()
+    page.wait_for_function(
+        "() => document.querySelector('#learning-exercise-count').textContent === 'Exercise 3 of 3'"
+    )
+    page.locator("#learning-reflection").fill("I built a timetable app for my class.")
+    page.locator("#learning-submit").click()
+    page.wait_for_function(
+        "() => document.querySelector('#learning-runner').textContent.includes('Lesson review')"
+    )
+    assert "saved for self review" in page.locator("#learning-feedback").inner_text().lower()
+    assert "not automatically graded" in page.locator("#learning-feedback").inner_text().lower()
+    assert "Lessons completed" in page.locator("#learning-progress").inner_text()
