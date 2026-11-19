@@ -116,6 +116,18 @@ def test_progress_recommendations_follow_profile_and_saved_activity(tmp_path: Pa
         assert any(item["kind"] == "goal" and item["target_id"] == goal["id"] for item in updated["recommendations"])
         assert any(item["kind"] == "resume_practice" and item["target_id"] == practice["id"] for item in updated["recommendations"])
         assert any(item["kind"] == "resume_interview" and item["target_id"] == interview["id"] for item in updated["recommendations"])
+        recommendation = next(item for item in updated["recommendations"] if item["kind"] == "resume_practice")
+        dismissed = client.post("/api/progress/recommendations/dismiss", json=recommendation)
+        assert dismissed.status_code == 200
+        assert not any(item["kind"] == "resume_practice" for item in client.get("/api/progress/overview").json()["recommendations"])
+        hidden = client.get("/api/progress/recommendations/dismissed").json()["recommendations"]
+        assert any(item["target_id"] == practice["id"] for item in hidden)
+        restored = client.post("/api/progress/recommendations/restore", json={
+            "kind": "resume_practice", "target_id": practice["id"],
+        })
+        assert restored.status_code == 200
+        assert any(item["kind"] == "resume_practice" and item["target_id"] == practice["id"]
+                   for item in client.get("/api/progress/overview").json()["recommendations"])
     finally:
         client.__exit__(None, None, None)
 
@@ -137,4 +149,4 @@ def test_goal_baseline_column_migration_preserves_existing_goal(tmp_path: Path) 
         row = conn.execute("SELECT id,baseline_count FROM learner_goals WHERE id='legacy'").fetchone()
         assert "baseline_count" in columns
         assert row == ("legacy", 0)
-        assert conn.execute("PRAGMA user_version").fetchone()[0] == 2
+        assert conn.execute("PRAGMA user_version").fetchone()[0] == 3
