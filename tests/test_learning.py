@@ -388,6 +388,7 @@ def test_pronunciation_attempt_is_private_self_review_not_an_accuracy_score(tmp_
             ("past-tense", "b"), ("preposition", "a"),
             ("grammar-review", "Yesterday, I tested the form."),
             ("articles-in-context", "a"), ("future-plan", "b"),
+            ("error-correction", "Yesterday, she went to the lab and checked the results."),
         ]:
             assert client.post(f"/api/learning/attempts/{grammar['id']}/responses",
                                json={"exercise_id": exercise_id, "answer": answer}).status_code == 200
