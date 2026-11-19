@@ -133,10 +133,11 @@ def test_lesson_attempt_enforces_order_persists_feedback_and_updates_progress(tm
         assert saved["feedback"][2]["original_response"] == "I built a small timetable app for my class."
 
 
-def test_prerequisite_is_enforced_and_retry_is_a_new_attempt(tmp_path: Path) -> None:
+def test_prerequisites_are_guidance_and_retry_is_a_new_attempt(tmp_path: Path) -> None:
     with client_for(tmp_path) as client:
-        blocked = client.post("/api/learning/attempts", json={"lesson_id": "grammar-in-context"})
-        assert blocked.status_code == 409
+        direct = client.post("/api/learning/attempts", json={"lesson_id": "grammar-in-context"})
+        assert direct.status_code == 201
+        assert direct.json()["lesson_id"] == "grammar-in-context"
 
         first = client.post("/api/learning/attempts", json={"lesson_id": "sentence-building"}).json()
         answers = [
@@ -236,7 +237,7 @@ def test_listening_and_vocabulary_exercises_are_safe_and_deterministic(tmp_path:
         assert all("answer" not in exercise for exercise in vocabulary["exercises"])
 
         attempt = client.post("/api/learning/attempts", json={"lesson_id": "listening-for-details"})
-        assert attempt.status_code == 409  # sentence-building is an explicit prerequisite
+        assert attempt.status_code == 201  # prerequisites guide order but do not block access
 
         first = client.post("/api/learning/attempts", json={"lesson_id": "sentence-building"}).json()
         for exercise_id, answer in [
@@ -469,7 +470,7 @@ def test_question_vocabulary_and_listening_content_have_authored_answer_handling
         assert response.json()["feedback"][0]["status"] == "correct"
 
         vocabulary = client.post("/api/learning/attempts", json={"lesson_id": "phrases-for-study"})
-        assert vocabulary.status_code == 409  # the vocabulary unit has its own prerequisite
+        assert vocabulary.status_code == 201  # later lessons remain directly accessible
         catalog = client.get("/api/learning/catalog").json()
         phrase_lesson = next(item for item in catalog["tracks"][0]["lessons"]
                              if item["id"] == "phrases-for-study")
