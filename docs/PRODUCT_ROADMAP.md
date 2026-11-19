@@ -266,7 +266,8 @@ The English starter path is now expanded under Phase C. Advanced diagnostic inte
 - Explicit item types: word, phrase, correction, concept, and example.
 - Manual item creation plus optional lesson and project-practice feedback suggestions. A suggestion only prefills the editor; the learner must review and submit it before anything is saved.
 - Source provenance: source type, lesson/attempt identifier, lesson title, and a short source excerpt are retained when available.
-- Edit, suspend/resume, and permanent delete controls. Deleting an item also deletes its review history.
+- Edit, suspend/resume, dismiss/restore, and permanent delete controls. Dismissal removes an item from active review without deleting it or its history; permanent deletion cascades to review history.
+- Duplicate attempts return the existing item and the UI opens that item for editing instead of silently overwriting it.
 - Duplicate detection uses Unicode-normalised, case-folded, whitespace-collapsed text within the same item type. Existing items are not silently overwritten.
 - A due-review queue with answer reveal and Again / Hard / Good / Easy ratings.
 - A deterministic, transparent interval scheduler implemented locally. It is deliberately a small custom schedule, not FSRS and not claimed to be FSRS-compatible.
