@@ -2,7 +2,7 @@
   const $ = (selector, root = document) => root.querySelector(selector);
   const state = { catalog: null, progress: null, diagnostic: null, attempt: null, busy: false, voiceStatus: null,
     recorder: null, stream: null, chunks: [], recordTimer: null, discardRecording: false, transcribing: false, listeningAudio: null, audioUrl: null };
-  const viewIds = ["home-view", "practice-view", "feedback-view", "history-view", "learning-view"];
+  const viewIds = ["home-view", "practice-view", "feedback-view", "history-view", "learning-view", "career-view"];
 
   async function request(url, options = {}) {
     const response = await fetch(url, {
