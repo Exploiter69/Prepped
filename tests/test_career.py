@@ -117,3 +117,16 @@ def test_studio_catalog_is_versioned_and_has_authored_difficulty_followups() -> 
             variants = question["followup"]["prompts"]
             assert set(variants) == {"guided", "standard", "challenging"}
             assert all(isinstance(value, str) and value.strip() for value in variants.values())
+
+
+def test_career_schema_is_additive_and_preserves_existing_practice(tmp_path: Path) -> None:
+    with client_for(tmp_path) as client:
+        practice = client.post("/api/sessions")
+        assert practice.status_code == 201
+        practice_id = practice.json()["id"]
+        career = start(client, "project-explanation")
+        assert career.status_code == 201
+        assert client.get(f"/api/sessions/{practice_id}").status_code == 200
+        assert client.get(f"/api/career/sessions/{career.json()['id']}").status_code == 200
+        assert client.delete(f"/api/career/sessions/{career.json()['id']}").status_code == 204
+        assert client.get(f"/api/sessions/{practice_id}").status_code == 200
