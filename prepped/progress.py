@@ -188,7 +188,9 @@ def _overview(db_path: Path, curriculum_path: Path) -> dict[str, Any]:
         if due:
             recommendations.append({"kind": "review_memory", "title": f"Review {due} due learning note(s)", "reason": "These learner-saved notes have reached their next review date.", "target_id": "learning-memory"})
         route = build_recommendations(curriculum, profile)
-        next_lesson = next((item for item in route["items"] if item["lesson_id"] not in completed_ids), None)
+        active_lesson_id = in_progress["lesson_id"] if in_progress else None
+        next_lesson = next((item for item in route["items"]
+                            if item["lesson_id"] not in completed_ids and item["lesson_id"] != active_lesson_id), None)
         if next_lesson:
             recommendations.append({"kind": "lesson", "title": "Continue: " + next_lesson["title"], "reason": next_lesson["why"], "target_id": next_lesson["lesson_id"]})
         if active_goals:
