@@ -212,32 +212,38 @@ def build_recommendations(curriculum: dict[str, Any], profile: dict[str, Any] | 
     lessons = {item["id"]: item for item in curriculum["lessons"]}
     areas = set(profile.get("improvement_areas", [])) if profile else set()
     items = []
+    covered_areas: set[str] = set()
     for lesson_id in track["lesson_ids"]:
         lesson = lessons[lesson_id]
         matched = []
         if "grammar" in areas and "english.grammar-in-context" in lesson["skill_ids"]:
             matched.append("grammar")
+            covered_areas.add("grammar")
         if "vocabulary" in areas and "english.vocabulary-context" in lesson["skill_ids"]:
             matched.append("vocabulary")
+            covered_areas.add("vocabulary")
         if "speaking_fluency" in areas and "english.fluency" in lesson["skill_ids"]:
             matched.append("speaking fluency practice")
+            covered_areas.add("speaking_fluency")
         if "pronunciation" in areas and "english.pronunciation" in lesson["skill_ids"]:
             matched.append("listen-and-repeat pronunciation practice")
+            covered_areas.add("pronunciation")
         if "confidence" in areas and "communication.confidence" in lesson["skill_ids"]:
             matched.append("low-pressure speaking practice")
+            covered_areas.add("confidence")
         if "project_explanation" in areas and "communication.project-summary" in lesson["skill_ids"]:
             matched.append("project explanation")
+            covered_areas.add("project_explanation")
         if "professional_communication" in areas and (
                 "communication.clarity" in lesson["skill_ids"] or "communication.professional" in lesson["skill_ids"]):
             matched.append("professional communication")
+            covered_areas.add("professional_communication")
         why = ("Matches your focus on " + ", ".join(matched) + ".") if matched else (
             f"Included in the {track['title']} path selected for your {goal.replace('_', ' ')} goal."
         )
         items.append({"lesson_id": lesson_id, "title": lesson["title"], "summary": lesson["summary"],
                       "estimated_minutes": lesson["estimated_minutes"], "skill_ids": lesson["skill_ids"], "why": why})
-    covered = {"grammar", "vocabulary", "speaking_fluency", "pronunciation", "confidence",
-               "professional_communication", "project_explanation"}
-    missing = sorted(areas - covered)
+    missing = sorted(areas - covered_areas)
     if goal == "technical_interviews":
         note = "A dedicated technical-interview question bank is planned. This route builds project-explanation foundations first."
     elif missing:
