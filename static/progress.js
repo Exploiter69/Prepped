@@ -226,20 +226,57 @@
     if (item.kind === "career") $("#career-toggle")?.click();
   }
 
-  function renderRecommendations(items) {
+  function renderRecommendations(items, dismissed) {
     const target = $("#progress-recommendations");
     target.replaceChildren();
     for (const item of items) {
       const row = node("div", "progress-row");
       const details = node("div");
       details.append(node("strong", "", item.title), node("p", "", item.reason));
+      const actions = node("div", "progress-row-actions");
       const action = node("button", "button button-secondary", "Open");
       action.type = "button";
       action.addEventListener("click", () => openRecommendation(item));
-      row.append(details, node("div", "progress-row-actions"));
-      row.lastChild.append(action);
+      const dismiss = node("button", "button button-quiet", "Dismiss");
+      dismiss.type = "button";
+      dismiss.addEventListener("click", async () => {
+        try {
+          await request("/api/progress/recommendations/dismiss", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(item),
+          });
+          await load();
+        } catch (error) { setStatus(error.message, true); }
+      });
+      actions.append(action, dismiss);
+      row.append(details, actions);
       target.append(row);
     }
+    if (!items.length) target.append(node("p", "progress-empty", "No suggested next steps right now. Your saved work remains available from Learning, Career, and History."));
+    const dismissedTarget = $("#progress-dismissed-recommendations");
+    dismissedTarget.replaceChildren();
+    dismissedTarget.classList.toggle("hidden", !state.dismissedVisible);
+    $("#progress-dismissed-toggle").textContent = state.dismissedVisible ? "Hide dismissed suggestions" : "Show dismissed suggestions (" + dismissed.length + ")";
+    $("#progress-dismissed-toggle").setAttribute("aria-expanded", String(state.dismissedVisible));
+    for (const item of dismissed) {
+      const row = node("div", "progress-row");
+      const details = node("div");
+      details.append(node("strong", "", item.title), node("p", "", item.reason));
+      const restore = node("button", "button button-secondary", "Restore suggestion");
+      restore.type = "button";
+      restore.addEventListener("click", async () => {
+        try {
+          await request("/api/progress/recommendations/restore", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ kind: item.kind, target_id: item.target_id }),
+          });
+          await load();
+        } catch (error) { setStatus(error.message, true); }
+      });
+      row.append(details, restore);
+      dismissedTarget.append(row);
+    }
+    if (!dismissed.length) dismissedTarget.append(node("p", "progress-empty", "No dismissed suggestions."));
   }
 
   function setStatus(message, isError = false) {
@@ -250,9 +287,10 @@
   async function load() {
     setStatus("Updating saved activity…");
     try {
-      const [overview, goals] = await Promise.all([
+      const [overview, goals, dismissed] = await Promise.all([
         request("/api/progress/overview"),
         request("/api/goals?include_archived=true"),
+        request("/api/progress/recommendations/dismissed"),
       ]);
       state.overview = overview;
       renderSummary(overview.summary);
@@ -261,7 +299,7 @@
       renderGoals(goals.goals.filter(goal => goal.status === "active"),
         goals.goals.filter(goal => goal.status === "archived"));
       renderActivity(overview.recent_activity);
-      renderRecommendations(overview.recommendations);
+      renderRecommendations(overview.recommendations, dismissed.recommendations);
       setStatus("Updated " + new Date(overview.generated_at).toLocaleTimeString());
     } catch (error) {
       setStatus(error.message, true);
@@ -352,6 +390,10 @@
 
   $("#progress-toggle")?.addEventListener("click", showProgress);
   $("#progress-refresh")?.addEventListener("click", load);
+  $("#progress-dismissed-toggle")?.addEventListener("click", () => {
+    state.dismissedVisible = !state.dismissedVisible;
+    if (state.overview) load();
+  });
   $("#progress-home")?.addEventListener("click", () => { for (const id of viewIds) $("#" + id)?.classList.toggle("hidden", id !== "home-view"); $("#progress-toggle")?.setAttribute("aria-expanded", "false"); });
   $("#goal-form")?.addEventListener("submit", createGoal);
   $("#goal-cancel-edit")?.addEventListener("click", () => {
