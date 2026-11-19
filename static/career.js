@@ -131,6 +131,20 @@
         item.append(make("p", check.guidance, "section-help"));
         card.append(item);
       }
+      const save = make("button", "Save answer to learning memory", "button button-quiet");
+      save.type = "button";
+      save.addEventListener("click", () => {
+        document.dispatchEvent(new CustomEvent("prepped:memory-save", { detail: {
+          item_type: "example",
+          front: note.prompt,
+          back: note.answer,
+          source_type: "career_interview",
+          source_id: state.session?.id || "",
+          source_title: state.session?.studio_title || "Career interview",
+          source_excerpt: note.answer,
+        }}));
+      });
+      card.append(save);
       notes.append(card);
     }
     const steps = $("#career-next-steps");
