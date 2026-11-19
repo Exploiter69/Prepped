@@ -206,13 +206,22 @@ Deliver a coherent first track rather than a large empty catalogue.
 
 ### Phase E — Career and interview studios
 
-- Add project explanation and personal contribution tracks.
-- Add HR/behavioural and technical interview scenario packs.
-- Add follow-up turns using explicit scenario state and validated transitions.
-- Reuse the same session, voice, feedback, and history infrastructure.
-- Add role-specific paths only when the content is authored and tested.
+**Implementation added on `feature/learner-profile`; final CI and target-laptop acceptance are pending.**
 
-**Exit gate:** at least two distinct scenario families run through the same reusable infrastructure without breaking the English learning path.
+- [x] Project Explanation Studio: problem/user framing, personal contribution, technical decisions, tests/evidence, limitations, and reflection.
+- [x] HR & Behavioural Studio: introduction, teamwork, disagreement/priorities, setbacks, learning, motivation, and preparation.
+- [x] Technical Fundamentals Studio: arrays/linked lists, HTTP/API flow, database indexes, and processes/threads.
+- [x] Four authored main questions per studio, each followed by a studio-specific follow-up. Guided, standard, and challenging modes select different authored follow-up wording.
+- [x] Persisted interview sessions and ordered turns, with versioned content snapshots, resume, history, retry grouping, feedback, and deletion.
+- [x] Reuse the existing STT/TTS adapters for optional record/stop transcription, editable transcripts, and spoken prompts. Text remains available.
+- [x] Disclose Groq remote-audio processing before microphone permission when that provider is configured. Prepped does not persist raw recordings.
+- [x] Provide transparent, evidence-linked reflection without technical correctness grading, overall interview score, recruiter rating, or placement prediction.
+- [x] Allow explicit handoff of an answer to the Phase D memory editor; the learner must review and submit before saving.
+- [x] Add additive `career_sessions` and `career_turns` tables; preserve existing practice, profile, learning, and memory data.
+- [ ] Confirm final GitHub Actions run passes on the latest commit.
+- [ ] Complete target-laptop text, voice, persistence, accessibility, and responsive acceptance.
+
+**Exit gate:** all three studios complete through the same reusable state machine; follow-ups, review, retry, resume, delete, and memory handoff work; CI is green; target-device acceptance is recorded. The authored starter question bank is not an exhaustive interview curriculum or a validated hiring assessment.
 
 ### Phase F — Progress, portability, and release hardening
 
