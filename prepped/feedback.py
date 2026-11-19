@@ -17,17 +17,24 @@ OVERVIEW_PROBLEM = (
     "problem", "needed to", "wanted to address", "because", "challenge",
     "students missed", "students had to", "difficult to", "hard to",
     "scattered", "look across", "across different channels", "have to look",
-    "find information", "look in different places",
+    "find information", "look in different places", "struggle to communicate",
+    "struggle to explain", "difficulty explaining", "cannot explain",
+    "can't explain", "lack confidence", "communicate their knowledge",
 )
 OVERVIEW_BENEFIT = (
     "for university students", "designed for students", "students can",
     "students benefit", "helps students", "helps users", "for learners",
     "for people", "benefit", "makes it easier", "so that", "in one place",
-    "who want a more convenient way",
+    "who want a more convenient way", "engineering students",
+    "fresh graduates", "job seekers",
 )
 OVERVIEW_FEATURES = (
     "posts", "replies", "polls", "voting", "directory", "notices", "feed",
     "search", "dashboard", "api", "database", "endpoint", "test", "interface",
+    "practice interview questions", "practice answering", "voice-based",
+    "voice based", "receive feedback", "get feedback", "provide feedback",
+    "speech to text", "transcribe", "improve communication",
+    "prepare for job interviews", "interview preparation",
 )
 CONTRIBUTION_ACTIONS = (
     "i built", "i implemented", "i wrote", "i developed", "i designed",
@@ -352,21 +359,18 @@ def build_feedback(session: dict[str, Any], answers: list[dict[str, Any]]) -> di
                 else "No concrete implementation detail or check was recognised. The heuristic may miss valid examples."
             )
             next_action = "Use one real implementation detail, decision, test, or observed result that you can explain."
-        elif criterion_id == "follow_up_handling":
+        elif criterion_id == "question_coverage":
             answered = sum(bool(by_question.get(question["id"], "").strip()) for question in questions)
-            signal_count = sum(
-                item["status"] == "evidence_found"
-                for item in question_feedback
-            )
-            all_signals = answered == len(questions) and signal_count == len(questions)
-            status = "evidence_found" if all_signals else "try_next"
-            evidence = f"Prompt-specific phrase signals were found in {signal_count} of {len(questions)} answers; {answered} answers were non-empty."
+            total = len(questions)
+            complete = answered == total
+            status = "evidence_found" if complete else "try_next"
+            evidence = f"{answered} of {total} prompts have a non-empty response."
             message = (
-                "Each answer triggered its prompt's expected phrase signals. This still cannot determine relevance, completeness, or whether the question was genuinely answered."
-                if all_signals
-                else "At least one answer was blank or did not trigger all expected phrase signals. Review its question-specific note; a missed signal does not prove the answer is wrong."
+                "Every prompt has a response. This checks completion only; it does not measure follow-up handling or prove that each answer addresses the prompt."
+                if complete
+                else "At least one prompt has no response. This checklist measures completion only, not answer quality."
             )
-            next_action = "Make the first sentence directly answer the question, then add only the context needed to explain it."
+            next_action = "Review each response against its question. Follow-up handling is not measured because this scenario has no follow-up turns."
         elif criterion_id == "conciseness":
             answer_details = [
                 (question, text, len(_words(text)), _repeated_sentence_count(text))

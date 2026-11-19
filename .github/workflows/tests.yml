@@ -21,7 +21,9 @@ jobs:
           python-version: "3.11"
           cache: pip
       - name: Check browser JavaScript syntax
-        run: node --check static/app.js
+        run: |
+          node --check static/app.js
+          node --check static/voice.js
       - name: Install project and test dependencies
         run: python -m pip install -e ".[dev]"
       - name: Run tests

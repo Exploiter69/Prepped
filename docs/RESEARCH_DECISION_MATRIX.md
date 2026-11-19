@@ -41,7 +41,7 @@ The original TDP Phase 2 PPT/report is also relevant context. It describes a dir
 | Practice should be scenario-based, not just open-ended chat | All five, most explicitly Grok, Gemini, Perplexity, Claude | Adopt now | A bounded scenario is buildable, testable, and easy to explain to faculty |
 | Feedback must point to actual learner evidence | Claude, Gemini, DeepSeek, Grok, Perplexity | Adopt now | Core trust requirement; feedback must quote or reference real answer text |
 | Repeat practice is more valuable than one-off chat | Gemini, Grok, Perplexity; Claude/DeepSeek support session evidence and review loops | Adopt now | The first MVP includes retry against the same checklist |
-| Voice is an important future differentiator | Gemini, DeepSeek, Grok, Perplexity, Claude | Adopt later through a feasibility gate | Voice creates STT/TTS, latency, device, accessibility, and hardware risks; first prove the learning loop |
+| Voice is an important differentiator | Gemini, DeepSeek, Grok, Perplexity, Claude | Adopt now as a local record/stop slice | Voice creates STT/TTS, device, accuracy, and accessibility risks; a small local slice tests the highest-risk assumptions without paid services |
 | Use structured scenario state and explicit transitions | Claude, Gemini, DeepSeek, Grok, Perplexity | Adopt now in a minimal form | A small deterministic controller is enough; a general graph platform is not |
 | Keep model providers replaceable | Claude, Gemini, DeepSeek, Perplexity | Adopt as a small interface | Prevents code coupling without building a general model gateway prematurely |
 | Reuse learner mistakes in later practice | Gemini, DeepSeek, Grok, Perplexity, Claude | Adopt later | First validate feedback and retry; then test review-item quality before adding scheduling |
@@ -85,7 +85,7 @@ For Prepped v1: one Python application, SQLite, JSON scenario files, a small det
 - What is the right rubric and what constitutes agreement with human ratings?
 - What local voice stack works on actual hardware?
 - Is an offline review queue needed?
-- Which privacy/legal requirements apply to the pilot?
+- Which privacy/legal requirements apply to future user validation?
 - Which licences and model versions are current at the time of selection?
 
 ## 5. Gemini Deep Research — product, learning, and technology report
@@ -116,7 +116,7 @@ The report recommends Next.js/React, XState, LiveKit, Groq, Kokoro, PostgreSQL/S
 
 **Report emphasis:** cascaded STT → LLM → TTS versus speech-to-speech, streaming overlap, VAD, interruption, model shortlist, local inference, reliability, latency, and cost.
 
-### Adopted for the future voice gate
+### Adopted for the local voice slice
 
 - Preserve a controlled/cascaded option where transcript, scenario state, and feedback evidence are inspectable.
 - Treat audio models and orchestration as replaceable components.
@@ -133,7 +133,7 @@ The report recommends Next.js/React, XState, LiveKit, Groq, Kokoro, PostgreSQL/S
 
 ### Re-verify before use
 
-The report contains many vendor prices, quotas, model latency/accuracy claims, licences, and hardware benchmarks from third-party and vendor sources. They are dated and configuration-dependent. Do not use them as current guaranteed values. The project remains zero-mandatory-spend; managed free tiers may be optional experiments, never a required runtime dependency.
+The report contains many vendor prices, quotas, model latency/accuracy claims, licences, and hardware benchmarks from third-party and vendor sources. They are dated and configuration-dependent. Do not use them as current guaranteed values. The project remains zero-mandatory-spend; managed free tiers may be optional experiments, never a required runtime dependency. Following the observed Vosk transcription failure, ADR-003 adopts Groq Whisper as an opt-in STT path while preserving Vosk as offline fallback.
 
 ## 7. Grok — competitor and opportunity report
 
@@ -172,7 +172,7 @@ The preserved Grok original is an image-based PDF. The readable Markdown and OCR
 
 ### Narrowed
 
-Perplexity recommends an initial 10-scenario voice MVP with authentication, review cards, FSRS, progress dashboard, replay, and provider abstraction. Prepped starts smaller: one project-explanation interview scenario, text-first, same-rubric retry, local history/deletion, and grounded feedback. The smaller wedge reduces the number of unknowns and lets the team collect meaningful pilot evidence before expanding.
+Perplexity recommends an initial 10-scenario voice MVP with authentication, review cards, FSRS, progress dashboard, replay, and provider abstraction. Prepped starts smaller: one project-explanation interview scenario with text plus a local record/stop voice slice, same-rubric retry, local history/deletion, and grounded feedback. The smaller wedge reduces the number of unknowns before expanding.
 
 ### Rejected for the MVP
 
@@ -207,21 +207,21 @@ Disposition:
 |---|---|
 | Primary user | Indian engineering students preparing for placement/internship interviews |
 | First scenario | Explain a project to a placement interviewer and handle a few relevant follow-ups |
-| Initial interface | Local web app, text-first |
+| Initial interface | Local web app; text fallback plus optional Groq / local Vosk record/stop voice slice |
 | Core loop | Scenario → answer → evidence-linked feedback → retry with same rubric |
 | Backend | Python + FastAPI, one application |
 | Frontend | Plain HTML/CSS/JavaScript initially |
 | Storage | SQLite for local session history |
 | Scenario authoring | Versioned JSON files |
 | Dialogue state | Small deterministic controller |
-| AI use | Optional local-model adapter; app remains demonstrable without a paid API or configured model |
+| AI use | Optional adapters; app remains demonstrable without a paid API or configured model |
 | Feedback | Transparent checklist and concrete suggestions grounded in answer text |
-| Voice | Gated feasibility milestone after text MVP and pilot |
+| Voice | Record/stop slice implemented: optional Groq Whisper or local Vosk STT, editable transcript, Piper/espeak TTS, text fallback. Browser/provider/accuracy validation outstanding. |
 | Review scheduling | Explore only after review-item quality is demonstrated; FSRS is a candidate, not a requirement |
 | Scoring | No overall communication score in v1; no placement prediction |
 | Privacy | Local-first, explicit saving/deletion, no raw audio storage by default |
 | Infrastructure | No required hosted database, paid API, paid deployment, Redis, queue, microservices, Kubernetes, or vector store |
-| Evidence | Tests, actual demo, pilot notes, human review, measured results; never substitute AI report recommendations for implementation evidence |
+| Evidence | Tests, actual demo, future validation notes, human review, measured results; never substitute AI report recommendations for implementation evidence. A student pilot is useful but is not an engineering blocker. |
 
 ## 11. Evidence and claim rules for future documents
 

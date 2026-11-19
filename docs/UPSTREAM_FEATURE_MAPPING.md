@@ -1,9 +1,10 @@
 # Prepped — Upstream Feature-to-Blueprint Mapping
 
-**Version:** 1.0  
-**Date:** 2026-10-24  
-**Status:** Decision document for Step 2. No upstream code is imported by this document.  
-**Inputs:** [Product Blueprint](PRODUCT_BLUEPRINT.md), [Complete Roadmap](COMPLETE_ROADMAP.md), [Research Decision Matrix](RESEARCH_DECISION_MATRIX.md), and [Upstream Repository Audit](UPSTREAM_REPOSITORY_AUDIT.md).
+**Version:** 1.1<br>
+**Date:** 2026-10-24; voice decisions updated 2026-11-04<br>
+**Status:** Living decision document. No upstream code is imported by this document.<br>
+**Inputs:** [Product Blueprint](PRODUCT_BLUEPRINT.md), [Complete Roadmap](COMPLETE_ROADMAP.md), [Research Decision Matrix](RESEARCH_DECISION_MATRIX.md), and [Upstream Repository Audit](UPSTREAM_REPOSITORY_AUDIT.md).<br>
+**Note:** Section 3C originally treated voice as a later feasibility gate. The local record/stop voice slice is now implemented under [ADR-002](ADR-002-LOCAL-VOICE-SLICE.md); current-state documentation takes precedence over the older DEFER labels for STT/TTS.
 
 ## 1. Purpose and decision rules
 
@@ -11,12 +12,12 @@ This document translates the three upstream repositories into explicit decisions
 
 ### Hard constraints
 
-1. The first complete product flow remains text-first.
+1. The first complete product flow was text-first. It is now extended by the local record/stop voice slice; see [Current State](CURRENT_STATE.md) and [ADR-002](ADR-002-LOCAL-VOICE-SLICE.md).
 2. The core application must work without external AI credentials, paid APIs, hosted services, or an inference-provider connection.
 3. Keep one application, Python/FastAPI, plain HTML/CSS/JavaScript, SQLite, versioned JSON scenario definitions, and a deterministic Python session controller unless evidence shows a real blocker.
 4. Do not introduce PostgreSQL, Redis, queues, microservices, a graph/workflow engine, a vector database, or separate deployable services to imitate an upstream repository.
 5. Feedback must refer to the learner's actual words and support “not enough evidence.” It is formative guidance, not a hiring decision or validated score.
-6. Keep session data local and minimal; no audio is stored in the text MVP; saved session data must be deletable.
+6. Keep session data local and minimal; no raw audio is stored by default; saved session data must be deletable.
 7. Do not copy Sotto code under its current PolyForm Noncommercial license into a project that may later be commercialized without resolving the licensing issue.
 8. No imported code is approved until the exact file, pinned source commit, license/notice, dependencies, changes, and tests have been reviewed.
 
@@ -82,18 +83,18 @@ This document translates the three upstream repositories into explicit decisions
 | Multi-skill curriculum / many scenarios | Sotto and interview project catalogs | Longer-term expansion only | **DEFER** | Add a second scenario only after the first scenario's completion, feedback and retry loop has been tested with learners. |
 | Background jobs / Redis / BullMQ | Sotto infrastructure | No need for current single-user local flow | **REJECT FOR MVP** | Review scheduling can be computed when the app opens. No daemon, queue or second workflow system. |
 
-### C. Third milestone — voice feasibility and later integration
+### C. Third milestone — local voice (first slice implemented)
 
 | Candidate feature/pattern | Upstream evidence | Blueprint fit | Decision | Implementation boundary / reason |
 |---|---|---|---|---|
 | Prep/live/post separation | DeepInterview | Useful if voice makes session phases more complex | **ADAPT THE PATTERN** | Keep logical stages in the same application. Do not create separate deployable services. |
-| Local speech-to-text | DeepInterview and Sotto local profiles use faster-whisper or related local inference; AI Mock Interviewer uses browser speech | Fits later voice gate if measured on target hardware | **DEFER** | Benchmark one local STT option on the actual laptop. Record model/download size, peak RAM/CPU, latency, transcription quality and network behavior. |
-| Local text-to-speech | DeepInterview/Sotto local profiles include local TTS options | Useful after STT is viable | **DEFER** | Evaluate one option after STT and text interaction work. Do not install a full voice stack in the first MVP. |
-| Real-time duplex voice / streaming orchestration | DeepInterview LiveKit pipeline and Sotto service architecture | More complex than first practice requirement | **DEFER** | First voice version can be turn-based: capture one response, transcribe, allow correction, then reply. Streaming/interruption needs separate evidence. |
-| Transcript correction and text fallback | Prepped blueprint explicitly requires transcript/caption and text alternative | Mandatory for any voice milestone | **BUILD OURSELVES** | Learner can correct transcription before it becomes feedback evidence. Mic denial, poor transcription, model absence and latency cannot block text practice. |
-| Raw audio storage | Voice systems may process audio; Prepped excludes automatic raw-audio retention | Conflicts with privacy defaults | **REJECT BY DEFAULT** | Process locally and discard audio after the turn unless a later explicit consent-based feature is justified. |
+| Local speech-to-text | DeepInterview and Sotto local profiles use faster-whisper or related local inference; AI Mock Interviewer uses browser speech | Fits the first local voice slice on target hardware | **BUILD OURSELVES / IMPLEMENTED** | Vosk 0.3.45 remains the offline adapter; ADR-003 adds optional Groq `whisper-large-v3` after poor observed Vosk recognition. Accuracy on target Indian English speech remains unvalidated. |
+| Local text-to-speech | DeepInterview/Sotto local profiles include local TTS options | Needed for spoken interviewer prompts | **BUILD OURSELVES / IMPLEMENTED** | Piper 1.8.0 with `en_US-lessac-medium`, falling back to local `espeak-ng`. Text remains visible if TTS fails. |
+| Real-time duplex voice / streaming orchestration | DeepInterview LiveKit pipeline and Sotto service architecture | More complex than the first practice requirement | **DEFER** | The implemented flow is turn-based: record/stop, transcribe, correct, submit. Streaming/interruption needs separate evidence. |
+| Transcript correction and text fallback | Prepped blueprint explicitly requires transcript/caption and text alternative | Mandatory for the voice milestone | **BUILD OURSELVES / IMPLEMENTED** | The learner can correct transcription before it becomes feedback evidence. Mic denial, poor transcription, model absence, and latency cannot block text practice. |
+| Raw audio storage | Voice systems may process audio; Prepped excludes automatic raw-audio retention | Conflicts with privacy defaults | **REJECT BY DEFAULT / IMPLEMENTED** | Audio is decoded and transcribed in memory and discarded. No raw-audio files are created by the transcription path. |
 | Cloud STT/TTS/LLM as required runtime | Hosted providers in voice stacks | Violates mandatory zero-cost constraint | **REJECT** | No API key or external account can be required. Optional external integrations require clear opt-in and cannot be the only path. |
-| Voice performance assumptions from README | Upstream local profiles | No verified benchmark on target laptop | **REJECT AS EVIDENCE** | Do not claim usable offline voice until measured with reproducible setup on target hardware. |
+| Voice performance assumptions from README | Upstream local profiles | No verified benchmark on target laptop | **REJECT AS EVIDENCE** | Do not claim usable offline voice until measured with reproducible setup on target hardware. One-off local timings are not benchmarks. |
 
 ## 4. Architecture mapping: what changes and what does not
 
@@ -210,7 +211,7 @@ Observe roughly 10–20 student volunteers if feasible. Ask whether feedback is 
 Add review items only if pilot evidence shows a repeated weakness that students benefit from revisiting. Begin with explicit, locally stored items and a transparent due-date rule. Add spaced repetition only if it helps more than a simple retry/history view.
 
 ### Gate D — voice feasibility
-Benchmark local STT first, then local TTS. Measure on the actual target laptop: model/download size, peak RAM, CPU use, turn latency, transcription correction rate and failure behavior. Voice integration is approved only if it remains usable and text fallback remains complete.
+Compare the optional Groq Whisper path with local Vosk, then measure local TTS. Measure on the actual target laptop: model/download size, peak RAM, CPU use, turn latency, transcription correction rate and failure behavior. Voice integration is approved only if it remains usable and text fallback remains complete.
 
 ## 8. Final decision
 

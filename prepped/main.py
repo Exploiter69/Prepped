@@ -17,6 +17,8 @@ from pydantic import BaseModel, Field
 from prepped.database import connect_database, initialize_database
 from prepped.feedback import build_feedback
 from prepped.scenarios import DEFAULT_SCENARIO_PATH, ScenarioValidationError, load_scenario
+from prepped.voice import VoiceService, build_voice_service
+from prepped.voice.routes import create_voice_router
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -84,8 +86,9 @@ def _session_view(session: dict[str, Any], answers: list[dict[str, Any]]) -> dic
 def create_app(
     db_path: Path = DEFAULT_DB_PATH,
     scenario_path: Path = DEFAULT_SCENARIO_PATH,
+    voice_service: VoiceService | None = None,
 ) -> FastAPI:
-    """Build an app with injectable local paths for isolated tests."""
+    """Build an app with injectable local paths and voice engines for tests."""
 
     @asynccontextmanager
     async def lifespan(_: FastAPI):
@@ -94,11 +97,12 @@ def create_app(
 
     application = FastAPI(
         title="Prepped",
-        description="A local-first scenario practice prototype.",
-        version="0.2.0",
+        description="A local-first, voice-enabled scenario practice prototype.",
+        version="0.3.0",
         lifespan=lifespan,
     )
     application.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")
+    application.include_router(create_voice_router(voice_service or build_voice_service()))
 
     @application.get("/", include_in_schema=False)
     def home() -> FileResponse:

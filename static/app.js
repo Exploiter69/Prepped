@@ -12,6 +12,7 @@ function setStatus(message, isError = false) {
 }
 
 function showView(viewId) {
+  if (viewId !== "practice-view") window.PreppedVoice?.stopAll();
   for (const id of views) $("#" + id).classList.toggle("hidden", id !== viewId);
   setStatus("");
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -37,6 +38,7 @@ function buttonBusy(value) {
     const button = $(selector);
     if (button) button.disabled = value;
   }
+  window.PreppedVoice?.setBusy(value);
 }
 
 async function loadStarterData() {
@@ -77,11 +79,13 @@ function renderQuestion(session) {
     $("#practice-title").textContent = "All questions complete";
     $("#question-prompt").textContent = "Preparing your review…";
     $("#answer-form").classList.add("hidden");
+    window.PreppedVoice?.setQuestion("");
     return;
   }
   $("#answer-form").classList.remove("hidden");
   $("#practice-title").textContent = "Question " + (session.answered_count + 1);
   $("#question-prompt").textContent = current.prompt;
+  window.PreppedVoice?.setQuestion(current.prompt);
 }
 
 async function startPractice() {
@@ -101,6 +105,7 @@ async function startPractice() {
 
 async function submitCurrentAnswer(answerText) {
   if (busy || !activeSession || !activeSession.current_question) return;
+  window.PreppedVoice?.stopAll();
   buttonBusy(true);
   $("#answer-error").textContent = "";
   try {
@@ -348,4 +353,5 @@ $("#history-toggle").addEventListener("click", async () => { await loadHistory()
 $("#history-home-button").addEventListener("click", () => showView("home-view"));
 $("#answer-input").addEventListener("input", () => { $("#answer-count").textContent = $("#answer-input").value.length + " / 6000"; });
 
+window.PreppedVoice?.init();
 loadStarterData();

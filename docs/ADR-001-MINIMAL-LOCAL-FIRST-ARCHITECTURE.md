@@ -1,10 +1,23 @@
 # ADR-001: Minimal local-first application architecture
 
-**Status:** Accepted for the first MVP  
-**Date:** 2026-10-24  
-**Decision owners:** Prepped project team  
-**Scope:** First runnable local application and one complete text-based project-interview scenario  
+**Status:** Accepted for the text MVP; amended 2026-11-04. Text feature development is frozen except for material bugs. Voice is handled by [ADR-002](ADR-002-LOCAL-VOICE-SLICE.md).<br>
+**Date:** 2026-10-24<br>
+**Decision owners:** Prepped project team<br>
+**Scope:** First runnable local application and one complete text-based project-interview scenario<br>
 **Supersedes:** None
+
+## Amendment (2026-11-04)
+
+The product direction changed to voice-first. This ADR's text architecture, evidence rules, privacy defaults, and module boundaries remain authoritative for the text path. Its original voice exclusions are superseded by ADR-002, which adds a local record/stop STT/TTS slice while keeping text as a fallback.
+
+The following remain true:
+
+- One local modular application, not microservices.
+- FastAPI + plain HTML/CSS/JavaScript + SQLite + versioned JSON.
+- Deterministic session state owned by application code.
+- No paid or remote service as a mandatory dependency.
+- No raw audio persistence by default.
+- Text feedback stays a transparent heuristic; do not add more phrase heuristics in this phase.
 
 ## Context
 
@@ -170,7 +183,7 @@ Do not add the following to deliver the first text MVP:
 
 - React, Next.js, a frontend framework rewrite, or a second application runtime.
 - LangGraph or another general workflow/agent framework.
-- LiveKit, real-time voice rooms, mandatory STT/TTS, avatars, or audio storage.
+- Real-time voice rooms, always-listening agents, avatars, lip-sync, or raw audio storage. (The local record/stop STT/TTS slice is now covered by ADR-002.)
 - PostgreSQL, Redis, Kafka, Celery, queues, Kubernetes, microservices, or separate deployable services.
 - Vector databases, RAG, knowledge graphs, CV/job-description ingestion, or company research.
 - Authentication, institutional dashboards, public feeds, leaderboards, or multi-tenant cloud deployment.
@@ -185,7 +198,7 @@ These are explicit exclusions from the current milestone, not permanent claims t
 - The whole MVP can be understood and run as one local application.
 - Core behaviour is deterministic and testable without a model.
 - Scenario, session, feedback, persistence, and optional inference responsibilities have clear boundaries.
-- The architecture preserves the option to test local voice or review features later without committing to them now.
+- The architecture preserved the option to add local voice without rewriting the text loop. That option is now exercised by ADR-002.
 
 ### Trade-offs
 - Deterministic follow-ups may initially be less conversational than a live agent.
@@ -199,6 +212,8 @@ Reopen this ADR only when evidence from implementation, tests, hardware experime
 
 ## Related decisions and source documents
 
+- [ADR-002: Local record/stop voice slice](ADR-002-LOCAL-VOICE-SLICE.md)
+- [Voice setup and privacy](VOICE.md)
 - [Product and System Blueprint](PRODUCT_BLUEPRINT.md)
 - [Complete Project Roadmap](COMPLETE_ROADMAP.md)
 - [Research Review and Decision Matrix](RESEARCH_DECISION_MATRIX.md)

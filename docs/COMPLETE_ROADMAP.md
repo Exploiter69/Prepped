@@ -1,396 +1,334 @@
 # Prepped — Complete Project Roadmap
 
-**Status:** Working roadmap for the complete TDP, from research archive to evaluated prototype  
-**Date:** 2026-10-24  
-**Planning basis:** B.Tech semester 3 now; TDP continues through the final year. Dates are decision gates, not promises that every feature will be delivered.  
-**Companion documents:** [Complete Product Blueprint](PRODUCT_BLUEPRINT.md) · [Research Decision Matrix](RESEARCH_DECISION_MATRIX.md)
+**Status:** Active engineering roadmap for a voice-first practice platform. The text MVP is frozen except for material bugs.<br>
+**Updated:** 2026-11-19<br>
+**Planning basis:** B.Tech semester 3 now; TDP continues through the final year. Dates are decision gates, not promises.<br>
+**Companion documents:** [Product Blueprint](PRODUCT_BLUEPRINT.md) · [Current State](CURRENT_STATE.md) · [Voice Setup](VOICE.md) · [ADR-002](ADR-002-LOCAL-VOICE-SLICE.md)
 
-## 1. The destination
+## 1. Destination
 
-Prepped is a practice environment for Indian engineering students preparing for placement interviews and other professional conversations. It should help a student practise a realistic conversation, receive specific feedback tied to what they actually said, retry, and learn from the difference.
+Prepped is a **voice-first, personalised AI practice and learning platform** for Indian engineering students. It should help a learner practise realistic placement and professional conversations, speak answers naturally, receive specific feedback tied to what they actually said, retry, and improve over time.
 
-The full project may eventually include voice, multiple scenarios, review scheduling, validated assessment, multilingual support, and institution-facing features. Those are not all first-release requirements. The project is successful only if the team can demonstrate a working core, explain the design, test it, collect real user evidence, and honestly report limitations.
+The first job remains concrete: **practise explaining a project to a placement interviewer and handling follow-up questions.** Voice is now part of that first job rather than a distant gate.
+
+The long-term direction may include more scenarios, English fluency practice, technical interview drills, review scheduling, and local personalisation. Those are future work, not claims about the current build.
 
 ### Product loop
 
 1. Choose a scenario with a clear goal.
-2. Answer a simulated interviewer.
-3. Handle a few relevant follow-up questions.
-4. Review a transcript or answer history.
-5. Receive feedback tied to actual answer evidence.
-6. Retry with the same checklist.
-7. Compare the attempts and record what changed.
+2. Hear or read the interviewer's prompt.
+3. Answer by speaking or typing.
+4. Review and correct the local transcript.
+5. Submit through the same session backend.
+6. Receive evidence-linked formative feedback.
+7. Retry with the same checklist.
+8. Compare attempts and carry useful lessons into later practice.
 
-The first proof is this loop working end to end—not an avatar, a dashboard, or a large architecture diagram.
+The first proof is this loop working locally with voice, not an avatar, dashboard, or large architecture diagram.
 
 ## 2. Current baseline and truth reset
 
-**Status updated 2026-10-24.** The repository contains a runnable local text MVP. PR #6 improved checklist evidence selection; PR #7 (`4bf7774810bd76ae904505109f4dab49dbec23ba`) normalized Unicode punctuation in feedback signals and stopped explicitly denied testing from counting as positive test evidence. PR #7's GitHub Actions test run passed before merge.
+**Status updated 2026-11-04.**
 
-- **Research collected:** yes, five AI reports are archived; see the verification notes for extraction limitations.
-- **Product direction selected:** yes, one text-first project-interview scenario.
-- **Application implemented:** yes — FastAPI, plain HTML/CSS/JavaScript, SQLite, and versioned JSON scenario/rubric.
-- **Core flow automated-tested:** yes — session creation, ordered answers, completion, feedback, retry, attempt grouping/comparison data, history, deletion, empty answers, cancellation, and answer-length boundaries have regression coverage.
-- **Checklist feedback:** deterministic phrase heuristics with excerpts from learner answers; not a validated assessment. PR #6 adds separate sentence-level evidence and prompt-specific follow-up signals; PR #7 improves matching for curly apostrophes and guards against false-positive test evidence. Heuristics can still miss meaning, so user review is required.
-- **Local fresh-checkout acceptance:** not yet independently confirmed after the latest merge. Run the documented install/test/start flow from a clean checkout.
-- **Student pilot:** not yet run or evidenced. This is the next product-validation gate.
-- **Placement-readiness improvement measured:** no.
-- **Voice pipeline benchmarked on target hardware:** no.
-- **AI scoring validated against human raters:** no.
+### Implemented and locally tested
 
-The old Phase 2 PPT/report proposed graph logic, voice, avatars, “Skill DNA,” institutional heatmaps, and an estimated 40% improvement. These are historical proposal claims, not proof of implementation or results. Do not repeat the 40% claim unless an appropriate study supports it.
+- One versioned project-interview scenario with five prompts and a rubric.
+- FastAPI, plain HTML/CSS/JavaScript, SQLite, and versioned JSON scenario/rubric.
+- Ordered answer capture, empty answers, cancellation, completion, answer limits, retry, attempt comparison, history, and deletion.
+- Deterministic, evidence-linked text feedback with no overall score.
+- First voice slice:
+  - Browser `MediaRecorder` start/stop with a 60-second cap.
+  - Optional Groq Whisper (`whisper-large-v3`) or local Vosk speech-to-text.
+  - Editable transcript inserted into the existing answer box.
+  - Submission through the existing answer endpoint.
+  - Local Piper TTS with `espeak-ng` fallback.
+  - Play/stop/replay controls.
+  - Clear microphone/model/TTS errors and text fallback.
+  - No raw audio persistence by Prepped; Groq mode sends audio to the provider only when explicitly configured.
+- Automated tests for voice API boundaries, failure handling, text fallback, and a synthetic real-Vosk integration check.
+- Uploaded-snapshot audit before the Groq adapter: `29 passed, 1 skipped`. After adding the mocked Groq adapter, the isolated audit suite reports `32 passed, 1 skipped`; this does not represent a live API or laptop acceptance. JavaScript syntax and Python compilation checks pass.
+
+### Not yet evidenced
+
+- Real browser microphone acceptance on the target machine.
+- Real Vosk transcription and Piper/espeak-ng playback rechecked on the target machine after the latest hardening changes.
+- Speech-recognition accuracy on representative Indian English speech.
+- Repeatable voice latency/memory benchmarks.
+- GitHub Actions result for the voice change (must run on the pushed commit before merge).
+- Fresh-checkout install/test/browser smoke test after this change.
+- Student usability or voice-specific user validation. No pilot has been run.
+
+### Product development and user validation are separate
+
+The student pilot is **not an engineering blocker**. Engineering can build and test the voice slice without waiting for participants.
+
+- **Engineering:** code, automated tests, failure handling, privacy, setup, manual browser acceptance.
+- **Future validation:** whether students understand and value the flow, whether transcripts are usable, and whether recognition errors are tolerable. This is documented separately with method, sample size, and limitations.
+
+Do not fabricate pilot results. Do not delay implementation solely because a pilot is not available.
+
+### Frozen text work
+
+The text feedback system is a heuristic baseline, not the product's future. **Do not keep adding phrase heuristics.** Only material bugs should change it. Automated regression tests protect existing behaviour; they should not become the project's main activity.
+
 ## 3. Hard constraints
 
 - No mandatory paid APIs, subscriptions, hosted databases, paid hosting, or pay-per-use services.
 - The core demo must work locally without an external model account.
-- GitHub is the source of truth; decisions, code, tests, and evidence belong in the repository.
+- No remote voice processing unless the developer explicitly configures a provider key; the UI/status endpoint discloses remote transcription.
+- No raw audio persistence by Prepped; the optional remote provider receives the recording only when explicitly configured.
+- GitHub is the source of truth.
 - Keep one application and one simple data store until evidence proves a need for more.
-- Do not add Redis, Kafka, Celery, Kubernetes, microservices, a vector database, or a second workflow system for the MVP.
-- Use the smallest end-to-end slice rather than implementing infrastructure layers before a working feature exists.
+- Keep the FastAPI + plain HTML/CSS/JS + SQLite stack. No React/Vue/Svelte migration.
+- No Redis, Kafka, Celery, Kubernetes, microservices, vector database, or second workflow engine.
+- Keep STT/TTS engines behind replaceable adapters.
+- Text mode remains fully functional whenever voice fails.
+- No LLM feedback, adaptive intelligence, or pronunciation scoring in this phase.
 - Never claim that a planned feature exists; require code, a reproducible demo, and tests.
-- Keep personal data minimal. Do not store raw audio by default.
-- Never present generated feedback as a formal hiring decision or validated placement predictor.
+- Do not present generated feedback as a hiring decision, validated assessment, placement predictor, or speech-accuracy claim.
 
 ## 4. Workstreams
 
-| Workstream | Purpose | Starts | Can expand only when |
+| Workstream | Purpose | Status | Expands only when |
 |---|---|---|---|
-| Product and scenario design | Define user task, scenario, follow-ups, success conditions | Immediately | Pilot evidence identifies a new need |
-| Core application | Build a local, usable end-to-end practice loop | Immediately | Core acceptance tests pass |
-| Feedback and evaluation | Ground feedback in answer evidence and a transparent rubric | With first scenario | Human review shows acceptable quality |
-| Privacy and safety | Minimize data, validate outputs, provide deletion | From first stored session | Public use requires further review |
-| Voice feasibility | Test local STT, LLM, TTS, latency, and hardware | After text MVP and pilot | Measured usability justifies voice integration |
-| Learning loop | Retry comparison, later review items and spaced repetition | Retry in MVP; review items later | Feedback/item quality is useful and repeatable |
-| Academic evidence | Keep experiments, decisions, test results, and limitations | From day one | Every phase adds evidence |
-| Institutional expansion | Cohorts, faculty views, LMS, multi-user administration | Final-year option only | A real stakeholder need and privacy basis exist |
+| Product and scenario design | Define the learner task, prompts, and success conditions | Active | User validation identifies a concrete need |
+| Voice interaction | Record/stop, optional Groq STT or local Vosk, editable transcript, local TTS | Active | Browser/provider acceptance and usability are understood |
+| Core application | Keep the local session/answer flow reliable | Maintained | A material bug or new scenario requires change |
+| Feedback and evaluation | Keep the transparent text baseline stable | Frozen except bugs | A separately designed, evidence-led feedback change is approved |
+| Privacy and safety | Minimise data, avoid raw audio, provide deletion | Active | Public/multi-user use requires review |
+| Personalisation and learning loop | Use practice history to guide future practice | Future | Feedback quality and learner value are demonstrated |
+| Second scenario / fluency | Broaden beyond one project-interview scenario | Future | The voice loop is usable and maintainable |
+| Academic evidence | Record decisions, tests, limitations, and validation | Continuous | Every phase adds evidence |
+| Institutional expansion | Cohorts, faculty views, LMS | Final-year option only | Real stakeholder need and privacy basis exist |
 
-## 5. Phase 0 — Reset, scope, and reproducibility
+## 5. Phase 0 — Research, truth reset, and scope (done)
 
-**Purpose:** establish one shared project truth before implementation.
+**Purpose:** establish a shared, honest project baseline.
 
-### Tasks
-- Keep the five source reports and verification notes unchanged.
-- Review the research decision matrix and agree that it governs scope.
-- Keep the product blueprint and this roadmap in GitHub.
-- Create a clear distinction in project documents between proposed, implemented, tested, observed, and externally reported claims.
-- Define the first scenario: explain a project to a placement interviewer.
-- Define the initial rubric: clarity, structure, specificity, relevance to the follow-up, and conciseness.
-- Agree on what the first demo must show and what it must not claim.
+Completed:
 
-### Deliverables
-- Product blueprint.
-- Source-to-decision matrix.
-- Complete roadmap.
-- Scenario specification and feedback rubric.
-- Initial acceptance checklist.
+- Preserved five research reports and verification notes.
+- Created product blueprint, roadmap, and research decision matrix.
+- Defined the first scenario and rubric.
+- Separated prior proposal claims from implemented work.
+- Recorded that the old “40% improvement” claim is unsupported.
 
-### Exit gate
-The team can explain in plain language: who Prepped serves, which first problem it solves, what the first version does, what it does not do, and how success will be checked.
+**Exit gate:** the team can explain who Prepped serves, what the first version does, what it does not do, and how claims will be checked. Met.
 
-## 6. Phase 1 — First runnable local application
+## 6. Phase 1 — First local text loop (done; frozen)
 
-**Purpose:** make the smallest working software skeleton.
+**Purpose:** prove the core session/answer/feedback/retry loop.
 
-### Tasks
-- Create a Python project with FastAPI.
-- Serve a simple HTML/CSS/JavaScript interface from the same application.
-- Add a health/status page and clear local run instructions.
-- Use SQLite for local session records.
-- Add versioned JSON for the first scenario and its rubric.
-- Add basic automated tests and a clean setup path.
-- Add a visible explanation when optional AI/model support is not configured.
-- Do not require authentication for the first local-only demo unless there is a specific need.
+Delivered:
 
-### Deliverables
-- Application starts locally with a documented command.
-- First screen explains the scenario and lets the learner begin.
-- Scenario and rubric are readable, versioned files.
-- Tests run from a fresh checkout.
+- Local FastAPI application and browser interface.
+- SQLite session/answer persistence.
+- Versioned scenario and rubric.
+- Evidence-linked heuristic feedback, retry, comparison, history, deletion.
+- Automated regression coverage.
 
-### Exit gate
-A teammate can clone the repository, follow the README, run the app locally, and reach the first scenario without a paid service or undocumented setup.
+**Status:** complete enough to serve as the fallback. Feature development is frozen except material bugs.
 
-## 7. Phase 2 — One complete text scenario
+## 7. Phase 2 — First voice slice (current milestone)
 
-**Purpose:** prove the core learning loop end to end.
+**Purpose:** make the existing scenario genuinely voice-enabled, with a reliable optional free-tier cloud STT path and a local offline fallback.
 
-### Scenario
-The learner explains a project to a simulated placement interviewer. The interviewer asks a small number of follow-ups about the problem, the learner's contribution, design choices, evidence/results, and lessons learned. Follow-ups should be relevant to what the learner has said; the first version may use deterministic rules and curated question branches.
+Delivered:
 
-### Tasks
-- Implement session start, turn capture, and session completion.
-- Implement a small deterministic scenario state controller.
-- Keep the allowed states and transitions explicit and testable.
-- Support empty answers, user cancellation, restart, and graceful completion.
-- Show a transcript or ordered answer history.
-- Provide evidence-linked feedback using the same rubric each time.
-- Provide a retry action and side-by-side comparison of first and second attempts.
-- Store session history locally and allow the learner to delete a session.
-- Add optional local LLM support behind a narrow adapter only if it can be run without a paid API; retain deterministic fallback behaviour.
-- Validate model output and never let model text directly modify state or database permissions.
+- Record/stop microphone capture.
+- Local Vosk STT fallback; explicit one-time model installation.
+- Optional Groq Whisper (`whisper-large-v3`) STT when a server-side `GROQ_API_KEY` is configured.
+- In-memory `ffmpeg` decoding; no raw audio persistence.
+- Editable transcript before submission through the existing backend.
+- Local Piper TTS with `espeak-ng` fallback.
+- Play/stop/replay for interviewer prompts.
+- Error handling and text fallback.
+- Adapter interfaces for STT/TTS replacement; provider selection does not change session APIs.
+- Architecture decision and setup/privacy documentation.
 
-### Minimum feedback format
-- **What worked:** one or two observable strengths.
-- **What needs work:** a specific issue linked to the answer.
-- **Evidence:** quote or point to the learner's actual words.
-- **Next action:** a concrete improvement to try.
-- **Uncertainty:** “not enough evidence” when the answer does not support a conclusion.
+**Not delivered in this phase:** streaming, VAD, interruption, always-listening, pronunciation scoring, LLM feedback, personalisation.
 
-### Tests
-- Scenario starts and ends correctly.
-- Each state has a reachable next state or a terminal condition.
-- Follow-up branch is selected as expected for representative answers.
-- Empty and very long answers are handled.
-- Feedback evidence belongs to the actual learner answer.
-- Invalid model output does not crash the app or invent a score.
-- Retry uses the same scenario and rubric version.
-- Deletion removes the selected local session data.
+**Exit gate:** the scenario can be completed through voice on the target machine, transcript errors can be corrected, prompts can be stopped/replayed, failures fall back to text, and automated tests cover the integration boundaries. The API/adapters are verified; **real browser microphone acceptance is still required** before calling the interaction fully accepted.
 
-### Exit gate
-A new user can complete the scenario, receive evidence-linked feedback, retry, compare attempts, and delete history. The full flow works locally with no paid API.
+## 8. Phase 3 — Voice hardening and target-device acceptance (next)
 
-## 8. Phase 3 — Internal quality and small student pilot
+**Purpose:** turn the first working slice into something reliable enough to build on.
 
-**Purpose:** discover whether the actual product is understandable and useful.
+Tasks:
 
-### Pilot design
-- Recruit 10–20 student volunteers if available and appropriate.
-- Explain that this is a prototype, not a placement predictor.
-- Ask each participant to complete the same scenario, review feedback, and retry.
-- Do not require participants to provide confidential project or personal information.
-- Collect only the minimum information needed; anonymize notes where practical.
-- Do not record raw audio in the text MVP.
+- Run the manual browser acceptance checklist in [VOICE.md](VOICE.md) on the actual laptop.
+- Measure warm/cold STT and TTS latency and memory over repeated runs; record the method and environment. Do not call it a benchmark until repeated.
+- Test representative Indian English recordings with consent; compare Groq Whisper and Vosk against human reference transcripts without storing raw audio.
+- Decide whether Groq Whisper is good enough for the demo and whether a local whisper.cpp adapter is worth evaluating for offline use.
+- Improve microphone/recording states only where observed problems justify it.
+- Add cancellation/timeout handling if real use reveals a need.
+- Keep text fallback and editable transcripts mandatory.
+- Add regression tests only for failures found in real use.
 
-### Record
-- Completion without help.
-- Steps that caused confusion.
-- Whether each feedback item points to something actually present in the answer.
-- Whether the learner understands the next action.
-- Differences between the first and second answer using the same checklist.
-- Whether the learner would voluntarily practise again.
-- Bugs, failure cases, and completion time.
-- Sample size, method, and limitations.
+**Exit gate:** a written acceptance record covers browser permission, record/stop, transcript editing, submission, TTS play/stop/replay, model failure, and text fallback. Accuracy remains a documented limitation, not a validated claim.
 
-### Exit gate
-A short pilot report records what worked, what failed, the observed counts, and the next decision. A positive result is not mandatory. The gate passes when the evidence is documented and the team makes a reasoned decision to iterate, narrow, or proceed.
+## 9. Phase 4 — Future user validation (not an engineering blocker)
 
-## 9. Phase 4 — Improve feedback and attempt comparison
+**Purpose:** learn whether the voice-first workflow is understandable and useful.
 
-**Purpose:** fix quality problems before adding new product surfaces.
+This phase can run when participants and an appropriate setting are available. It does not block Phase 3 engineering.
 
-### Tasks
-- Review anonymized pilot examples.
-- Create a small feedback test set containing strong answers, vague answers, unsupported claims, irrelevant answers, and insufficient-evidence cases.
-- Check that feedback quotes the learner accurately and avoids invented details.
-- Compare deterministic checklist feedback with optional local-model suggestions.
-- Keep human-readable reasons for rubric criteria.
-- Add rubric/scenario version identifiers to saved sessions.
-- Improve retry comparison without collapsing the learner into a single overall number.
+Suggested tasks:
 
-### Exit gate
-The test set passes the agreed grounding checks, known failure cases are documented, and feedback is understandable to a student reviewer. If the model cannot meet the bar, keep the deterministic checklist rather than hiding the failure.
+- Complete one prompt by voice, correct a transcript error, and submit.
+- Play/stop/replay a spoken prompt.
+- Deny microphone permission and recover using text.
+- Explain what feedback evidence came from their answer.
+- Retry and describe one change.
 
-## 10. Phase 5 — Local voice feasibility spike
+Record only the minimum anonymised observations. Do not collect raw audio, names, or confidential project details. Report sample size, method, failures, and limitations. A positive result is not required.
 
-**Purpose:** determine whether voice is technically feasible on the actual available hardware and still compatible with zero mandatory spend.
+Also use future validation to check whether students value voice enough to justify further personalisation work. Do not assume it.
 
-This is a research spike, not permission to rewrite the app around a voice framework.
+## 10. Phase 5 — Personalisation and learning loop (future)
 
-### Compare
-- Local STT candidates such as faster-whisper or whisper.cpp.
-- A local TTS candidate such as Piper or Kokoro.
-- A locally runnable LLM through the same narrow adapter, if hardware supports it.
-- A simple push-to-talk or record-and-submit flow before attempting full-duplex live audio.
+**Purpose:** move from one-off practice toward a personalised learning platform without turning uncertain model output into learner traits.
 
-### Measure
-- Hardware and model versions.
-- Cold start and warm response time.
-- Transcription errors on representative student speech, with consent.
-- Memory and CPU/GPU use.
-- Failure rates and setup burden.
-- Whether the voice path remains usable on the actual laptop.
-- What works without GPU and what does not.
-- Whether text/captions remain a usable fallback.
+Only start after the voice loop is usable and user value is demonstrated.
 
-### Rules
-- Do not copy latency figures from AI reports as if they were measured on our hardware.
-- Do not rely on temporary free API credits.
-- Do not integrate avatars, lip-sync, or streaming orchestration during this spike.
-- Do not store raw audio by default.
-- If local voice is too slow or difficult, retain text mode and document the result.
+Candidate steps:
 
-### Exit gate
-A reproducible benchmark and a written go/no-go decision exist. Voice proceeds only if the measured experience is useful, maintainable, and compatible with the project constraints.
+- Turn concrete, evidence-linked weaknesses into learner-controlled review items.
+- Link every item to the source answer and explain why it was suggested.
+- Let the learner accept, edit, or reject items.
+- Deduplicate items and track whether they are used in later attempts.
+- Consider a simple local review schedule; FSRS remains a later experiment.
+- Consider a local-only model adapter for wording or scenario variation, behind a narrow validated interface, with deterministic fallback.
+- Keep assessment off the realtime path.
 
-## 11. Phase 6 — Voice practice, only if the gate passes
+**Exit gate:** review items are accurate, useful, non-duplicative, and reused. If they are noisy, keep a manual/rules-based list or stop.
 
-**Purpose:** add voice without losing evidence, control, accessibility, or zero-cost operation.
+## 11. Phase 6 — Second scenario and fluency practice (future)
 
-### Tasks
-- Add microphone permission flow and visible recording state.
-- Start with push-to-talk or short recorded turns.
-- Show editable/inspectable transcript text before using it for feedback.
-- Add captions for spoken output and text alternatives.
-- Keep the deterministic scenario controller as the authority.
-- Add timeouts, cancellation, retry, and a visible failure message.
-- Benchmark latency and transcription quality on real student devices and networks.
-- Add streaming and interruption handling only if the simpler voice interaction proves useful.
-- Choose LiveKit Agents or Pipecat only after a small comparison using the same scenario and measured criteria.
+**Purpose:** prove the scenario/voice layer generalises without becoming a generic platform.
 
-### Exit gate
-The scenario completes through voice on the target hardware, transcript errors can be corrected or acknowledged, captions/text fallback works, and tests cover permission denial, STT failure, model failure, and session cancellation.
+Candidate scenarios:
 
-## 12. Phase 7 — Conversation-to-review loop
-
-**Purpose:** test whether session mistakes can become useful repeated practice.
-
-### Tasks
-- Start with a small set of candidate review-item types: missing project detail, unsupported claim, unclear explanation, and a useful response structure.
-- Link every candidate item to the source answer and explain why it was suggested.
-- Let the learner accept, edit, or reject a candidate.
-- Deduplicate near-identical items.
-- Track whether the learner actually uses the item in a later attempt.
-- Only after item quality is acceptable, compare a simple schedule with an FSRS implementation.
-- Keep review history and deletion behaviour testable.
-
-### Exit gate
-Review items are accurate, useful, non-duplicative, linked to evidence, and reused in a later scenario. If AI-generated items are noisy, keep a manual or rules-based review list instead.
-
-## 13. Phase 8 — Second scenario and reusable scenario format
-
-**Purpose:** prove that the scenario format can support more than one use case without becoming a generic platform.
-
-Candidate second scenarios:
 - Explain a technical concept to a non-technical interviewer.
-- Handle a follow-up question about a design decision.
-- Explain a project setback and what was learned.
+- Handle a follow-up about a design decision.
+- Describe a project setback and what was learned.
+- Short professional-communication or English-fluency drills.
 
-Choose based on pilot feedback, not novelty.
+Tasks:
 
-### Tasks
-- Define a shared scenario schema.
-- Add validation for required fields and valid transitions.
-- Separate interviewer persona instructions from feedback rubric instructions.
-- Test that every state is reachable and terminal states are possible.
-- Ensure model responses cannot reveal hidden scenario facts or skip required transitions.
-- Add one new scenario and compare whether existing code can support it with little special casing.
+- Keep scenario definitions data-driven and validated.
+- Reuse the same session, voice, and feedback infrastructure.
+- Avoid scenario-specific special cases in the core controller.
+- Test dead states, terminal states, and voice fallback for each scenario.
 
-### Exit gate
-Two scenarios use the same session and feedback infrastructure; scenario-specific logic remains in data where appropriate; tests prevent dead states and unintended transitions.
+**Exit gate:** two scenarios use the same infrastructure with little special casing, and the second adds demonstrated learner value.
 
-## 14. Phase 9 — Human-calibrated assessment research
+## 12. Phase 7 — Assessment and human calibration (only if needed)
 
-**Purpose:** establish whether any rubric-based outputs are consistent enough to be presented as more than formative guidance.
+**Purpose:** establish whether any rubric output is consistent enough to present as more than formative guidance.
 
-### Tasks
-- Define each rubric criterion in observable language.
-- Recruit human reviewers where possible and document their background and instructions.
-- Compare AI suggestions with human ratings on the same anonymized responses.
-- Measure disagreements and recurring failure types.
-- Test repeatability across repeated runs and prompt/model versions.
-- Keep human judgements and model outputs distinguishable.
-- Do not introduce an overall “communication score” until there is evidence and a clear explanation of its limits.
+Tasks:
 
-### Exit gate
-A written calibration report shows sample size, rubric, agreement method, examples of disagreement, and limitations. If results are weak, keep the product at checklist feedback.
+- Define each criterion in observable language.
+- Collect human ratings on anonymised responses with documented instructions.
+- Compare deterministic/model-assisted suggestions with human ratings.
+- Report disagreements, sample size, and failure types.
+- Do not introduce an overall communication score or placement prediction without a defensible basis.
 
-## 15. Phase 10 — Final-year options, not automatic commitments
+**Exit gate:** a written calibration report exists. If results are weak, keep checklist feedback and make no score claim.
 
-Only consider these after the core loop, pilot, and evidence are solid:
+## 13. Phase 8 — Final-year options (not automatic commitments)
 
-- More scenarios for interviews, presentations, teamwork, negotiation, or difficult conversations.
+Only consider after the voice loop and validation are solid:
+
+- More interview, presentation, teamwork, negotiation, or difficult-conversation scenarios.
 - Shadowing and playback-speed controls.
-- Pronunciation or prosody feedback if local audio models and human validation justify it.
-- Multilingual interface or practice languages based on user need and tested quality.
-- Instructor assignment or review tools if a faculty member requests them and learner privacy can be protected.
+- Pronunciation/prosody feedback if local models and human validation justify it.
+- Multilingual practice based on tested need and quality.
 - Export of sessions or review items.
-- Institution accounts, cohort analytics, SSO, LMS integrations, multi-tenant cloud hosting, mobile packaging, avatars, VR, and marketplace features.
+- Institution accounts, cohort analytics, SSO, LMS integrations, multi-tenant cloud, mobile packaging, avatars, VR, or marketplace features.
 
-Every new capability requires a problem statement, zero-cost plan, acceptance criteria, privacy assessment, and a reason it is more important than improving the existing learning loop.
+Every new capability needs a problem statement, zero-mandatory-cost plan, acceptance criteria, privacy assessment, and a reason it matters more than improving the current loop.
 
-## 16. Semester-by-semester TDP map
-
-These are intended outcomes for a four-year programme where semester 3 is the current point. Actual dates should be adjusted with the guide and team schedule.
+## 14. Semester-by-semester TDP map
 
 | Semester | Primary objective | Expected evidence / deliverable |
 |---|---|---|
-| **Semester 3 — reset and first working slice** | Finalize scope; build local text scenario; grounded feedback and retry | Runnable local demo, tests, updated README, scenario/rubric, architecture note |
-| **Semester 4 — usability and first pilot** | Test with students, fix feedback and interaction issues, benchmark local model options | Pilot report, issue log, feedback grounding test set, decision log |
-| **Semester 5 — voice feasibility and optional voice MVP** | Measure local STT/LLM/TTS; integrate voice only if the gate passes | Reproducible benchmark, go/no-go note, voice demo or documented text-first decision |
-| **Semester 6 — learning loop and second scenario** | Improve attempt comparison; validate review-item quality; add a second scenario if useful | Review-loop tests, scenario schema, two-scenario demo, user findings |
-| **Semester 7 — assessment and robustness** | Human calibration, privacy/safety testing, accessibility, failure cases | Calibration report, threat/privacy review, accessibility checklist, regression tests |
-| **Semester 8 — final integration and TDP evidence** | Stabilize, document, demonstrate, evaluate, and prepare final submission | Release candidate, reproducible demo instructions, final report, presentation, results/limitations, future-work plan |
+| **Semester 3 — reset, text loop, first voice slice** | Build local text loop; add record/stop STT/TTS; document architecture and privacy | Runnable local demo, automated tests, voice setup docs, ADR-002, current-state record |
+| **Semester 4 — voice hardening and validation** | Browser acceptance, latency/accuracy observations, failure fixes; run user validation when possible | Acceptance record, measured observations, validation notes with limitations |
+| **Semester 5 — personalisation/learning loop** | Evaluate review items and simple local personalisation only if useful | Review-loop prototype, tests, user findings |
+| **Semester 6 — second scenario and fluency** | Reuse voice/session infrastructure for a second scenario | Two-scenario demo, scenario schema, learner findings |
+| **Semester 7 — assessment and robustness** | Human calibration, privacy/safety, accessibility, failure cases | Calibration report, privacy review, accessibility checklist |
+| **Semester 8 — final integration** | Stabilise, document, demonstrate, evaluate | Release candidate, reproducible demo, final report, limitations, future work |
 
-A semester's outcome is evidence, not just a list of features. If a gate fails, the team should report the finding and keep the previous working version rather than adding features to make the roadmap look complete.
+A semester's outcome is evidence, not a feature count. If a gate fails, keep the previous working version and report the finding.
 
-## 17. Testing strategy
+## 15. Testing strategy
 
 ### Every change
-- Unit tests for scenario transitions and feedback structure.
+
+- Unit/integration tests for affected boundaries and failure paths.
 - Regression tests for previously found bugs.
-- Manual smoke test from a clean start.
-- No secrets or personal data in Git.
+- JavaScript syntax check (`node --check`).
+- No secrets, personal recordings, or model weights in Git.
+
+### Voice-specific
+
+- Missing STT package/model.
+- Missing `ffmpeg`.
+- Empty, silent, oversized, and undecodable audio.
+- Denied/unavailable microphone.
+- TTS unavailable or failing.
+- Transcript edit before submission.
+- Text fallback with both engines unavailable.
+- No raw audio file created by the transcription path.
+- Manual browser microphone check on the target machine before acceptance.
 
 ### Before a demo
-- Fresh clone and setup.
-- Main scenario completes.
-- Empty and unexpected inputs behave safely.
+
+- Fresh setup from the documented commands.
+- Main scenario completes in text and voice modes.
 - Feedback evidence matches the answer.
 - Retry uses the same rubric.
 - Deletion works.
-- Model absent or invalid output does not crash the application.
+- Missing model or failed voice does not crash the app.
 - Keyboard navigation and readable layout work.
 
-### Before a student pilot
+### Before user validation
+
 - Clear prototype disclaimer.
 - Consent and minimal-data plan.
 - No raw audio retention by default.
 - Anonymous note-taking process.
 - Known limitations documented.
 
-### Before voice
-- Permission denial, device unavailable, network failure, transcription correction, cancellation, timeout, and fallback tests.
-- Stage-level timing measurements on the actual target machine.
-
 ### Before any formal score or institutional data
+
 - Human-rater calibration.
 - Privacy and security review.
 - Access-control tests.
 - Explicit evidence and limitation statement.
 
-## 18. Team and faculty operating model
+## 16. Evidence and claim rules
 
-For every phase, keep five small artefacts:
+Every project statement must be one of:
 
-1. **Decision log:** what was decided, why, alternatives rejected, and what evidence could change the decision.
-2. **Implementation log:** links to commits and files, not just a claim that work is complete.
-3. **Test record:** command run, outcome, environment, and known failures.
-4. **Evidence log:** pilot method, sample size, anonymized observations, and limitations.
-5. **Demo script:** steps that another teammate or faculty member can follow to reproduce the result.
+1. **Implemented:** exists in code and can be demonstrated.
+2. **Tested:** a repeatable test verifies the behaviour; name the test and its limits.
+3. **Observed:** a documented experiment or validation produced results; include method and sample size.
+4. **Proposed:** planned but not built.
+5. **Hypothesis:** plausible, not established.
+6. **Externally reported:** supported by a named source and date.
 
-Do not write future tense as past tense. A proposed architecture belongs in design documentation; a tested implementation belongs in implementation/evidence documentation.
+Do not convert “the model ran” into “speech accuracy is good.” Do not convert “a learner liked it” into “placement outcomes improved.” Do not report a percentage without a denominator, method, and source. Do not describe one-off timings as benchmarks.
 
-## 19. Final completion criteria
+## 17. Immediate next actions
 
-Prepped is ready for final TDP submission when the team can provide:
+1. **Complete browser/microphone acceptance** using the checklist in [VOICE.md](VOICE.md) on the target laptop. Record actual results, including failures.
+2. **Run GitHub Actions** on the pushed voice commit; fix any CI issue before merge.
+3. **Run a fresh-checkout setup** with `.[dev]`, then voice setup, and confirm text mode still works without models.
+4. **Record voice observations** (latency, memory, transcript errors) with the method and environment; do not call them benchmarks yet.
+5. **Decide Phase 3 scope from observed failures**, not from novelty. Keep text fallback and editing mandatory.
+6. **Run user validation only when feasible.** It is valuable, but it is not a blocker for engineering.
 
-- A working application that runs from documented instructions.
-- A clear explanation of the user problem and why the first scenario was chosen.
-- A traceable architecture and scenario definition.
-- Tests for core behaviour, failure handling, and deletion.
-- Evidence that feedback references actual learner answers.
-- A pilot or other clearly described evaluation with sample size and limitations.
-- A documented voice decision based on measurement, whether go or no-go.
-- No unsupported placement-readiness or learning-improvement percentage.
-- A final report distinguishing implemented features, tested properties, observed outcomes, hypotheses, and future work.
-- A live demo that does not depend on a paid account or an expiring free API quota.
-
-## 20. Immediate next actions
-
-1. **Verify the merged MVP locally:** sync `main`, install from the documented development requirements in a clean environment, run the complete test suite, and smoke-test the browser flow.
-2. **Close the manual acceptance gate:** confirm retry uses the same scenario/rubric version, attempt comparison is understandable, history persists after restart, and deletion removes the selected session and answers.
-3. **Run a small student usability pilot:** invite 10–20 volunteers if available; clearly label the app as a prototype, collect minimal anonymous observations, and record task completion, feedback grounding, next-action clarity, confusion, and willingness to practise again.
-4. **Publish the evidence:** add a dated pilot/test record with method, sample size, observations, failures, and limitations. Do not invent results if a pilot cannot be run.
-5. **Decide the next iteration from evidence:** improve feedback and attempt comparison first. Only then begin a measured local voice feasibility spike; do not integrate voice frameworks or paid services by default.
-
-**Current gate:** the text MVP is implemented and its core automated tests are passing on the feature branch before merge. Product completion is not claimed until fresh-checkout and manual acceptance checks are recorded and a student pilot (or a documented reason it could not be run) informs the next decision.
+**Current gate:** record/stop slice and mocked Groq adapter implemented; live provider, real browser/microphone acceptance, and CI are outstanding. Speech accuracy and learning outcomes are not validated and must not be claimed.

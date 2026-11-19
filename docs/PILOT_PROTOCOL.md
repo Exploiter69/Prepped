@@ -1,11 +1,31 @@
 # Prepped — First Student Usability Pilot Protocol
 
-**Status:** Ready to use; no pilot results have been collected yet.  
-**Version:** 1.0 · **Prepared:** 2026-10-24
+**Status:** Future validation activity; no pilot results have been collected. This is **not an engineering blocker**.<br>
+**Version:** 1.1 · **Updated:** 2026-11-04
 
 ## Purpose
 
-Find out whether students can complete the local text-based project-interview practice loop, understand its feedback, and identify a useful next action. This is a usability and formative-feedback check, not a study proving improved placement outcomes.
+Find out whether students can complete the local project-interview practice loop, understand its feedback, and identify a useful next action. This is a usability and formative-feedback check, not a study proving improved placement outcomes or speech accuracy.
+
+## Relationship to engineering
+
+Product development and user validation are separate tracks:
+
+- Engineering continues on the local voice slice, failure handling, tests, privacy, and maintainability without waiting for this pilot.
+- This protocol is used when participants and an appropriate setting are available.
+- No pilot result is claimed until it is actually collected and written up with method, sample size, and limitations.
+- A pilot is not required to “unlock” voice or other engineering work. It informs future priorities; it does not replace technical acceptance.
+
+## Optional voice addendum
+
+If the participant is comfortable using a microphone, add these steps after the text flow:
+
+1. Press **Play question aloud**, then **Stop**, then **Replay**.
+2. Press **Start recording**, allow microphone permission, speak one short answer, and press **Stop recording**.
+3. Correct one transcription error before saving.
+4. Deny microphone permission in a second browser/profile and recover using text.
+
+Record only whether the flow was understandable and whether the transcript was editable/useful. Do **not** retain raw audio, recordings, or full personal answers. Speech-recognition accuracy is not established by this usability check.
 
 ## Participants and scope
 
@@ -75,7 +95,7 @@ Use IDs such as P01, P02; do not record names or contact details.
 - **Unexpected failures:**
 - **Changes recommended and why:**
 - **Limitations:** convenience sample, small sample size, self-report/observer effects, prototype status, and no evidence of placement or learning improvement.
-- **Decision:** iterate text MVP / repeat pilot / consider a later feasibility spike. Explain the evidence behind the choice.
+- **Decision:** iterate the current voice/text slice / repeat pilot / defer voice changes pending more engineering evidence. Explain the evidence behind the choice.
 
 ## Stop and privacy rules
 

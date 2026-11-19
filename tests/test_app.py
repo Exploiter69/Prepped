@@ -64,10 +64,10 @@ def test_scenario_endpoint_returns_versioned_scenario(tmp_path: Path) -> None:
         assert response.status_code == 200
         scenario = response.json()
         assert scenario["id"] == "project-explanation"
-        assert scenario["version"] == "1.0.0"
+        assert scenario["version"] == "1.0.1"
         assert len(scenario["questions"]) == 5
         assert {item["id"] for item in scenario["rubric"]} == {
-            "clarity", "structure", "specificity", "follow_up_handling", "conciseness",
+            "clarity", "structure", "specificity", "question_coverage", "conciseness",
         }
     finally:
         client.__exit__(None, None, None)
@@ -424,7 +424,7 @@ def test_conciseness_feedback_reports_not_enough_evidence_when_all_answers_are_e
 
 
 
-def test_rubric_evidence_is_checklist_specific_and_follow_up_uses_prompt_signals() -> None:
+def test_rubric_evidence_is_checklist_specific_and_question_coverage_counts_answers() -> None:
     from prepped.feedback import build_feedback
 
     questions = [
@@ -438,7 +438,7 @@ def test_rubric_evidence_is_checklist_specific_and_follow_up_uses_prompt_signals
         {"id": "clarity", "label": "Clarity"},
         {"id": "structure", "label": "Structure"},
         {"id": "specificity", "label": "Specificity"},
-        {"id": "follow_up_handling", "label": "Follow-up handling"},
+        {"id": "question_coverage", "label": "Question coverage"},
     ]
     answers_text = [
         "Campus updates were scattered, so I wanted to address that problem. I built posts and polls into the platform. University students benefit because they can find updates in one place.",
@@ -473,12 +473,12 @@ def test_rubric_evidence_is_checklist_specific_and_follow_up_uses_prompt_signals
     assert "Beneficiary:" in items["structure"]["evidence"]
     assert items["specificity"]["evidence"].startswith("Personal Contribution:")
     assert "posts API" in items["specificity"]["evidence"]
-    assert items["follow_up_handling"]["status"] == "evidence_found"
-    assert "5 of 5 answers" in items["follow_up_handling"]["evidence"]
-    assert "cannot determine relevance" in items["follow_up_handling"]["message"]
+    assert items["question_coverage"]["status"] == "evidence_found"
+    assert "5 of 5 prompts" in items["question_coverage"]["evidence"]
+    assert "completion only" in items["question_coverage"]["message"]
 
 
-def test_follow_up_handling_does_not_treat_five_nonempty_generic_answers_as_handled() -> None:
+def test_question_coverage_counts_nonempty_answers_not_answer_quality() -> None:
     from prepped.feedback import build_feedback
 
     questions = [
@@ -488,7 +488,7 @@ def test_follow_up_handling_does_not_treat_five_nonempty_generic_answers_as_hand
         {"id": "evidence_and_result", "prompt": "What evidence do you have?"},
         {"id": "reflection", "prompt": "What would you improve?"},
     ]
-    rubric = [{"id": "follow_up_handling", "label": "Follow-up handling"}]
+    rubric = [{"id": "question_coverage", "label": "Question coverage"}]
     session = {
         "id": "generic-follow-up-session",
         "scenario_id": "project-explanation",
@@ -503,9 +503,9 @@ def test_follow_up_handling_does_not_treat_five_nonempty_generic_answers_as_hand
 
     feedback = build_feedback(session, answers)
     item = feedback["rubric_feedback"][0]
-    assert item["status"] == "try_next"
-    assert "0 of 5 answers" in item["evidence"]
-    assert "does not prove the answer is wrong" in item["message"]
+    assert item["status"] == "evidence_found"
+    assert "5 of 5 prompts" in item["evidence"]
+    assert "completion only" in item["message"]
 
 
 def test_feedback_does_not_count_future_testing_or_unmeasured_outcomes_as_evidence() -> None:
@@ -570,7 +570,7 @@ def test_feedback_handles_curly_apostrophes_and_does_not_count_denied_testing_as
         {"id": "clarity", "label": "Clarity"},
         {"id": "structure", "label": "Structure"},
         {"id": "specificity", "label": "Specificity"},
-        {"id": "follow_up_handling", "label": "Follow-up handling"},
+        {"id": "question_coverage", "label": "Question coverage"},
         {"id": "conciseness", "label": "Conciseness"},
     ]
     session = {
@@ -601,3 +601,51 @@ def test_feedback_handles_curly_apostrophes_and_does_not_count_denied_testing_as
     assert question_items[4]["status"] == "evidence_found"
     assert "not measured" in feedback["rubric_feedback"][0]["message"].lower() or feedback["rubric_feedback"][0]["status"] in {"evidence_found", "try_next"}
 
+
+
+
+def test_prepped_project_overview_accepts_practice_and_feedback_features() -> None:
+    from prepped.feedback import build_feedback
+
+    questions = [{"id": "project_overview", "prompt": "Describe your project."}]
+    answer = (
+        "Prepped is a voice-based platform that helps engineering students prepare for job interviews. "
+        "Many students struggle to explain their technical knowledge confidently. "
+        "Students can practice interview questions, receive feedback, and improve communication skills."
+    )
+    session = {
+        "id": "overview-session", "scenario_id": "project-explanation",
+        "scenario_version": "1.0.0", "attempt_number": 1, "completed_at": None,
+        "scenario": {"questions": questions, "rubric": []}, "rubric": [],
+    }
+    feedback = build_feedback(session, [
+        {"question_id": "project_overview", "answer_text": answer}
+    ])
+    item = feedback["question_feedback"][0]
+    assert item["status"] == "evidence_found"
+    assert "real feature" in item["next_action"].lower()
+
+
+def test_question_coverage_does_not_claim_to_measure_follow_up_handling() -> None:
+    from prepped.feedback import build_feedback
+
+    questions = [
+        {"id": "one", "prompt": "First?"}, {"id": "two", "prompt": "Second?"},
+    ]
+    rubric = [{
+        "id": "question_coverage", "label": "Question coverage",
+        "question": "Has each prompt received a response?",
+    }]
+    session = {
+        "id": "coverage-session", "scenario_id": "test", "scenario_version": "1",
+        "attempt_number": 1, "completed_at": None,
+        "scenario": {"questions": questions, "rubric": rubric}, "rubric": rubric,
+    }
+    answers = [
+        {"question_id": "one", "answer_text": "A sufficiently long answer."},
+        {"question_id": "two", "answer_text": ""},
+    ]
+    item = build_feedback(session, answers)["rubric_feedback"][0]
+    assert item["status"] == "try_next"
+    assert "1 of 2" in item["evidence"]
+    assert "follow-up handling is not measured" in item["next_action"].lower()

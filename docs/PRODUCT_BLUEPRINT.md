@@ -1,16 +1,16 @@
 # Prepped — Complete Product and System Blueprint
 
-**Version:** 2.0 — complete project direction  
-**Status:** Approved direction for implementation; not a claim that the software is already built  
-**Last updated:** 2026-10-19  
-**Repository:** Exploiter69/Prepped  
-**Companion documents:** [Complete Roadmap](COMPLETE_ROADMAP.md) · [Research Decision Matrix](RESEARCH_DECISION_MATRIX.md) · [Research Archive Verification](../research/raw/VERIFICATION.md)
+**Version:** 2.1 — voice-first direction<br>
+**Status:** Active direction. The text loop is implemented and frozen except material bugs; the first record/stop voice slice and optional Groq STT adapter are implemented, with live acceptance outstanding.<br>
+**Last updated:** 2026-11-04<br>
+**Repository:** Exploiter69/Prepped<br>
+**Companion documents:** [Current State](CURRENT_STATE.md) · [Complete Roadmap](COMPLETE_ROADMAP.md) · [Voice Setup](VOICE.md) · [ADR-002](ADR-002-LOCAL-VOICE-SLICE.md) · [Research Decision Matrix](RESEARCH_DECISION_MATRIX.md)
 
 ## 1. Product definition
 
-**Prepped helps Indian engineering students practise important placement and professional conversations, get specific feedback tied to what they actually said, and improve through repeated practice.**
+**Prepped is a voice-first, personalised practice and learning environment for Indian engineering students: placement preparation, professional communication, English fluency, and technical interview practice.**
 
-Prepped is a structured practice environment, not a general-purpose chatbot, an official university service, a hiring tool, or a placement predictor.
+The first implemented slice lets a learner speak an answer to a project-interview prompt, correct the local transcript, and submit it through the same session loop as typed text. Prepped is a structured practice environment, not a general-purpose chatbot, an official university service, a hiring tool, a placement predictor, or a validated speech-accuracy product.
 
 ### The problem
 
@@ -49,21 +49,24 @@ English is the first practice language. Use clear, natural language and avoid cl
 
 ## 3. The first release and its boundaries
 
-### Included in the first working MVP
+### Included and implemented
 
 - One curated project-explanation interview scenario.
 - A short guided conversation with a small number of relevant follow-up questions.
 - Text input and responses.
+- Browser microphone capture with explicit **Start recording** / **Stop recording**.
+- Editable transcript before submission, using optional Groq Whisper or local Vosk.
+- Submission of the corrected transcript through the existing session backend.
+- Local Piper text-to-speech for interviewer prompts, with `espeak-ng` fallback.
+- **Play**, **Stop**, and **Replay** controls for spoken prompts.
+- Clear microphone/model/TTS errors and a working text fallback.
 - Ordered session transcript/answer history.
 - Transparent checklist feedback with evidence from the learner's actual answer.
-- One or two concrete improvement actions.
-- Retry of the same scenario.
-- Comparison of first and second attempts using the same rubric.
-- Local session history and explicit session deletion.
-- Automated tests for scenario flow, feedback grounding, malformed output, retry consistency, and deletion.
-- Optional local LLM integration behind a small interface, only if the base app still works without it.
+- Retry, attempt comparison, local session history, and explicit deletion.
+- Automated tests for scenario flow, voice boundaries, failure handling, feedback grounding, retry consistency, and deletion.
+- No raw audio persistence by default.
 
-### Explicitly excluded from the first MVP
+### Explicitly excluded from this phase
 
 - Required paid APIs, temporary free-credit dependencies, paid hosting, or hosted database services.
 - Mandatory login, institution accounts, SSO, LMS integration, or multi-tenant cloud.
@@ -73,7 +76,9 @@ English is the first practice language. Use clear, natural language and avoid cl
 - Emotion detection, personality inference, automated confidence scoring, or employability judgements.
 - Phoneme-level pronunciation scores, IELTS/ACTFL certification, or a single overall “communication score.”
 - Predictive placement modelling or any unsupported percentage-improvement claim.
-- Automatic recording or retention of raw audio.
+- Always-listening recording, realtime streaming agents, interruption/VAD orchestration, or raw-audio retention by default.
+- LLM feedback, adaptive intelligence, or personalisation in the current voice milestone.
+- Additional phrase heuristics in the existing text feedback engine.
 
 These exclusions are intentional scope control, not a statement that the features can never be considered.
 
@@ -84,7 +89,7 @@ These exclusions are intentional scope control, not a statement that the feature
 1. **Welcome:** explain that this is a practice prototype and not an official assessment.
 2. **Scenario briefing:** explain the interviewer role, task, approximate length, and what the learner should prepare.
 3. **Start:** create a local session and show the first interviewer question.
-4. **Answer:** learner enters a text response.
+4. **Answer:** learner types a response or records a spoken answer, reviews the local transcript, corrects errors, and saves through the same backend.
 5. **Follow-up:** deterministic scenario logic chooses a relevant next question using explicit state and simple validated rules. Optional model-generated wording may be used only behind validation.
 6. **Finish:** the learner can finish early or complete the bounded scenario.
 7. **Review:** show the learner's answers and the checklist feedback.
@@ -104,9 +109,11 @@ Every feedback item contains:
 
 Do not quote fabricated text. Do not infer intelligence, personality, confidence, empathy, or hiring potential from a single response. A better second answer is an observed difference in this task, not proof of general employability improvement.
 
-### Flow C — later voice mode
+### Flow C — first voice slice (implemented)
 
-Voice is added only after the text loop works and a feasibility experiment supports it. The expected flow is microphone permission → voice capture → transcript/caption → learner correction when needed → response → feedback. Text remains available when microphone access, speech recognition, hardware, or network conditions fail.
+The current flow is microphone permission → record/stop → transcription through the configured STT provider → editable transcript → submission through the existing answer endpoint → feedback. Vosk transcription and interviewer prompts run locally; optional Groq Whisper sends recorded audio to Groq. The UI discloses the active STT mode. Text remains available when microphone access, transcription, decoding, or TTS fails.
+
+This is a bounded record/stop interaction, not an always-listening realtime agent. Speech accuracy is not validated; the transcript must remain inspectable and correctable.
 
 ## 5. Initial feedback rubric
 
@@ -117,7 +124,8 @@ The initial rubric is formative and checklist-based. It is not a validated psych
 | **Clarity** | Can a listener understand the project's purpose? | The answer explains the problem in plain language |
 | **Structure** | Does the answer cover the key parts in a logical order? | Problem, approach, personal contribution, result |
 | **Specificity** | Does the learner give concrete details rather than unsupported claims? | A named component, decision, constraint, or result |
-| **Follow-up handling** | Does the answer address the question actually asked? | Responds to the interviewer's stated concern rather than changing the subject |
+| **Question coverage (implemented)** | Has each prompt received a non-empty response? | A completion count across the five scenario prompts |
+| **Follow-up handling (not implemented)** | Does the answer address a follow-up question actually asked? | Requires a scenario with explicit follow-up turns; the current scenario has none |
 | **Conciseness** | Is the answer relevant without omitting important context? | Avoids repetition while retaining necessary detail |
 
 Each criterion may be marked as **evident**, **partly evident**, or **not enough evidence**. Use these labels as guidance, not as calibrated scores. The exact wording and examples should be reviewed by the team and, if possible, a faculty member before the pilot.
@@ -208,26 +216,29 @@ The application controller remains the authority. Treat all learner text and mod
 
 ### MVP defaults
 
-- Local-only operation unless a future deployment explicitly changes that policy.
-- No raw audio capture or storage in the text MVP.
+- Local-only operation by default; optional remote transcription is explicitly enabled by the developer and disclosed to the learner.
+- No raw audio persistence by default. The first voice slice decodes and transcribes in memory; only corrected answer text is stored.
 - Explain what is saved and why.
 - Provide session deletion and test it.
-- Do not transmit learner answers to external services by default.
+- Do not transmit learner answers to external services. If optional remote STT is enabled, only the audio recording is sent for transcription; the corrected answer is stored locally.
 - Do not collect personal identifiers that are not required for the practice task.
 - Do not use session content for model training.
 - Show a clear notice that the interviewer is simulated.
 - Provide a stop/end action at all times.
 - Avoid roleplay that pressures users to reveal sensitive personal information.
 
-### Voice-stage requirements
+### Voice requirements (first slice implemented)
 
 - Explicit microphone permission.
-- Separate choice for retaining audio; default to no raw audio retention.
+- Record/stop control; no always-listening mode.
+- STT with an editable transcript before submission (Groq Whisper opt-in; Vosk offline fallback).
+- Local TTS prompt playback with stop/replay.
 - Text captions and an alternative text interaction.
-- Visible recording and connection states.
+- Visible recording, transcription, and failure states.
+- No raw audio retention by default.
 - No voice cloning.
 - No emotion/personality inference.
-- A documented retention/deletion policy before any external pilot.
+- A documented retention/deletion policy before any external validation.
 
 ### Legal note
 
@@ -244,7 +255,7 @@ Include from the beginning:
 - A text-only path for every scenario.
 - Clear loading, empty, error, and completion states.
 - An easy-to-find stop, restart, retry, and delete action.
-- For later voice: captions, replay, speed control, microphone state, and graceful fallback.
+- For voice: visible microphone/recording state, editable transcript, spoken-prompt stop/replay, and graceful text fallback.
 
 Target good accessibility practices from the first version; formal WCAG conformance should not be claimed without an appropriate audit.
 
@@ -261,6 +272,8 @@ Target good accessibility practices from the first version; formal WCAG conforma
 - Invalid model output falls back safely.
 - Empty/long/unexpected input handling.
 - Session deletion removes all related local records.
+- Voice boundaries: missing model/package, missing ffmpeg, empty/silent/oversized/undecodable audio, denied microphone, TTS failure, editable transcript, and text fallback.
+- No raw audio file created by the transcription path.
 - Fresh-checkout setup and smoke test.
 
 ### Feedback-quality tests
@@ -277,7 +290,7 @@ Create a small fixed set of representative answers:
 
 For each case, record expected behaviour and regressions. Automated tests can verify grounding and structure; human review is still required to judge whether feedback is understandable and useful.
 
-### Pilot metrics
+### Future validation metrics (not an engineering blocker)
 
 For a small pilot of 10–20 student volunteers if available, record:
 
@@ -286,27 +299,51 @@ For a small pilot of 10–20 student volunteers if available, record:
 - Whether feedback cites actual answers.
 - Whether the learner understands the next action.
 - Change between first and second attempts using the same checklist.
+- Voice-specific: microphone permission, record/stop, transcript correction, spoken-prompt stop/replay, and text fallback.
 - Willingness to use it again.
 - Time to complete and reported friction.
 
-State the sample size and limitations. Do not claim causality or general placement impact from a small convenience sample.
+State the sample size and limitations. Do not claim causality, speech accuracy, or general placement impact from a small convenience sample. Engineering continues without waiting for this validation.
 
-## 11. Voice architecture — future option, not a dependency
+## 11. Voice architecture — local record/stop slice (implemented)
 
-The reports discuss cascaded speech pipelines (VAD → STT → LLM → TTS), speech-to-speech, LiveKit Agents, Pipecat, Whisper/faster-whisper, Parakeet, Kokoro, Piper, and multiple managed providers.
+The voice slice is a bounded record/stop cascade with editable text in the middle. STT selection is opt-in:
 
-No voice framework or model is selected yet. After the text MVP and pilot:
+```text
+Browser MediaRecorder
+  → POST /api/voice/transcribe (raw audio body)
+  → ffmpeg decode in memory
+  → Groq Whisper when configured, otherwise local Vosk STT
+  → editable transcript in the existing answer textarea
+  → existing POST /api/sessions/{id}/answers
+```
 
-1. Benchmark local STT, TTS, and optional LLM on the actual available laptop.
-2. Record hardware, model versions, setup burden, latency, memory use, transcription errors, and failures.
-3. Start with push-to-talk or record-and-submit turns before full-duplex streaming.
+Interviewer prompts use local Piper TTS, falling back to local `espeak-ng`. The question text is always visible.
+
+### Engine choices
+
+| Role | Chosen | Why | Limitations |
+|---|---|---|---|
+| STT (optional cloud) | Groq `whisper-large-v3` | Multilingual model, free-tier rate-limited access | Audio leaves device; target-speaker accuracy still needs evaluation |
+| STT (offline fallback) | Vosk 0.3.45 + `vosk-model-small-en-us-0.15` | Apache 2.0, CPU-friendly, small, no cloud account | Known weak recognition for some Indian English speech; transcript remains editable |
+| TTS | Piper 1.8.0 + `en_US-lessac-medium` | Local neural voice, CPU-compatible, better than formant synthesis | GPL-3.0-or-later; first load is slow; optional |
+| TTS fallback | `espeak-ng` | Tiny, local, often preinstalled | Robotic voice |
+| Decode | `ffmpeg` | Handles browser containers without temporary files | System dependency |
+
+whisper.cpp remains a plausible future offline STT adapter. No realtime framework or paid speech provider is required.
+
+### Rules
+
+1. Record/stop only; no always-listening mode.
+2. No model download at application startup. Setup is explicit.
+3. No raw audio persistence by default; decode in memory.
 4. Keep the transcript inspectable and correctable.
-5. Use a deterministic scenario controller and run assessment off the live response path.
-6. Compare LiveKit Agents and Pipecat only if a realtime transport is justified.
-7. Preserve text fallback.
-8. Make a documented go/no-go decision.
+5. Submit through the existing session/answer backend.
+6. Keep text fallback and clear errors.
+7. Use a deterministic scenario controller; assessment stays outside the live voice path.
+8. Report only measurements from the actual tested setup. One-off timings are not benchmarks, and speech accuracy is not claimed as validated.
 
-A reported 500 ms latency or a model benchmark in an AI report is not a Prepped performance result. Report only measurements from the actual tested setup.
+See [Voice Setup](VOICE.md) and [ADR-002](ADR-002-LOCAL-VOICE-SLICE.md) for the implementation details and known limitations.
 
 ## 12. Learning loop beyond the first MVP
 
@@ -327,15 +364,14 @@ Candidate review items may include project explanation structure, missing eviden
 The detailed gates, tasks, semester map, testing plan, and deliverables live in the [Complete Roadmap](COMPLETE_ROADMAP.md). The overall order is:
 
 1. **Foundation:** repository truth, scenario, rubric, local app skeleton.
-2. **Text vertical slice:** scenario, answers, feedback, retry, comparison, deletion.
-3. **Pilot:** student usability and feedback-grounding evidence.
-4. **Quality iteration:** improve the loop based on observed problems.
-5. **Voice feasibility:** measure local models and hardware.
-6. **Voice integration:** only if the experiment passes.
-7. **Review loop:** evidence-linked review items and later scheduling.
-8. **Second scenario:** validate reusable scenario structure.
-9. **Human calibration:** evaluate rubric consistency before any score claims.
-10. **Final-year options:** additional scenarios, language support, faculty/institution features, advanced audio, or avatars only when justified.
+2. **Text vertical slice:** scenario, answers, feedback, retry, comparison, deletion. Implemented and frozen except material bugs.
+3. **First voice slice:** record/stop, optional Groq Whisper or Vosk STT, editable transcript, Piper/espeak TTS, failure fallback. Implemented; live provider and browser acceptance outstanding.
+4. **Voice hardening:** browser/microphone acceptance, latency/accuracy observations, failure fixes.
+5. **User validation:** usability and voice-specific findings when participants are available. Not an engineering blocker.
+6. **Personalisation and review loop:** evidence-linked review items and later scheduling, only after voice value is demonstrated.
+7. **Second scenario and fluency:** validate reusable scenario/voice structure.
+8. **Human calibration:** evaluate rubric consistency before any score claims.
+9. **Final-year options:** additional scenarios, language support, faculty/institution features, advanced audio, or avatars only when justified.
 
 ## 14. Feature priority by evidence gate
 
@@ -345,11 +381,11 @@ The detailed gates, tasks, semester map, testing plan, and deliverables live in 
 | Evidence-linked checklist feedback | Required | First runnable MVP |
 | Retry and attempt comparison | Required | First runnable MVP |
 | Local history and deletion | Required | First runnable MVP |
-| Optional local LLM | Optional | Only after deterministic flow works |
-| Voice input/output | Conditional | Local hardware feasibility |
-| Review items | Later | Feedback quality and student usefulness |
+| Optional local LLM | Not in this phase | Keep deterministic flow and text fallback stable |
+| Voice input/output | Implemented first slice | Browser acceptance, accuracy observations, and failure handling |
+| Review items | Later | Voice value, feedback quality, and student usefulness |
 | FSRS | Later experiment | Review-item usefulness demonstrated |
-| Second scenario | Later | Pilot identifies useful expansion |
+| Second scenario | Later | Voice loop is usable and validation identifies a useful expansion |
 | Pronunciation/GOP scoring | Research only initially | Audio benchmark and human validation |
 | Numeric rubric score | Not in v1 | Human calibration and clear validity limits |
 | Avatar/lip-sync/VR | Deferred | Evidence of learning benefit and feasible cost |
@@ -383,6 +419,6 @@ Do not use AI-generated research as proof of implementation. Do not present the 
 
 ## 17. Current decision
 
-**Build one local text-based project-interview practice flow with evidence-linked checklist feedback, retry, attempt comparison, local history, and deletion. Test it with students. Then measure local voice feasibility on actual hardware.**
+**Keep the implemented text loop as a stable fallback. Build the voice-first product on the same simple app: record/stop microphone input, opt-in Groq Whisper or offline Vosk STT with an editable transcript, local TTS prompt playback, and submission through the existing session backend. Harden the browser/device experience next; user validation is valuable but is not an engineering blocker.**
 
-That is the project's committed starting point. Everything else remains a conditional expansion, not a prerequisite.
+Speech accuracy, latency, and learning outcomes are not validated. No LLM feedback, adaptive intelligence, pronunciation scoring, or overall score is added in this phase. Everything beyond the first voice slice remains a conditional expansion, not a prerequisite.

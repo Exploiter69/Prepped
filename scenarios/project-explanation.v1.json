@@ -1,6 +1,6 @@
 {
   "id": "project-explanation",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "title": "Explain your project to a placement interviewer",
   "description": "Practise explaining a project clearly, describing your own contribution, defending a design decision, and reflecting on evidence and lessons learned.",
   "role": "Placement interviewer",
@@ -44,9 +44,9 @@
       "question": "Does the answer include concrete details rather than unsupported claims?"
     },
     {
-      "id": "follow_up_handling",
-      "label": "Follow-up handling",
-      "question": "Does the answer address the question that was asked?"
+      "id": "question_coverage",
+      "label": "Question coverage",
+      "question": "Has each prompt received a non-empty response?"
     },
     {
       "id": "conciseness",

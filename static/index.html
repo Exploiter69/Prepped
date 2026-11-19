@@ -7,18 +7,19 @@
     <meta name="description" content="Private, local-first practice for placement conversations.">
     <title>Prepped — Practice with purpose</title>
     <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/voice.js" defer></script>
     <script src="/static/app.js" defer></script>
   </head>
   <body>
     <header class="site-header">
       <a class="wordmark" href="/" aria-label="Prepped home">prepped<span>.</span></a>
-      <div class="header-actions"><span class="header-note">LOCAL PRACTICE · 0.2.0</span><button id="history-toggle" class="button button-quiet" type="button">History</button></div>
+      <div class="header-actions"><span class="header-note">LOCAL PRACTICE · 0.3.0</span><button id="history-toggle" class="button button-quiet" type="button">History</button></div>
     </header>
     <main>
       <section class="intro" aria-labelledby="page-title">
         <p class="eyebrow">PRACTICE ROOM / 001</p>
         <h1 id="page-title">Get better at explaining<br>the work you do.</h1>
-        <p class="intro-copy">A private practice space for engineering students preparing for real placement conversations. Practise explaining your project, review specific evidence from your own words, then try again.</p>
+        <p class="intro-copy">A private practice space for engineering students preparing for real placement conversations. Speak or type your answer, review and edit the transcript, then try again. Text always remains available.</p>
       </section>
       <p id="global-status" class="global-status" role="status" aria-live="polite">Checking local app…</p>
       <section id="home-view" class="scenario-panel" aria-labelledby="scenario-title">
@@ -28,21 +29,44 @@
         <div class="scenario-meta"><div><span class="meta-label">ROLE</span><span id="scenario-role">—</span></div><div><span class="meta-label">LENGTH</span><span id="scenario-length">—</span></div><div><span class="meta-label">VERSION</span><span id="scenario-version">—</span></div></div>
         <div class="divider"></div><h3>What you will practise</h3>
         <ol id="question-list" class="question-list"><li>Loading scenario questions…</li></ol>
-        <div class="notice"><strong>Honest by design.</strong><span>Feedback uses a transparent text checklist. It is not a validated assessment, placement predictor, or measure of speaking ability.</span></div>
+        <div class="notice"><strong>Honest by design.</strong><span>Feedback uses a transparent text checklist. Speech recognition is an editable first draft and its accuracy has not been validated. This is not an assessment, placement predictor, or measure of speaking ability.</span></div>
         <div class="primary-action"><button id="start-button" class="button button-primary" type="button" disabled>Start practice <span aria-hidden="true">→</span></button><span class="action-note">Your answers stay in this local app.</span></div>
       </section>
       <section id="practice-view" class="scenario-panel hidden" aria-labelledby="practice-title">
         <div class="panel-topline"><span class="eyebrow">LIVE PRACTICE</span><span id="practice-progress" class="status">Question 1 of 5</span></div>
         <div class="progress-track" aria-hidden="true"><div id="progress-bar" class="progress-bar"></div></div>
         <h2 id="practice-title">Question</h2><p id="question-prompt" class="question-prompt"></p>
+        <div class="spoken-prompt" aria-label="Spoken question controls">
+          <div class="voice-actions">
+            <button id="tts-play-button" class="button button-secondary" type="button" disabled>Play question aloud</button>
+            <button id="tts-stop-button" class="button button-quiet" type="button" disabled>Stop</button>
+            <button id="tts-replay-button" class="button button-quiet" type="button" disabled>Replay</button>
+          </div>
+          <span id="tts-status" class="voice-status" role="status" aria-live="polite">Checking local speech…</span>
+          <audio id="tts-audio" preload="none" class="hidden"></audio>
+        </div>
         <form id="answer-form">
+          <section class="voice-recorder" aria-labelledby="voice-answer-title">
+            <div class="voice-recorder-heading">
+              <div>
+                <h3 id="voice-answer-title">Speak your answer <span class="optional-label">(optional)</span></h3>
+                <p>Record, stop, then review and edit the transcript before saving. Prepped does not store raw audio.</p>
+              </div>
+              <div class="voice-actions">
+                <button id="record-button" class="button button-secondary" type="button" disabled>Start recording</button>
+                <button id="stop-recording-button" class="button button-quiet" type="button" disabled>Stop recording</button>
+              </div>
+            </div>
+            <p id="record-status" class="voice-status" role="status" aria-live="polite">Checking microphone and local model…</p>
+            <p id="voice-error" class="inline-error voice-error" role="alert"></p>
+          </section>
           <label for="answer-input">Your answer</label>
-          <textarea id="answer-input" name="answer" rows="7" maxlength="6000" placeholder="Answer in your own words. Specific details are useful; do not invent results." aria-describedby="answer-help answer-count"></textarea>
-          <div class="input-meta"><span id="answer-help">Up to 6,000 characters. You can skip a question.</span><span id="answer-count">0 / 6000</span></div>
+          <textarea id="answer-input" name="answer" rows="7" maxlength="6000" placeholder="Speak using the controls above, then edit the transcript here. You can also type your answer. Specific details are useful; do not invent results." aria-describedby="answer-help answer-count"></textarea>
+          <div class="input-meta"><span id="answer-help">Up to 6,000 characters. Edit the transcript before saving. You can skip a question.</span><span id="answer-count">0 / 6000</span></div>
           <p id="answer-error" class="inline-error" role="alert"></p>
           <div class="form-actions"><button id="cancel-button" class="button button-quiet" type="button">End session</button><div class="action-group"><button id="skip-button" class="button button-secondary" type="button">Skip</button><button id="submit-button" class="button button-primary" type="submit">Save answer <span aria-hidden="true">→</span></button></div></div>
         </form>
-        <p class="privacy-note">Saved to a local SQLite database on this computer. No AI service is called.</p>
+        <p class="privacy-note" id="privacy-note">Checking speech and data handling…</p>
       </section>
       <section id="feedback-view" class="scenario-panel hidden" aria-labelledby="feedback-title">
         <div class="panel-topline"><span class="eyebrow">SESSION REVIEW</span><span id="attempt-label" class="status"></span></div>
@@ -60,7 +84,7 @@
       <section class="principles" aria-label="Product principles">
         <article><span class="principle-index">01</span><h3>Evidence, not guesses</h3><p>Feedback quotes or points to your submitted words.</p></article>
         <article><span class="principle-index">02</span><h3>Retry, then compare</h3><p>Repeat the same scenario and checklist; review differences without an overall score.</p></article>
-        <article><span class="principle-index">03</span><h3>Local by default</h3><p>Answers stay in this local app unless you choose to export them yourself.</p></article>
+        <article><span class="principle-index">03</span><h3>Local by default</h3><p id="privacy-summary">Answers are stored locally. Speech transcription depends on the configured provider; Prepped does not store raw audio.</p></article>
       </section>
     </main>
     <footer><span>PREPPED / TDP</span><span>Built for practice, not prediction.</span></footer>

@@ -19,6 +19,11 @@ data/
 *.sqlite3
 *.db
 
+# Local voice models (explicitly installed, never committed or bundled)
+models/
+*.onnx
+*.onnx.json
+
 # Editors / OS
 .DS_Store
 .idea/
