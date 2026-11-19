@@ -79,7 +79,8 @@ def load_curriculum(path: Path = DEFAULT_CURRICULUM_PATH) -> dict[str, Any]:
         if any(item not in skills or item == skill["id"] for item in skill.get("prerequisites", [])):
             raise CurriculumValidationError(f"Skill {skill['id']} has an invalid prerequisite.")
     for lesson in lessons.values():
-        if not all(lesson.get(key) for key in ("version", "title", "introduction")):
+        if (not all(lesson.get(key) for key in ("version", "title", "introduction"))
+                or lesson.get("kind", "lesson") not in {"lesson", "diagnostic"}):
             raise CurriculumValidationError(f"Lesson {lesson['id']} is missing required metadata.")
         if (lesson.get("track_id") not in tracks or lesson.get("level_id") not in levels
                 or lesson.get("unit_id") not in units or not lesson.get("exercises")
@@ -394,14 +395,43 @@ def create_learning_router(db_path: Path, curriculum_path: Path = DEFAULT_CURRIC
             updated = get_attempt(conn, attempt_id)
         return view(updated, data)
 
+    @router.get("/diagnostic/latest")
+    def latest_diagnostic() -> dict[str, Any]:
+        data = curriculum_data()
+        diagnostic = next((item for item in data["lessons"] if item.get("kind") == "diagnostic"), None)
+        if diagnostic is None:
+            return {"configured": False, "latest": None}
+        with connect_database(Path(db_path)) as conn:
+            row = conn.execute(
+                "SELECT id FROM learning_attempts WHERE lesson_id = ? ORDER BY started_at DESC LIMIT 1",
+                (diagnostic["id"],),
+            ).fetchone()
+            if row is None:
+                return {"configured": True, "latest": None,
+                        "note": "This is a low-stakes snapshot of responses, not a proficiency test."}
+            attempt = get_attempt(conn, row["id"])
+        return {"configured": True, "latest": view(attempt, data),
+                "note": "Responses are stored for later comparison. No proficiency level or overall score is assigned."}
+
     @router.get("/progress")
     def progress() -> dict[str, Any]:
         data = curriculum_data()
         with connect_database(Path(db_path)) as conn:
             rows = conn.execute("SELECT id, lesson_id, track_id, status, started_at, completed_at FROM learning_attempts ORDER BY started_at DESC").fetchall()
             event_count = conn.execute("SELECT COUNT(*) AS n FROM learning_events").fetchone()["n"]
-        completed_by_lesson = {row["lesson_id"] for row in rows if row["status"] == "completed"}
-        lesson_completions = sum(row["status"] == "completed" for row in rows)
+        diagnostic_ids = {lesson["id"] for lesson in data["lessons"] if lesson.get("kind") == "diagnostic"}
+        completed_by_lesson = {
+            row["lesson_id"] for row in rows
+            if row["status"] == "completed" and row["lesson_id"] not in diagnostic_ids
+        }
+        lesson_completions = sum(
+            row["status"] == "completed" and row["lesson_id"] not in diagnostic_ids for row in rows
+        )
+        diagnostics_completed = len({
+            row["lesson_id"] for row in rows
+            if row["status"] == "completed" and row["lesson_id"] in diagnostic_ids
+        })
+        diagnostic_attempts_started = sum(row["lesson_id"] in diagnostic_ids for row in rows)
         skills = []
         for skill in data["skills"]:
             lesson_ids = [lesson["id"] for lesson in data["lessons"] if skill["id"] in lesson["skill_ids"]]
@@ -412,6 +442,8 @@ def create_learning_router(db_path: Path, curriculum_path: Path = DEFAULT_CURRIC
                            "available_lessons": len(lesson_ids)})
         return {"attempts_started": len(rows), "lessons_completed": len(completed_by_lesson),
                 "lesson_completions": lesson_completions,
+                "diagnostic_attempts_started": diagnostic_attempts_started,
+                "diagnostics_completed": diagnostics_completed,
                 "learning_events": event_count, "skills": skills,
                 "completed_lesson_ids": sorted(completed_by_lesson),
                 "active_attempts": [dict(row) for row in rows if row["status"] == "in_progress"],
