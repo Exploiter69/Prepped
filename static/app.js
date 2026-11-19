@@ -67,6 +67,96 @@ async function loadStarterData() {
   }
 }
 
+const goalLabels = {
+  english_fluency: "English fluency",
+  placement_interviews: "Placement interviews",
+  technical_interviews: "Technical interviews",
+  project_communication: "Explaining projects",
+  professional_communication: "Professional communication",
+};
+
+const areaLabels = {
+  speaking_fluency: "speaking fluency",
+  grammar: "grammar and sentence construction",
+  vocabulary: "vocabulary",
+  pronunciation: "pronunciation and listening",
+  project_explanation: "project explanation",
+  technical_interviews: "technical interviews",
+  hr_interviews: "HR and behavioural interviews",
+  professional_communication: "professional communication",
+  confidence: "speaking confidence",
+};
+
+function renderProfile(result) {
+  const profile = result.profile;
+  const form = $("#profile-form");
+  if (!profile) {
+    $("#profile-summary").textContent = "Not set up yet. Add a few details to help Prepped organise relevant practice. You can skip this and start practising.";
+    $("#profile-edit-toggle").textContent = "Set up profile";
+    form.classList.remove("hidden");
+    return;
+  }
+
+  $("#profile-name").value = profile.display_name || "";
+  $("#profile-year").value = profile.study_year == null ? "" : String(profile.study_year);
+  $("#profile-branch").value = profile.branch || "";
+  $("#profile-role").value = profile.target_role || "";
+  $("#profile-goal").value = profile.primary_goal;
+  $("#profile-confidence").value = profile.confidence_level;
+  for (const checkbox of document.querySelectorAll('input[name="improvement_areas"]')) {
+    checkbox.checked = profile.improvement_areas.includes(checkbox.value);
+  }
+
+  const details = [
+    goalLabels[profile.primary_goal] || profile.primary_goal,
+    profile.study_year ? "Year " + profile.study_year : null,
+    profile.branch || null,
+    profile.target_role ? "Target: " + profile.target_role : null,
+  ].filter(Boolean);
+  const focus = profile.improvement_areas.map((area) => areaLabels[area]).filter(Boolean);
+  $("#profile-summary").textContent = details.join(" · ") + (focus.length ? ". Focus: " + focus.join(", ") + "." : ".");
+  $("#profile-edit-toggle").textContent = "Edit profile";
+  form.classList.add("hidden");
+}
+
+async function loadProfile() {
+  try {
+    const result = await api("/api/profile");
+    renderProfile(result);
+    $("#profile-save-status").textContent = result.configured ? "Saved locally" : "Not set up";
+  } catch (error) {
+    $("#profile-save-status").textContent = "Could not load profile";
+    $("#profile-error").textContent = error.message;
+  }
+}
+
+async function saveProfile(event) {
+  event.preventDefault();
+  const submit = $("#profile-form button[type='submit']");
+  submit.disabled = true;
+  $("#profile-error").textContent = "";
+  const studyYear = $("#profile-year").value;
+  const payload = {
+    display_name: $("#profile-name").value,
+    study_year: studyYear ? Number(studyYear) : null,
+    branch: $("#profile-branch").value,
+    target_role: $("#profile-role").value,
+    primary_goal: $("#profile-goal").value,
+    confidence_level: $("#profile-confidence").value,
+    improvement_areas: Array.from(document.querySelectorAll('input[name="improvement_areas"]:checked')).map((item) => item.value),
+  };
+  try {
+    const result = await api("/api/profile", { method: "PUT", body: JSON.stringify(payload) });
+    renderProfile(result);
+    $("#profile-save-status").textContent = "Saved locally";
+    setStatus("Your learning profile has been saved on this device.");
+  } catch (error) {
+    $("#profile-error").textContent = error.message;
+  } finally {
+    submit.disabled = false;
+  }
+}
+
 function renderQuestion(session) {
   activeSession = session;
   const current = session.current_question;
@@ -339,6 +429,15 @@ async function loadHistory() {
   }
 }
 
+$("#profile-edit-toggle").addEventListener("click", () => {
+  const form = $("#profile-form");
+  form.classList.toggle("hidden");
+  if (!form.classList.contains("hidden")) $("#profile-name").focus();
+});
+$("#profile-cancel").addEventListener("click", async () => {
+  await loadProfile();
+});
+$("#profile-form").addEventListener("submit", saveProfile);
 $("#start-button").addEventListener("click", startPractice);
 $("#answer-form").addEventListener("submit", (event) => {
   event.preventDefault();
@@ -355,3 +454,4 @@ $("#answer-input").addEventListener("input", () => { $("#answer-count").textCont
 
 window.PreppedVoice?.init();
 loadStarterData();
+loadProfile();
