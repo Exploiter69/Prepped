@@ -135,6 +135,45 @@ def initialize_database(db_path: Path) -> None:
             "CREATE INDEX IF NOT EXISTS idx_learning_events_attempt_time ON learning_events(attempt_id, occurred_at)"
         )
 
+        connection.executescript(
+            """
+            CREATE TABLE IF NOT EXISTS learning_memory (
+                id TEXT PRIMARY KEY,
+                item_type TEXT NOT NULL CHECK (item_type IN ('word', 'phrase', 'correction', 'concept', 'example')),
+                front TEXT NOT NULL CHECK (length(front) BETWEEN 1 AND 240),
+                back TEXT NOT NULL CHECK (length(back) BETWEEN 1 AND 2000),
+                normalised_front TEXT NOT NULL,
+                source_type TEXT NOT NULL DEFAULT 'manual',
+                source_id TEXT,
+                source_title TEXT,
+                source_excerpt TEXT,
+                status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'suspended')),
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                due_at TEXT NOT NULL,
+                interval_days INTEGER NOT NULL DEFAULT 0 CHECK (interval_days >= 0),
+                repetitions INTEGER NOT NULL DEFAULT 0 CHECK (repetitions >= 0),
+                lapses INTEGER NOT NULL DEFAULT 0 CHECK (lapses >= 0),
+                last_reviewed_at TEXT,
+                last_rating TEXT CHECK (last_rating IS NULL OR last_rating IN ('again', 'hard', 'good', 'easy'))
+            );
+            CREATE INDEX IF NOT EXISTS idx_learning_memory_due ON learning_memory(status, due_at);
+            CREATE INDEX IF NOT EXISTS idx_learning_memory_normalised ON learning_memory(item_type, normalised_front);
+            CREATE INDEX IF NOT EXISTS idx_learning_memory_updated ON learning_memory(updated_at DESC);
+            CREATE TABLE IF NOT EXISTS learning_memory_reviews (
+                id TEXT PRIMARY KEY,
+                item_id TEXT NOT NULL REFERENCES learning_memory(id) ON DELETE CASCADE,
+                rating TEXT NOT NULL CHECK (rating IN ('again', 'hard', 'good', 'easy')),
+                reviewed_at TEXT NOT NULL,
+                previous_due_at TEXT NOT NULL,
+                next_due_at TEXT NOT NULL,
+                interval_days INTEGER NOT NULL CHECK (interval_days >= 1)
+            );
+            CREATE INDEX IF NOT EXISTS idx_learning_memory_reviews_item_time
+                ON learning_memory_reviews(item_id, reviewed_at DESC);
+            """
+        )
+
 
 def row_to_dict(row: sqlite3.Row | None) -> dict[str, Any] | None:
     """Convert a SQLite row to a plain dictionary."""
