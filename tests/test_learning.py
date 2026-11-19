@@ -20,7 +20,7 @@ def test_curriculum_loads_with_unique_skills_tracks_lessons_and_supported_exerci
     assert len({item["id"] for item in data["tracks"]}) == len(data["tracks"])
     assert len({item["id"] for item in data["lessons"]}) == len(data["lessons"])
     assert {exercise["type"] for lesson in data["lessons"] for exercise in lesson["exercises"]} == {
-        "choice", "ordering", "reflection"
+        "choice", "ordering", "reflection", "vocabulary", "listening"
     }
 
 
@@ -205,3 +205,35 @@ def test_legacy_session_and_profile_data_survive_learning_migrations(tmp_path: P
     assert connection.execute("SELECT answer_text FROM answers WHERE id='legacy-answer'").fetchone()[0] == "Preserve me"
     assert connection.execute("SELECT COUNT(*) FROM learning_events").fetchone()[0] == 1
     connection.close()
+
+
+def test_listening_and_vocabulary_exercises_are_safe_and_deterministic(tmp_path: Path) -> None:
+    with client_for(tmp_path) as client:
+        catalog = client.get("/api/learning/catalog").json()
+        english = next(track for track in catalog["tracks"] if track["id"] == "english-foundations")
+        vocabulary = next(lesson for lesson in english["lessons"] if lesson["id"] == "vocabulary-in-context")
+        assert any(exercise["type"] == "vocabulary" for exercise in vocabulary["exercises"])
+        assert all("answer" not in exercise for exercise in vocabulary["exercises"])
+
+        attempt = client.post("/api/learning/attempts", json={"lesson_id": "listening-for-details"})
+        assert attempt.status_code == 409  # sentence-building is an explicit prerequisite
+
+        first = client.post("/api/learning/attempts", json={"lesson_id": "sentence-building"}).json()
+        for exercise_id, answer in [
+            ("sentence-complete", "b"),
+            ("sentence-order", ["a", "b", "c", "d"]),
+            ("sentence-practice", "I built a study planner."),
+        ]:
+            assert client.post(f"/api/learning/attempts/{first['id']}/responses",
+                               json={"exercise_id": exercise_id, "answer": answer}).status_code == 200
+
+        listening = client.post("/api/learning/attempts", json={"lesson_id": "listening-for-details"}).json()
+        exercise = listening["current_exercise"]
+        assert exercise["type"] == "listening"
+        assert exercise["audio_text"]
+        assert exercise["transcript"]  # accessible text alternative
+        assert "answer" not in exercise
+        result = client.post(f"/api/learning/attempts/{listening['id']}/responses",
+                             json={"exercise_id": "listening-detail", "answer": "b"})
+        assert result.status_code == 200
+        assert result.json()["feedback"][0]["status"] == "correct"
