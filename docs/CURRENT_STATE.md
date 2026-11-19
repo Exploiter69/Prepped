@@ -179,8 +179,7 @@ The learner profile stores preferences such as goal, study year, branch, confide
 
 ### Not implemented yet
 
-- Learner-controlled vocabulary/correction memory and spaced revision.
-- HR, behavioural and technical interview studios with multi-turn follow-ups.
+- Career and interview studios with multi-turn follow-ups.
 - Evidence-based skill progress dashboard and goal tracking.
 - Local export, backup and restore.
 - Full release-grade accessibility, security, fresh-install and target-device acceptance.
@@ -192,7 +191,7 @@ Follow [PRODUCT_ROADMAP.md](PRODUCT_ROADMAP.md) and [COMPLETE_ROADMAP.md](COMPLE
 1. **Foundation acceptance:** verify profile setup/edit/save/reload and the existing practice/voice flows in a real browser; rerun automated checks and CI.
 2. **Learning Engine:** complete automated and target-device acceptance of the implemented skill taxonomy, versioned JSON curriculum, reusable lesson runner, exercise types, progress events and profile-driven starter paths.
 3. **English & communication studio:** implementation is on the branch; complete CI and target-laptop acceptance before closing Phase C.
-4. **Personal learning memory:** learner-approved words, phrases, corrections and review cards with a transparent local scheduler.
+4. **Personal learning memory:** implementation added; complete CI, browser acceptance, and target-laptop review for learner-approved cards, source context, duplicate handling, dismissal, and the local scheduler.
 5. **Career & interview studios:** project, HR/behavioural and technical tracks using shared scenario infrastructure.
 6. **Progress & portability:** skill evidence, goals, explainable recommendations, export, backup and restore.
 7. **Release hardening:** accessibility, security, responsive UX, fresh install, target-device acceptance and documented limitations.
