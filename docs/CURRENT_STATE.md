@@ -216,8 +216,8 @@ The feature/learner-profile branch now includes the first Phase B implementation
 - Reusable learning API: GET /api/learning/catalog (skill map, tracks, lessons, and profile-based route); GET /api/learning/recommendations; POST /api/learning/attempts; GET /api/learning/attempts/{id}; POST /api/learning/attempts/{id}/responses; and GET /api/learning/progress.
 - Additive learning_attempts and learning_events tables. Existing sessions, answers, and profile data are preserved.
 - Profile-driven starting routes for English fluency, placement interviews, project communication, and professional communication. Technical-interview goals currently route through project-explanation foundations and disclose that the dedicated technical question bank is planned.
-- Learning workspace UI for recommended lessons, curriculum browsing, choice/order/reflection exercises, feedback, progress, and resuming unfinished lessons.
-- Choice and ordering feedback compares a response to authored answer keys. Reflection responses are saved for learner self-review and are never automatically graded. No overall or proficiency score is generated.
+- Learning workspace UI for the skill map, levels/units, recommended tracks, all six exercise formats, local TTS listening with a revealable transcript, optional STT spoken responses, feedback, next-lesson navigation, progress, and resuming unfinished lessons.
+- Choice, vocabulary, listening, and ordering feedback compares a response to authored answer keys. Short responses are saved for learner self-review with an illustrative example and are never automatically graded. No overall or proficiency score is generated.
 
 **Validation in progress:** API tests and a Chromium end-to-end learning journey have been added, including reload/resume. The latest CI run must pass before this milestone is marked automated-tested. Target-laptop browser/responsive acceptance remains a separate manual check.
 
