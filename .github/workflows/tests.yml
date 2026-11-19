@@ -46,7 +46,7 @@ jobs:
       - name: Audit installed Python dependencies
         run: |
           python -m pip install pip-audit
-          pip-audit
+          pip-audit --skip-editable
       - name: Install Chromium for browser acceptance tests
         run: python -m playwright install --with-deps chromium
       - name: Run tests
