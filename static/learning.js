@@ -483,7 +483,7 @@
           source_type: "lesson",
           source_id: state.attempt?.id || "",
           source_title: state.attempt?.lesson?.title || "Learning lesson",
-          source_excerpt: (item.prompt || "").slice(0, 1000),
+          source_excerpt: (openResponse ? (item.original_response || item.prompt) : (item.prompt || "")).slice(0, 6000),
         }}));
       });
       card.append(save);
