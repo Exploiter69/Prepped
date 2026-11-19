@@ -200,7 +200,9 @@ def test_learning_workspace_completes_and_resumes_a_saved_lesson(local_app_url: 
     next_lesson = page.locator("#learning-feedback button").filter(has_text="Next lesson: Grammar in context")
     assert next_lesson.is_visible()
     next_lesson.click()
-    assert "Grammar in context" in page.locator("#learning-runner-title").inner_text()
+    page.wait_for_function(
+        "() => document.querySelector('#learning-runner-title').textContent.includes('Grammar in context')"
+    )
 
 
 def test_listening_lesson_has_playback_and_revealed_text_alternative(local_app_url: str, browser_page) -> None:
@@ -215,7 +217,7 @@ def test_listening_lesson_has_playback_and_revealed_text_alternative(local_app_u
     page.locator("#learning-submit").click()
     page.locator("#learning-reflection").fill("I built a small web application.")
     page.locator("#learning-submit").click()
-    page.locator("#learning-feedback button").click()
+    page.get_by_role("button", name="Back to lesson list").click()
 
     page.locator('button[data-lesson-id="listening-for-details"]').click()
     page.locator(".learning-listening-controls").wait_for(state="visible")
