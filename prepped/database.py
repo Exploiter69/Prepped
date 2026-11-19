@@ -159,6 +159,7 @@ def initialize_database(db_path: Path) -> None:
             );
             CREATE INDEX IF NOT EXISTS idx_learning_memory_due ON learning_memory(status, due_at);
             CREATE INDEX IF NOT EXISTS idx_learning_memory_normalised ON learning_memory(item_type, normalised_front);
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_learning_memory_unique_front ON learning_memory(item_type, normalised_front);
             CREATE INDEX IF NOT EXISTS idx_learning_memory_updated ON learning_memory(updated_at DESC);
             CREATE TABLE IF NOT EXISTS learning_memory_reviews (
                 id TEXT PRIMARY KEY,
