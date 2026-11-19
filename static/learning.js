@@ -169,6 +169,17 @@
       return;
     }
     const latest = diagnostic.latest;
+    const history = $("#learning-diagnostic-history");
+    history.replaceChildren();
+    for (const item of diagnostic.history || []) {
+      const review = document.createElement("button");
+      review.type = "button";
+      review.className = "button button-quiet";
+      const date = item.started_at ? new Date(item.started_at).toLocaleString() : "saved attempt";
+      review.textContent = (item.status === "completed" ? "Review saved check · " : "Resume saved check · ") + date;
+      review.addEventListener("click", () => resumeAttempt(item.id));
+      history.append(review);
+    }
     if (latest?.status === "in_progress") {
       $("#learning-diagnostic-status").textContent = "In progress";
       button.textContent = "Resume starting-point check →";
