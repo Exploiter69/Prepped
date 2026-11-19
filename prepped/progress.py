@@ -15,6 +15,7 @@ from prepped.database import connect_database
 from prepped.learning import build_recommendations, load_curriculum
 
 GoalType = Literal["lessons_completed", "practice_sessions", "interviews_completed", "memory_reviews"]
+RecommendationKind = Literal["resume_lesson", "resume_practice", "resume_interview", "review_memory", "lesson", "goal", "choose_goal"]
 GOAL_TABLE = """
 CREATE TABLE IF NOT EXISTS learner_goals (
     id TEXT PRIMARY KEY,
@@ -29,6 +30,15 @@ CREATE TABLE IF NOT EXISTS learner_goals (
     updated_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_learner_goals_status ON learner_goals(status, due_date);
+CREATE TABLE IF NOT EXISTS recommendation_dismissals (
+    recommendation_key TEXT PRIMARY KEY,
+    kind TEXT NOT NULL CHECK (length(kind) BETWEEN 1 AND 40),
+    target_id TEXT NOT NULL CHECK (length(target_id) BETWEEN 1 AND 160),
+    title TEXT NOT NULL CHECK (length(title) BETWEEN 1 AND 160),
+    reason TEXT NOT NULL CHECK (length(reason) <= 500),
+    dismissed_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_recommendation_dismissals_time ON recommendation_dismissals(dismissed_at DESC);
 """
 
 def _now() -> datetime:
@@ -43,7 +53,29 @@ def initialize_progress_database(db_path: Path) -> None:
         columns = {row["name"] for row in conn.execute("PRAGMA table_info(learner_goals)")}
         if "baseline_count" not in columns:
             conn.execute("ALTER TABLE learner_goals ADD COLUMN baseline_count INTEGER NOT NULL DEFAULT 0")
-        conn.execute("PRAGMA user_version = 2")
+        conn.execute("PRAGMA user_version = 3")
+
+class RecommendationDismissPayload(BaseModel):
+    kind: RecommendationKind
+    target_id: str = Field(min_length=1, max_length=160)
+    title: str = Field(min_length=1, max_length=160)
+    reason: str = Field(default="", max_length=500)
+
+    @field_validator("target_id", "title", "reason")
+    @classmethod
+    def clean_recommendation_text(cls, value: str) -> str:
+        return value.strip()
+
+
+class RecommendationKeyPayload(BaseModel):
+    kind: RecommendationKind
+    target_id: str = Field(min_length=1, max_length=160)
+
+    @field_validator("target_id")
+    @classmethod
+    def clean_target_id(cls, value: str) -> str:
+        return value.strip()
+
 
 class GoalPayload(BaseModel):
     title: str = Field(min_length=1, max_length=100)
@@ -132,6 +164,7 @@ def _overview(db_path: Path, curriculum_path: Path) -> dict[str, Any]:
         review_total = int(conn.execute("SELECT COUNT(*) AS n FROM learning_memory_reviews").fetchone()["n"] or 0)
         review_rows = conn.execute("SELECT reviewed_at FROM learning_memory_reviews WHERE reviewed_at >= ?", (start,)).fetchall()
         active_goals = [_goal_view(conn, row) for row in conn.execute("SELECT * FROM learner_goals WHERE status='active' ORDER BY COALESCE(due_date,'9999-12-31'), created_at")]
+        dismissed_keys = {row["recommendation_key"] for row in conn.execute("SELECT recommendation_key FROM recommendation_dismissals")}
         goals_total = int(conn.execute("SELECT COUNT(*) AS n FROM learner_goals").fetchone()["n"] or 0)
         diagnostic_ids = {lesson["id"] for lesson in curriculum["lessons"] if lesson.get("kind") == "diagnostic"}
         completed_ids = {row["lesson_id"] for row in lesson_rows if row["status"] == "completed" and row["lesson_id"] not in diagnostic_ids}
@@ -206,6 +239,8 @@ def _overview(db_path: Path, curriculum_path: Path) -> dict[str, Any]:
             recommendations.append({"kind": "goal", "title": "Work toward: " + goal["title"], "reason": f"{goal['current_count']} of {goal['target_count']} {goal['goal_type'].replace('_',' ')} recorded.", "target_id": goal["id"]})
         if not recommendations:
             recommendations.append({"kind": "choose_goal", "title": "Choose a small practice goal", "reason": "A short, learner-chosen target makes the next action clear without estimating ability.", "target_id": "goals"})
+        recommendations = [item for item in recommendations
+                           if f'{item["kind"]}:{item["target_id"]}' not in dismissed_keys]
         return {
             "generated_at": _stamp(now),
             "summary": {"lessons_completed": lesson_count, "practice_sessions_completed": practice_completed,
@@ -229,6 +264,37 @@ def create_progress_router(db_path: Path, curriculum_path: Path) -> APIRouter:
     @router.get("/api/progress/overview")
     def overview() -> dict[str, Any]:
         return _overview(Path(db_path), Path(curriculum_path))
+
+    @router.get("/api/progress/recommendations/dismissed")
+    def list_dismissed_recommendations() -> dict[str, Any]:
+        with connect_database(Path(db_path)) as conn:
+            rows = conn.execute(
+                "SELECT kind,target_id,title,reason,dismissed_at FROM recommendation_dismissals ORDER BY dismissed_at DESC"
+            ).fetchall()
+        return {"recommendations": [dict(row) for row in rows], "count": len(rows)}
+
+    @router.post("/api/progress/recommendations/dismiss")
+    def dismiss_recommendation(payload: RecommendationDismissPayload) -> dict[str, Any]:
+        key = f"{payload.kind}:{payload.target_id}"
+        with connect_database(Path(db_path)) as conn:
+            conn.execute(
+                """INSERT INTO recommendation_dismissals
+                   (recommendation_key,kind,target_id,title,reason,dismissed_at)
+                   VALUES (?,?,?,?,?,?)
+                   ON CONFLICT(recommendation_key) DO UPDATE SET
+                     title=excluded.title, reason=excluded.reason, dismissed_at=excluded.dismissed_at""",
+                (key, payload.kind, payload.target_id, payload.title, payload.reason, _stamp()),
+            )
+        return {"dismissed": True, "recommendation_key": key}
+
+    @router.post("/api/progress/recommendations/restore")
+    def restore_recommendation(payload: RecommendationKeyPayload) -> dict[str, Any]:
+        key = f"{payload.kind}:{payload.target_id}"
+        with connect_database(Path(db_path)) as conn:
+            cursor = conn.execute("DELETE FROM recommendation_dismissals WHERE recommendation_key=?", (key,))
+            if cursor.rowcount == 0:
+                raise HTTPException(status_code=404, detail="Dismissed recommendation not found.")
+        return {"restored": True, "recommendation_key": key}
 
     @router.get("/api/goals")
     def list_goals(include_archived: bool = False) -> dict[str, Any]:
