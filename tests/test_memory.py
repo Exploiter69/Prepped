@@ -167,3 +167,42 @@ def test_memory_migration_preserves_existing_practice_and_learning_data(tmp_path
 def test_review_scheduler_caps_long_intervals() -> None:
     assert _next_interval(12, 3000, "good") == (13, MAX_INTERVAL_DAYS)
     assert _next_interval(12, 3000, "easy") == (13, MAX_INTERVAL_DAYS)
+
+
+def test_memory_additive_migration_preserves_pre_dismissal_cards(tmp_path: Path) -> None:
+    db = tmp_path / "pre-dismissal.sqlite3"
+    connection = sqlite3.connect(db)
+    connection.execute("""CREATE TABLE learning_memory (
+        id TEXT PRIMARY KEY,
+        item_type TEXT NOT NULL,
+        front TEXT NOT NULL,
+        back TEXT NOT NULL,
+        normalised_front TEXT NOT NULL,
+        source_type TEXT NOT NULL,
+        source_id TEXT,
+        source_title TEXT,
+        source_excerpt TEXT,
+        status TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        due_at TEXT NOT NULL,
+        interval_days INTEGER NOT NULL,
+        repetitions INTEGER NOT NULL,
+        lapses INTEGER NOT NULL,
+        last_reviewed_at TEXT,
+        last_rating TEXT
+    )""")
+    connection.execute("""INSERT INTO learning_memory
+        (id, item_type, front, back, normalised_front, source_type, status,
+         created_at, updated_at, due_at, interval_days, repetitions, lapses)
+        VALUES ('legacy-card', 'word', 'clarify', 'Make something easier to understand.',
+                'clarify', 'manual', 'active', '2026-01-01T00:00:00+00:00',
+                '2026-01-01T00:00:00+00:00', '2026-01-01T00:00:00+00:00', 0, 0, 0)""")
+    connection.commit()
+    connection.close()
+
+    with TestClient(create_app(db_path=db)) as client:
+        migrated = client.get("/api/memory/items/legacy-card")
+        assert migrated.status_code == 200
+        assert migrated.json()["item"]["dismissed_at"] is None
+        assert migrated.json()["item"]["front"] == "clarify"
