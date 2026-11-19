@@ -206,7 +206,7 @@ def test_learning_workspace_completes_and_resumes_a_saved_lesson(local_app_url: 
     page.locator("#learning-runner").wait_for(state="visible")
     assert "Exercise 2 of 3" in page.locator("#learning-exercise-count").inner_text()
     assert page.locator("#learning-outcomes li").count() >= 1
-    assert "Build complete sentences" in page.locator("#learning-outcomes").inner_text()
+    assert "Recognise a complete sentence" in page.locator("#learning-outcomes").inner_text()
 
     for position, token in enumerate(["a", "b", "c", "d"]):
         page.locator(".learning-order-select").nth(position).select_option(token)
