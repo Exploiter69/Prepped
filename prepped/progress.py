@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS learner_goals (
     description TEXT NOT NULL DEFAULT '' CHECK (length(description) <= 240),
     goal_type TEXT NOT NULL CHECK (goal_type IN ('lessons_completed','practice_sessions','interviews_completed','memory_reviews')),
     target_count INTEGER NOT NULL CHECK (target_count BETWEEN 1 AND 500),
+    baseline_count INTEGER NOT NULL DEFAULT 0 CHECK (baseline_count >= 0),
     due_date TEXT,
     status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','archived')),
     created_at TEXT NOT NULL,
@@ -39,6 +40,9 @@ def _stamp(value: datetime | None = None) -> str:
 def initialize_progress_database(db_path: Path) -> None:
     with connect_database(Path(db_path)) as conn:
         conn.executescript(GOAL_TABLE)
+        columns = {row["name"] for row in conn.execute("PRAGMA table_info(learner_goals)")}
+        if "baseline_count" not in columns:
+            conn.execute("ALTER TABLE learner_goals ADD COLUMN baseline_count INTEGER NOT NULL DEFAULT 0")
         conn.execute("PRAGMA user_version = 1")
 
 class GoalPayload(BaseModel):
@@ -61,19 +65,22 @@ class GoalPayload(BaseModel):
     def clean_description(cls, value: str) -> str:
         return value.strip()
 
-def _goal_progress(conn: sqlite3.Connection, goal_type: str, created_at: str) -> int:
+def _activity_count(conn: sqlite3.Connection, goal_type: str) -> int:
     queries = {
-        "lessons_completed": "SELECT COUNT(DISTINCT lesson_id) AS n FROM learning_attempts WHERE status='completed' AND completed_at >= ? AND lesson_id != 'baseline-check'",
-        "practice_sessions": "SELECT COUNT(*) AS n FROM sessions WHERE status='completed' AND completed_at >= ?",
-        "interviews_completed": "SELECT COUNT(*) AS n FROM career_sessions WHERE status='completed' AND completed_at >= ?",
-        "memory_reviews": "SELECT COUNT(*) AS n FROM learning_memory_reviews WHERE reviewed_at >= ?",
+        "lessons_completed": "SELECT COUNT(DISTINCT lesson_id) AS n FROM learning_attempts WHERE status='completed' AND lesson_id != 'baseline-check'",
+        "practice_sessions": "SELECT COUNT(*) AS n FROM sessions WHERE status='completed'",
+        "interviews_completed": "SELECT COUNT(*) AS n FROM career_sessions WHERE status='completed'",
+        "memory_reviews": "SELECT COUNT(*) AS n FROM learning_memory_reviews",
     }
-    row = conn.execute(queries[goal_type], (created_at,)).fetchone()
+    row = conn.execute(queries[goal_type]).fetchone()
     return int(row["n"] or 0)
+
+def _goal_progress(conn: sqlite3.Connection, goal_type: str, baseline_count: int) -> int:
+    return max(0, _activity_count(conn, goal_type) - baseline_count)
 
 def _goal_view(conn: sqlite3.Connection, row: sqlite3.Row) -> dict[str, Any]:
     item = dict(row)
-    progress = _goal_progress(conn, item["goal_type"], item["created_at"])
+    progress = _goal_progress(conn, item["goal_type"], item["baseline_count"])
     item.update({"current_count": progress, "remaining": max(0, item["target_count"] - progress),
                  "reached_target": progress >= item["target_count"]})
     return item
@@ -225,8 +232,9 @@ def create_progress_router(db_path: Path, curriculum_path: Path) -> APIRouter:
     def create_goal(payload: GoalPayload) -> dict[str, Any]:
         now, goal_id = _stamp(), str(uuid4())
         with connect_database(Path(db_path)) as conn:
-            conn.execute("INSERT INTO learner_goals (id,title,description,goal_type,target_count,due_date,status,created_at,updated_at) VALUES (?,?,?,?,?,?,'active',?,?)",
-                         (goal_id, payload.title, payload.description, payload.goal_type, payload.target_count, payload.due_date.isoformat() if payload.due_date else None, now, now))
+            baseline = _activity_count(conn, payload.goal_type)
+            conn.execute("INSERT INTO learner_goals (id,title,description,goal_type,target_count,baseline_count,due_date,status,created_at,updated_at) VALUES (?,?,?,?,?,?,?,'active',?,?)",
+                         (goal_id, payload.title, payload.description, payload.goal_type, payload.target_count, baseline, payload.due_date.isoformat() if payload.due_date else None, now, now))
             row = conn.execute("SELECT * FROM learner_goals WHERE id=?", (goal_id,)).fetchone()
             return {"goal": _goal_view(conn, row)}
 
@@ -234,10 +242,12 @@ def create_progress_router(db_path: Path, curriculum_path: Path) -> APIRouter:
     def update_goal(goal_id: str, payload: GoalPayload) -> dict[str, Any]:
         now = _stamp()
         with connect_database(Path(db_path)) as conn:
-            cursor = conn.execute("UPDATE learner_goals SET title=?,description=?,goal_type=?,target_count=?,due_date=?,updated_at=? WHERE id=?",
-                                  (payload.title, payload.description, payload.goal_type, payload.target_count, payload.due_date.isoformat() if payload.due_date else None, now, goal_id))
-            if cursor.rowcount == 0:
+            existing = conn.execute("SELECT * FROM learner_goals WHERE id=?", (goal_id,)).fetchone()
+            if existing is None:
                 raise HTTPException(status_code=404, detail="Goal not found.")
+            baseline = existing["baseline_count"] if existing["goal_type"] == payload.goal_type else _activity_count(conn, payload.goal_type)
+            conn.execute("UPDATE learner_goals SET title=?,description=?,goal_type=?,target_count=?,baseline_count=?,due_date=?,updated_at=? WHERE id=?",
+                         (payload.title, payload.description, payload.goal_type, payload.target_count, baseline, payload.due_date.isoformat() if payload.due_date else None, now, goal_id))
             return {"goal": _goal_view(conn, conn.execute("SELECT * FROM learner_goals WHERE id=?", (goal_id,)).fetchone())}
 
     @router.post("/api/goals/{goal_id}/archive")
