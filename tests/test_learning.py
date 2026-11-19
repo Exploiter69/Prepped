@@ -420,11 +420,12 @@ def test_pronunciation_attempt_is_private_self_review_not_an_accuracy_score(tmp_
         assert "answer" not in exercise
         response = client.post(
             f"/api/learning/attempts/{pronunciation['id']}/responses",
-            json={"exercise_id": "repeat-project-update", "answer": "I tested the application."},
+            json={"exercise_id": "repeat-project-update", "answer": ""},
         )
         assert response.status_code == 200
         feedback = response.json()["feedback"][0]
         assert feedback["status"] == "saved_for_self_review"
+        assert "practised privately" in feedback["original_response"].lower()
         assert "does not measure pronunciation" in feedback["measurement_note"]
         assert "score" not in json.dumps(feedback).lower()
 
