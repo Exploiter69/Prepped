@@ -345,10 +345,10 @@ This section is the active execution order for turning the current practice foun
 
 ### Current truth
 
-- The app has one project-explanation practice scenario, a local session/history flow, heuristic formative feedback, a bounded voice record/stop slice, and a learner profile.
-- The profile stores preferences. It does not yet generate adaptive lessons or profile-driven recommendations.
-- The app does not yet contain a structured English curriculum, general lesson runner, vocabulary revision system, spaced repetition, comprehensive progress insights, or backup/restore.
-- The profile button fix has been pushed to the feature branch, but browser acceptance must be confirmed locally.
+- The app has the original project-explanation practice scenario, a local session/history flow, formative feedback, a bounded voice record/stop slice, a learner profile, and a reusable Learning Engine.
+- The profile goal and focus areas select transparent starter routes through the versioned curriculum; they do not infer ability or adapt difficulty.
+- The branch now contains the initial English and communication curriculum. Learner-controlled vocabulary/correction memory, spaced revision, dedicated HR/technical interview studios, richer progress insights, and backup/restore remain future milestones.
+- Foundation and Learning Engine browser tests exist; latest CI and target-laptop acceptance must be confirmed before the milestones are closed.
 - Do not label this product market-ready or complete.
 
 ### Build sequence
