@@ -77,7 +77,7 @@ def test_goals_validate_create_count_archive_restore_and_delete(tmp_path: Path) 
         assert goal["current_count"] == 0
         assert goal["remaining"] == 3
 
-        complete_sentence_lesson(client)
+        complete_sentence_lesson(client, "grammar-in-context")
         refreshed = client.get("/api/goals").json()["goals"][0]
         assert refreshed["current_count"] == 1
         assert refreshed["remaining"] == 2
