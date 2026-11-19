@@ -27,19 +27,21 @@ This repository does **not** claim validated speech accuracy, placement improvem
 
 
 
-## Learning workspace — Phase B starter engine
+## Learning workspace — Phase B engine and Phase C English curriculum
 
-The Learning entry in the header opens a reusable lesson workspace built on the same FastAPI + SQLite + plain JavaScript stack. The current versioned curriculum includes a stable skill map, goal-based tracks, prerequisites, examples, and six starter lessons grouped into six units across English foundations and project communication.
+The Learning entry in the header opens a reusable lesson workspace built on the same FastAPI + SQLite + plain JavaScript stack. The current versioned curriculum includes 14 stable skills, one foundation stage, nine units, four tracks, 13 authored lessons plus a separate low-stakes baseline check. The English foundations track contains 11 sequenced lessons across sentence construction, grammar, vocabulary, listening, speaking, and pronunciation.
 
 The lesson runner supports:
 - Single-choice and contextual vocabulary exercises.
 - Sentence/idea ordering.
-- Listening comprehension using the configured local TTS endpoint, with a revealable text alternative.
+- Listening comprehension using the configured local TTS endpoint, with replay controls and a revealable text alternative.
+- Structured speaking practice for descriptions, process/feature explanations, retelling, opinions, and follow-up responses; text input remains available when speech input is unavailable.
+- Listen-and-repeat pronunciation activities using local TTS model phrases, optional recording/transcription, and private self-review. No pronunciation, accent, phoneme, or fluency score is generated.
 - Short written or spoken responses. Spoken responses use the existing STT endpoint; Groq use is disclosed before recording, and raw audio is not stored by Prepped.
 - Deterministic answer feedback for closed exercises; open responses are saved for learner self-review and are not automatically graded.
 - Ordered attempts, prerequisite enforcement, restart-safe resume, and progress events.
 
-The saved learner goal and focus areas select an explainable starter route. The optional Starting point check records a few sentence, listening, and project-response tasks for later comparison. It can be repeated and reviewed; it assigns no proficiency level or total score. The progress view reports recorded activity counts, not proficiency or learning gains. The curriculum is intentionally a starter slice; broader grammar, vocabulary, listening, pronunciation, advanced diagnostic interpretation, revision, and interview content remains on the roadmap.
+The saved learner goal and focus areas select an explainable starter route through the English and project-communication tracks. The optional Starting point check records sentence, listening, and project-response tasks for later comparison. It can be repeated and reviewed; it assigns no proficiency level or total score. The progress view reports recorded activity counts, not proficiency or learning gains. Open speaking and pronunciation responses are saved for self-review, not automatically graded. Advanced diagnostic interpretation, learner-controlled revision, and dedicated HR/technical interview content remain on the roadmap.
 
 Learning API: GET /api/learning/catalog, GET /api/learning/recommendations, POST /api/learning/attempts, GET /api/learning/attempts/{id}, POST /api/learning/attempts/{id}/responses, GET /api/learning/progress, and GET /api/learning/diagnostic/latest.
 
