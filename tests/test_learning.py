@@ -20,7 +20,7 @@ def test_curriculum_loads_with_unique_skills_tracks_lessons_and_supported_exerci
     assert len({item["id"] for item in data["tracks"]}) == len(data["tracks"])
     assert len({item["id"] for item in data["lessons"]}) == len(data["lessons"])
     assert {exercise["type"] for lesson in data["lessons"] for exercise in lesson["exercises"]} == {
-        "choice", "ordering", "reflection", "vocabulary", "listening"
+        "choice", "ordering", "reflection", "short_response", "vocabulary", "listening"
     }
 
 
@@ -237,3 +237,34 @@ def test_listening_and_vocabulary_exercises_are_safe_and_deterministic(tmp_path:
                              json={"exercise_id": "listening-detail", "answer": "b"})
         assert result.status_code == 200
         assert result.json()["feedback"][0]["status"] == "correct"
+
+
+def test_in_progress_attempt_keeps_its_original_lesson_version(tmp_path: Path) -> None:
+    import json
+    from prepped.learning import DEFAULT_CURRICULUM_PATH
+
+    curriculum_path = tmp_path / "curriculum.json"
+    curriculum = json.loads(DEFAULT_CURRICULUM_PATH.read_text(encoding="utf-8"))
+    curriculum_path.write_text(json.dumps(curriculum), encoding="utf-8")
+    db = tmp_path / "snapshot.sqlite3"
+    with TestClient(create_app(db_path=db, curriculum_path=curriculum_path)) as client:
+        started = client.post("/api/learning/attempts", json={"lesson_id": "sentence-building"}).json()
+        original_title = started["lesson"]["title"]
+        curriculum["lessons"][0]["title"] = "Changed lesson title"
+        curriculum_path.write_text(json.dumps(curriculum), encoding="utf-8")
+        resumed = client.get(f"/api/learning/attempts/{started['id']}").json()
+        assert resumed["lesson"]["title"] == original_title
+        assert resumed["current_exercise"]["id"] == "sentence-complete"
+
+
+def test_curriculum_rejects_prerequisite_cycles(tmp_path: Path) -> None:
+    data = load_curriculum()
+    data["lessons"][0]["prerequisites"] = ["grammar-in-context"]
+    path = tmp_path / "cycle.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+    try:
+        load_curriculum(path)
+    except CurriculumValidationError as exc:
+        assert "prerequisite cycle" in str(exc)
+    else:
+        raise AssertionError("Prerequisite cycle was accepted")
