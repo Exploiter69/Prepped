@@ -247,7 +247,7 @@ Run these checks on a disposable database first. Keep the normal local database 
 - [ ] Run `python -m compileall -q prepped`.
 - [ ] Run `node --check static/app.js`, `node --check static/voice.js`, `node --check static/learning.js`, and `node --check static/memory.js`.
 - [ ] Run `python -m pytest -q` and record exact pass/skip counts.
-- [ ] Confirm GitHub Actions passes for the exact commit.
+- [x] Confirm GitHub Actions passes for the exact implementation commit: [run 44561847713](https://github.com/Exploiter69/Prepped/actions/runs/44561847713) — 79 passed, 2 skipped (both require `espeak-ng`).
 - [ ] Confirm legacy sessions, answers, learner profile, learning attempts, and learning events remain unchanged by the memory migration.
 - [ ] Confirm memory items and review history persist in SQLite and no external service or raw audio file is introduced.
 - [ ] Check keyboard-only operation, visible focus, screen-reader labels/status, and narrow-screen layout.
