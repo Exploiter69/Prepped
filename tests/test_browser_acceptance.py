@@ -326,6 +326,7 @@ def test_pronunciation_lesson_supports_replay_text_and_unscored_self_review(
     complete_lesson_in_browser(page, "speaking-structured", [
         "I worked on a form and added validation.",
         "First I opened the form, then I checked the inputs.",
+        "I checked the form with invalid inputs and observed the validation message.",
         "The first version is ready, two issues were found, and fixes are planned.",
     ])
     page.get_by_role("button", name="Back to lesson list").click()
