@@ -503,6 +503,18 @@ def test_memory_create_edit_and_review_flow_in_browser(local_app_url: str, brows
     page.wait_for_function(
         "() => document.querySelector('#memory-items').textContent.includes('Paused')"
     )
+    page.locator("#memory-items button").filter(has_text="Resume").click()
+    page.wait_for_function(
+        "() => document.querySelector('#memory-items').textContent.includes('Active')"
+    )
+    page.locator("#memory-items button").filter(has_text="Dismiss").click()
+    page.wait_for_function(
+        "() => document.querySelector('#memory-items').textContent.includes('Dismissed')"
+    )
+    page.locator("#memory-items button").filter(has_text="Restore").click()
+    page.wait_for_function(
+        "() => document.querySelector('#memory-items').textContent.includes('Active')"
+    )
 
 
 def test_lesson_memory_suggestion_requires_explicit_save_and_keeps_source(local_app_url: str, browser_page) -> None:
