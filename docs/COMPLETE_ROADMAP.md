@@ -492,7 +492,7 @@ Phase D has been implemented on `feature/learner-profile`. Automated CI passes; 
 
 ## Phase E — Career & Interview Studios implementation update (2026-11-19)
 
-The Career workspace is implemented on `feature/learner-profile`; final CI and target-laptop acceptance are verification gates, not assumed results.
+The Career workspace is implemented on `feature/learner-profile`. GitHub Actions passes on the implementation commit: [run 44568533503](https://github.com/Exploiter69/Prepped/actions/runs/44568533503) — 88 passed, 2 skipped (both require `espeak-ng`). Target-laptop acceptance remains outstanding.
 
 - Three versioned studios: project explanation, HR/behavioural interviews, and technical fundamentals.
 - Four authored main questions per studio, each followed by an authored follow-up. Guided, standard, and challenging modes choose different follow-up wording.
