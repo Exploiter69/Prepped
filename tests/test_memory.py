@@ -87,6 +87,10 @@ def test_memory_review_scheduler_ratings_are_transparent_and_persist(tmp_path: P
         assert third.json()["item"]["repetitions"] == 0
         assert third.json()["item"]["lapses"] == 1
         assert third.json()["history"][0]["rating"] == "again"
+        history = client.get(f"/api/memory/items/{item['id']}/reviews")
+        assert history.status_code == 200
+        assert history.json()["count"] == 3
+        assert history.json()["reviews"][0]["rating"] == "again"
 
         stats = client.get("/api/memory/stats").json()
         assert stats["total"] == 1
