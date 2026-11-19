@@ -177,7 +177,7 @@
     $("#learning-progress-note").textContent = progress.note;
     const resume = $("#learning-resume-list");
     resume.replaceChildren();
-    const active = progress.recent_attempts.filter((item) => item.status === "in_progress");
+    const active = progress.active_attempts || progress.recent_attempts.filter((item) => item.status === "in_progress");
     if (active.length) {
       const heading = document.createElement("h4");
       heading.textContent = "Continue an unfinished lesson";
