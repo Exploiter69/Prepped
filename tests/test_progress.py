@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import json
+import sqlite3
 from pathlib import Path
 
 from prepped.learning import DEFAULT_CURRICULUM_PATH
+from prepped.progress import initialize_progress_database
 
 from fastapi.testclient import TestClient
 
@@ -111,3 +113,23 @@ def test_progress_recommendations_follow_profile_and_saved_activity(tmp_path: Pa
         assert any(item["kind"] == "goal" and item["target_id"] == goal["id"] for item in updated["recommendations"])
     finally:
         client.__exit__(None, None, None)
+
+
+def test_goal_baseline_column_migration_preserves_existing_goal(tmp_path: Path) -> None:
+    db_path = tmp_path / "legacy-goals.sqlite3"
+    with sqlite3.connect(db_path) as conn:
+        conn.execute("""CREATE TABLE learner_goals (
+            id TEXT PRIMARY KEY, title TEXT NOT NULL, description TEXT NOT NULL DEFAULT '',
+            goal_type TEXT NOT NULL, target_count INTEGER NOT NULL, due_date TEXT,
+            status TEXT NOT NULL DEFAULT 'active', created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+        )""")
+        conn.execute(
+            "INSERT INTO learner_goals (id,title,goal_type,target_count,created_at,updated_at) VALUES ('legacy','Old goal','lessons_completed',3,'2026-01-01T00:00:00+00:00','2026-01-01T00:00:00+00:00')"
+        )
+    initialize_progress_database(db_path)
+    with sqlite3.connect(db_path) as conn:
+        columns = {row[1] for row in conn.execute("PRAGMA table_info(learner_goals)")}
+        row = conn.execute("SELECT id,baseline_count FROM learner_goals WHERE id='legacy'").fetchone()
+        assert "baseline_count" in columns
+        assert row == ("legacy", 0)
+        assert conn.execute("PRAGMA user_version").fetchone()[0] == 2
