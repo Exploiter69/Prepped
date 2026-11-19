@@ -270,3 +270,26 @@ The Learning workspace now includes a local personal memory and spaced-revision 
 GitHub Actions passes on the final Phase D implementation: 79 passed, 2 skipped (both require `espeak-ng`), including API coverage for CRUD, validation, duplicate detection, source retention, scheduler behaviour, history, deletion, restart persistence, legacy data, and Chromium memory journeys.
 
 No mandatory paid service, external model, raw audio storage, login, or new infrastructure was added. Target-laptop manual acceptance remains outstanding.
+
+
+---
+
+## Phase E — Career & Interview Studios (2026-11-19)
+
+**Implementation added on `feature/learner-profile`; automated verification pending.** Phase D target-laptop acceptance remains a separate open gate.
+
+The Career header entry opens a local workspace with three studios:
+
+- Project Explanation Studio.
+- HR & Behavioural Interview Studio.
+- Technical Interview Studio covering selected CS fundamentals.
+
+Each studio currently contains four authored main questions. Every main question has one authored follow-up; guided, standard, and challenging modes select distinct follow-up prompts. The session API persists ordered turns and a versioned content snapshot. In-progress interviews can be resumed; completed interviews can be reviewed, retried, or deleted.
+
+The browser supports typed answers, optional record/stop capture through the existing STT endpoint, editable transcripts, and spoken prompts through the existing TTS endpoint. If Groq Whisper is configured, the Career microphone action discloses that the recording will be sent to Groq before requesting microphone permission. Prepped does not persist raw audio. Text answers remain available.
+
+Review is formative and transparent: it displays each original answer, simple response-development/example/reasoning signals, and suggestions. It does not check technical correctness, assign an interview score, or predict hiring outcomes. A learner may explicitly send an answer to the Phase D memory editor; it remains an editable suggestion until saved.
+
+New additive SQLite tables: `career_sessions` and `career_turns`. Existing practice sessions, answers, learner profile, learning attempts/events, and memory tables are preserved. No paid service, new infrastructure, mandatory model, or remote LLM feedback was added.
+
+**Verification still required:** final GitHub Actions pass count and run link; target-laptop text-mode completion across all studios; microphone permission and local/Groq disclosure paths; TTS playback where available; session resume/retry/delete; memory handoff; keyboard and narrow-screen acceptance. Do not mark Phase E closed until CI and manual device checks are recorded.
