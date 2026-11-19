@@ -467,6 +467,8 @@ def test_question_vocabulary_and_listening_content_have_authored_answer_handling
         assert any(item["type"] == "vocabulary" and item.get("context")
                    for item in phrase_lesson["exercises"])
         assert any(item["type"] == "short_response" for item in phrase_lesson["exercises"])
+        assert any(item["id"] == "phrase-review" and item["type"] == "vocabulary"
+                   for item in phrase_lesson["exercises"])
 
 
 def test_curriculum_rejects_listening_or_pronunciation_without_text_alternative(tmp_path: Path) -> None:
