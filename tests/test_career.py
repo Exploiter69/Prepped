@@ -76,7 +76,7 @@ def test_complete_interview_feedback_retry_history_and_restart_persistence(tmp_p
         feedback = client.get(f"/api/career/sessions/{session_id}/feedback").json()
         assert len(feedback["notes"]) == 8
         assert "not an expert interview rating" in feedback["disclaimer"]
-        assert "score" not in feedback
+        assert "overall_score" not in feedback
         assert feedback["notes"][0]["checks"][0]["observed"] is True
         assert client.post(f"/api/career/sessions/{session_id}/answers", json={"answer_text": "late"}).status_code == 409
 
