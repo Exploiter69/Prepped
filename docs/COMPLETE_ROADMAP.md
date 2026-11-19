@@ -416,7 +416,7 @@ Every unit needs an outcome, authored examples, exercises, feedback, tests, and 
 
 - [x] Evidence-based skill coverage linked to completed curriculum lessons, plus activity counts for project practice, interviews, and memory reviews.
 - [x] Learner-created goals with create/edit/archive/restore/delete and counts scoped from goal creation time.
-- [x] Explainable recommendations from profile preferences, unfinished lessons, due memory reviews, and active goals.
+- [x] Explainable recommendations from profile preferences, unfinished lessons/practice/interviews, due memory reviews, and active goals, with persistent dismiss/restore controls.
 - [x] Full local JSON export and staged, validated full-replacement restore for every learner-data table.
 - [x] Backup format/schema versioning, size/record limits, integrity and foreign-key validation, and failure-without-replacement tests.
 - [ ] Record final CI pass for the exact implementation commit.
