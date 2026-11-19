@@ -38,7 +38,7 @@ class CreateMemoryItem(BaseModel):
     source_type: str = Field(default="manual", max_length=40)
     source_id: str | None = Field(default=None, max_length=120)
     source_title: str | None = Field(default=None, max_length=200)
-    source_excerpt: str | None = Field(default=None, max_length=1000)
+    source_excerpt: str | None = Field(default=None, max_length=6000)
 
     @field_validator("front", "back", "source_type")
     @classmethod
