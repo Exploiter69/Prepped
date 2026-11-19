@@ -19,7 +19,7 @@ python -m pytest -q
 Expected:
 - Dependency installation completes without a paid service or API key.
 - Python compilation and both JavaScript syntax checks exit successfully.
-- The complete test suite passes. Record the exact pass/skip count and any warnings.
+- The complete test suite passes. The profile tests also assert the served page's accessible toggle/form contract and that the served JavaScript includes the explicit open/close handler. This is a regression guard, not a substitute for clicking the control in a real browser. Record the exact pass/skip count and any warnings.
 - A skipped real-model integration test is recorded as skipped, not passed.
 
 CI must run on pushes to `feature/learner-profile` and pull requests targeting that branch or `main`. A green CI run is evidence for the checked commit only.
