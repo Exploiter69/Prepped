@@ -108,7 +108,7 @@ These checks require a real browser on the target laptop. Mark each item only af
 ### Curriculum and profile recommendations
 
 - [ ] Open Learning and confirm the English foundations path shows all 11 lessons across sentence, grammar, vocabulary, listening, speaking, and pronunciation units.
-- [ ] Confirm every lesson shows its estimated time, outcomes/summary, exercise count, prerequisite state, and a working start/retry action.
+- [ ] Confirm every unit has clear outcomes and every lesson displays its outcomes, estimated time, summary, exercise count, prerequisite state, and a working start/retry action.
 - [ ] Set the profile goal to English fluency and focus areas to grammar, vocabulary, speaking fluency, pronunciation, confidence, and professional communication; save and reopen Learning.
 - [ ] Confirm recommendation explanations point to the relevant lessons and that the route does not claim to infer ability or proficiency.
 - [ ] Confirm the project-communication and placement-communication tracks and the original practice room remain available.
