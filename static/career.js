@@ -137,7 +137,7 @@
         document.dispatchEvent(new CustomEvent("prepped:memory-save", { detail: {
           item_type: "example",
           front: note.prompt,
-          back: note.answer,
+          back: note.answer.slice(0, 2000),
           source_type: "career_interview",
           source_id: state.session?.id || "",
           source_title: state.session?.studio_title || "Career interview",
