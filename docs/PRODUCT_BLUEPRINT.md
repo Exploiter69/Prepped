@@ -456,4 +456,4 @@ The first Phase B implementation adds a reusable local lesson engine on the exis
 - Profile goal/focus-based recommendations with an explanation for each lesson.
 - A browser learning workspace with route, catalogue, exercise runner, feedback, progress, and resume UI.
 
-This slice does not automatically grade open responses, infer learner proficiency, or claim learning gains. The diagnostic, broader English curriculum, personal revision memory, listening/pronunciation curriculum, and dedicated career/interview packs remain planned. Automated and target-device acceptance must be recorded before calling this phase complete.
+This slice does not automatically grade open responses, infer learner proficiency, or claim learning gains. The diagnostic, broader English curriculum, personal revision memory, broader broader listening and pronunciation curriculum, and dedicated career/interview packs remain planned. Automated and target-device acceptance must be recorded before calling this phase complete.
