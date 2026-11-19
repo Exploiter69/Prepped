@@ -276,7 +276,7 @@ No mandatory paid service, external model, raw audio storage, login, or new infr
 
 ## Phase E — Career & Interview Studios (2026-11-19)
 
-**Implementation added on `feature/learner-profile`; automated verification pending.** Phase D target-laptop acceptance remains a separate open gate.
+**Implemented on `feature/learner-profile`; GitHub Actions passes (88 passed, 2 skipped); target-laptop acceptance pending.** Phase D target-laptop acceptance remains a separate open gate.
 
 The Career header entry opens a local workspace with three studios:
 
