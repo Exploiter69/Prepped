@@ -132,7 +132,7 @@ This section turns the product direction into an implementation sequence. It is 
 
 ### Release principle
 
-The learner profile is currently a preference record. It does **not** yet power adaptive lessons, recommendations, or an English curriculum. Do not describe the app as a complete personalised learning platform until the learning loop below is implemented end to end.
+The learner profile remains a preference record, but its stated goal and focus areas now select a transparent starter route through the Learning Engine and English curriculum. This is route selection, not inferred ability, adaptive difficulty, or a validated assessment.
 
 ### Phase A — Stabilise the current foundation
 
@@ -145,7 +145,7 @@ The learner profile is currently a preference record. It does **not** yet power 
 
 **Exit gate:** automated Chromium profile and text-practice smoke tests pass; automated checks and CI pass; voice limitations are recorded honestly. The phase remains open until the target-laptop voice/microphone acceptance is performed or explicitly recorded as unavailable.
 
-### Phase B — Learning Engine (next major product milestone)
+### Phase B — Learning Engine (implementation added; acceptance in progress)
 
 Build the reusable learning foundation before adding many disconnected screens.
 
@@ -173,6 +173,22 @@ Deliver a coherent first track rather than a large empty catalogue.
 - Confidence: private, repeatable low-pressure practice and visible completion evidence; do not infer emotion or assign a confidence score.
 
 **Exit gate:** each unit has authored content, clear outcomes, exercises, answer handling, feedback, tests, and a complete learner flow. Every audio activity has an accessible text alternative.
+
+### Phase C implementation status — English and communication studio
+
+**Implementation added; automated CI and target-laptop acceptance are pending.** The initial English path is now authored in the versioned curriculum and uses the existing Phase B lesson runner.
+
+- The curriculum contains 14 stable skills, one foundation stage, nine units, four tracks, 13 authored lessons plus the separate low-stakes baseline check. The English foundations track contains 11 sequenced lessons across sentence construction, grammar, vocabulary, listening, speaking, and pronunciation.
+- Grammar and sentence work covers complete sentences; expansion, combining, shortening, and clarification; past and future tense in context; articles; prepositions; question formation; and authored error explanations.
+- Vocabulary work covers precise words, collocations, phrase meaning, contextual use, and a learner-authored example.
+- Speaking work includes structured descriptions, process explanations, project checks, retelling, opinions, reasons, and follow-up responses. Responses can be typed or recorded and transcribed when the configured STT service is available.
+- Listening work includes authored spoken updates and short conversations, comprehension choices, replay/stop controls, and an always-available transcript alternative.
+- Pronunciation work uses local TTS model phrases, listen-and-repeat prompts, optional spoken recording/transcription, and learner self-review. It does not grade pronunciation, accent, phonemes, or fluency.
+- Confidence practice is private and repeatable. No emotion inference or confidence score is generated.
+- Profile focus areas for grammar, vocabulary, speaking fluency, pronunciation, confidence, and professional communication now explain which English lessons match. Existing project/interview paths and the original practice room remain available.
+- No new paid service, external runtime dependency, database service, or database migration is required for this curriculum expansion. Audio playback uses the configured local TTS service; typed responses remain usable if audio or microphone support is unavailable.
+
+**Remaining Phase C gates:** latest GitHub Actions run passes; review the new units in a real browser on the target laptop; verify replay, text alternatives, optional Groq disclosure, transcript editing, text-only fallback, keyboard navigation, and narrow-screen layout; review the lesson content for clarity and usefulness. The content is implemented, but it is not manually accepted until those checks are recorded.
 
 ### Phase D — Personal learning memory and revision
 
@@ -226,13 +242,13 @@ Keep the existing Python + FastAPI + plain HTML/CSS/JavaScript + SQLite modular 
 
 **Implementation in progress; automated and manual acceptance pending.** The first complete vertical slice is now in the branch:
 
-- Versioned curriculum/curriculum.v1.json defines 14 stable skill IDs, one foundation level, seven units, four tracks, six lessons plus one diagnostic check, outcomes, prerequisites, examples, and authored exercises.
-- prepped/learning.py validates skill/track/level/unit/lesson references and supported exercise shapes, exposes a reusable lesson-attempt API, enforces exercise order and prerequisites, withholds answer keys from catalogue responses, and produces deterministic feedback for choice, vocabulary, listening, and ordering exercises. Short responses are stored for learner self-review; they are not automatically graded.
+- Versioned curriculum/curriculum.v1.json now defines 14 stable skill IDs, one foundation level, nine units, four tracks, 13 authored lessons plus one diagnostic check, outcomes, prerequisites, examples, and authored exercises.
+- prepped/learning.py validates skill/track/level/unit/lesson references and supported exercise shapes, exposes a reusable lesson-attempt API, enforces exercise order and prerequisites, withholds answer keys from catalogue responses, and produces deterministic feedback for authored choice, vocabulary, listening, and ordering exercises. Open responses are stored for learner self-review; they are not automatically graded.
 - Additive SQLite learning_attempts and learning_events tables preserve existing sessions, answers, and the learner profile. Attempts and responses survive application restarts.
 - Profile goal and selected focus areas now select a transparent starter route with a reason per recommended lesson. Unsupported focus areas are disclosed rather than silently mapped to unrelated content.
-- A new Learning workspace provides skill-map and unit browsing, recommendations, lesson exercises, local spoken listening playback with a text alternative, optional spoken responses through the configured STT provider, feedback, progress counts, next-lesson navigation, and resume controls. It uses plain HTML/CSS/JavaScript and keeps the existing practice room available.
-- API and browser acceptance tests cover curriculum validation, answer-key isolation, profile routing, exercise validation/order, prerequisites, completion, persistence, progress events, resume, and legacy-data preservation.
+- A new Learning workspace provides skill-map and unit browsing, profile-based recommendations, lesson exercises, local spoken listening and pronunciation playback with text alternatives, optional spoken responses through the configured STT provider, feedback, progress counts, next-lesson navigation, and resume controls. It uses plain HTML/CSS/JavaScript and keeps the existing practice room available.
+- API and Chromium acceptance tests cover curriculum validation, answer-key isolation, profile routing, exercise validation/order, prerequisites, completion, persistence, progress events, resume, and legacy-data preservation.
 
-**Remaining Phase B gates:** successful latest CI run; target-laptop browser check for navigation, all six exercise formats, listening text alternatives, optional voice controls, next-lesson navigation, reload/resume, and responsive layout; review of lesson wording and learning usefulness. A short, low-stakes starting-point check is now included after the exercise loop was implemented. It stores observable responses and task completion, can be repeated/reviewed, and assigns no proficiency level or overall score. More advanced diagnostic interpretation remains deferred.
+**Remaining Phase B gates:** successful latest CI run; target-laptop browser check for navigation, all seven exercise formats, listening text alternatives, optional voice controls, next-lesson navigation, reload/resume, and responsive layout; review of lesson wording and learning usefulness. A short, low-stakes starting-point check is now included after the exercise loop was implemented. It stores observable responses and task completion, can be repeated/reviewed, and assigns no proficiency level or overall score. More advanced diagnostic interpretation remains deferred.
 
-The starter curriculum is deliberately small. Broader vocabulary and listening curricula, pronunciation activities, HR/technical interview packs, advanced diagnostic interpretation, and spaced revision remain later roadmap work.
+The English starter path is now expanded under Phase C. Advanced diagnostic interpretation, learner-controlled vocabulary/correction memory and spaced revision, and dedicated HR/technical interview packs remain later roadmap work.
