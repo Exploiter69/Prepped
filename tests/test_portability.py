@@ -87,6 +87,10 @@ def test_restore_requires_explicit_confirmation_and_rejects_wrong_format(tmp_pat
             **backup, "confirm_replace": True, "format": "other-app",
         })
         assert wrong_format.status_code == 400
+        old_schema = client.post("/api/data/restore", json={
+            **backup, "confirm_replace": True, "database_schema_version": 1,
+        })
+        assert old_schema.status_code == 409
         assert client.get("/api/profile").json()["profile"]["display_name"] == "Keep this data"
     finally:
         client.__exit__(None, None, None)
