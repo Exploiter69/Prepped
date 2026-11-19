@@ -1,7 +1,6 @@
 """Learner-controlled local memory and transparent spaced revision."""
 from __future__ import annotations
 
-import re
 import sqlite3
 import unicodedata
 from datetime import datetime, timedelta, timezone
@@ -17,6 +16,7 @@ from prepped.database import connect_database
 ItemType = Literal["word", "phrase", "correction", "concept", "example"]
 Rating = Literal["again", "hard", "good", "easy"]
 Status = Literal["active", "suspended"]
+MAX_INTERVAL_DAYS = 3650
 
 
 def _now() -> datetime:
@@ -83,16 +83,16 @@ def _next_interval(repetitions: int, interval_days: int, rating: Rating) -> tupl
     if rating == "again":
         return 0, 1
     if rating == "hard":
-        return repetitions + 1, max(1, round(max(interval_days, 1) * 1.2))
+        return repetitions + 1, min(MAX_INTERVAL_DAYS, max(1, round(max(interval_days, 1) * 1.2)))
     if rating == "easy":
         if repetitions == 0:
             return 1, 3
-        return repetitions + 1, max(2, round(max(interval_days, 1) * 2.5))
+        return repetitions + 1, min(MAX_INTERVAL_DAYS, max(2, round(max(interval_days, 1) * 2.5)))
     if repetitions == 0:
         return 1, 1
     if repetitions == 1:
         return 2, 3
-    return repetitions + 1, max(1, interval_days * 2)
+    return repetitions + 1, min(MAX_INTERVAL_DAYS, max(1, interval_days * 2))
 
 
 def create_memory_router(db_path: Path) -> APIRouter:
