@@ -235,4 +235,4 @@ Keep the existing Python + FastAPI + plain HTML/CSS/JavaScript + SQLite modular 
 
 **Remaining Phase B gates:** successful latest CI run; target-laptop browser check for navigation, all six exercise formats, listening text alternatives, optional voice controls, next-lesson navigation, reload/resume, and responsive layout; review of lesson wording and learning usefulness. A short, low-stakes starting-point check is now included after the exercise loop was implemented. It stores observable responses and task completion, can be repeated/reviewed, and assigns no proficiency level or overall score. More advanced diagnostic interpretation remains deferred.
 
-The starter curriculum is deliberately small. Broader vocabulary and listening curricula, pronunciation activities, HR/technical interview packs, diagnostic assessment, and spaced revision remain later roadmap work.
+The starter curriculum is deliberately small. Broader vocabulary and listening curricula, pronunciation activities, HR/technical interview packs, advanced diagnostic interpretation, and spaced revision remain later roadmap work.
