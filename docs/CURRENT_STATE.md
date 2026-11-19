@@ -259,8 +259,8 @@ The user confirmed GET /api/voice/status reports groq-whisper / whisper-large-v3
 The Learning workspace now includes a local personal memory and spaced-revision area:
 
 - Explicitly saved words, phrases, corrections, concepts, and examples.
-- Lesson-feedback suggestions that prefill an editor; no suggestion is persisted without learner submission.
-- Source metadata for lesson-derived items.
+- Lesson and project-practice feedback suggestions that prefill an editor; no suggestion is persisted without learner submission.
+- Source metadata and quoted evidence for lesson- and practice-derived items.
 - Edit, suspend/resume, dismiss/restore, duplicate resolution by opening the existing item for editing, and permanent delete with review-history cascade.
 - Due queue with reveal-before-rating and Again / Hard / Good / Easy actions.
 - A small transparent local interval scheduler with review history, lapse/repetition counts, and persisted due dates. It is not FSRS.
