@@ -15,6 +15,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from prepped.database import connect_database, initialize_database
+from prepped.career import create_career_router, initialize_career_database
 from prepped.feedback import build_feedback
 from prepped.profile import create_profile_router
 from prepped.learning import DEFAULT_CURRICULUM_PATH, create_learning_router, load_curriculum
@@ -97,6 +98,7 @@ def create_app(
     @asynccontextmanager
     async def lifespan(_: FastAPI):
         initialize_database(Path(db_path))
+        initialize_career_database(Path(db_path))
         load_curriculum(Path(curriculum_path))
         yield
 
@@ -111,6 +113,7 @@ def create_app(
     application.include_router(create_profile_router(Path(db_path)))
     application.include_router(create_learning_router(Path(db_path), Path(curriculum_path)))
     application.include_router(create_memory_router(Path(db_path)))
+    application.include_router(create_career_router(Path(db_path)))
 
     @application.get("/", include_in_schema=False)
     def home() -> FileResponse:
