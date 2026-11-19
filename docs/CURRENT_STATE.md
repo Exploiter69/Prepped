@@ -248,3 +248,24 @@ The work reuses the existing versioned JSON curriculum, FastAPI lesson runner, S
 ### Voice configuration observation (2026-11-19)
 
 The user confirmed GET /api/voice/status reports groq-whisper / whisper-large-v3 available and local Piper en_US-lessac-medium available. This verifies configuration visibility, not live transcription quality or a measured Indian-English word-error rate. Audio sent to Groq leaves the device; Prepped does not persist raw audio by default.
+
+
+---
+
+## Phase D — Personal learning memory and revision (2026-11-19)
+
+**Implementation status: added on `feature/learner-profile`; automated CI and target-device acceptance pending.**
+
+The Learning workspace now includes a local personal memory and spaced-revision area:
+
+- Explicitly saved words, phrases, corrections, concepts, and examples.
+- Lesson-feedback suggestions that prefill an editor; no suggestion is persisted without learner submission.
+- Source metadata for lesson-derived items.
+- Edit, suspend/resume, duplicate detection, and permanent delete with review-history cascade.
+- Due queue with reveal-before-rating and Again / Hard / Good / Easy actions.
+- A small transparent local interval scheduler with review history, lapse/repetition counts, and persisted due dates. It is not FSRS.
+- Additive `learning_memory` and `learning_memory_reviews` tables. Existing session, answer, profile, and learning attempt/event tables are preserved.
+
+The current branch includes API tests for CRUD, validation, duplicate detection, source retention, scheduler behaviour, history, deletion, restart persistence, and legacy data, plus a Chromium memory journey test. These are coverage added, not proof of passing until CI completes on the final Phase D commit.
+
+No mandatory paid service, external model, raw audio storage, login, or new infrastructure was added. Target-laptop manual acceptance remains outstanding.
