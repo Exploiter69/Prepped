@@ -99,3 +99,14 @@ footer { border-top:1px solid var(--line); border-bottom:0; color:var(--muted); 
 .learning-listening-controls .section-help,.learning-voice-controls .section-help { flex-basis:100%; margin:.2rem 0; }
 .learning-transcript { flex-basis:100%; padding:1rem; border:1px solid var(--line); border-radius:6px; white-space:pre-wrap; }
 .learning-transcript.hidden { display:none; }
+
+
+.learning-skill-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.7rem; }
+.learning-skill { position:relative; border:1px solid var(--line); border-radius:8px; padding:1rem; background:var(--raised); min-width:0; }
+.learning-skill h4 { margin:0 5rem .4rem 0; }
+.learning-skill p { color:var(--muted); font-size:.82rem; margin:.4rem 0; }
+.learning-skill ul { color:var(--muted); font-size:.8rem; padding-left:1.1rem; margin:.5rem 0 0; }
+.learning-skill-status { position:absolute; top:1rem; right:1rem; color:var(--accent); font-size:.68rem; text-transform:uppercase; }
+.learning-skill-status.planned { color:var(--muted); }
+.learning-prerequisite { font-size:.78rem !important; }
+@media (max-width:600px) { .learning-skill-list { grid-template-columns:1fr; } }
