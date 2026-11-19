@@ -153,6 +153,24 @@ def create_app(
     def health() -> dict[str, str]:
         return {"status": "ok", "application": "Prepped"}
 
+    @application.get("/api/ready")
+    def readiness() -> dict[str, Any]:
+        try:
+            with connect_database(Path(db_path)) as connection:
+                integrity = connection.execute("PRAGMA quick_check").fetchone()[0]
+                required = {"sessions", "answers", "learner_profile", "learning_attempts",
+                            "learning_events", "learning_memory", "learning_memory_reviews",
+                            "career_sessions", "career_turns", "learner_goals"}
+                existing = {row["name"] for row in connection.execute(
+                    "SELECT name FROM sqlite_master WHERE type='table'"
+                )}
+                if integrity != "ok" or not required.issubset(existing):
+                    raise RuntimeError("Database check failed.")
+            load_curriculum(Path(curriculum_path))
+        except Exception as exc:
+            raise HTTPException(status_code=503, detail="Local data or curriculum is not ready. Check the local application files.") from exc
+        return {"status": "ready", "application": "Prepped", "database": "ok", "curriculum": "ok"}
+
     @application.get("/api/scenarios/project-explanation")
     def project_explanation_scenario() -> dict[str, Any]:
         try:
