@@ -192,7 +192,7 @@ Deliver a coherent first track rather than a large empty catalogue.
 
 ### Phase D — Personal learning memory and revision
 
-**Implementation added; automated and target-laptop acceptance pending.**
+**Implementation added; GitHub Actions passes. Target-laptop manual acceptance remains pending.**
 
 - [x] Let learners explicitly save a word, phrase, correction, concept, or useful example manually or from lesson/project-practice feedback.
 - [x] Preserve original response/evidence, source title, identifier, and excerpt where available.
