@@ -9,7 +9,8 @@
 Run from a clean checkout or a clean worktree after syncing the branch:
 
 ```bash
-python -m pip install -e ".[dev]"
+python -m pip install -e ".[dev,browser-test]"
+python -m playwright install chromium
 python -m compileall -q prepped
 node --check static/app.js
 node --check static/voice.js
@@ -19,7 +20,7 @@ python -m pytest -q
 Expected:
 - Dependency installation completes without a paid service or API key.
 - Python compilation and both JavaScript syntax checks exit successfully.
-- The complete test suite passes. The profile tests also assert the served page's accessible toggle/form contract and that the served JavaScript includes the explicit open/close handler. This is a regression guard, not a substitute for clicking the control in a real browser. Record the exact pass/skip count and any warnings.
+- The complete test suite passes. The optional Playwright browser tests exercise profile open/save/edit/cancel/reload and the text-only practice journey in Chromium. The profile unit tests also assert the served page's accessible toggle/form contract. CI installs the optional browser-test extra and Chromium; the application itself does not require Playwright. Record the exact pass/skip count and any warnings.
 - A skipped real-model integration test is recorded as skipped, not passed.
 
 CI must run on pushes to `feature/learner-profile` and pull requests targeting that branch or `main`. A green CI run is evidence for the checked commit only.
