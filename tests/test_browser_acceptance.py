@@ -299,6 +299,8 @@ def test_english_track_exposes_complete_phase_c_units(local_app_url: str, browse
         "() => document.querySelector('#learning-status').textContent.includes('skills')"
     )
     track = page.locator(".learning-track").filter(has_text="English foundations")
+    assert track.locator(".learning-unit").count() == 6
+    assert track.locator(".learning-unit-outcomes li").count() >= 12
     for title in [
         "Build a clear sentence", "Shape a sentence for clarity", "Grammar in context",
         "Ask clear questions", "Choose useful words in context", "Use useful study and project phrases",
