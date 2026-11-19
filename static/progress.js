@@ -21,6 +21,15 @@
     load();
   }
 
+  async function waitForElement(selector, matches) {
+    for (let frame = 0; frame < 300; frame += 1) {
+      const found = [...document.querySelectorAll(selector)].find(matches);
+      if (found) return found;
+      await new Promise(resolve => requestAnimationFrame(resolve));
+    }
+    return null;
+  }
+
   function node(tag, className, text) {
     const element = document.createElement(tag);
     if (className) element.className = className;
@@ -190,26 +199,23 @@
     }
     if (item.kind === "resume_practice") {
       $("#history-toggle").click();
-      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-      const button = [...document.querySelectorAll("#history-list button[data-session-id]")].find(el => el.dataset.sessionId === item.target_id);
+      const button = await waitForElement("#history-list button[data-session-id]", el => el.dataset.sessionId === item.target_id);
       if (button) button.click();
       return;
     }
     if (item.kind === "resume_interview") {
       $("#career-toggle").click();
-      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-      const button = [...document.querySelectorAll("#career-history-list button[data-session-id]")].find(el => el.dataset.sessionId === item.target_id);
+      const button = await waitForElement("#career-history-list button[data-session-id]", el => el.dataset.sessionId === item.target_id);
       if (button) button.click();
       return;
     }
     if (item.kind === "resume_lesson" || item.kind === "lesson" || item.kind === "review_memory") {
       $("#learning-toggle").click();
-      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       if (item.kind === "resume_lesson") {
-        const button = [...document.querySelectorAll("#learning-resume-list button")].find(el => el.dataset.attemptId === item.target_id);
+        const button = await waitForElement("#learning-resume-list button[data-attempt-id]", el => el.dataset.attemptId === item.target_id);
         if (button) button.click();
       } else if (item.kind === "lesson") {
-        const button = [...document.querySelectorAll("[data-lesson-id]")].find(el => el.dataset.lessonId === item.target_id);
+        const button = await waitForElement("[data-lesson-id]", el => el.dataset.lessonId === item.target_id);
         if (button) button.click();
       } else {
         $("#memory-view")?.scrollIntoView({ behavior: "smooth", block: "start" });
