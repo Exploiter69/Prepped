@@ -184,6 +184,10 @@ def _overview(db_path: Path, curriculum_path: Path) -> dict[str, Any]:
         in_progress = next((row for row in lesson_rows if row["status"] == "in_progress"), None)
         if in_progress:
             recommendations.append({"kind": "resume_lesson", "title": "Resume your lesson", "reason": "You have a saved lesson attempt that has not been completed.", "target_id": in_progress["id"]})
+        in_progress_interview = next((row for row in interviews if row["status"] == "in_progress"), None)
+        if in_progress_interview:
+            studio_title = {"project-explanation": "Project explanation", "hr-behavioural": "HR & behavioural", "technical-fundamentals": "Technical fundamentals"}.get(in_progress_interview["studio_id"], "Career")
+            recommendations.append({"kind": "resume_interview", "title": "Resume: " + studio_title, "reason": "You have a saved interview with unanswered turns.", "target_id": in_progress_interview["id"]})
         due = int(memory["due"] or 0)
         if due:
             recommendations.append({"kind": "review_memory", "title": f"Review {due} due learning note(s)", "reason": "These learner-saved notes have reached their next review date.", "target_id": "learning-memory"})
