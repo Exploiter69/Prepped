@@ -232,9 +232,9 @@ Deliver a coherent first track rather than a large empty catalogue.
 - [x] Local progress overview combines lesson evidence, project practice, interview completions, memory reviews, weekly activity, and recent activity.
 - [x] Learner-owned goals for completed lessons, project practice sessions, completed interviews, and memory reviews. Goals can be created, edited, archived/restored, and deleted; progress counts only activity recorded after the goal was created. Recommendation dismissals are persisted and can be restored.
 - [x] Explainable next-step recommendations use saved profile preferences, unfinished lesson/practice/interview sessions, due memory reviews, and active goals; learners can dismiss and restore suggestions, with dismissal state persisted locally and included in backups.
-- [x] Local JSON export covers profile, sessions/answers, lesson attempts/events, memory items/reviews, career sessions/turns, and goals.
+- [x] Local JSON export covers profile, sessions/answers, lesson attempts/events, memory items/reviews, career sessions/turns, goals, and dismissed recommendation preferences.
 - [x] Restore is explicit full replacement, not merge. It is size/row bounded, validates the backup in a staged database, checks SQLite integrity and foreign keys, and only then replaces the active database.
-- [x] Additive `learner_goals` migration and explicit backup format/database schema versions.
+- [x] Additive `learner_goals` and `recommendation_dismissals` migrations and explicit backup format/database schema versions.
 - [x] Local-only Host/Origin guard, restrictive security headers/CSP, no-store API responses, and a database/curriculum readiness endpoint.
 - [x] Clean-install and recovery documentation for Linux/Omarchy, plus a release-hardening record.
 - [x] CI checks Python compilation, all browser JavaScript syntax, automated API/Chromium tests, and a Python dependency vulnerability audit.
