@@ -449,7 +449,7 @@ Each phase must preserve the existing FastAPI + plain HTML/CSS/JavaScript + SQLi
 
 The first Phase B implementation adds a reusable local lesson engine on the existing stack:
 
-- A versioned JSON curriculum with six skills, three goal-based tracks, four lessons, prerequisites, outcomes, examples, and deterministic choice, ordering, and reflection exercises.
+- A versioned JSON curriculum with 14 skills, three goal-based tracks, six lessons, prerequisites, outcomes, examples, and deterministic choice, ordering, vocabulary, listening, short-response, and reflection exercises.
 - A validator that rejects duplicate identifiers, broken references, unsupported exercise types, and malformed answer/token definitions.
 - APIs for catalogue/recommendations, attempt creation and retrieval, ordered response submission, and progress.
 - Additive SQLite learning-attempt and learning-event persistence, including restart-safe resume.
