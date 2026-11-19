@@ -474,14 +474,14 @@
       save.addEventListener("click", () => {
         const openResponse = ["reflection", "short_response", "pronunciation"].includes(item.type);
         const back = openResponse
-          ? [item.guidance, item.example_to_compare ? "Example to compare: " + item.example_to_compare : ""].filter(Boolean).join("\\n\\n")
-          : ["Suggested answer: " + (item.correct_answer || (item.suggested_order || []).join(" → ")), item.explanation].filter(Boolean).join("\\n\\n");
+          ? [item.guidance, item.example_to_compare ? "Example to compare: " + item.example_to_compare : ""].filter(Boolean).join("\n\n")
+          : ["Suggested answer: " + (item.correct_answer || (item.suggested_order || []).join(" → ")), item.explanation].filter(Boolean).join("\n\n");
         document.dispatchEvent(new CustomEvent("prepped:memory-save", { detail: {
           item_type: openResponse ? "example" : "correction",
           front: openResponse ? (item.original_response || item.prompt) : item.prompt,
           back: back || "Review this response and add your own explanation.",
           source_type: "lesson",
-          source_id: state.attempt?.lesson_id || "",
+          source_id: state.attempt?.id || "",
           source_title: state.attempt?.lesson?.title || "Learning lesson",
           source_excerpt: item.prompt || "",
         }}));
