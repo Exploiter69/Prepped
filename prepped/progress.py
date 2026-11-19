@@ -43,7 +43,7 @@ def initialize_progress_database(db_path: Path) -> None:
         columns = {row["name"] for row in conn.execute("PRAGMA table_info(learner_goals)")}
         if "baseline_count" not in columns:
             conn.execute("ALTER TABLE learner_goals ADD COLUMN baseline_count INTEGER NOT NULL DEFAULT 0")
-        conn.execute("PRAGMA user_version = 1")
+        conn.execute("PRAGMA user_version = 2")
 
 class GoalPayload(BaseModel):
     title: str = Field(min_length=1, max_length=100)
