@@ -1,7 +1,7 @@
 (() => {
   const $ = (selector, root = document) => root.querySelector(selector);
   const state = { studios: [], selected: null, session: null, recorder: null, stream: null, chunks: [], timer: null, audioUrl: null, audio: null, stt: null };
-  const viewIds = ["home-view", "practice-view", "feedback-view", "history-view", "learning-view", "career-view"];
+  const viewIds = ["home-view", "practice-view", "feedback-view", "history-view", "learning-view", "career-view", "progress-view"];
   async function api(url, options = {}) {
     const response = await fetch(url, { ...options, headers: { "Content-Type": "application/json", ...(options.headers || {}) } });
     if (response.status === 204) return null;
@@ -20,6 +20,7 @@
     for (const id of viewIds) $("#" + id)?.classList.toggle("hidden", id !== "career-view");
     $("#career-toggle")?.setAttribute("aria-expanded", "true");
     $("#learning-toggle")?.setAttribute("aria-expanded", "false");
+    $("#progress-toggle")?.setAttribute("aria-expanded", "false");
     window.scrollTo({ top: 0, behavior: "smooth" });
     loadWorkspace();
   }
