@@ -117,6 +117,10 @@ def test_progress_recommendations_follow_profile_and_saved_activity(tmp_path: Pa
         assert any(item["kind"] == "resume_practice" and item["target_id"] == practice["id"] for item in updated["recommendations"])
         assert any(item["kind"] == "resume_interview" and item["target_id"] == interview["id"] for item in updated["recommendations"])
         recommendation = next(item for item in updated["recommendations"] if item["kind"] == "resume_practice")
+        assert client.post("/api/progress/recommendations/dismiss", json={**recommendation, "title": " "}).status_code == 422
+        assert client.post("/api/progress/recommendations/restore", json={
+            "kind": "resume_practice", "target_id": " ",
+        }).status_code == 422
         dismissed = client.post("/api/progress/recommendations/dismiss", json=recommendation)
         assert dismissed.status_code == 200
         assert not any(item["kind"] == "resume_practice" for item in client.get("/api/progress/overview").json()["recommendations"])
