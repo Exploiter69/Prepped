@@ -323,7 +323,7 @@ def create_learning_router(db_path: Path, curriculum_path: Path = DEFAULT_CURRIC
     def progress() -> dict[str, Any]:
         data = curriculum_data()
         with connect_database(Path(db_path)) as conn:
-            rows = conn.execute("SELECT lesson_id, track_id, status, started_at, completed_at FROM learning_attempts ORDER BY started_at DESC").fetchall()
+            rows = conn.execute("SELECT id, lesson_id, track_id, status, started_at, completed_at FROM learning_attempts ORDER BY started_at DESC").fetchall()
             event_count = conn.execute("SELECT COUNT(*) AS n FROM learning_events").fetchone()["n"]
         completed_by_lesson: dict[str, int] = {}
         for row in rows:
