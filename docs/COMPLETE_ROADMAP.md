@@ -434,9 +434,9 @@ A release candidate requires all of the following:
 - [ ] English curriculum contains complete, tested learning units.
 - [ ] Learner memory and revision work end to end.
 - [ ] Interview scenarios reuse the common engine.
-- [ ] Progress is evidence-based and understandable.
-- [ ] Export/backup/restore has been tested.
-- [ ] Automated tests and CI pass on the release commit.
+- [x] Progress is evidence-based and understandable in the implementation; target-device acceptance remains pending.
+- [x] Export/backup/restore is implemented with API round-trip and failure-path tests; target-device acceptance remains pending.
+- [ ] Automated tests and CI pass on the final Phase F implementation commit.
 - [ ] Fresh-install and target-device checks pass.
 - [ ] Accessibility, privacy, security, and failure states are reviewed.
 - [ ] Claims and limitations match demonstrated evidence.
