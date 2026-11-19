@@ -260,12 +260,12 @@ function makeFeedbackCard(title, status, message, evidence, nextAction, meta = "
   save.addEventListener("click", () => {
     document.dispatchEvent(new CustomEvent("prepped:memory-save", { detail: {
       item_type: "correction",
-      front: evidence || title,
-      back: [message, "Next action: " + nextAction].filter(Boolean).join("\n\n"),
+      front: (evidence || title).slice(0, 240),
+      back: [message, "Next action: " + nextAction].filter(Boolean).join("\n\n").slice(0, 2000),
       source_type: "practice",
       source_id: activeSession?.id || "",
       source_title: "Project explanation · Attempt " + (activeFeedback?.attempt_number || ""),
-      source_excerpt: evidence || "",
+      source_excerpt: (evidence || "").slice(0, 1000),
     }}));
   });
   card.append(save);
