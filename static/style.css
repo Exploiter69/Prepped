@@ -115,3 +115,8 @@ footer { border-top:1px solid var(--line); border-bottom:0; color:var(--muted); 
 .learning-diagnostic h3 { margin:.35rem 0 .6rem; }
 
 .learning-diagnostic-history { display:flex; flex-wrap:wrap; gap:.45rem; margin-top:.8rem; }
+
+.learning-outcomes-panel { border:1px solid var(--line); border-radius:8px; padding:.85rem 1rem; margin:.8rem 0 1rem; background:var(--raised); }
+.learning-outcomes-panel strong { font-size:.82rem; }
+.learning-outcomes-panel ul { margin:.5rem 0 0; padding-left:1.2rem; color:var(--muted); font-size:.88rem; }
+.learning-outcomes-panel li+li { margin-top:.25rem; }
