@@ -58,6 +58,29 @@ def browser_page():
         browser.close()
 
 
+def complete_lesson_in_browser(page, lesson_id: str, answers: list[str | list[str]]) -> None:
+    page.locator(f'button[data-lesson-id="{lesson_id}"]').click()
+    page.locator("#learning-runner").wait_for(state="visible")
+    for index, answer in enumerate(answers, start=1):
+        if isinstance(answer, list):
+            for position, token in enumerate(answer):
+                page.locator(".learning-order-select").nth(position).select_option(token)
+        elif page.locator('input[name="learning-choice"]').count():
+            page.locator(f'input[name="learning-choice"][value="{answer}"]').check()
+        else:
+            page.locator("#learning-reflection").fill(answer)
+        page.locator("#learning-submit").click()
+        if index < len(answers):
+            page.wait_for_function(
+                "(expected) => document.querySelector('#learning-exercise-count').textContent === expected",
+                f"Exercise {index + 1} of {len(answers)}",
+            )
+        else:
+            page.wait_for_function(
+                "() => !document.querySelector('#learning-feedback').classList.contains('hidden')"
+            )
+
+
 def test_profile_setup_edit_cancel_save_and_reload(local_app_url: str, browser_page) -> None:
     page = browser_page
     page.goto(local_app_url)
@@ -264,3 +287,95 @@ def test_baseline_check_records_responses_without_a_proficiency_score(local_app_
     assert page.locator("#learning-diagnostic-history button").count() == 1
     page.locator("#learning-diagnostic-history button").click()
     assert "Record your starting point" in page.locator("#learning-runner-title").inner_text()
+
+
+def test_english_track_exposes_complete_phase_c_units(local_app_url: str, browser_page) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+    page.locator("#learning-toggle").click()
+    page.wait_for_function(
+        "() => document.querySelector('#learning-status').textContent.includes('skills')"
+    )
+    track = page.locator(".learning-track").filter(has_text="English foundations")
+    for title in [
+        "Build a clear sentence", "Shape a sentence for clarity", "Grammar in context",
+        "Ask clear questions", "Choose useful words in context", "Use useful study and project phrases",
+        "Listen for the key detail", "Follow a short conversation", "Give a clear short response",
+        "Express an opinion and handle a follow-up", "Listen, repeat, and self-review",
+    ]:
+        assert track.get_by_role("heading", name=title).is_visible()
+
+
+def test_pronunciation_lesson_supports_replay_text_and_unscored_self_review(
+    local_app_url: str, browser_page
+) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+    page.locator("#learning-toggle").click()
+    page.wait_for_function(
+        "() => document.querySelector('#learning-status').textContent.includes('skills')"
+    )
+    complete_lesson_in_browser(page, "sentence-building", [
+        "b", ["a", "b", "c", "d"], "I tested the registration form."
+    ])
+    page.get_by_role("button", name="Back to lesson list").click()
+    complete_lesson_in_browser(page, "sentence-shaping", [
+        "a", ["a", "b", "c"], "Because the server did not respond, I could not access the page."
+    ])
+    page.get_by_role("button", name="Back to lesson list").click()
+    complete_lesson_in_browser(page, "speaking-structured", [
+        "I worked on a form and added validation.",
+        "First I opened the form, then I checked the inputs.",
+        "The first version is ready, two issues were found, and fixes are planned.",
+    ])
+    page.get_by_role("button", name="Back to lesson list").click()
+    page.locator('button[data-lesson-id="pronunciation-self-review"]').click()
+    page.locator(".learning-listening-controls").wait_for(state="visible")
+    assert page.get_by_role("button", name="Play model phrase").is_visible()
+    page.get_by_role("button", name="Show phrase text").click()
+    phrase = page.locator(".learning-transcript")
+    assert phrase.is_visible()
+    assert "I tested the application" in phrase.inner_text()
+    assert page.get_by_role("button", name="Record spoken response").is_visible()
+    page.locator("#learning-reflection").fill("I practised at a comfortable pace.")
+    page.locator("#learning-submit").click()
+    page.wait_for_function(
+        "() => document.querySelector('#learning-exercise-count').textContent === 'Exercise 2 of 3'"
+    )
+    page.get_by_role("button", name="Show phrase text").click()
+    page.locator("#learning-reflection").fill("I paused before please.")
+    page.locator("#learning-submit").click()
+    page.wait_for_function(
+        "() => document.querySelector('#learning-exercise-count').textContent === 'Exercise 3 of 3'"
+    )
+    page.locator("#learning-reflection").fill("I want to practise word endings.")
+    page.locator("#learning-submit").click()
+    page.wait_for_function(
+        "() => !document.querySelector('#learning-feedback').classList.contains('hidden')"
+    )
+    feedback = page.locator("#learning-feedback").inner_text().lower()
+    assert "does not measure pronunciation" in feedback
+    assert "no pronunciation score" in feedback
+
+
+def test_listening_conversation_has_replay_controls_and_accessible_text(local_app_url: str, browser_page) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+    page.locator("#learning-toggle").click()
+    page.wait_for_function(
+        "() => document.querySelector('#learning-status').textContent.includes('skills')"
+    )
+    complete_lesson_in_browser(page, "sentence-building", [
+        "b", ["a", "b", "c", "d"], "I tested the registration form."
+    ])
+    page.get_by_role("button", name="Back to lesson list").click()
+    complete_lesson_in_browser(page, "listening-for-details", [
+        "b", "b", "The completed task was input validation; deployment testing remains pending."
+    ])
+    page.get_by_role("button", name="Back to lesson list").click()
+    page.locator('button[data-lesson-id="listening-conversations"]').click()
+    page.locator(".learning-listening-controls").wait_for(state="visible")
+    assert page.get_by_role("button", name="Play spoken message").is_visible()
+    page.get_by_role("button", name="Show text alternative").click()
+    assert "Riya:" in page.locator(".learning-transcript").inner_text()
+    assert "Arjun:" in page.locator(".learning-transcript").inner_text()
