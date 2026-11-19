@@ -183,6 +183,13 @@
         "grammar-in-context",
         "vocabulary-in-context",
         "listening-for-details"
+      ],
+      "level_id": "foundation",
+      "unit_ids": [
+        "sentence-foundations",
+        "grammar-practice",
+        "vocabulary-practice",
+        "listening-practice"
       ]
     },
     {
@@ -201,6 +208,11 @@
       "lesson_ids": [
         "structured-project-summary",
         "specific-explanations"
+      ],
+      "level_id": "foundation",
+      "unit_ids": [
+        "project-structure",
+        "evidence-clarity"
       ]
     },
     {
@@ -221,6 +233,11 @@
       "lesson_ids": [
         "structured-project-summary",
         "specific-explanations"
+      ],
+      "level_id": "foundation",
+      "unit_ids": [
+        "project-structure",
+        "evidence-clarity"
       ]
     }
   ],
@@ -307,7 +324,9 @@
           "placeholder": "I built… / I learned…",
           "guidance": "Keep one main idea. Include a specific action or subject. This response is saved for your review; it is not automatically graded."
         }
-      ]
+      ],
+      "level_id": "foundation",
+      "unit_id": "sentence-foundations"
     },
     {
       "id": "grammar-in-context",
@@ -384,7 +403,9 @@
           "placeholder": "Last week, I…",
           "guidance": "Check that the verb form matches the time you mention. This is a self-review prompt, not an automated grammar grade."
         }
-      ]
+      ],
+      "level_id": "foundation",
+      "unit_id": "grammar-practice"
     },
     {
       "id": "structured-project-summary",
@@ -463,7 +484,9 @@
           "placeholder": "The problem is… I built… It is intended for…",
           "guidance": "Use only facts you can support. If you have not measured an outcome, describe the intended benefit rather than claiming success."
         }
-      ]
+      ],
+      "level_id": "foundation",
+      "unit_id": "project-structure"
     },
     {
       "id": "specific-explanations",
@@ -544,7 +567,9 @@
           "placeholder": "I implemented… I checked it by… I have not yet…",
           "guidance": "Name a real feature and a real check. Do not invent test results, user feedback, or impact."
         }
-      ]
+      ],
+      "level_id": "foundation",
+      "unit_id": "evidence-clarity"
     },
     {
       "id": "vocabulary-in-context",
@@ -622,7 +647,9 @@
           "placeholder": "Original sentence… / More specific version…",
           "guidance": "Keep the original meaning. Choose a precise verb or noun; do not add achievements that did not happen."
         }
-      ]
+      ],
+      "level_id": "foundation",
+      "unit_id": "vocabulary-practice"
     },
     {
       "id": "listening-for-details",
@@ -703,6 +730,91 @@
           "placeholder": "The speaker completed… The next planned task is…",
           "guidance": "Use details from the spoken message. You may reveal the transcript if you need the text alternative."
         }
+      ],
+      "level_id": "foundation",
+      "unit_id": "listening-practice"
+    }
+  ],
+  "levels": [
+    {
+      "id": "foundation",
+      "title": "Foundation",
+      "description": "Start with clear, practical communication tasks. This is a curriculum stage, not a measured learner level."
+    }
+  ],
+  "units": [
+    {
+      "id": "sentence-foundations",
+      "title": "Sentence foundations",
+      "description": "Build and order complete sentences.",
+      "level_id": "foundation",
+      "track_ids": [
+        "english-foundations"
+      ],
+      "lesson_ids": [
+        "sentence-building"
+      ]
+    },
+    {
+      "id": "grammar-practice",
+      "title": "Grammar in context",
+      "description": "Apply grammar choices in complete sentences.",
+      "level_id": "foundation",
+      "track_ids": [
+        "english-foundations"
+      ],
+      "lesson_ids": [
+        "grammar-in-context"
+      ]
+    },
+    {
+      "id": "vocabulary-practice",
+      "title": "Vocabulary in context",
+      "description": "Choose precise words for study and project contexts.",
+      "level_id": "foundation",
+      "track_ids": [
+        "english-foundations"
+      ],
+      "lesson_ids": [
+        "vocabulary-in-context"
+      ]
+    },
+    {
+      "id": "listening-practice",
+      "title": "Listening for details",
+      "description": "Identify completed tasks and future plans in short speech.",
+      "level_id": "foundation",
+      "track_ids": [
+        "english-foundations"
+      ],
+      "lesson_ids": [
+        "listening-for-details"
+      ]
+    },
+    {
+      "id": "project-structure",
+      "title": "Project explanation structure",
+      "description": "Explain the problem, approach, and intended users.",
+      "level_id": "foundation",
+      "track_ids": [
+        "project-communication",
+        "placement-communication"
+      ],
+      "lesson_ids": [
+        "structured-project-summary"
+      ]
+    },
+    {
+      "id": "evidence-clarity",
+      "title": "Evidence and clarity",
+      "description": "Describe implementation and evidence without overclaiming.",
+      "level_id": "foundation",
+      "track_ids": [
+        "project-communication",
+        "placement-communication"
+      ],
+      "lesson_ids": [
+        "specific-explanations"
       ]
     }
   ]
