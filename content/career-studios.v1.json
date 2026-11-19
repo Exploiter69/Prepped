@@ -20,28 +20,48 @@
           "id": "project-overview",
           "prompt": "Choose one project. What problem does it address, who is it for, and what does it do?",
           "followup": {
-            "prompt": "What is one concrete user journey that shows the problem and how your project addresses it?"
+            "prompt": "What is one concrete user journey that shows the problem and how your project addresses it?",
+            "prompts": {
+              "guided": "What problem were you trying to solve? Who experiences it, and what does your project help them do?",
+              "standard": "What is one concrete user journey that shows the problem and how your project addresses it?",
+              "challenging": "What evidence supports the problem being worth solving, and what alternative solution did you reject?"
+            }
           }
         },
         {
           "id": "personal-contribution",
           "prompt": "What did you personally design, build, or verify? Be clear about your own work versus the team's work.",
           "followup": {
-            "prompt": "Pick one part you personally implemented. What did you change, and how can someone verify it?"
+            "prompt": "Pick one part you personally implemented. What did you change, and how can someone verify it?",
+            "prompts": {
+              "guided": "Which part did you personally work on? What did you do first, and what changed?",
+              "standard": "Pick one part you personally implemented. What did you change, and how can someone verify it?",
+              "challenging": "What was the hardest engineering decision in your contribution, and how would you defend it in a code review?"
+            }
           }
         },
         {
           "id": "technical-decision",
           "prompt": "Describe one important technical decision. What alternatives or constraints did you consider?",
           "followup": {
-            "prompt": "If the main constraint changed, what would you reconsider and why?"
+            "prompt": "If the main constraint changed, what would you reconsider and why?",
+            "prompts": {
+              "guided": "What options did you have, and what made you choose this one?",
+              "standard": "If the main constraint changed, what would you reconsider and why?",
+              "challenging": "What failure mode or scale limit could invalidate this choice, and how would you test that?"
+            }
           }
         },
         {
           "id": "testing-limitations",
           "prompt": "How did you test the project, what evidence do you have, and what remains incomplete?",
           "followup": {
-            "prompt": "Tell me about one failure or limitation you found. How did you investigate it, and what would you do next?"
+            "prompt": "Tell me about one failure or limitation you found. How did you investigate it, and what would you do next?",
+            "prompts": {
+              "guided": "What did you test, what happened, and what is still not checked?",
+              "standard": "Tell me about one failure or limitation you found. How did you investigate it, and what would you do next?",
+              "challenging": "Which result is strongest evidence that it works, what does that evidence not prove, and what experiment comes next?"
+            }
           }
         }
       ]
@@ -64,28 +84,48 @@
           "id": "introduction",
           "prompt": "Tell me about yourself and the kind of role or opportunity you are preparing for.",
           "followup": {
-            "prompt": "Which experience or project best supports that introduction, and what was your specific contribution?"
+            "prompt": "Which experience or project best supports that introduction, and what was your specific contribution?",
+            "prompts": {
+              "guided": "What is one experience that shows the kind of work you enjoy?",
+              "standard": "Which experience or project best supports that introduction, and what was your specific contribution?",
+              "challenging": "What differentiates your experience from another candidate's, and what evidence can you point to?"
+            }
           }
         },
         {
           "id": "teamwork",
           "prompt": "Describe a time you worked with other people toward a shared goal. What was your role?",
           "followup": {
-            "prompt": "How did you coordinate when people had different priorities or working styles?"
+            "prompt": "How did you coordinate when people had different priorities or working styles?",
+            "prompts": {
+              "guided": "What was the shared goal, and what part did you take responsibility for?",
+              "standard": "How did you coordinate when people had different priorities or working styles?",
+              "challenging": "Describe a disagreement that changed the plan. How did you reach a decision and what was the outcome?"
+            }
           }
         },
         {
           "id": "challenge",
           "prompt": "Tell me about a difficult problem, mistake, or setback. What did you do?",
           "followup": {
-            "prompt": "What would the people involved say you handled well, and what would you change next time?"
+            "prompt": "What would the people involved say you handled well, and what would you change next time?",
+            "prompts": {
+              "guided": "What happened, what did you do, and what did you learn?",
+              "standard": "What would the people involved say you handled well, and what would you change next time?",
+              "challenging": "What assumption failed, how did you respond under pressure, and what process change prevents recurrence?"
+            }
           }
         },
         {
           "id": "motivation",
           "prompt": "Why are you interested in this role, and what would you want to learn in your first few months?",
           "followup": {
-            "prompt": "What have you done so far to understand the role or build the skills it needs?"
+            "prompt": "What have you done so far to understand the role or build the skills it needs?",
+            "prompts": {
+              "guided": "What interests you about this role, and what would you like to learn?",
+              "standard": "What have you done so far to understand the role or build the skills it needs?",
+              "challenging": "Which part of the role will be most challenging for you initially, and what is your concrete plan to close that gap?"
+            }
           }
         }
       ]
@@ -108,28 +148,48 @@
           "id": "data-structures",
           "prompt": "Explain the difference between an array and a linked list. When might you choose each?",
           "followup": {
-            "prompt": "What is the cost of accessing an element by index in each structure, and why?"
+            "prompt": "What is the cost of accessing an element by index in each structure, and why?",
+            "prompts": {
+              "guided": "Can you give a small example of each structure and how you would use it?",
+              "standard": "What is the cost of accessing an element by index in each structure, and why?",
+              "challenging": "How do insertion patterns and memory locality affect the choice between these structures?"
+            }
           }
         },
         {
           "id": "http-api",
           "prompt": "Walk me through what happens when a browser sends an HTTP request to an API and receives a response.",
           "followup": {
-            "prompt": "Where would you investigate first if the request returns a 500 response, and what evidence would you inspect?"
+            "prompt": "Where would you investigate first if the request returns a 500 response, and what evidence would you inspect?",
+            "prompts": {
+              "guided": "Can you describe the request and response using a simple example?",
+              "standard": "Where would you investigate first if the request returns a 500 response, and what evidence would you inspect?",
+              "challenging": "How would you distinguish a client error, server error, network failure, and timeout in an investigation?"
+            }
           }
         },
         {
           "id": "database",
           "prompt": "What is a database index? Explain the benefit and one trade-off of adding an index.",
           "followup": {
-            "prompt": "Why might an index fail to improve a particular query, or even make writes slower?"
+            "prompt": "Why might an index fail to improve a particular query, or even make writes slower?",
+            "prompts": {
+              "guided": "Can you explain what the index stores and why that helps a lookup?",
+              "standard": "Why might an index fail to improve a particular query, or even make writes slower?",
+              "challenging": "How would you use a query plan to decide whether an index is useful, and what would you measure?"
+            }
           }
         },
         {
           "id": "operating-systems",
           "prompt": "What is the difference between a process and a thread? Give a practical example.",
           "followup": {
-            "prompt": "What kinds of problems can occur when threads share mutable data, and how can a program reduce that risk?"
+            "prompt": "What kinds of problems can occur when threads share mutable data, and how can a program reduce that risk?",
+            "prompts": {
+              "guided": "Can you give an example of work that belongs to a process and work that belongs to a thread?",
+              "standard": "What kinds of problems can occur when threads share mutable data, and how can a program reduce that risk?",
+              "challenging": "Compare a lock and message passing for coordinating concurrent work. What trade-offs would guide your choice?"
+            }
           }
         }
       ]
