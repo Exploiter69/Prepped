@@ -629,6 +629,16 @@ def test_progress_goals_and_backup_restore_in_browser(local_app_url: str, browse
     page.locator("#goal-form button[type='submit']").click()
     assert "Complete two lessons" in page.locator("#progress-goals").inner_text()
     assert "0 / 2" in page.locator("#progress-goals").inner_text()
+    page.locator("#progress-goals").get_by_role("button", name="Edit").click()
+    page.locator("#goal-title").fill("Complete two lessons this month")
+    page.locator("#goal-form button[type='submit']").click()
+    assert "Complete two lessons this month" in page.locator("#progress-goals").inner_text()
+    page.locator("#progress-goals").get_by_role("button", name="Archive").click()
+    assert "No active goals yet" in page.locator("#progress-goals").inner_text()
+    page.locator("#goal-archive-toggle").click()
+    assert "Complete two lessons this month" in page.locator("#progress-archived-goals").inner_text()
+    page.locator("#progress-archived-goals").get_by_role("button", name="Restore").click()
+    assert "Complete two lessons this month" in page.locator("#progress-goals").inner_text()
 
     with page.expect_download() as download_info:
         page.locator("#data-export").click()
@@ -643,7 +653,7 @@ def test_progress_goals_and_backup_restore_in_browser(local_app_url: str, browse
     page.wait_for_function("(before) => performance.timeOrigin > before", arg=before_reload, timeout=10000)
     page.locator("#progress-toggle").click()
     page.wait_for_function("() => document.querySelector('#progress-status').textContent.startsWith('Updated')")
-    assert "Complete two lessons" in page.locator("#progress-goals").inner_text()
+    assert "Complete two lessons this month" in page.locator("#progress-goals").inner_text()
 
 
 def test_progress_navigation_and_security_headers_are_accessible(local_app_url: str, browser_page) -> None:
