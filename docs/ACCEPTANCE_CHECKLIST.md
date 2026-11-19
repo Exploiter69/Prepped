@@ -302,3 +302,9 @@ Use a disposable database. Automated Chromium coverage does not replace checking
 - [ ] Complete the flow with keyboard navigation and visible focus.
 - [ ] Check laptop and narrow-screen widths; confirm studio cards, transcript field, review notes, and history controls do not overflow.
 - [ ] Confirm no raw audio files are created by Prepped and text fallback works when voice is unavailable.
+
+
+### Phase E automated evidence
+
+- [x] GitHub Actions passes on the Phase E implementation commit: [run 44568533503](https://github.com/Exploiter69/Prepped/actions/runs/44568533503) — 88 passed, 2 skipped (both require `espeak-ng`); Python compilation, JavaScript syntax, API tests, and Chromium acceptance all passed.
+- [ ] Complete the manual target-laptop checks above. CI does not prove microphone permission, live transcription quality, local TTS availability, or device-specific responsive behaviour.
