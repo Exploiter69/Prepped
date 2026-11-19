@@ -198,6 +198,9 @@ def build_recommendations(curriculum: dict[str, Any], profile: dict[str, Any] | 
             matched.append("grammar")
         if "vocabulary" in areas and "english.vocabulary-context" in lesson["skill_ids"]:
             matched.append("vocabulary")
+        if ("speaking_fluency" in areas and track_id == "english-foundations"
+                and any(exercise["type"] in {"reflection", "short_response"} for exercise in lesson["exercises"])):
+            matched.append("speaking fluency practice")
         if "project_explanation" in areas and "communication.project-summary" in lesson["skill_ids"]:
             matched.append("project explanation")
         if "professional_communication" in areas and "communication.clarity" in lesson["skill_ids"]:
@@ -207,7 +210,7 @@ def build_recommendations(curriculum: dict[str, Any], profile: dict[str, Any] | 
         )
         items.append({"lesson_id": lesson_id, "title": lesson["title"], "summary": lesson["summary"],
                       "estimated_minutes": lesson["estimated_minutes"], "skill_ids": lesson["skill_ids"], "why": why})
-    covered = {"grammar", "vocabulary", "project_explanation"}
+    covered = {"grammar", "vocabulary", "speaking_fluency", "project_explanation"}
     missing = sorted(areas - covered)
     if goal == "technical_interviews":
         note = "A dedicated technical-interview question bank is planned. This route builds project-explanation foundations first."
