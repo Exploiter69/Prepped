@@ -428,10 +428,9 @@ def create_learning_router(db_path: Path, curriculum_path: Path = DEFAULT_CURRIC
         lesson_completions = sum(
             row["status"] == "completed" and row["lesson_id"] not in diagnostic_ids for row in rows
         )
-        diagnostics_completed = len({
-            row["lesson_id"] for row in rows
-            if row["status"] == "completed" and row["lesson_id"] in diagnostic_ids
-        })
+        diagnostics_completed = sum(
+            row["status"] == "completed" and row["lesson_id"] in diagnostic_ids for row in rows
+        )
         diagnostic_attempts_started = sum(row["lesson_id"] in diagnostic_ids for row in rows)
         skills = []
         for skill in data["skills"]:
