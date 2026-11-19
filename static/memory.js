@@ -103,10 +103,28 @@
       const pause = node("button", item.status === "active" ? "Suspend" : "Resume", "button button-quiet");
       pause.type = "button";
       pause.addEventListener("click", () => changeStatus(item, item.status === "active" ? "suspended" : "active"));
+      const history = node("button", "Review history", "button button-quiet");
+      history.type = "button";
+      history.addEventListener("click", async () => {
+        const existing = card.querySelector(".memory-history");
+        if (existing) { existing.remove(); return; }
+        try {
+          const result = await request("/api/memory/items/" + encodeURIComponent(item.id) + "/reviews");
+          const list = node("div", undefined, "memory-history");
+          list.append(node("strong", "Review history (" + result.count + ")"));
+          if (!result.reviews.length) list.append(node("p", "No reviews yet.", "section-help"));
+          result.reviews.forEach((review) => {
+            list.append(node("p", review.rating.toUpperCase() + " · " +
+              new Date(review.reviewed_at).toLocaleString() + " · next: " +
+              new Date(review.next_due_at).toLocaleDateString(), "section-help"));
+          });
+          card.append(list);
+        } catch (error) { setStatus(error.message, true); }
+      });
       const remove = node("button", "Delete", "button button-quiet");
       remove.type = "button";
       remove.addEventListener("click", () => deleteItem(item));
-      actions.append(edit, pause, remove);
+      actions.append(edit, pause, history, remove);
       card.append(actions);
       target.append(card);
     }
@@ -178,9 +196,9 @@
       const result = await request("/api/memory/items/" + encodeURIComponent(item.id) + "/review", {
         method: "POST", body: JSON.stringify({ rating }),
       });
-      setStatus(result.schedule_note);
       state.revealed = false;
       await load();
+      setStatus(result.schedule_note);
     } catch (error) { setStatus(error.message, true); }
   }
 
