@@ -351,11 +351,7 @@ def create_learning_router(db_path: Path, curriculum_path: Path = DEFAULT_CURRIC
         if lesson is None:
             raise HTTPException(status_code=404, detail="Lesson not found.")
         with connect_database(Path(db_path)) as conn:
-            done = {row["lesson_id"] for row in conn.execute(
-                "SELECT DISTINCT lesson_id FROM learning_attempts WHERE status = 'completed'").fetchall()}
-            missing = [item for item in lesson.get("prerequisites", []) if item not in done]
-            if missing:
-                raise HTTPException(status_code=409, detail="Complete the prerequisite lesson first: " + ", ".join(missing))
+            # Lesson prerequisites guide the recommended order; they never block learner access.
             attempt_id, started = str(uuid4()), _now()
             conn.execute("""INSERT INTO learning_attempts
                 (id, lesson_id, lesson_version, track_id, lesson_json, status, responses_json, feedback_json, started_at, completed_at)
