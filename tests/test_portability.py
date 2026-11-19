@@ -19,10 +19,19 @@ def test_export_and_restore_round_trip_all_local_user_tables(tmp_path: Path) -> 
     target = client_for(tmp_path / "target.sqlite3")
     try:
         source.put("/api/profile", json={"display_name": "Source learner", "primary_goal": "english_fluency"})
-        source.post("/api/sessions")
-        source.post("/api/memory/items", json={
-            "item_type": "phrase", "front": "Could you clarify?", "back": "A polite request for more detail.",
+        practice = source.post("/api/sessions").json()
+        source.post(f"/api/sessions/{practice['id']}/answers", json={
+            "question_id": practice["current_question"]["id"],
+            "answer_text": "I built a small local practice tool and tested its API.",
         })
+        source.post("/api/learning/attempts", json={"lesson_id": "sentence-building"})
+        studio = source.get("/api/career/studios").json()["studios"][0]
+        interview = source.post("/api/career/sessions", json={"studio_id": studio["id"], "difficulty": "guided"}).json()
+        source.post(f"/api/career/sessions/{interview['id']}/answers", json={"answer_text": "I worked on a student project and tested the main flow."})
+        memory = source.post("/api/memory/items", json={
+            "item_type": "phrase", "front": "Could you clarify?", "back": "A polite request for more detail.",
+        }).json()["item"]
+        source.post(f"/api/memory/items/{memory['id']}/review", json={"rating": "good"})
         source.post("/api/goals", json={
             "title": "Complete lessons", "goal_type": "lessons_completed", "target_count": 2,
         })
@@ -36,7 +45,13 @@ def test_export_and_restore_round_trip_all_local_user_tables(tmp_path: Path) -> 
             "learning_memory", "learning_memory_reviews", "career_sessions", "career_turns", "learner_goals",
         }
         assert backup["tables"]["sessions"]
+        assert backup["tables"]["answers"]
+        assert backup["tables"]["learning_attempts"]
+        assert backup["tables"]["learning_events"]
         assert backup["tables"]["learning_memory"]
+        assert backup["tables"]["learning_memory_reviews"]
+        assert backup["tables"]["career_sessions"]
+        assert backup["tables"]["career_turns"]
         assert backup["tables"]["learner_goals"]
 
         target.put("/api/profile", json={"display_name": "Target learner"})
@@ -47,7 +62,13 @@ def test_export_and_restore_round_trip_all_local_user_tables(tmp_path: Path) -> 
         assert target.get("/api/profile").json()["profile"]["display_name"] == "Source learner"
         status = target.get("/api/data/status").json()
         assert status["counts"]["sessions"] == 1
+        assert status["counts"]["answers"] == 1
+        assert status["counts"]["learning_attempts"] == 1
+        assert status["counts"]["learning_events"] == 1
         assert status["counts"]["learning_memory"] == 1
+        assert status["counts"]["learning_memory_reviews"] == 1
+        assert status["counts"]["career_sessions"] == 1
+        assert status["counts"]["career_turns"] == 1
         assert status["counts"]["learner_goals"] == 1
         assert status["database_schema_version"] == 1
     finally:
