@@ -53,7 +53,7 @@ def test_catalog_hides_answer_keys_and_exposes_profile_based_recommendations(tmp
         saved = client.put("/api/profile", json={
             "primary_goal": "english_fluency",
             "confidence_level": "beginner",
-            "improvement_areas": ["grammar", "speaking_fluency", "vocabulary"],
+            "improvement_areas": ["grammar", "speaking_fluency", "vocabulary", "pronunciation", "confidence", "professional_communication"],
         })
         assert saved.status_code == 200
         recommended = client.get("/api/learning/recommendations").json()
@@ -62,6 +62,10 @@ def test_catalog_hides_answer_keys_and_exposes_profile_based_recommendations(tmp
         assert "grammar" in grammar["why"]
         speaking = next(item for item in recommended["items"] if item["lesson_id"] == "speaking-structured")
         assert "speaking fluency" in speaking["why"]
+        assert "low-pressure speaking" in speaking["why"]
+        pronunciation = next(item for item in recommended["items"] if item["lesson_id"] == "pronunciation-self-review")
+        assert "listen-and-repeat pronunciation" in pronunciation["why"]
+        assert "professional communication" in speaking["why"]
 
 
 def test_lesson_attempt_enforces_order_persists_feedback_and_updates_progress(tmp_path: Path) -> None:
@@ -420,3 +424,38 @@ def test_pronunciation_attempt_is_private_self_review_not_an_accuracy_score(tmp_
         assert feedback["status"] == "saved_for_self_review"
         assert "does not measure pronunciation" in feedback["measurement_note"]
         assert "score" not in json.dumps(feedback).lower()
+
+
+def test_question_vocabulary_and_listening_content_have_authored_answer_handling(tmp_path: Path) -> None:
+    with client_for(tmp_path) as client:
+        first = client.post("/api/learning/attempts", json={"lesson_id": "sentence-building"}).json()
+        for exercise_id, answer in [
+            ("sentence-complete", "b"), ("sentence-order", ["a", "b", "c", "d"]),
+            ("sentence-practice", "I tested the page."),
+        ]:
+            client.post(f"/api/learning/attempts/{first['id']}/responses",
+                        json={"exercise_id": exercise_id, "answer": answer})
+        grammar = client.post("/api/learning/attempts", json={"lesson_id": "grammar-in-context"}).json()
+        for exercise_id, answer in [
+            ("past-tense", "b"), ("preposition", "a"),
+            ("grammar-review", "Yesterday, I tested the form."),
+        ]:
+            client.post(f"/api/learning/attempts/{grammar['id']}/responses",
+                        json={"exercise_id": exercise_id, "answer": answer})
+        questions = client.post("/api/learning/attempts", json={"lesson_id": "question-formation"}).json()
+        assert questions["current_exercise"]["id"] == "question-does"
+        assert "answer" not in questions["current_exercise"]
+        response = client.post(
+            f"/api/learning/attempts/{questions['id']}/responses",
+            json={"exercise_id": "question-does", "answer": "a"},
+        )
+        assert response.json()["feedback"][0]["status"] == "correct"
+
+        vocabulary = client.post("/api/learning/attempts", json={"lesson_id": "phrases-for-study"})
+        assert vocabulary.status_code == 409  # the vocabulary unit has its own prerequisite
+        catalog = client.get("/api/learning/catalog").json()
+        phrase_lesson = next(item for item in catalog["tracks"][0]["lessons"]
+                             if item["id"] == "phrases-for-study")
+        assert any(item["type"] == "vocabulary" and item.get("context")
+                   for item in phrase_lesson["exercises"])
+        assert any(item["type"] == "short_response" for item in phrase_lesson["exercises"])
