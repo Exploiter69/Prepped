@@ -137,3 +137,24 @@ def test_profile_migration_keeps_existing_sessions_and_answers(tmp_path: Path) -
             assert connection.execute("SELECT COUNT(*) FROM learner_profile").fetchone()[0] == 0
     finally:
         client.__exit__(None, None, None)
+
+def test_profile_page_exposes_accessible_toggle_and_serves_profile_handler(tmp_path: Path) -> None:
+    client = client_for(tmp_path / "profile-ui.sqlite3")
+    try:
+        page = client.get("/")
+        assert page.status_code == 200
+        assert 'id="profile-edit-toggle"' in page.text
+        assert 'aria-controls="profile-form"' in page.text
+        assert 'aria-expanded="false"' in page.text
+        assert 'id="profile-form"' in page.text
+        assert 'class="profile-form hidden"' in page.text
+        assert "/static/app.js" in page.text
+
+        script = client.get("/static/app.js")
+        assert script.status_code == 200
+        assert "function setProfileFormOpen(open)" in script.text
+        assert 'toggle.setAttribute("aria-expanded", String(open))' in script.text
+        assert 'setProfileFormOpen($("#profile-form").classList.contains("hidden"))' in script.text
+    finally:
+        client.__exit__(None, None, None)
+
