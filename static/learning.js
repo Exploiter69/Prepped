@@ -19,6 +19,7 @@
     stopLearningRecording(true);
     stopListeningAudio();
     for (const id of viewIds) $("#" + id)?.classList.toggle("hidden", id !== "learning-view");
+    $("#learning-toggle")?.setAttribute("aria-expanded", "true");
     $("#global-status")?.classList.add("hidden");
     $("#learning-view").classList.remove("hidden");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -29,6 +30,7 @@
     stopLearningRecording(true);
     stopListeningAudio();
     $("#learning-view").classList.add("hidden");
+    $("#learning-toggle")?.setAttribute("aria-expanded", "false");
     $("#global-status")?.classList.remove("hidden");
     for (const id of viewIds) $("#" + id)?.classList.toggle("hidden", id !== "home-view");
     window.scrollTo({ top: 0, behavior: "smooth" });
