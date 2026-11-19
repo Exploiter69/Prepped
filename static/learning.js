@@ -429,7 +429,7 @@
       status.textContent = item.status.replaceAll("_", " ");
       card.append(title, status);
       const detail = document.createElement("p");
-      if (item.type === "reflection") {
+      if (["reflection", "short_response"].includes(item.type)) {
         detail.textContent = "Your response: " + (item.original_response || "(empty)");
       } else if (["choice", "vocabulary", "listening"].includes(item.type)) {
         detail.textContent = "Your choice: " + item.selected + ". Suggested answer: " + item.correct_answer + ". " + item.explanation;
