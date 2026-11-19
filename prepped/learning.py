@@ -257,6 +257,8 @@ def _feedback(exercise: dict[str, Any], answer: str | list[str], example_to_comp
                        "explanation": exercise["explanation"]})
     else:
         text = answer if isinstance(answer, str) else ""
+        if exercise["type"] == "pronunciation" and not text:
+            text = "Practice completed privately; no transcript or note was saved."
         result.update({"status": "saved_for_self_review", "original_response": text,
                        "guidance": exercise["guidance"],
                        "example_to_compare": example_to_compare,
@@ -375,7 +377,7 @@ def create_learning_router(db_path: Path, curriculum_path: Path = DEFAULT_CURRIC
             exercise = lesson["exercises"][index]
             if payload.exercise_id != exercise["id"]:
                 raise HTTPException(status_code=409, detail="Complete the current exercise before moving on.")
-            if isinstance(payload.answer, str) and not payload.answer:
+            if isinstance(payload.answer, str) and not payload.answer and exercise["type"] != "pronunciation":
                 raise HTTPException(status_code=422, detail="Enter a response before continuing.")
             if exercise["type"] in {"choice", "vocabulary", "listening"}:
                 valid = {item["id"] for item in exercise["options"]}
