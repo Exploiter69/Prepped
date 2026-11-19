@@ -308,3 +308,57 @@ Use a disposable database. Automated Chromium coverage does not replace checking
 
 - [x] GitHub Actions passes on the Phase E implementation commit: [run 44568533503](https://github.com/Exploiter69/Prepped/actions/runs/44568533503) — 88 passed, 2 skipped (both require `espeak-ng`); Python compilation, JavaScript syntax, API tests, and Chromium acceptance all passed.
 - [ ] Complete the manual target-laptop checks above. CI does not prove microphone permission, live transcription quality, local TTS availability, or device-specific responsive behaviour.
+
+
+---
+
+## Phase F — Progress, portability, and release hardening
+
+### Progress evidence and learner goals
+
+- [ ] Open **Progress**; confirm counts match saved lessons, project sessions, career interviews, and memory reviews.
+- [ ] Complete a normal lesson; confirm only the linked skill evidence changes. Complete the baseline diagnostic; confirm it is not counted as a completed curriculum lesson.
+- [ ] Confirm skill coverage shows completed lesson evidence and explicitly does not present a proficiency rating.
+- [ ] Confirm the seven-day activity view uses saved completion/review timestamps and has a useful empty state on a new database.
+- [ ] Confirm recommendations explain why they are shown: unfinished lesson, due memory notes, profile-selected next lesson, or active learner goal.
+- [ ] Create one goal for each supported counter: lessons, project practice sessions, interviews, and memory reviews.
+- [ ] Confirm each goal counts only activity after its creation; confirm target count and remaining count update after the corresponding activity.
+- [ ] Edit a goal; archive it; show archived goals; restore it; permanently delete it. Confirm deleting a goal does not delete any activity.
+- [ ] Reload and restart the application; confirm goals and progress remain correct.
+
+### Export, backup, restore, and recovery
+
+- [ ] Use **Download local backup** and confirm a JSON file downloads without uploading data to an external service.
+- [ ] Confirm the backup includes profile, sessions and answers, lesson attempts and events, memory items and review history, career sessions and turns, and learner goals.
+- [ ] Confirm the backup does not contain environment variables, API keys, voice model files, or source code.
+- [ ] Make a second disposable database and restore the backup there; confirm every table's record counts and representative records match.
+- [ ] Restore a valid backup over disposable data only after reading the full-replacement confirmation; confirm all previous target data is replaced, not merged.
+- [ ] Try an invalid JSON file, wrong format/version, missing table, unexpected column, oversized file, and broken foreign-key reference. Confirm each restore is rejected and the current database remains unchanged.
+- [ ] Confirm a backup from an unsupported future schema is rejected without changing the active database.
+- [ ] Keep backup files private; they are unencrypted and contain personal answers/notes.
+- [ ] Confirm the readiness endpoint returns ready after a clean install and reports failure when tested against a disposable invalid database/curriculum.
+
+### Security, privacy, and supported environment
+
+- [ ] Start Uvicorn bound to 127.0.0.1; confirm localhost and 127.0.0.1 work and non-local Host values are rejected.
+- [ ] Confirm same-origin UI actions work and a mismatched Origin on a state-changing request is rejected.
+- [ ] Inspect response headers for CSP, frame denial, MIME sniffing protection, restrictive referrer/permissions policies, and API Cache-Control: no-store.
+- [ ] Confirm the microphone works only when requested by the learner and the text-only path remains usable when voice is unavailable.
+- [ ] Confirm Groq credentials remain server-side and are not included in exported data; no raw audio is persisted.
+- [ ] Confirm the default database, .env, backups, and local voice models remain ignored by Git.
+- [ ] Complete a fresh clone/install using [INSTALL.md](INSTALL.md) on the target Omarchy laptop and record Python/browser versions and any deviations.
+- [ ] Run the dependency audit and review any advisories; do not describe a CI audit as a third-party penetration test.
+- [ ] Complete keyboard-only navigation, visible focus, label/status announcements, screen-reader review, contrast, and narrow-screen checks across Home, Learning, Career, Progress, and History.
+
+### Honest reporting and validation
+
+- [ ] Confirm no total proficiency score, placement prediction, learning-gain claim, technical correctness verdict, or validated speaking score appears.
+- [ ] Confirm the progress dashboard calls its measures saved activity and lesson evidence, not ability.
+- [ ] Do not report a student pilot until it has actually been run with consent. Record sample size, method, failures, and limitations; never invent results.
+
+### Phase F automated evidence
+
+- [ ] GitHub Actions passes on the final Phase F commit, including pip-audit, Python compilation, all JavaScript syntax checks, API tests, and Chromium browser acceptance.
+- [ ] API tests cover all progress counters/goals, baseline exclusion, recommendation reasons, complete backup table coverage, round-trip restore, invalid backup rollback, size limits, readiness, Host/Origin checks, and security headers.
+- [ ] Browser tests cover Progress navigation, goal creation, backup download/restore, and cross-workspace navigation.
+- [ ] Complete the manual target-laptop checks above. CI does not prove fresh-install operation on the user's device, microphone permission, speech recognition quality, TTS output, screen-reader behaviour, or device-specific responsive layout.
