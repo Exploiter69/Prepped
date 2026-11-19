@@ -221,3 +221,18 @@ A feature is not complete because its screen exists. It is done only when:
 ### Scope and architecture guardrails
 
 Keep the existing Python + FastAPI + plain HTML/CSS/JavaScript + SQLite modular monolith and versioned JSON content. Use additive migrations. No mandatory paid services, hosted dependencies, login, React/Vue/Svelte rewrite, Redis, Kafka, Celery, Kubernetes, microservices, vector database, or second workflow system. Optional AI must be replaceable, explicitly configured, disclosed, and never required for core lessons. Do not store raw audio by default.
+
+### Phase B implementation status — Learning Engine
+
+**Implementation in progress; automated and manual acceptance pending.** The first complete vertical slice is now in the branch:
+
+- Versioned curriculum/curriculum.v1.json defines six stable skill IDs, three goal-based tracks, four lessons, outcomes, prerequisites, examples, and authored exercises.
+- prepped/learning.py validates curriculum references and supported exercise shapes, exposes a reusable lesson-attempt API, enforces exercise order and prerequisites, withholds answer keys from catalogue responses, and produces deterministic feedback for choice/order exercises. Open responses are stored for learner self-review; they are not automatically graded.
+- Additive SQLite learning_attempts and learning_events tables preserve existing sessions, answers, and the learner profile. Attempts and responses survive application restarts.
+- Profile goal and selected focus areas now select a transparent starter route with a reason per recommended lesson. Unsupported focus areas are disclosed rather than silently mapped to unrelated content.
+- A new Learning workspace provides curriculum browsing, recommendations, lesson exercises, feedback, progress counts, and resume controls. It uses plain HTML/CSS/JavaScript and keeps the existing practice room available.
+- API and browser acceptance tests cover curriculum validation, answer-key isolation, profile routing, exercise validation/order, prerequisites, completion, persistence, progress events, resume, and legacy-data preservation.
+
+**Remaining Phase B gates:** successful latest CI run; target-laptop browser check for navigation, choice/order/reflection exercises, reload/resume, and responsive layout; review of lesson wording and learning usefulness. The baseline diagnostic remains deliberately deferred until exercises and feedback are stable. No proficiency score is produced.
+
+The starter curriculum is deliberately small. Vocabulary, listening, pronunciation activities, HR/technical interview packs, diagnostic assessment, and spaced revision remain later roadmap work.
