@@ -380,3 +380,24 @@ def test_listening_conversation_has_replay_controls_and_accessible_text(local_ap
     page.get_by_role("button", name="Show text alternative").click()
     assert "Riya:" in page.locator(".learning-transcript").inner_text()
     assert "Arjun:" in page.locator(".learning-transcript").inner_text()
+
+
+def test_vocabulary_lesson_submits_contextual_choices_and_learner_example(
+    local_app_url: str, browser_page
+) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+    page.locator("#learning-toggle").click()
+    page.wait_for_function(
+        "() => document.querySelector('#learning-status').textContent.includes('skills')"
+    )
+    complete_lesson_in_browser(page, "sentence-building", [
+        "b", ["a", "b", "c", "d"], "I tested the registration form."
+    ])
+    page.get_by_role("button", name="Back to lesson list").click()
+    complete_lesson_in_browser(page, "vocabulary-in-context", [
+        "a", "b", "Original: I did a lot of work. Revised: I completed several tasks."
+    ])
+    feedback = page.locator("#learning-feedback").inner_text()
+    assert "carry out research" in feedback
+    assert "I completed several tasks" in feedback
