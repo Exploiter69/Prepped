@@ -157,3 +157,12 @@ The text feedback system is frozen for this phase. Do not keep adding phrase heu
 ## Current status
 
 The text practice loop is implemented on `main`. The voice slice has modular Groq Whisper and Vosk STT adapters, Piper/espeak TTS adapters, browser record/stop controls, editable transcripts, and text fallbacks. The Groq adapter has mocked automated tests; a live provider call and target-laptop browser acceptance are still outstanding. See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md).
+
+
+## Personal learning memory and revision (Phase D)
+
+The Learning workspace includes an optional, learner-controlled memory library. Save words, phrases, corrections, concepts, and examples manually, or use a lesson-feedback suggestion to prefill an editable form. Nothing is stored from a suggestion until the learner submits it. Lesson-derived notes retain their source context.
+
+Saved items can be edited, suspended, resumed, deduplicated, and deleted. The due-review queue reveals the answer before the learner rates recall as Again, Hard, Good, or Easy. A small deterministic local interval scheduler stores due dates and review history in SQLite. It is intentionally not FSRS and does not claim measured learning gain.
+
+The feature uses additive SQLite tables and the existing FastAPI/plain JavaScript stack. It requires no account, paid service, external model, or hosted infrastructure. See [the Product Roadmap](docs/PRODUCT_ROADMAP.md) and [Phase D acceptance checklist](docs/ACCEPTANCE_CHECKLIST.md). Implementation and acceptance status are tracked separately in [Current State](docs/CURRENT_STATE.md).
