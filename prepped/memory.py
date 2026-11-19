@@ -287,7 +287,7 @@ def create_memory_router(db_path: Path) -> APIRouter:
         with connect_database(Path(db_path)) as conn:
             totals = conn.execute(
                 """SELECT COUNT(*) AS total,
-                   SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) AS active,
+                   SUM(CASE WHEN status = 'active' AND dismissed_at IS NULL THEN 1 ELSE 0 END) AS active,
                    SUM(CASE WHEN status = 'suspended' AND dismissed_at IS NULL THEN 1 ELSE 0 END) AS suspended,
                    SUM(CASE WHEN dismissed_at IS NOT NULL THEN 1 ELSE 0 END) AS dismissed,
                    SUM(CASE WHEN status = 'active' AND dismissed_at IS NULL AND due_at <= ? THEN 1 ELSE 0 END) AS due
