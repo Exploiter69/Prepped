@@ -552,3 +552,54 @@ def test_lesson_memory_suggestion_requires_explicit_save_and_keeps_source(local_
         "() => document.querySelector('#memory-items').textContent.includes('Which option is a complete sentence?')"
     )
     assert "Build a clear sentence" in page.locator("#memory-items").inner_text()
+
+
+def test_career_studio_voice_optional_text_interview_feedback_and_retry(local_app_url: str, browser_page) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+    page.locator("#career-toggle").click()
+    page.locator(".career-studio-card").filter(has_text="Project Explanation Studio").get_by_role("button").click()
+    page.locator("#career-setup").wait_for(state="visible")
+    page.locator("#career-difficulty").select_option("challenging")
+    page.locator("#career-start").click()
+    page.locator("#career-active").wait_for(state="visible")
+    assert "What problem does it address" in page.locator("#career-prompt-title").inner_text()
+
+    for turn in range(8):
+        page.locator("#career-answer").fill(
+            f"I built a project and tested the feature. For example, a student can use it. "
+            f"Because the first approach had a limitation, I changed it. Evidence {turn}."
+        )
+        page.locator("#career-submit").click()
+        if turn < 7:
+            page.wait_for_function(
+                "(previous) => document.querySelector('#career-answer').value === '' && document.querySelector('#career-prompt-title').textContent.length > 0",
+                arg=turn,
+            )
+    page.locator("#career-review").wait_for(state="visible")
+    assert "not an expert interview rating" in page.locator("#career-review-disclaimer").inner_text()
+    assert page.locator(".career-review-card").count() == 8
+    assert "Suggested next steps" in page.locator("#career-next-steps").inner_text()
+    page.locator("#career-retry").click()
+    page.locator("#career-active").wait_for(state="visible")
+    assert page.locator("#career-answer").input_value() == ""
+
+
+def test_career_interview_can_resume_at_saved_followup(local_app_url: str, browser_page) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+    page.locator("#career-toggle").click()
+    page.locator(".career-studio-card").filter(has_text="HR & Behavioural Interview Studio").get_by_role("button").click()
+    page.locator("#career-start").click()
+    page.locator("#career-answer").fill("I worked with a team to complete a class project.")
+    page.locator("#career-submit").click()
+    page.wait_for_function(
+        "() => document.querySelector('#career-turn-label').textContent.includes('FOLLOW-UP')"
+    )
+    page.once("dialog", lambda dialog: dialog.accept())
+    page.locator("#career-exit").click()
+    page.locator("#career-history-list button").filter(has_text="Open").first.click()
+    page.wait_for_function(
+        "() => document.querySelector('#career-turn-label').textContent.includes('FOLLOW-UP')"
+    )
+    assert "different priorities" in page.locator("#career-prompt-title").inner_text().lower()
