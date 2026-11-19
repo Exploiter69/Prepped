@@ -410,16 +410,21 @@ Every unit needs an outcome, authored examples, exercises, feedback, tests, and 
 - Keep feedback tied to submitted answers and rubric versions.
 - Add role-specific content only when authored and covered by tests.
 
-### Milestone F/G — Progress, portability, and release
+### Milestone F — Progress and portability
 
-- Progress is based on completed work and explainable evidence, never an unexplained single score.
-- Show goals, activity, skill practice, review completion, and recommendation reasons.
-- Implement local export, backup, restore, and recovery tests.
-- Complete keyboard, responsive, focus, contrast, and screen-reader checks.
-- Review security, dependency health, local data handling, and audio upload boundaries.
-- Test a fresh clone/install on the target laptop.
-- Complete manual acceptance for onboarding, lessons, voice/text practice, review, progress, and recovery.
-- Run a small consent-based usability study when practical; report method and sample size without claiming causal learning or placement impact.
+**Implementation added on `feature/learner-profile`; automated CI and target-device acceptance are separate gates.**
+
+- [x] Evidence-based skill coverage linked to completed curriculum lessons, plus activity counts for project practice, interviews, and memory reviews.
+- [x] Learner-created goals with create/edit/archive/restore/delete and counts scoped from goal creation time.
+- [x] Explainable recommendations from profile preferences, unfinished lessons, due memory reviews, and active goals.
+- [x] Full local JSON export and staged, validated full-replacement restore for every learner-data table.
+- [x] Backup format/schema versioning, size/record limits, integrity and foreign-key validation, and failure-without-replacement tests.
+- [ ] Record final CI pass for the exact implementation commit.
+- [ ] Complete target-laptop progress and data-recovery acceptance.
+
+### Milestone G — Release hardening and validation
+
+Phase F implements the initial hardening foundations: local Host/Origin checks, security headers/CSP, readiness checks, dependency audit in CI, and clean-install/recovery/security documentation. The remaining G/release-candidate work is target-device acceptance, keyboard/screen-reader/contrast review, any necessary security/dependency remediation, performance observations, and optional consent-based usability validation. No public/multi-user deployment is supported. Do not invent pilot results.
 
 ### Release readiness checklist
 
