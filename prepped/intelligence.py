@@ -458,9 +458,6 @@ def _ensure_plan(conn: sqlite3.Connection, plan_date: date, minutes: int) -> sql
     if existing is None:
         conn.execute("INSERT INTO adaptive_plans(plan_date,available_minutes,generated_at) VALUES (?,?,?)",
                      (plan_date.isoformat(), minutes, _stamp()))
-    else:
-        conn.execute("UPDATE adaptive_plans SET available_minutes=? WHERE plan_date=?",
-                     (minutes, plan_date.isoformat()))
     return conn.execute("SELECT * FROM adaptive_plans WHERE plan_date=?", (plan_date.isoformat(),)).fetchone()
 
 def _add_plan_item(conn: sqlite3.Connection, plan_date: date, item_type: str, target_id: str,
@@ -505,7 +502,7 @@ def _generate_day(conn: sqlite3.Connection, curriculum: dict[str, Any], plan_dat
             conn.execute("DELETE FROM adaptive_plan_items WHERE id=?", (item["id"],))
     used_memory = used_memory if used_memory is not None else set()
     used_lessons = used_lessons if used_lessons is not None else set()
-    remaining = minutes
+    remaining = int(plan["available_minutes"])
     day_end = datetime.combine(plan_date + timedelta(days=1), time.min, tzinfo=timezone.utc).isoformat()
     due_rows = conn.execute(
         "SELECT id,front FROM learning_memory WHERE status='active' AND dismissed_at IS NULL AND due_at<? ORDER BY due_at LIMIT 10",
@@ -619,6 +616,9 @@ def create_intelligence_router(db_path: Path, curriculum_path: Path = DEFAULT_CU
         with connect_database(Path(db_path)) as conn:
             plan = _ensure_plan(conn, payload.plan_date, payload.available_minutes)
             if payload.regenerate:
+                conn.execute("UPDATE adaptive_plans SET available_minutes=? WHERE plan_date=?",
+                             (payload.available_minutes, payload.plan_date.isoformat()))
+                plan = conn.execute("SELECT * FROM adaptive_plans WHERE plan_date=?", (payload.plan_date.isoformat(),)).fetchone()
                 rows = conn.execute("SELECT * FROM adaptive_plan_items WHERE plan_date=?", (payload.plan_date.isoformat(),)).fetchall()
                 for item in rows:
                     if item["skipped_at"] is None and not _item_completed(conn, item, plan["generated_at"]):
