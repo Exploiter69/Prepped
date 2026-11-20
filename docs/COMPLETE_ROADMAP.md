@@ -536,4 +536,4 @@ Delivered: evidence-linked skill/activity progress; learner-owned goals; explain
 
 **Still open:** target-laptop acceptance for all A–F learner journeys, fresh-install/recovery rehearsal, voice hardware/provider checks, keyboard/screen-reader/contrast/responsive review, and any fixes arising from those checks. The two CI skips require `espeak-ng` and are not counted as passes. The student pilot remains optional future validation, not a prerequisite to engineering.
 
-**Phase G has not started.** It is reserved for closing the release-hardening and acceptance gates after the manual A–F evidence is recorded.
+**Phase G engineering is in progress.** Target-device acceptance is still required for release-candidate sign-off; it does not block code-level hardening and automated regression work.
