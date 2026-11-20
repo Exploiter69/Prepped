@@ -25,21 +25,31 @@ From a clean checkout:
 git clone https://github.com/Exploiter69/Prepped.git
 cd Prepped
 git switch feature/learner-profile
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -e ".[dev,browser-test]"
-python -m playwright install chromium
 ```
 
-The application runtime itself needs only the required dependencies from `pyproject.toml`; the `dev` and `browser-test` extras are for automated verification. Do not install optional voice extras unless you intend to test voice.
+For the full local developer/release-verification environment (including pytest, Playwright, and Chromium):
+
+```bash
+bash scripts/prepped.sh setup
+```
+
+For a minimal runtime-only install, use Python 3.11+ and install only the declared runtime dependencies:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e .
+```
+
+The `dev` and `browser-test` extras are only for automated verification. Optional voice extras and model weights are installed separately; do not install or download them unless you intend to test voice. The supported installation model is a source checkout. Wheel/binary packaging is not supported or claimed because static assets and versioned content are repository-root resources.
 
 ## Start the local application
 
 ```bash
-source .venv/bin/activate
-python -m uvicorn prepped.main:app --host 127.0.0.1 --port 8000
+bash scripts/prepped.sh start
 ```
+
+The helper runs Uvicorn in the foreground on 127.0.0.1. Press Ctrl+C in that terminal to stop it. To use Uvicorn directly, activate .venv and run `python -m uvicorn prepped.main:app --host 127.0.0.1 --port 8000`.
 
 Open [http://127.0.0.1:8000](http://127.0.0.1:8000). Keep the server bound to loopback. Do not use `--host 0.0.0.0`, a LAN address, a public reverse proxy, or an internet-facing tunnel. The app intentionally accepts only local Host values and same-origin state-changing requests.
 
@@ -121,3 +131,16 @@ The current backup format version is 1 and database schema version is 4. A backu
 ## Project licence
 
 This repository currently has no LICENSE file or project licence declaration. Do not assume that the source or package is licensed for reuse or redistribution. The optional Piper TTS package is GPL-3.0-or-later; its installation does not mean its code or model assets are bundled with Prepped. A project licence and third-party compatibility review are required before distributing the project.
+
+
+## One-command local checks
+
+With the full developer environment installed and the app running, use:
+
+    bash scripts/prepped.sh check
+
+To run the full local verification suite (compilation, JavaScript syntax, curriculum lint, dependency consistency, and pytest):
+
+    bash scripts/prepped.sh verify
+
+Before updating a checkout, export a backup from Progress and keep it outside the repository. Then update with git pull --ff-only, review the changelog, and check /api/ready. Do not delete the data/ directory during uninstall; it contains learner data. Removing the source checkout and its virtual environment does not itself remove backups downloaded elsewhere.
