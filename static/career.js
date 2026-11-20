@@ -188,7 +188,7 @@
         })).plan;
       }
       const alreadyAdded = plan.items.some(item =>
-        item.item_type === "career_practice" && item.target_id === state.session.studio_id && !item.skipped
+        item.item_type === "career_practice" && item.target_id === state.session.studio_id && item.status !== "skipped"
       );
       if (!alreadyAdded) {
         await api("/api/intelligence/plan/items", {
