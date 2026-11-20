@@ -3,7 +3,22 @@
 **Updated:** 2026-11-20<br>
 **Source of truth:** GitHub `feature/learner-profile` (working branch; `main` remains the last synced baseline)<br>
 **Product direction:** Voice-first, personalised practice and learning platform for Indian engineering students. The text practice loop is a reliable fallback and is frozen for feature development except material bugs.<br>
-**Engineering stage:** Phases A–F are implemented. Phase G engineering hardening is implemented and its full CI run is green: [44721637341](https://github.com/Exploiter69/Prepped/actions/runs/44721637341) — 112 passed, 2 skipped, 1 warning. Target-laptop acceptance remains open. Phase G.1 recording lifecycle fixes and deferred-permission browser tests are added and green in CI. Phase H implementation and its full automated suite are green; manual Omarchy and learner acceptance remain deferred.
+**Engineering stage:** Phases A–F are implemented. Phase G engineering hardening is implemented; target-laptop acceptance remains open. Phase G.1 recording lifecycle regressions and Phase H automated verification are green on the previously recorded run [44732997261](https://github.com/Exploiter69/Prepped/actions/runs/44732997261) (134 passed, 2 skipped, 1 warning); manual Omarchy and learner acceptance remain deferred. **Phase I implementation is now present on this branch; its exact-commit CI and manual target-device acceptance are pending.** See [Phase I acceptance](PHASE_I_ACCEPTANCE.md).
+
+## Phase I — Voice Intelligence & Contextual Coaching (implementation added; acceptance pending)
+
+The current branch now includes the first complete Phase I implementation slice:
+
+- Browser TTS requests and in-flight STT transcription requests are abortable in the Project Practice voice controller. Workspace cancellation increments the request generation, aborts outstanding fetches, stops active recording streams, and ignores stale results.
+- Career Studio prompt playback has request identity, AbortController cancellation, object-URL cleanup, and stale completion guards. Leaving Career, changing prompt, stopping playback, or unloading the page cancels pending synthesis.
+- Career curriculum version 1.1.0 adds one authored contextual follow-up rule per question across Project Explanation, HR/Behavioural, and Technical Fundamentals. Small deterministic text-cue rules choose a contextual prompt or the existing difficulty-specific fallback; the UI explains the cue and its limitations.
+- Career feedback now includes one response-specific next action per turn, grounded in the saved answer excerpt and explicit cue limitations. It remains formative reflection, not correctness grading or a score.
+- Learners can explicitly save a coaching action to existing Learning Memory or add the next studio practice to the existing daily adaptive plan. No new table or migration was added.
+- Text answers, editable transcripts, existing saved session snapshots, history, retries, deletion, existing Memory, and adaptive-plan semantics remain in place.
+- Automated tests were added for authored contextual prompt selection, feedback coaching, and Career/Project TTS cancellation on workspace navigation. Exact-commit CI has not yet been recorded.
+- Manual target-laptop microphone, STT/TTS, privacy, accessibility, and end-to-end plan/Memory acceptance remain open.
+
+**Important limitations:** cue selection and coaching use transparent lexical heuristics and can miss equivalent wording or match weak answers. They do not verify technical correctness, assess proficiency, score pronunciation, infer emotion/personality, or predict hiring/placement. Voice remains push-to-talk and turn-based; no always-listening or realtime speech agent was added.
 
 ## Phase G — release hardening implemented; device acceptance open
 
