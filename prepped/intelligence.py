@@ -140,7 +140,9 @@ def _freshness(value: str | None, now: datetime) -> tuple[str, int | None]:
     return "stale", days
 
 def _skill_evidence(conn: sqlite3.Connection, curriculum: dict[str, Any], now: datetime) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    skills = {item["id"]: item for item in curriculum["skills"] if item.get("status", "active") == "active"}
+    studio_skill_ids = {skill_id for skill_ids in STUDIO_SKILLS.values() for skill_id in skill_ids}
+    skills = {item["id"]: item for item in curriculum["skills"]
+              if item.get("status", "active") == "active" or item["id"] in studio_skill_ids}
     lessons = {item["id"]: item for item in curriculum["lessons"]}
     evidence: dict[str, list[dict[str, Any]]] = {key: [] for key in skills}
     activity: dict[str, int] = {key: 0 for key in skills}
@@ -204,35 +206,15 @@ def _skill_evidence(conn: sqlite3.Connection, curriculum: dict[str, Any], now: d
                 if exercise_type in CLOSED_EXERCISES and outcome in {"correct", "review"}:
                     objective[sid].append(event)
 
-    # Learner-approved memory reviews contribute revision activity only when
-    # their stored source can be linked unambiguously to a lesson or attempt.
-    revision_rows = conn.execute(
-        """SELECT r.id,r.rating,r.reviewed_at,m.source_type,m.source_id,m.source_title
-           FROM learning_memory_reviews r JOIN learning_memory m ON m.id=r.item_id
-           ORDER BY r.reviewed_at DESC"""
-    ).fetchall()
-    for row in revision_rows:
-        source_id = row["source_id"] or ""
-        linked = (attempt_skills.get(source_id, []) or lesson_skills.get(source_id, [])) if row["source_type"] in {"lesson", "lesson_attempt", "learning_attempt"} else []
-        for sid in linked:
-            activity[sid] += 1
-            evidence[sid].append({
-                "source_type": "learner_memory_review", "source_id": row["id"],
-                "linked_source_id": source_id,
-                "title": row["source_title"] or "Learner-saved revision",
-                "occurred_at": row["reviewed_at"], "kind": "revision_activity",
-                "outcome": row["rating"],
-                "note": "A learner-rated revision event; it is not an objective assessment of mastery.",
-            })
-
     project_rows = conn.execute(
         "SELECT id,status,created_at,completed_at FROM sessions ORDER BY COALESCE(completed_at,created_at) DESC"
     ).fetchall()
     project_skill_ids = ["communication.project-summary", "communication.clarity",
                          "interview.project-explanation", "interview.readiness"]
+    project_session_skills: dict[str, list[str]] = {}
     for row in project_rows:
-        for sid in project_skill_ids:
-            if sid in evidence:
+        project_session_skills[row["id"]] = [sid for sid in project_skill_ids if sid in evidence]
+        for sid in project_session_skills[row["id"]]:
                 activity[sid] += 1
                 evidence[sid].append({
                     "source_type": "project_practice", "source_id": row["id"],
@@ -245,9 +227,10 @@ def _skill_evidence(conn: sqlite3.Connection, curriculum: dict[str, Any], now: d
         "SELECT id,studio_id,status,created_at,completed_at FROM career_sessions "
         "ORDER BY COALESCE(completed_at,created_at) DESC"
     ).fetchall()
+    career_session_skills: dict[str, list[str]] = {}
     for row in career_rows:
-        for sid in STUDIO_SKILLS.get(row["studio_id"], []):
-            if sid in evidence:
+        career_session_skills[row["id"]] = [sid for sid in STUDIO_SKILLS.get(row["studio_id"], []) if sid in evidence]
+        for sid in career_session_skills[row["id"]]:
                 activity[sid] += 1
                 evidence[sid].append({
                     "source_type": "career_session", "source_id": row["id"],
@@ -256,6 +239,35 @@ def _skill_evidence(conn: sqlite3.Connection, curriculum: dict[str, Any], now: d
                     "kind": "practice_activity", "outcome": row["status"],
                     "note": "Interview activity is not scored for correctness or hiring readiness.",
                 })
+
+    # Revision records can link to lesson attempts, project-practice sessions,
+    # or Career studio sessions. These remain learner-rated activity, never scores.
+    revision_rows = conn.execute(
+        """SELECT r.id,r.rating,r.reviewed_at,m.source_type,m.source_id,m.source_title
+           FROM learning_memory_reviews r JOIN learning_memory m ON m.id=r.item_id
+           ORDER BY r.reviewed_at DESC"""
+    ).fetchall()
+    for row in revision_rows:
+        source_id = row["source_id"] or ""
+        source_type = row["source_type"]
+        if source_type in {"lesson", "lesson_attempt", "learning_attempt"}:
+            linked = attempt_skills.get(source_id, []) or lesson_skills.get(source_id, [])
+        elif source_type == "practice":
+            linked = project_session_skills.get(source_id, [])
+        elif source_type == "career_interview":
+            linked = career_session_skills.get(source_id, [])
+        else:
+            linked = []
+        for sid in linked:
+            activity[sid] += 1
+            evidence[sid].append({
+                "source_type": "learner_memory_review", "source_id": row["id"],
+                "linked_source_id": source_id,
+                "title": row["source_title"] or "Learner-saved revision",
+                "occurred_at": row["reviewed_at"], "kind": "revision_activity",
+                "outcome": row["rating"],
+                "note": "A learner-rated revision event; it is not an objective assessment of mastery.",
+            })
 
     output: list[dict[str, Any]] = []
     for sid, skill in skills.items():
@@ -289,6 +301,7 @@ def _skill_evidence(conn: sqlite3.Connection, curriculum: dict[str, Any], now: d
         coverage = "none" if not records else ("limited" if quantity < 2 else ("some" if quantity < 5 else "broader"))
         output.append({
             "skill_id": sid, "title": skill["title"], "description": skill["description"],
+            "curriculum_status": skill.get("status", "active"),
             "category": skill.get("category", "general"), "prerequisites": skill.get("prerequisites", []),
             "state": state, "state_label": {
                 "insufficient_evidence": "Not enough evidence",
@@ -355,6 +368,8 @@ def _recommendations(conn: sqlite3.Connection, curriculum: dict[str, Any], skill
                         "estimated_minutes": lesson.get("estimated_minutes", 8), "source": "repeated_observed_response"})
                     seen.add(key)
     for skill in skills:
+        if skill.get("curriculum_status") == "planned":
+            continue
         for prerequisite in skill["prerequisites"]:
             prereq_state = by_skill.get(prerequisite)
             if prereq_state and prereq_state["closed_response_count"] == 0:
