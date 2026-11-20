@@ -141,7 +141,7 @@ def test_difficulty_modes_select_distinct_authored_followups(tmp_path: Path) -> 
             session = start(client, difficulty=difficulty).json()
             response = client.post(
                 f"/api/career/sessions/{session['id']}/answers",
-                json={"answer_text": "I built a student project and tested the main feature."},
+                json={"answer_text": "For example, I built a student project and tested the main feature."},
             )
             assert response.status_code == 200
             prompts[difficulty] = response.json()["current_prompt"]["prompt"]
