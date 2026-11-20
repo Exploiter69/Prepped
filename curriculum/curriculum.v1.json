@@ -374,7 +374,13 @@
             }
           ],
           "answer": "b",
-          "explanation": "This option has a subject (the team) and a verb (tested), and it expresses a complete thought."
+          "explanation": "This option has a subject (the team) and a verb (tested), and it expresses a complete thought.",
+          "learning_outcome": "Select the option that best addresses: Which option is a complete sentence?",
+          "estimated_minutes": 1,
+          "skill_ids": [
+            "english.sentence-structure"
+          ],
+          "source_ids": []
         },
         {
           "id": "sentence-order",
@@ -404,14 +410,26 @@
             "c",
             "d"
           ],
-          "explanation": "Start with the subject, follow with the action, then add what was built and the context."
+          "explanation": "Start with the subject, follow with the action, then add what was built and the context.",
+          "learning_outcome": "Arrange the parts to produce a clear response for: Arrange these parts into a clear sentence.",
+          "estimated_minutes": 1,
+          "skill_ids": [
+            "english.sentence-structure"
+          ],
+          "source_ids": []
         },
         {
           "id": "sentence-practice",
           "type": "reflection",
           "prompt": "Write one clear sentence about something you built, learned, or practised.",
           "placeholder": "I built… / I learned…",
-          "guidance": "Keep one main idea. Include a specific action or subject. This response is saved for your review; it is not automatically graded."
+          "guidance": "Keep one main idea. Include a specific action or subject. This response is saved for your review; it is not automatically graded.",
+          "learning_outcome": "Reflect on your own response to: Write one clear sentence about something you built, learned, or practised.",
+          "estimated_minutes": 2,
+          "skill_ids": [
+            "english.sentence-structure"
+          ],
+          "source_ids": []
         }
       ],
       "level_id": "foundation",
@@ -473,7 +491,19 @@
             }
           ],
           "answer": "b",
-          "explanation": "“Tested” is the simple past form and matches the time marker “yesterday”."
+          "explanation": "“Tested” is the simple past form and matches the time marker “yesterday”.",
+          "learning_outcome": "Select the option that best addresses: Choose the sentence that correctly describes a completed action yesterday.",
+          "estimated_minutes": 1,
+          "skill_ids": [
+            "english.grammar-in-context"
+          ],
+          "source_ids": [
+            "bc-present-simple",
+            "bc-past-simple",
+            "bc-questions-negatives",
+            "bc-articles",
+            "bc-adjectives-prepositions"
+          ]
         },
         {
           "id": "preposition",
@@ -494,14 +524,38 @@
             }
           ],
           "answer": "a",
-          "explanation": "The usual construction is “responsible for” followed by a noun or an -ing verb."
+          "explanation": "The usual construction is “responsible for” followed by a noun or an -ing verb.",
+          "learning_outcome": "Select the option that best addresses: Choose the most natural preposition: “I am responsible ___ testing the API.”",
+          "estimated_minutes": 1,
+          "skill_ids": [
+            "english.grammar-in-context"
+          ],
+          "source_ids": [
+            "bc-present-simple",
+            "bc-past-simple",
+            "bc-questions-negatives",
+            "bc-articles",
+            "bc-adjectives-prepositions"
+          ]
         },
         {
           "id": "grammar-review",
           "type": "reflection",
           "prompt": "Write a sentence about a task you completed recently. Include when you did it.",
           "placeholder": "Last week, I…",
-          "guidance": "Check that the verb form matches the time you mention. This is a self-review prompt, not an automated grammar grade."
+          "guidance": "Check that the verb form matches the time you mention. This is a self-review prompt, not an automated grammar grade.",
+          "learning_outcome": "Reflect on your own response to: Write a sentence about a task you completed recently. Include when you did it.",
+          "estimated_minutes": 2,
+          "skill_ids": [
+            "english.grammar-in-context"
+          ],
+          "source_ids": [
+            "bc-present-simple",
+            "bc-past-simple",
+            "bc-questions-negatives",
+            "bc-articles",
+            "bc-adjectives-prepositions"
+          ]
         },
         {
           "id": "articles-in-context",
@@ -522,7 +576,19 @@
             }
           ],
           "answer": "a",
-          "explanation": "Use “a” before a singular countable noun beginning with a consonant sound when it is mentioned for the first time."
+          "explanation": "Use “a” before a singular countable noun beginning with a consonant sound when it is mentioned for the first time.",
+          "learning_outcome": "Select the option that best addresses: Choose the correct article: “I built ___ small dashboard for the project.”",
+          "estimated_minutes": 1,
+          "skill_ids": [
+            "english.grammar-in-context"
+          ],
+          "source_ids": [
+            "bc-present-simple",
+            "bc-past-simple",
+            "bc-questions-negatives",
+            "bc-articles",
+            "bc-adjectives-prepositions"
+          ]
         },
         {
           "id": "future-plan",
@@ -543,14 +609,38 @@
             }
           ],
           "answer": "b",
-          "explanation": "“Will share” is a clear way to describe a future plan. Context and intended meaning guide tense choice."
+          "explanation": "“Will share” is a clear way to describe a future plan. Context and intended meaning guide tense choice.",
+          "learning_outcome": "Select the option that best addresses: Choose the sentence that clearly describes a plan for tomorrow.",
+          "estimated_minutes": 1,
+          "skill_ids": [
+            "english.grammar-in-context"
+          ],
+          "source_ids": [
+            "bc-present-simple",
+            "bc-past-simple",
+            "bc-questions-negatives",
+            "bc-articles",
+            "bc-adjectives-prepositions"
+          ]
         },
         {
           "id": "error-correction",
           "type": "short_response",
           "prompt": "Correct the tense in this sentence while keeping its meaning: “Yesterday, she go to the lab and check the results.”",
           "placeholder": "Yesterday, she…",
-          "guidance": "Look for the time word “yesterday”. Use past-tense forms for both actions. This open response is saved for self-review; Prepped does not automatically mark grammar corrections."
+          "guidance": "Look for the time word “yesterday”. Use past-tense forms for both actions. This open response is saved for self-review; Prepped does not automatically mark grammar corrections.",
+          "learning_outcome": "Write a concise response that addresses: Correct the tense in this sentence while keeping its meaning: “Yesterday, she go to the lab and check the results.”",
+          "estimated_minutes": 2,
+          "skill_ids": [
+            "english.grammar-in-context"
+          ],
+          "source_ids": [
+            "bc-present-simple",
+            "bc-past-simple",
+            "bc-questions-negatives",
+            "bc-articles",
+            "bc-adjectives-prepositions"
+          ]
         }
       ],
       "level_id": "foundation",
@@ -615,7 +705,13 @@
             }
           ],
           "answer": "b",
-          "explanation": "It describes a concrete user problem. Technologies belong in the approach, not the problem statement."
+          "explanation": "It describes a concrete user problem. Technologies belong in the approach, not the problem statement.",
+          "learning_outcome": "Select the option that best addresses: Which opening gives the clearest problem statement?",
+          "estimated_minutes": 1,
+          "skill_ids": [
+            "communication.project-summary"
+          ],
+          "source_ids": []
         },
         {
           "id": "summary-order",
@@ -640,14 +736,26 @@
             "b",
             "c"
           ],
-          "explanation": "Start with the problem, explain the approach, then identify the intended users."
+          "explanation": "Start with the problem, explain the approach, then identify the intended users.",
+          "learning_outcome": "Arrange the parts to produce a clear response for: Arrange these parts into a useful project-summary sequence.",
+          "estimated_minutes": 1,
+          "skill_ids": [
+            "communication.project-summary"
+          ],
+          "source_ids": []
         },
         {
           "id": "summary-practice",
           "type": "reflection",
           "prompt": "Write a three-part project summary: problem, what you built, and intended users.",
           "placeholder": "The problem is… I built… It is intended for…",
-          "guidance": "Use only facts you can support. If you have not measured an outcome, describe the intended benefit rather than claiming success."
+          "guidance": "Use only facts you can support. If you have not measured an outcome, describe the intended benefit rather than claiming success.",
+          "learning_outcome": "Reflect on your own response to: Write a three-part project summary: problem, what you built, and intended users.",
+          "estimated_minutes": 2,
+          "skill_ids": [
+            "communication.project-summary"
+          ],
+          "source_ids": []
         }
       ],
       "level_id": "foundation",
@@ -708,7 +816,13 @@
             }
           ],
           "answer": "b",
-          "explanation": "It identifies concrete work and a verifiable check without claiming universal impact."
+          "explanation": "It identifies concrete work and a verifiable check without claiming universal impact.",
+          "learning_outcome": "Select the option that best addresses: Which statement is most specific and appropriately cautious?",
+          "estimated_minutes": 1,
+          "skill_ids": [
+            "communication.clarity"
+          ],
+          "source_ids": []
         },
         {
           "id": "specific-order",
@@ -733,14 +847,26 @@
             "b",
             "c"
           ],
-          "explanation": "Describe what you implemented, what you checked, and what remains unverified."
+          "explanation": "Describe what you implemented, what you checked, and what remains unverified.",
+          "learning_outcome": "Arrange the parts to produce a clear response for: Arrange the explanation from implementation to evidence to limitation.",
+          "estimated_minutes": 1,
+          "skill_ids": [
+            "communication.clarity"
+          ],
+          "source_ids": []
         },
         {
           "id": "specific-practice",
           "type": "reflection",
           "prompt": "Describe one feature you worked on, how you checked it, and one limitation that remains.",
           "placeholder": "I implemented… I checked it by… I have not yet…",
-          "guidance": "Name a real feature and a real check. Do not invent test results, user feedback, or impact."
+          "guidance": "Name a real feature and a real check. Do not invent test results, user feedback, or impact.",
+          "learning_outcome": "Reflect on your own response to: Describe one feature you worked on, how you checked it, and one limitation that remains.",
+          "estimated_minutes": 2,
+          "skill_ids": [
+            "communication.clarity"
+          ],
+          "source_ids": []
         }
       ],
       "level_id": "foundation",
@@ -801,7 +927,13 @@
             }
           ],
           "answer": "a",
-          "explanation": "“Implemented” is precise for adding a technical feature. “Made” and “did” are less specific here."
+          "explanation": "“Implemented” is precise for adding a technical feature. “Made” and “did” are less specific here.",
+          "learning_outcome": "Choose the word or phrase that best fits: Choose the most precise verb: “I ___ input validation to the form.”",
+          "estimated_minutes": 1,
+          "skill_ids": [
+            "english.vocabulary-context"
+          ],
+          "source_ids": []
         },
         {
           "id": "vocabulary-collocation",
@@ -823,14 +955,26 @@
             }
           ],
           "answer": "b",
-          "explanation": "“Carry out research” is a common collocation. The other options are not natural English."
+          "explanation": "“Carry out research” is a common collocation. The other options are not natural English.",
+          "learning_outcome": "Choose the word or phrase that best fits: Which phrase is most natural?",
+          "estimated_minutes": 1,
+          "skill_ids": [
+            "english.vocabulary-context"
+          ],
+          "source_ids": []
         },
         {
           "id": "vocabulary-practice",
           "type": "reflection",
           "prompt": "Rewrite one vague sentence about your studies or project using a more specific word.",
           "placeholder": "Original sentence… / More specific version…",
-          "guidance": "Keep the original meaning. Choose a precise verb or noun; do not add achievements that did not happen."
+          "guidance": "Keep the original meaning. Choose a precise verb or noun; do not add achievements that did not happen.",
+          "learning_outcome": "Reflect on your own response to: Rewrite one vague sentence about your studies or project using a more specific word.",
+          "estimated_minutes": 2,
+          "skill_ids": [
+            "english.vocabulary-context"
+          ],
+          "source_ids": []
         }
       ],
       "level_id": "foundation",
@@ -893,7 +1037,14 @@
             }
           ],
           "answer": "b",
-          "explanation": "The speaker says input validation was finished yesterday. Testing is happening today, and the classmate review is a future plan."
+          "explanation": "The speaker says input validation was finished yesterday. Testing is happening today, and the classmate review is a future plan.",
+          "learning_outcome": "Identify the spoken detail needed to answer: What did the speaker finish yesterday?",
+          "estimated_minutes": 1,
+          "skill_ids": [
+            "english.listening",
+            "english.fluency"
+          ],
+          "source_ids": []
         },
         {
           "id": "listening-status",
@@ -916,14 +1067,28 @@
             }
           ],
           "answer": "b",
-          "explanation": "The speaker reports a local test result and explicitly says deployment testing has not happened yet."
+          "explanation": "The speaker reports a local test result and explicitly says deployment testing has not happened yet.",
+          "learning_outcome": "Identify the spoken detail needed to answer: Which statement is supported by the spoken update?",
+          "estimated_minutes": 1,
+          "skill_ids": [
+            "english.listening",
+            "english.fluency"
+          ],
+          "source_ids": []
         },
         {
           "id": "listening-response",
           "type": "short_response",
           "prompt": "In one or two sentences, summarise the difference between a completed task and a planned task in the audio.",
           "placeholder": "The speaker completed… The next planned task is…",
-          "guidance": "Use details from the spoken message. You may reveal the transcript if you need the text alternative."
+          "guidance": "Use details from the spoken message. You may reveal the transcript if you need the text alternative.",
+          "learning_outcome": "Write a concise response that addresses: In one or two sentences, summarise the difference between a completed task and a planned task in the audio.",
+          "estimated_minutes": 2,
+          "skill_ids": [
+            "english.listening",
+            "english.fluency"
+          ],
+          "source_ids": []
         }
       ],
       "level_id": "foundation",
@@ -977,7 +1142,11 @@
             }
           ],
           "answer": "b",
-          "explanation": "A complete sentence communicates a full thought. This check records the response; it does not assign a proficiency level."
+          "explanation": "A complete sentence communicates a full thought. This check records the response; it does not assign a proficiency level.",
+          "learning_outcome": "Select the option that best addresses: Which option is a complete sentence?",
+          "estimated_minutes": 1,
+          "skill_ids": [],
+          "source_ids": []
         },
         {
           "id": "baseline-summary-order",
@@ -1002,7 +1171,11 @@
             "b",
             "c"
           ],
-          "explanation": "A useful explanation starts with the need, describes your action, then gives evidence or a check."
+          "explanation": "A useful explanation starts with the need, describes your action, then gives evidence or a check.",
+          "learning_outcome": "Arrange the parts to produce a clear response for: Arrange these parts into a clear project explanation.",
+          "estimated_minutes": 1,
+          "skill_ids": [],
+          "source_ids": []
         },
         {
           "id": "baseline-listening",
@@ -1025,14 +1198,22 @@
             }
           ],
           "answer": "c",
-          "explanation": "The completed task was login form validation. Error-message checks are happening today; the classmate test is planned next."
+          "explanation": "The completed task was login form validation. Error-message checks are happening today; the classmate test is planned next.",
+          "learning_outcome": "Identify the spoken detail needed to answer: What did the speaker complete yesterday?",
+          "estimated_minutes": 1,
+          "skill_ids": [],
+          "source_ids": []
         },
         {
           "id": "baseline-project-response",
           "type": "short_response",
           "prompt": "Describe one project or technical task you have worked on. Include the problem, what you did, and how you checked it.",
           "placeholder": "The problem was… I worked on… I checked it by…",
-          "guidance": "Use your own current ability. If you have not measured a result, say what you checked and what remains unknown. You may type or record a response."
+          "guidance": "Use your own current ability. If you have not measured a result, say what you checked and what remains unknown. You may type or record a response.",
+          "learning_outcome": "Write a concise response that addresses: Describe one project or technical task you have worked on. Include the problem, what you did, and how you checked it.",
+          "estimated_minutes": 2,
+          "skill_ids": [],
+          "source_ids": []
         }
       ],
       "source_ids": [],
@@ -1093,7 +1274,13 @@
             }
           ],
           "answer": "a",
-          "explanation": "It adds a specific test detail. The other options make claims that the original sentence does not support."
+          "explanation": "It adds a specific test detail. The other options make claims that the original sentence does not support.",
+          "learning_outcome": "Select the option that best addresses: Which revision adds useful detail without changing the original fact? Original: “I tested the form.”",
+          "estimated_minutes": 1,
+          "skill_ids": [
+            "english.sentence-structure"
+          ],
+          "source_ids": []
         },
         {
           "id": "combine-ideas",
@@ -1118,14 +1305,26 @@
             "b",
             "c"
           ],
-          "explanation": "The reason follows the result and is joined with “because”."
+          "explanation": "The reason follows the result and is joined with “because”.",
+          "learning_outcome": "Arrange the parts to produce a clear response for: Arrange the parts into one clear sentence using “because”.",
+          "estimated_minutes": 1,
+          "skill_ids": [
+            "english.sentence-structure"
+          ],
+          "source_ids": []
         },
         {
           "id": "clarify-sentence",
           "type": "short_response",
           "prompt": "Rewrite this sentence to make it shorter and clearer without changing its meaning: “Due to the fact that the server was not responding, I was unable to access the page.”",
           "placeholder": "Because…",
-          "guidance": "Keep the cause and result. A possible direction is to replace “due to the fact that” with “because”. This is self-review, not an automatic writing grade."
+          "guidance": "Keep the cause and result. A possible direction is to replace “due to the fact that” with “because”. This is self-review, not an automatic writing grade.",
+          "learning_outcome": "Write a concise response that addresses: Rewrite this sentence to make it shorter and clearer without changing its meaning: “Due to the fact that the server was not responding, I was unable to access the page.”",
+          "estimated_minutes": 2,
+          "skill_ids": [
+            "english.sentence-structure"
+          ],
+          "source_ids": []
         }
       ],
       "source_ids": [],
@@ -1181,7 +1380,18 @@
             }
           ],
           "answer": "a",
-          "explanation": "Use “does” with “she”, followed by the base verb “work”."
+          "explanation": "Use “does” with “she”, followed by the base verb “work”.",
+          "learning_outcome": "Select the option that best addresses: Choose the correct question about a teammate's daily task.",
+          "estimated_minutes": 1,
+          "skill_ids": [
+            "english.grammar-in-context",
+            "communication.professional"
+          ],
+          "source_ids": [
+            "bc-present-simple",
+            "bc-past-simple",
+            "bc-questions-negatives"
+          ]
         },
         {
           "id": "question-past",
@@ -1202,14 +1412,36 @@
             }
           ],
           "answer": "b",
-          "explanation": "After “did”, use the base form “test”."
+          "explanation": "After “did”, use the base form “test”.",
+          "learning_outcome": "Select the option that best addresses: Choose the correct question about yesterday's test.",
+          "estimated_minutes": 1,
+          "skill_ids": [
+            "english.grammar-in-context",
+            "communication.professional"
+          ],
+          "source_ids": [
+            "bc-present-simple",
+            "bc-past-simple",
+            "bc-questions-negatives"
+          ]
         },
         {
           "id": "question-clarify",
           "type": "short_response",
           "prompt": "Write one polite question you could ask when a project requirement is unclear.",
           "placeholder": "Could you clarify…?",
-          "guidance": "Ask about one specific missing detail. Keep the tone respectful and the question easy to answer."
+          "guidance": "Ask about one specific missing detail. Keep the tone respectful and the question easy to answer.",
+          "learning_outcome": "Write a concise response that addresses: Write one polite question you could ask when a project requirement is unclear.",
+          "estimated_minutes": 2,
+          "skill_ids": [
+            "english.grammar-in-context",
+            "communication.professional"
+          ],
+          "source_ids": [
+            "bc-present-simple",
+            "bc-past-simple",
+            "bc-questions-negatives"
+          ]
         }
       ],
       "example": {
@@ -1276,7 +1508,17 @@
             }
           ],
           "answer": "a",
-          "explanation": "“Carry out tests” is a natural collocation meaning to perform tests."
+          "explanation": "“Carry out tests” is a natural collocation meaning to perform tests.",
+          "learning_outcome": "Choose the word or phrase that best fits: Choose the natural collocation: “I ___ a series of tests before the demo.”",
+          "estimated_minutes": 1,
+          "skill_ids": [
+            "english.vocabulary-context",
+            "communication.professional"
+          ],
+          "source_ids": [
+            "cambridge-carry-out",
+            "cambridge-look-into"
+          ]
         },
         {
           "id": "phrase-meaning",
@@ -1298,7 +1540,17 @@
             }
           ],
           "answer": "b",
-          "explanation": "“Look into” means investigate or examine something to understand it."
+          "explanation": "“Look into” means investigate or examine something to understand it.",
+          "learning_outcome": "Choose the word or phrase that best fits: What does “look into the error” mean here?",
+          "estimated_minutes": 1,
+          "skill_ids": [
+            "english.vocabulary-context",
+            "communication.professional"
+          ],
+          "source_ids": [
+            "cambridge-carry-out",
+            "cambridge-look-into"
+          ]
         },
         {
           "id": "phrase-review",
@@ -1320,14 +1572,34 @@
             }
           ],
           "answer": "a",
-          "explanation": "“Carry out” means perform or conduct. “Look into” means investigate or examine. The surrounding context helps confirm both meanings."
+          "explanation": "“Carry out” means perform or conduct. “Look into” means investigate or examine. The surrounding context helps confirm both meanings.",
+          "learning_outcome": "Choose the word or phrase that best fits: Review both phrases. Which meaning pair is correct?",
+          "estimated_minutes": 1,
+          "skill_ids": [
+            "english.vocabulary-context",
+            "communication.professional"
+          ],
+          "source_ids": [
+            "cambridge-carry-out",
+            "cambridge-look-into"
+          ]
         },
         {
           "id": "phrase-own-example",
           "type": "short_response",
           "prompt": "Choose one phrase—“carry out a test”, “look into an issue”, or “make progress”—and write a true sentence about your studies or project.",
           "placeholder": "I…",
-          "guidance": "Use the phrase naturally and keep the example factual. You can save a useful phrase later when the revision feature is available; this response remains part of this lesson attempt for now."
+          "guidance": "Use the phrase naturally and keep the example factual. You can save a useful phrase later when the revision feature is available; this response remains part of this lesson attempt for now.",
+          "learning_outcome": "Write a concise response that addresses: Choose one phrase—“carry out a test”, “look into an issue”, or “make progress”—and write a true sentence about your studies or project.",
+          "estimated_minutes": 2,
+          "skill_ids": [
+            "english.vocabulary-context",
+            "communication.professional"
+          ],
+          "source_ids": [
+            "cambridge-carry-out",
+            "cambridge-look-into"
+          ]
         }
       ],
       "example": {
@@ -1394,7 +1666,14 @@
             }
           ],
           "answer": "b",
-          "explanation": "Arjun will check the query, then share what he finds before the afternoon review."
+          "explanation": "Arjun will check the query, then share what he finds before the afternoon review.",
+          "learning_outcome": "Identify the spoken detail needed to answer: What does Riya ask Arjun to do before the review?",
+          "estimated_minutes": 1,
+          "skill_ids": [
+            "english.listening",
+            "english.fluency"
+          ],
+          "source_ids": []
         },
         {
           "id": "conversation-next-step",
@@ -1417,14 +1696,28 @@
             }
           ],
           "answer": "b",
-          "explanation": "Dev says valid-login cases pass, but expired-password testing remains."
+          "explanation": "Dev says valid-login cases pass, but expired-password testing remains.",
+          "learning_outcome": "Identify the spoken detail needed to answer: Which test is still pending?",
+          "estimated_minutes": 1,
+          "skill_ids": [
+            "english.listening",
+            "english.fluency"
+          ],
+          "source_ids": []
         },
         {
           "id": "conversation-summary",
           "type": "short_response",
           "prompt": "Summarise the agreed next action from either conversation in one or two sentences.",
           "placeholder": "The next action is…",
-          "guidance": "Mention the person, action, and timing if the audio provides them. Reveal the transcript if you need the text alternative."
+          "guidance": "Mention the person, action, and timing if the audio provides them. Reveal the transcript if you need the text alternative.",
+          "learning_outcome": "Write a concise response that addresses: Summarise the agreed next action from either conversation in one or two sentences.",
+          "estimated_minutes": 2,
+          "skill_ids": [
+            "english.listening",
+            "english.fluency"
+          ],
+          "source_ids": []
         }
       ],
       "example": {
@@ -1474,28 +1767,60 @@
           "type": "short_response",
           "prompt": "Describe a task you completed recently. Include the context, what you did, and one specific detail.",
           "placeholder": "I was working on… I… One detail is…",
-          "guidance": "You may type or record. Keep the response to three or four sentences. Use only details that are true for you."
+          "guidance": "You may type or record. Keep the response to three or four sentences. Use only details that are true for you.",
+          "learning_outcome": "Write a concise response that addresses: Describe a task you completed recently. Include the context, what you did, and one specific detail.",
+          "estimated_minutes": 2,
+          "skill_ids": [
+            "english.fluency",
+            "communication.confidence",
+            "communication.professional"
+          ],
+          "source_ids": []
         },
         {
           "id": "speaking-process",
           "type": "short_response",
           "prompt": "Explain a simple process you know—for example, how you test a form or prepare for a class. Describe the steps in order.",
           "placeholder": "First… Then… Finally…",
-          "guidance": "Use sequence words such as first, then, after that, and finally. A listener should be able to follow the steps."
+          "guidance": "Use sequence words such as first, then, after that, and finally. A listener should be able to follow the steps.",
+          "learning_outcome": "Write a concise response that addresses: Explain a simple process you know—for example, how you test a form or prepare for a class. Describe the steps in order.",
+          "estimated_minutes": 2,
+          "skill_ids": [
+            "english.fluency",
+            "communication.confidence",
+            "communication.professional"
+          ],
+          "source_ids": []
         },
         {
           "id": "speaking-explanation",
           "type": "short_response",
           "prompt": "Explain how you checked one feature in a project and what you observed. Separate what you tested from what you have not tested yet.",
           "placeholder": "I checked… I observed… I have not yet…",
-          "guidance": "Describe one real check and its observed result. State any important limitation; do not claim that a test proves the whole application is error-free."
+          "guidance": "Describe one real check and its observed result. State any important limitation; do not claim that a test proves the whole application is error-free.",
+          "learning_outcome": "Write a concise response that addresses: Explain how you checked one feature in a project and what you observed. Separate what you tested from what you have not tested yet.",
+          "estimated_minutes": 2,
+          "skill_ids": [
+            "english.fluency",
+            "communication.confidence",
+            "communication.professional"
+          ],
+          "source_ids": []
         },
         {
           "id": "speaking-retell",
           "type": "short_response",
           "prompt": "Retell this update in your own words: “The first version is ready. The team found two issues during testing. We will fix them before sharing the next version.”",
           "placeholder": "The update says…",
-          "guidance": "Keep the three facts: first version ready, two issues found, fixes planned before sharing. Do not add an outcome that was not stated."
+          "guidance": "Keep the three facts: first version ready, two issues found, fixes planned before sharing. Do not add an outcome that was not stated.",
+          "learning_outcome": "Write a concise response that addresses: Retell this update in your own words: “The first version is ready. The team found two issues during testing. We will fix them before sharing the next version.”",
+          "estimated_minutes": 2,
+          "skill_ids": [
+            "english.fluency",
+            "communication.confidence",
+            "communication.professional"
+          ],
+          "source_ids": []
         }
       ],
       "example": {
@@ -1545,28 +1870,60 @@
           "type": "short_response",
           "prompt": "Compare reading documentation first with trying a small example first. Give one advantage of each approach, then say when you would choose one.",
           "placeholder": "Reading documentation first can… Trying a small example can… I would choose… when…",
-          "guidance": "Represent both options fairly. Give a real advantage for each and connect your choice to the situation. There is no single correct preference."
+          "guidance": "Represent both options fairly. Give a real advantage for each and connect your choice to the situation. There is no single correct preference.",
+          "learning_outcome": "Write a concise response that addresses: Compare reading documentation first with trying a small example first. Give one advantage of each approach, then say when you would choose one.",
+          "estimated_minutes": 2,
+          "skill_ids": [
+            "english.fluency",
+            "communication.confidence",
+            "communication.professional"
+          ],
+          "source_ids": []
         },
         {
           "id": "opinion-response",
           "type": "short_response",
           "prompt": "Which is more useful when learning a new programming tool: reading documentation first or trying a small example first? Give your opinion and one reason.",
           "placeholder": "I think… because… For example…",
-          "guidance": "There is no single correct opinion. State your preference and support it with a relevant reason or example."
+          "guidance": "There is no single correct opinion. State your preference and support it with a relevant reason or example.",
+          "learning_outcome": "Write a concise response that addresses: Which is more useful when learning a new programming tool: reading documentation first or trying a small example first? Give your opinion and one reason.",
+          "estimated_minutes": 2,
+          "skill_ids": [
+            "english.fluency",
+            "communication.confidence",
+            "communication.professional"
+          ],
+          "source_ids": []
         },
         {
           "id": "opinion-followup",
           "type": "short_response",
           "prompt": "Follow-up: Someone prefers the other approach. How would you acknowledge their view and explain when it might be useful?",
           "placeholder": "That approach can be useful when… I prefer… because…",
-          "guidance": "Acknowledge the alternative fairly. Explain a situation where it helps, then restate your own reason without dismissing the other person."
+          "guidance": "Acknowledge the alternative fairly. Explain a situation where it helps, then restate your own reason without dismissing the other person.",
+          "learning_outcome": "Write a concise response that addresses: Follow-up: Someone prefers the other approach. How would you acknowledge their view and explain when it might be useful?",
+          "estimated_minutes": 2,
+          "skill_ids": [
+            "english.fluency",
+            "communication.confidence",
+            "communication.professional"
+          ],
+          "source_ids": []
         },
         {
           "id": "clarification-request",
           "type": "short_response",
           "prompt": "Write a polite sentence you could use if you did not understand a follow-up question.",
           "placeholder": "Could you please rephrase…?",
-          "guidance": "Ask for clarification directly and respectfully. You are practising a communication strategy, not being graded."
+          "guidance": "Ask for clarification directly and respectfully. You are practising a communication strategy, not being graded.",
+          "learning_outcome": "Write a concise response that addresses: Write a polite sentence you could use if you did not understand a follow-up question.",
+          "estimated_minutes": 2,
+          "skill_ids": [
+            "english.fluency",
+            "communication.confidence",
+            "communication.professional"
+          ],
+          "source_ids": []
         }
       ],
       "example": {
@@ -1616,7 +1973,14 @@
           "transcript": "I tested the application, corrected the error, and explained the result to my teammate.",
           "prompt": "Listen to the phrase, then repeat it once or twice at a comfortable pace. Focus on finishing each word clearly.",
           "placeholder": "Optional note about your attempt…",
-          "guidance": "Use Play spoken message, then repeat the phrase. You can record and edit a transcript or simply practise privately. Notice word endings and pauses; do not try to imitate an accent or force a faster pace."
+          "guidance": "Use Play spoken message, then repeat the phrase. You can record and edit a transcript or simply practise privately. Notice word endings and pauses; do not try to imitate an accent or force a faster pace.",
+          "learning_outcome": "Practise the model phrase and review it using the supplied guidance for: Listen to the phrase, then repeat it once or twice at a comfortable pace. Focus on finishing each word clearly.",
+          "estimated_minutes": 2,
+          "skill_ids": [
+            "english.pronunciation",
+            "english.fluency"
+          ],
+          "source_ids": []
         },
         {
           "id": "repeat-clarification",
@@ -1625,14 +1989,28 @@
           "transcript": "Could you explain that step again, please?",
           "prompt": "Listen and repeat this polite clarification question. Try pausing naturally before “please”.",
           "placeholder": "Optional note about your attempt…",
-          "guidance": "Listen, repeat, and compare with the text. Choose one thing to practise again, such as a comfortable pace or a clear final word. No pronunciation score is produced."
+          "guidance": "Listen, repeat, and compare with the text. Choose one thing to practise again, such as a comfortable pace or a clear final word. No pronunciation score is produced.",
+          "learning_outcome": "Practise the model phrase and review it using the supplied guidance for: Listen and repeat this polite clarification question. Try pausing naturally before “please”.",
+          "estimated_minutes": 2,
+          "skill_ids": [
+            "english.pronunciation",
+            "english.fluency"
+          ],
+          "source_ids": []
         },
         {
           "id": "pronunciation-self-review",
           "type": "reflection",
           "prompt": "What one part of the phrase would you like to practise again: pace, pauses, word endings, or a particular word?",
           "placeholder": "I would like to practise…",
-          "guidance": "This is a private self-review choice. It is not an assessment of your accent, pronunciation accuracy, or confidence."
+          "guidance": "This is a private self-review choice. It is not an assessment of your accent, pronunciation accuracy, or confidence.",
+          "learning_outcome": "Reflect on your own response to: What one part of the phrase would you like to practise again: pace, pauses, word endings, or a particular word?",
+          "estimated_minutes": 2,
+          "skill_ids": [
+            "english.pronunciation",
+            "english.fluency"
+          ],
+          "source_ids": []
         }
       ],
       "example": {
