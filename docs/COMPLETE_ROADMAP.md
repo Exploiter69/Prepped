@@ -340,7 +340,7 @@ Do not convert “the model ran” into “speech accuracy is good.” Do not co
 
 ## 18. Updated product completion plan (2026-11-19)
 
-This is the authoritative A–G execution sequence. Earlier sections are the original research/planning model and historical baseline; use this section plus CURRENT_STATE.md for present implementation truth. Phases A–F are implemented; Phase G is deliberately held until the pre-release manual acceptance gates are complete.
+This is the authoritative A–G execution sequence. Earlier sections are the original research/planning model and historical baseline; use this section plus CURRENT_STATE.md for present implementation truth. Phases A–F are implemented; Phase G engineering is in progress while target-device acceptance remains a final release gate.
 
 ### Current truth
 
