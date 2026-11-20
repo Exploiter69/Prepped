@@ -390,7 +390,11 @@
     }
     if (item.item_type === "career_practice") {
       $("#career-toggle")?.click();
-      const studioTitle = item.target_id.replaceAll("-", " ").toLowerCase();
+      const studioTitle = {
+        "project-explanation": "project explanation",
+        "hr-behavioural": "hr & behavioural",
+        "technical-fundamentals": "technical fundamentals",
+      }[item.target_id] || item.target_id.replaceAll("-", " ").toLowerCase();
       const card = await waitFor(() => [...document.querySelectorAll(".career-studio-card")].find(
         element => element.textContent.toLowerCase().includes(studioTitle)
       ));
