@@ -20,7 +20,7 @@
 - Practice and interview answers have bounded text lengths.
 - Memory cards have bounded front/back/source text lengths and normalized duplicate handling.
 - Voice routes enforce content type, decode/error handling, and bounded upload size before processing.
-- Backup restore caps request size at 25 MiB and record count at 200,000; only known tables/columns and scalar values are accepted.
+- Backup restore caps request size at 25 MiB and record count at 200,000; only known tables/columns and scalar values are accepted. Non-finite floats, integers outside SQLite's signed 64-bit range, and excessively nested JSON are rejected.
 - Backup restore is staged in a temporary SQLite database and checks schema version, constraints, integrity, and foreign keys before replacing the current database.
 - Restore requires explicit UI confirmation and is a full replacement, not a merge.
 - Browser rendering uses text nodes/textContent for learner-controlled content; do not insert user text through `innerHTML`.
