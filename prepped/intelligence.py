@@ -492,6 +492,13 @@ def _generate_day(conn: sqlite3.Connection, curriculum: dict[str, Any], plan_dat
     skills, _ = _skill_evidence(conn, curriculum, _now())
     recommendations = _recommendations(conn, curriculum, skills)
     current = _plan_view(conn, plan)
+    used_memory = used_memory if used_memory is not None else set()
+    used_lessons = used_lessons if used_lessons is not None else set()
+    for existing_item in current["items"]:
+        if existing_item["item_type"] == "lesson":
+            used_lessons.add(existing_item["target_id"])
+        elif existing_item["item_type"] == "memory_review":
+            used_memory.add(existing_item["target_id"])
     if any(item["status"] == "planned" for item in current["items"]):
         return current
     # Preserve completed and skipped work on regeneration; only pending items are replaceable.
@@ -500,8 +507,6 @@ def _generate_day(conn: sqlite3.Connection, curriculum: dict[str, Any], plan_dat
             if item["status"] == "completed" or item["status"] == "skipped":
                 continue
             conn.execute("DELETE FROM adaptive_plan_items WHERE id=?", (item["id"],))
-    used_memory = used_memory if used_memory is not None else set()
-    used_lessons = used_lessons if used_lessons is not None else set()
     remaining = int(plan["available_minutes"])
     day_end = datetime.combine(plan_date + timedelta(days=1), time.min, tzinfo=timezone.utc).isoformat()
     due_rows = conn.execute(
