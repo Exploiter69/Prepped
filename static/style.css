@@ -412,3 +412,90 @@ textarea,.learning-exercise textarea,.learning-order-list select { background:#F
 @media (prefers-reduced-motion:reduce) {
   .learning-track-progressbar span,.learning-step-progress span { transition:none; }
 }
+
+
+/* Stage 3 — focused voice-first practice room */
+.practice-room { padding:clamp(1rem,3vw,2rem); border-radius:20px; background:linear-gradient(155deg,#191c18 0%,var(--panel) 48%); }
+.practice-room-topline { display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; }
+.practice-room-topline>div { display:flex; align-items:center; gap:.85rem; flex-wrap:wrap; }
+.practice-session-label { display:inline-flex; align-items:center; gap:.45rem; color:var(--muted); font-size:.68rem; letter-spacing:.07em; }
+.practice-session-label>span { width:.48rem; height:.48rem; border-radius:50%; background:var(--accent); box-shadow:0 0 0 4px rgba(214,242,119,.1); }
+.practice-progress-track { height:7px; margin:1rem 0 1.3rem; border-radius:99px; overflow:hidden; background:#30352d; }
+.practice-progress-track .progress-bar { border-radius:inherit; background:linear-gradient(90deg,#a8c66c,var(--accent)); transition:width .25s ease; }
+.practice-question-card { padding:clamp(1rem,3vw,1.6rem); border:1px solid #41463b; border-radius:16px; background:rgba(255,255,255,.025); }
+.practice-question-kicker { display:flex; justify-content:space-between; gap:1rem; color:var(--accent); font-size:.68rem; font-weight:750; letter-spacing:.13em; }
+.practice-question-kicker span:last-child { color:var(--muted); font-variant-numeric:tabular-nums; }
+.practice-question-card h2 { margin:.9rem 0 .55rem; font-size:clamp(1.45rem,3.5vw,2rem); }
+.practice-question-card .question-prompt { max-width:70ch; margin:.6rem 0 1.15rem; font-size:clamp(1.08rem,2vw,1.3rem); line-height:1.6; }
+.practice-question-card .spoken-prompt { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:.8rem 1rem; margin:0; padding:.85rem 1rem; border-radius:12px; background:rgba(0,0,0,.16); }
+.spoken-prompt-copy { display:grid; gap:.12rem; }
+.spoken-prompt-hint { color:var(--muted); font-size:.78rem; }
+.practice-question-card .spoken-prompt .voice-status { grid-column:1/-1; }
+.practice-answer-form { margin-top:1.5rem; }
+.practice-response-heading { display:flex; justify-content:space-between; align-items:flex-end; gap:1rem; margin-bottom:.9rem; }
+.practice-response-heading h3 { margin:.2rem 0; font-size:1.18rem; }
+.practice-response-heading p { margin:.2rem 0; color:var(--muted); font-size:.82rem; }
+.practice-input-choice { padding:.35rem .6rem; border:1px solid var(--line); border-radius:99px; color:var(--muted); font-size:.65rem; font-weight:750; letter-spacing:.08em; white-space:nowrap; }
+.voice-recorder { margin:0 0 1rem; padding:1rem 1.1rem; border-radius:14px; background:rgba(255,255,255,.025); }
+.voice-recorder-heading { align-items:center; }
+.voice-recorder-intro { display:flex; align-items:center; gap:.8rem; }
+.voice-recorder-icon { display:grid; place-items:center; width:2.4rem; height:2.4rem; flex:0 0 2.4rem; border-radius:12px; color:var(--accent); background:rgba(214,242,119,.1); font-size:1.2rem; }
+.voice-recorder h4 { margin:0 0 .15rem; font-size:.96rem; }
+.voice-recorder-intro p { margin:0; }
+.voice-recorder .button-primary { color:#17190f; }
+.recording-stage { display:flex; align-items:center; gap:1rem; min-height:58px; margin:.85rem 0 .45rem; padding:.6rem .85rem; border:1px solid var(--line); border-radius:10px; background:rgba(0,0,0,.15); }
+.recording-visualizer { display:flex; align-items:center; justify-content:center; gap:3px; flex:1; height:42px; overflow:hidden; }
+.recording-visualizer span { display:block; width:4px; height:7px; border-radius:99px; background:var(--accent); opacity:.48; transition:height .08s linear,opacity .15s ease; }
+.recording-visualizer.is-active span { opacity:.95; }
+.recording-visualizer.is-fallback.is-active span { animation:practice-wave .8s ease-in-out infinite alternate; }
+.recording-visualizer.is-fallback.is-active span:nth-child(3n) { animation-delay:-.45s; }
+.recording-visualizer.is-fallback.is-active span:nth-child(3n + 1) { animation-delay:-.2s; }
+@keyframes practice-wave { from { height:7px; } to { height:31px; } }
+.recording-clock { min-width:7.2rem; color:var(--muted); font-size:.76rem; font-variant-numeric:tabular-nums; text-align:right; }
+.practice-transcript-heading { display:flex; align-items:center; justify-content:space-between; gap:.8rem; margin:.25rem 0 .45rem; }
+.practice-transcript-heading label { margin:0; }
+.response-draft-state { color:var(--muted); font-size:.72rem; text-align:right; }
+.practice-room textarea { min-height:155px; border-color:#42483d; background:#121510; border-radius:12px; }
+.practice-room textarea:focus { border-color:var(--accent); }
+.practice-room .input-meta { gap:1rem; }
+.practice-submit-row { display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-top:1rem; }
+.practice-submit-row .action-group { justify-content:flex-end; }
+.practice-privacy { margin-top:1.2rem; padding-top:.85rem; border-top:1px solid var(--line); color:var(--muted); font-size:.78rem; }
+.practice-privacy summary { width:max-content; max-width:100%; cursor:pointer; color:var(--muted); }
+.practice-privacy summary:hover { color:var(--text); }
+.practice-privacy .privacy-note { margin:.7rem 0 0; padding:0; border:0; font-size:.78rem; }
+.practice-review { border-radius:20px; }
+.practice-review-heading { display:flex; align-items:center; gap:1rem; margin:.7rem 0 1.3rem; }
+.practice-review-heading h2 { margin:.2rem 0 .35rem; }
+.practice-review-heading .scenario-description { margin:0; }
+.practice-review-mark { display:grid; place-items:center; width:3rem; height:3rem; flex:0 0 3rem; border-radius:14px; color:var(--accent); background:rgba(214,242,119,.12); font-size:1.3rem; }
+.practice-review .notice { border-radius:0 12px 12px 0; }
+.practice-review .feedback-list { gap:.9rem; }
+.practice-review .feedback-card { border-radius:13px; padding:1.1rem; }
+.practice-review .review-actions { margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--line); }
+@media (max-width:700px) {
+  .practice-room { padding:.9rem; border-radius:15px; }
+  .practice-question-card .spoken-prompt { grid-template-columns:1fr; }
+  .practice-response-heading { align-items:flex-start; }
+  .voice-recorder-heading { align-items:flex-start; }
+  .voice-recorder-heading .voice-actions { width:100%; }
+  .voice-recorder-heading .voice-actions .button { flex:1; }
+  .practice-submit-row { align-items:stretch; flex-direction:column; }
+  .practice-submit-row>.button,.practice-submit-row>.action-group { width:100%; }
+  .practice-submit-row .action-group>.button { flex:1; }
+}
+@media (max-width:420px) {
+  .practice-room-topline { align-items:flex-start; }
+  .practice-session-label { width:100%; }
+  .practice-response-heading { flex-direction:column; }
+  .practice-input-choice { align-self:flex-start; }
+  .practice-transcript-heading { align-items:flex-start; flex-direction:column; }
+  .response-draft-state { text-align:left; }
+  .recording-stage { gap:.5rem; padding:.5rem; }
+  .recording-clock { min-width:6.5rem; font-size:.68rem; }
+  .practice-review-heading { align-items:flex-start; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .recording-visualizer.is-fallback.is-active span { animation:none; height:12px; }
+  .practice-progress-track .progress-bar { transition:none; }
+}
