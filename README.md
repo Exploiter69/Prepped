@@ -158,7 +158,7 @@ The text feedback system is frozen for this phase. Do not keep adding phrase heu
 
 ## Current status (2026-11-20)
 
-Phases A–F are implemented on `feature/learner-profile`. The latest full CI run is green: [100 passed, 2 skipped, 1 warning](https://github.com/Exploiter69/Prepped/actions/runs/44653868798), including dependency audit, Python compilation, all JavaScript syntax checks, API tests, and Chromium browser acceptance. The two skips require `espeak-ng`, which is not installed on the hosted runner.
+Phases A–F are implemented on `feature/learner-profile`. The latest full CI run is green: [100 passed, 2 skipped, 1 warning](https://github.com/Exploiter69/Prepped/actions/runs/44655380427), including dependency audit, Python compilation, all JavaScript syntax checks, API tests, and Chromium browser acceptance. The two skips require `espeak-ng`, which is not installed on the hosted runner.
 
 This is not yet a release and is not a claim of target-device acceptance. Manual Omarchy checks remain for all learner journeys, microphone/STT/TTS behaviour, backup/recovery, keyboard/screen-reader, contrast, and responsive layout. Phase G release hardening has not started. See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md) and [the acceptance checklist](docs/ACCEPTANCE_CHECKLIST.md).
 
@@ -180,7 +180,7 @@ Answers can be typed or recorded and transcribed through the existing optional v
 
 Completed interviews show question-by-question formative reflection with the original answer and transparent text signals. This is not a technical correctness grader, recruiter evaluation, or placement predictor. Sessions are stored locally, can be resumed/retried/deleted, and a learner can explicitly send an answer to the Phase D memory editor for review before saving.
 
-The studio content is versioned in `content/career-studios.v1.json`. API routes are under `/api/career`. No paid service, account, remote LLM interviewer, or additional infrastructure is required. Current full-suite CI covers the studios: [100 passed, 2 skipped](https://github.com/Exploiter69/Prepped/actions/runs/44653868798); the two skips require `espeak-ng`. Target-device microphone/TTS and responsive acceptance remain manual checks; see [the acceptance checklist](docs/ACCEPTANCE_CHECKLIST.md).
+The studio content is versioned in `content/career-studios.v1.json`. API routes are under `/api/career`. No paid service, account, remote LLM interviewer, or additional infrastructure is required. Current full-suite CI covers the studios: [100 passed, 2 skipped](https://github.com/Exploiter69/Prepped/actions/runs/44655380427); the two skips require `espeak-ng`. Target-device microphone/TTS and responsive acceptance remain manual checks; see [the acceptance checklist](docs/ACCEPTANCE_CHECKLIST.md).
 
 
 ## Progress, goals, and portability (Phase F)
