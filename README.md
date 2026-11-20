@@ -162,7 +162,7 @@ The text feedback system is frozen for this phase. Do not keep adding phrase heu
 
 Phases A–F are implemented on `feature/learner-profile`. The latest full CI run is green: [112 passed, 2 skipped, 1 warning](https://github.com/Exploiter69/Prepped/actions/runs/44721637341), including dependency audit, Python compilation, all JavaScript syntax checks, API tests, and Chromium browser acceptance. The two skips require `espeak-ng`, which is not installed on the hosted runner.
 
-This is not yet a release and is not a claim of target-device acceptance. Phase G engineering hardening is implemented; manual Omarchy checks remain for all learner journeys, microphone/STT/TTS behaviour, backup/recovery, keyboard/screen-reader, contrast, and responsive layout. See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md), [the A–F learner checklist](docs/ACCEPTANCE_CHECKLIST.md), and [the Phase G release record](docs/PHASE_G_ACCEPTANCE.md).
+This is not yet a release and is not a claim of target-device acceptance. Phase G engineering hardening and Phase H adaptive learning implementation pass automated CI; manual Omarchy checks remain for learner journeys, microphone/STT/TTS behaviour, backup/recovery, keyboard/screen-reader, contrast, and responsive layout. See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md), [the A–F learner checklist](docs/ACCEPTANCE_CHECKLIST.md), and [the Phase G release record](docs/PHASE_G_ACCEPTANCE.md).
 
 
 ## Personal learning memory and revision (Phase D)
@@ -201,7 +201,7 @@ The Progress workspace now includes an evidence-backed learner skill profile, ex
 
 Learners can generate a daily plan or seven-day plan, set a time budget, add lessons/interview/project practice, reorder or skip suggestions, and see completion only when the linked source activity is saved. Recommendations use repeated closed-exercise review needs, prerequisites, profile routes, due revisions, and active goals. The implementation adapts sequence and selection only; the curriculum has no difficulty metadata, so no difficulty scoring or generated exercises are claimed.
 
-This is deterministic local adaptation, not an AI tutor, proficiency assessment, or validated learning model. See [Phase H implementation and acceptance gates](docs/PHASE_H_ACCEPTANCE.md). Final CI for the exact Phase H commit and manual Omarchy acceptance remain outstanding.
+This is deterministic local adaptation, not an AI tutor, proficiency assessment, or validated learning model. See [Phase H implementation and acceptance gates](docs/PHASE_H_ACCEPTANCE.md). Automated CI is green: [134 passed, 2 optional skips, 1 warning](https://github.com/Exploiter69/Prepped/actions/runs/44732997261). Manual Omarchy and learner acceptance remain outstanding.
 
 
 Progress is evidence of saved activity, not proficiency, learning gains, confidence measurement, hiring likelihood, or placement prediction. The optional student usability pilot has not been run; no results are claimed.
