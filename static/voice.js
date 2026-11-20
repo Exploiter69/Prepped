@@ -627,6 +627,7 @@
   function setQuestion(text) {
     stopAll();
     state.questionText = typeof text === "string" ? text.trim() : "";
+    if (ui.recordingClock) ui.recordingClock.textContent = "00:00 / " + formatClock(recordingLimitSeconds());
     setVoiceError("");
     setRecordStatus("");
     setTtsStatus("");
