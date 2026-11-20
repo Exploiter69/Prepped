@@ -187,7 +187,7 @@ The studio content is versioned in `content/career-studios.v1.json`. API routes 
 
 ## Progress, goals, and portability (Phase F)
 
-The Progress workspace combines saved lesson completions and linked skill evidence with project-practice sessions, career interviews, memory reviews, due notes, recent activity, and a seven-day activity view. Skill coverage is based on completed curriculum lessons; it is not a proficiency score or prediction.
+The Progress workspace combines saved activity with source-linked skill evidence, project-practice sessions, Career interviews, learner-approved memory reviews, due revision, recent activity, and daily/weekly plans. Authored closed-exercise outcomes are separated from open self-review and practice activity. The HR/behavioural and technical Career skills whose curriculum lessons are still planned are labelled accordingly. No proficiency score or prediction is produced.
 
 Learners can create, edit, archive, restore, and delete goals for completed lessons, project-practice sessions, interviews, and memory reviews. Goal counts begin when the goal is created. Recommendations explain whether they are based on a saved profile route, an unfinished lesson, due memory notes, or an active goal. You can dismiss a suggestion and restore it later; that choice is saved locally and included in backups.
 
