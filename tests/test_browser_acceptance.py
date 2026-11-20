@@ -743,3 +743,82 @@ def test_mobile_layout_has_no_horizontal_page_overflow(local_app_url: str, brows
         "() => document.querySelector('#progress-status').textContent.startsWith('Updated')"
     )
     assert_no_horizontal_overflow()
+
+
+def _deferred_microphone_script() -> str:
+    return """
+    window.__stoppedTracks = 0;
+    window.__createdRecorders = 0;
+    Object.defineProperty(navigator.mediaDevices, "getUserMedia", {
+      configurable: true,
+      value: () => new Promise(resolve => {
+        window.__resolveMicrophone = () => resolve({
+          getTracks: () => [{ stop: () => { window.__stoppedTracks += 1; } }]
+        });
+      })
+    });
+    window.MediaRecorder = class {
+      constructor() { window.__createdRecorders += 1; this.state = "inactive"; }
+      static isTypeSupported() { return false; }
+    };
+    """
+
+
+def _mock_available_voice_status(page) -> None:
+    page.route(
+        "**/api/voice/status",
+        lambda route: route.fulfill(
+            status=200,
+            content_type="application/json",
+            body='{"stt":{"available":true,"engine":"vosk","detail":"Mock speech engine ready."},"tts":{"available":false}}',
+        ),
+    )
+
+
+def test_learning_discards_late_microphone_permission_after_navigation(local_app_url: str, browser_page) -> None:
+    page = browser_page
+    _mock_available_voice_status(page)
+    page.add_init_script(_deferred_microphone_script())
+    page.goto(local_app_url)
+    page.locator("#learning-toggle").click()
+    page.locator('button[data-lesson-id="sentence-building"]').click()
+    page.locator('input[name="learning-choice"][value="b"]').check()
+    page.locator("#learning-submit").click()
+    page.wait_for_function(
+        "() => document.querySelector('#learning-exercise-count').textContent === 'Exercise 2 of 3'"
+    )
+    for position, token in enumerate(["a", "b", "c", "d"]):
+        page.locator(".learning-order-select").nth(position).select_option(token)
+    page.locator("#learning-submit").click()
+    page.wait_for_function(
+        "() => document.querySelector('#learning-exercise-count').textContent === 'Exercise 3 of 3'"
+    )
+
+    page.get_by_role("button", name="Record spoken response").click()
+    page.wait_for_function("() => typeof window.__resolveMicrophone === 'function'")
+    page.locator("#progress-toggle").click()
+    page.evaluate("window.__resolveMicrophone()")
+    page.wait_for_function("() => window.__stoppedTracks === 1")
+
+    assert page.evaluate("window.__createdRecorders") == 0
+    assert page.locator("#progress-view").is_visible()
+
+
+def test_career_discards_late_microphone_permission_after_navigation(local_app_url: str, browser_page) -> None:
+    page = browser_page
+    _mock_available_voice_status(page)
+    page.add_init_script(_deferred_microphone_script())
+    page.goto(local_app_url)
+    page.locator("#career-toggle").click()
+    page.locator(".career-studio-card button").first.click()
+    page.locator("#career-start").click()
+    page.locator("#career-active").wait_for(state="visible")
+
+    page.locator("#career-record").click()
+    page.wait_for_function("() => typeof window.__resolveMicrophone === 'function'")
+    page.locator("#learning-toggle").click()
+    page.evaluate("window.__resolveMicrophone()")
+    page.wait_for_function("() => window.__stoppedTracks === 1")
+
+    assert page.evaluate("window.__createdRecorders") == 0
+    assert page.locator("#learning-view").is_visible()
