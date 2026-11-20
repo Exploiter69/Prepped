@@ -8,8 +8,8 @@
 
 ### H1 — Evidence-backed learner skill profile
 
-- Skill records are derived from the existing versioned curriculum's active skill IDs; there is no duplicated persistent learner-skill table.
-- Lesson attempts, authored closed-exercise outcomes, open self-review responses, project-practice activity, Career studio activity, and explicitly learner-approved lesson-, project-practice-, and Career-session-linked memory reviews are represented as distinct evidence types. The HR/behavioural and technical Career skills whose curriculum lessons are still marked planned appear only as clearly labelled practice-evidence views; no missing lesson curriculum is implied. The two planned curriculum skills are included only as clearly labelled practice-evidence views for their already implemented Career studios; no missing lesson curriculum is implied.
+- Skill records are derived from the existing versioned curriculum's active skill IDs. The HR/behavioural and technical IDs are also surfaced only as clearly labelled practice-evidence views for their already implemented Career studios while their curriculum lessons remain planned; no missing lesson curriculum is implied. There is no duplicated persistent learner-skill table.
+- Lesson attempts, authored closed-exercise outcomes, open self-review responses, project-practice activity, Career studio activity, and explicitly learner-approved lesson-, project-practice-, and Career-session-linked memory reviews are represented as distinct evidence types.
 - Closed-exercise correctness is included only for authored choice, vocabulary, listening, and ordering exercises where the existing lesson engine already has an answer key.
 - Reflection, short response, pronunciation self-review, project practice, Career sessions, and Career heuristic feedback are never treated as objectively graded performance.
 - Evidence shows source type/ID, activity title, timestamp, freshness, count/coverage, and explicit limitations. Evidence lists are bounded to recent source records.
