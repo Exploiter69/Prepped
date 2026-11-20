@@ -20,6 +20,10 @@
     generation: 0,
     transcriptionController: null,
     ttsController: null,
+    audioContext: null,
+    analyser: null,
+    visualizerSource: null,
+    visualizerFrame: null,
   };
 
   const ui = {};
@@ -37,6 +41,9 @@
     ui.answer = document.getElementById("answer-input");
     ui.privacyNote = document.getElementById("privacy-note");
     ui.privacySummary = document.getElementById("privacy-summary");
+    ui.visualizer = document.getElementById("recording-visualizer");
+    ui.recordingClock = document.getElementById("recording-clock");
+    ui.draftState = document.getElementById("response-draft-state");
   }
 
   function setRecordStatus(message, tone = "") {
@@ -68,6 +75,76 @@
     return state.status?.limits?.max_recording_seconds || 60;
   }
 
+  function formatClock(seconds) {
+    const safe = Math.max(0, Math.floor(seconds));
+    return String(Math.floor(safe / 60)).padStart(2, "0") + ":" + String(safe % 60).padStart(2, "0");
+  }
+
+  function stopVisualizer() {
+    if (state.visualizerFrame !== null) {
+      window.cancelAnimationFrame(state.visualizerFrame);
+      state.visualizerFrame = null;
+    }
+    try { state.visualizerSource?.disconnect(); } catch (error) {}
+    state.visualizerSource = null;
+    state.analyser = null;
+    const context = state.audioContext;
+    state.audioContext = null;
+    if (context && context.state !== "closed") context.close().catch(() => {});
+    if (ui.visualizer) {
+      ui.visualizer.classList.remove("is-active", "is-fallback");
+      for (const bar of ui.visualizer.querySelectorAll("span")) bar.style.height = "7px";
+    }
+  }
+
+  function startVisualizer(stream) {
+    if (!ui.visualizer) return;
+    stopVisualizer();
+    ui.visualizer.classList.add("is-active");
+    const bars = Array.from(ui.visualizer.querySelectorAll("span"));
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) {
+      ui.visualizer.classList.add("is-fallback");
+      return;
+    }
+    try {
+      const context = new AudioContextClass();
+      const analyser = context.createAnalyser();
+      analyser.fftSize = 128;
+      const source = context.createMediaStreamSource(stream);
+      source.connect(analyser);
+      state.audioContext = context;
+      state.analyser = analyser;
+      state.visualizerSource = source;
+      const samples = new Uint8Array(analyser.fftSize);
+      context.resume().catch(() => {});
+      const draw = () => {
+        if (!state.recording || state.analyser !== analyser) return;
+        if (context.state !== "running") {
+          ui.visualizer.classList.add("is-fallback");
+        } else {
+          ui.visualizer.classList.remove("is-fallback");
+          analyser.getByteTimeDomainData(samples);
+          const windowSize = Math.max(1, Math.floor(samples.length / Math.max(1, bars.length)));
+          bars.forEach((bar, index) => {
+            let energy = 0;
+            const first = index * windowSize;
+            for (let sample = first; sample < Math.min(samples.length, first + windowSize); sample += 1) {
+              const amplitude = (samples[sample] - 128) / 128;
+              energy += amplitude * amplitude;
+            }
+            const rms = Math.sqrt(energy / windowSize);
+            bar.style.height = (7 + Math.min(31, rms * 72)) + "px";
+          });
+        }
+        state.visualizerFrame = window.requestAnimationFrame(draw);
+      };
+      state.visualizerFrame = window.requestAnimationFrame(draw);
+    } catch (error) {
+      ui.visualizer.classList.add("is-fallback");
+    }
+  }
+
   function updateControls() {
     if (!ui.record) return;
     const sttReady = supportsRecording() && Boolean(state.status?.stt?.available);
@@ -77,6 +154,7 @@
     ui.record.disabled = state.busy || !sttReady || recordingOrTranscribing;
     ui.record.textContent = state.recording ? "Recording…" : "Start recording";
     ui.record.classList.toggle("recording", state.recording);
+    ui.visualizer?.classList.toggle("is-active", state.recording);
     ui.stopRecord.disabled = state.busy || !state.recording;
     ui.stopRecord.textContent = state.transcribing ? "Transcribing…" : "Stop recording";
 
@@ -313,6 +391,7 @@
       `Recording… ${elapsed}s / ${limit}s. Press Stop recording when finished.`,
       "recording"
     );
+    if (ui.recordingClock) ui.recordingClock.textContent = formatClock(elapsed) + " / " + formatClock(limit);
     if (elapsed >= limit) {
       stopRecording(false, `Recording reached the ${limit}-second limit; transcribing now.`);
     }
@@ -404,6 +483,8 @@
       updateControls();
       return;
     }
+    startVisualizer(state.stream);
+    if (ui.recordingClock) ui.recordingClock.textContent = "00:00 / " + formatClock(recordingLimitSeconds());
     state.timerId = window.setInterval(updateRecordingTimer, 250);
     setRecordStatus(`Recording… 0s / ${recordingLimitSeconds()}s. Press Stop recording when finished.`, "recording");
     updateControls();
@@ -413,6 +494,7 @@
     if (!state.recording && !state.recorder) return;
     state.discardRecording = discard;
     clearTimer();
+    stopVisualizer();
     releaseStream();
     const recorder = state.recorder;
     state.recording = false;
@@ -433,6 +515,7 @@
 
   async function finishRecording() {
     clearTimer();
+    stopVisualizer();
     releaseStream();
     const recorder = state.recorder;
     state.recorder = null;
@@ -515,6 +598,7 @@
     ui.answer.dispatchEvent(new Event("input", { bubbles: true }));
     ui.answer.focus();
     ui.answer.setSelectionRange(ui.answer.value.length, ui.answer.value.length);
+    if (ui.draftState) ui.draftState.textContent = "Transcript added · review before saving";
     setRecordStatus(
       truncated
         ? "Transcript added, but it was cut at the 6,000-character limit. Edit before saving."
@@ -534,6 +618,7 @@
       stopRecording(true);
     }
     clearTimer();
+    stopVisualizer();
     releaseStream();
     setVoiceError("");
     updateControls();
