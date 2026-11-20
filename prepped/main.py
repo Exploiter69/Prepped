@@ -150,6 +150,7 @@ def create_app(
                     parsed_origin.port
                     valid_origin = (
                         parsed_origin.scheme in {"http", "https"}
+                        and parsed_origin.scheme == request.url.scheme
                         and bool(parsed_origin.hostname)
                         and parsed_origin.username is None
                         and parsed_origin.password is None
