@@ -32,8 +32,8 @@ def test_learner_content_is_not_written_through_html_string_sinks() -> None:
         "progress.js",
     )
     forbidden = re.compile(
-        r"\\.(?:innerHTML|outerHTML)\\s*(?:=|\\+=)|"
-        r"\\binsertAdjacentHTML\\s*\\(|\\bdocument\\.write\\s*\\("
+        r"\.(?:innerHTML|outerHTML)\s*(?:=|\+=)|"
+        r"\binsertAdjacentHTML\s*\(|\bdocument\.write\s*\("
     )
     for filename in scripts:
         source = (ROOT / "static" / filename).read_text(encoding="utf-8")
