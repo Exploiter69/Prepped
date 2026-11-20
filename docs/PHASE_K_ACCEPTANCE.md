@@ -1,6 +1,6 @@
 # Phase K — Security, Privacy, Data Protection & Reliability
 
-**Status:** Engineering implementation and exact-commit GitHub Actions passed on commit f0d4dd14673392ea90787a7029873be11f89b69b ([run 44750831526](https://github.com/Exploiter69/Prepped/actions/runs/44750831526)): 168 passed, 2 skipped, 0 warnings. pip-audit scanned 73 resolved dependencies with 0 known vulnerabilities; pip-licenses produced 68 distribution records. User laptop verification and disposable-data recovery drills remain open. The repository's own licence is undeclared; no redistribution permission is implied. This is not a security certification.
+**Status:** Phase K engineering controls are implemented. On commit ec623c4, the user's target laptop passed 170 tests with no warnings and confirmed data/ mode 0700 plus SQLite mode 0600. Exact-commit CI for the added restore-interruption and backup-confidentiality regressions is running on commit 1405129; update this record after it completes. The earlier full dependency audit found 0 known vulnerabilities across 73 resolved dependencies and reviewed 68 licence records. A real OS-level kill during restore has not been performed; the new regression injects a worker interruption after staging and verifies recovery. The project licence is undeclared, so redistribution remains blocked. This is not a security certification.
 
 **Scope:** local, single-user, loopback-only application. No LAN/public deployment, reverse proxy, tunnel, multi-user accounts, authentication, or hosted database is supported or authorised.
 
@@ -76,7 +76,7 @@ Application-level backup encryption is deferred. Adding encryption without a rel
 | Request size bounds | 1 MiB JSON, 12 MiB voice, 25 MiB restore ASGI limits | Passed in CI; laptop run pending |
 | File permissions and symlink | POSIX 0700/0600 assertions, symlink/non-regular rejection | Passed in CI; laptop run pending |
 | SQL transaction rollback | Process-level exception rollback and subsequent integrity check | Passed in CI; laptop run pending |
-| Restore validation/rollback | Existing malformed, numeric, nested, size, row, FK and schema-compatibility tests | Passed in CI; laptop run pending |
+| Restore validation/rollback | Malformed, numeric, nested, size, row, FK, schema compatibility, injected worker interruption and trusted-backup recovery | Existing cases passed; new interruption test pending exact-commit CI |
 | Deletion cascades | Session answers, Career turns, Memory reviews | Passed in CI; laptop run pending |
 | Safe DOM sinks | Static test across all learner-facing JS modules | Passed in CI; laptop run pending |
 | Voice data disclosure | Existing adapter/status/error tests; raw audio remains in memory | Passed in CI; laptop run pending |
@@ -87,18 +87,19 @@ Application-level backup encryption is deferred. Adding encryption without a rel
 
 Automated failure simulations and regression tests are recorded in the exact CI run. The remaining checks below must use disposable data and must not endanger the only learner database.
 
-- [ ] On the target Linux machine, verify default data/ mode 0700 and DB mode 0600 after starting Prepped.
+- [x] On the target Linux machine, verify default data/ mode 0700 and DB mode 0600 after starting Prepped (user-reported `stat` output on commit ec623c4).
 - [x] POSIX permission-denied simulation: a custom read-only database directory rejects creation cleanly; passed in CI. Target-device confirmation is optional.
 - [x] SQLite disk-full simulation: PRAGMA max_page_count forces a bounded database-full failure; transaction rolls back and integrity_check remains ok. No real filesystem was filled.
-- [ ] Interrupt a restore while using a disposable DB, then check /api/ready, SQLite integrity, and restore from a trusted backup.
+- [ ] Perform a real OS-level interruption during restore on a disposable DB, then check /api/ready, SQLite integrity, and restore from a trusted backup. The new automated regression simulates a worker failure after staging but before commit; it is not a power-loss/process-kill drill.
 - [x] Schema-3 upgrade regression test: preserved session/answer data, adaptive tables recreated, foreign keys and integrity pass in CI. A real user DB must still be backed up before any local upgrade.
 - [ ] Verify remote Groq disclosure/provider selection only if the optional key is already configured; never use confidential audio.
 - [x] CI audit artifacts reviewed: 0 known vulnerabilities across 73 dependencies; 68 licence records; Piper GPL-3.0-or-later; project package UNKNOWN.
-- [ ] Recheck backup confidentiality, delete/cascade semantics, and the limitations in this document.
+- [x] Automated backup-confidentiality regression checks that environment-secret canaries and audio/secret fields are absent from the fixed export schema, with no-store/nosniff response headers. Export remains intentionally unencrypted; keep files private.
+- [x] Delete/cascade semantics and data lifecycle limitations are covered by regression tests and the personal-data inventory.
 - [ ] Choose and declare a project licence before any package/source redistribution; do not treat the current UNKNOWN metadata as permission.
 
 ## Exit decision
 
-Phase K may be marked engineering-complete only when the exact-commit local tests and GitHub Actions pass, dependency and licence artifacts have been reviewed, and there is no knowingly unresolved critical/high-severity issue. Manual disposable-data disk/permission/interruption tests must be recorded as passed or explicitly unavailable with reason before calling the local release candidate accepted.
+Phase K engineering completion requires the latest exact-commit CI and local tests to pass, dependency and licence artifacts to be reviewed, and no knowingly unresolved critical/high-severity issue. The user's laptop permission modes are verified; permission-denied and disk-full simulations are automated. The restore-interruption regression exercises a worker failure after staging and then restores a trusted backup, but a real OS-level kill/power-loss rehearsal remains a target-device check and must be recorded as unavailable if not safely performed. Groq-specific checks are conditional on the optional provider being configured. The local release candidate is not accepted until remaining manual checks are passed or explicitly deferred with reason.
 
 No third-party penetration test, legal review, secure-erasure guarantee, security certification, or public deployment approval is claimed.
