@@ -1108,3 +1108,43 @@ def test_project_transcription_request_is_aborted_when_leaving_practice(local_ap
     page.locator("#career-toggle").click()
     assert page.evaluate("window.__practiceSttSignal.aborted") is True
     assert page.locator("#career-view").is_visible()
+
+
+def test_practice_room_redesign_has_accessible_progress_and_editable_draft(local_app_url: str, browser_page) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+    page.locator("#practice-toggle").click()
+    page.locator("#start-button").click()
+    page.locator("#practice-view").wait_for(state="visible")
+
+    progress = page.locator("#practice-progress-track")
+    assert progress.get_attribute("role") == "progressbar"
+    assert progress.get_attribute("aria-valuenow") == "0"
+    assert progress.get_attribute("aria-valuemax") == "5"
+    assert page.locator("#recording-visualizer span").count() == 24
+    assert page.locator("#answer-input").is_visible()
+    assert page.locator("#practice-privacy summary").inner_text() == "How your voice and answers are handled"
+
+    page.locator("#answer-input").fill("I built a small API and verified it with automated tests.")
+    assert page.locator("#response-draft-state").inner_text() == "Draft in progress · not saved"
+    page.locator("#submit-button").click()
+    page.wait_for_function("() => document.querySelector('#practice-progress-track').getAttribute('aria-valuenow') === '1'")
+    assert page.locator("#practice-progress-track").get_attribute("aria-valuetext") == "1 of 5 questions saved"
+
+
+def test_practice_visualizer_is_active_only_during_microphone_capture(local_app_url: str, browser_page) -> None:
+    page = browser_page
+    _mock_available_voice_status(page)
+    page.add_init_script(_recording_and_deferred_transcription_script("__practiceVisualiserSignal"))
+    page.goto(local_app_url)
+    page.locator("#practice-toggle").click()
+    page.locator("#start-button").click()
+    page.locator("#practice-view").wait_for(state="visible")
+
+    page.locator("#record-button").click()
+    page.wait_for_function("() => document.querySelector('#record-status').textContent.startsWith('Recording')")
+    assert "is-active" in (page.locator("#recording-visualizer").get_attribute("class") or "")
+    page.locator("#stop-recording-button").click()
+    page.wait_for_function("() => window.__practiceVisualiserSignal !== undefined")
+    assert "is-active" not in (page.locator("#recording-visualizer").get_attribute("class") or "")
+    assert page.locator("#record-status").inner_text().startswith("Transcribing locally")
