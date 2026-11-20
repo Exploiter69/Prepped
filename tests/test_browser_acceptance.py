@@ -927,3 +927,32 @@ def test_career_review_can_add_next_practice_to_adaptive_plan(local_app_url: str
         and item["target_id"] == "project-explanation"
         for item in plan["items"]
     )
+
+
+def test_project_prompt_audio_request_is_aborted_when_leaving_practice(local_app_url: str, browser_page) -> None:
+    page = browser_page
+    page.add_init_script("""
+        (() => {
+          const originalFetch = window.fetch.bind(window);
+          window.fetch = (input, init = {}) => {
+            if (String(input).includes("/api/voice/tts")) {
+              window.__practiceTtsSignal = init.signal;
+              return new Promise((resolve, reject) => {
+                init.signal?.addEventListener("abort", () => {
+                  reject(new DOMException("Aborted", "AbortError"));
+                }, { once: true });
+                window.__resolvePracticeTts = () => resolve(new Response(new Blob(["wav"]), { status: 200 }));
+              });
+            }
+            return originalFetch(input, init);
+          };
+        })();
+    """)
+    page.goto(local_app_url)
+    page.locator("#start-button").click()
+    page.locator("#practice-view").wait_for(state="visible")
+    page.locator("#tts-play-button").click()
+    page.wait_for_function("() => window.__practiceTtsSignal !== undefined")
+    page.locator("#career-toggle").click()
+    assert page.evaluate("window.__practiceTtsSignal.aborted") is True
+    assert page.locator("#career-view").is_visible()
