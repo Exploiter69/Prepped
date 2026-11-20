@@ -28,6 +28,22 @@
 - Host and Origin validation, CSP, no CORS, no-store API headers, and controlled public voice errors are retained. Unexpected voice errors no longer log exception text or traceback.
 - SQL foreign keys are enabled on each application connection. Session, Career session, and Memory deletion cascade to their dependent answer/turn/review rows.
 
+## API and route review inventory
+
+| Route group | Surface reviewed | Validation / safety boundary |
+|---|---|---|
+| Core practice | /api/health, /api/ready, scenario read, session create/list/read/answer/cancel/feedback/retry/delete | Pydantic answer limits, expected-question state checks, parameterized values, session deletion cascade |
+| Learner profile | GET/PUT /api/profile | Enumerated goals/focus, bounded text and study-year validation |
+| Learning | catalogue, recommendations, attempt create/read/response, diagnostic, progress | Versioned curriculum loader/linter, bounded exercise responses, stable lesson IDs, parameterized persistence |
+| Learning memory | item list/create/read/update/status/dismiss/restore/delete, review queue/history/stats | Bounded front/back/source fields, fixed update-field allowlist, parameterized values, duplicate checks, review cascade |
+| Progress and goals | overview, recommendation dismiss/restore, goal CRUD/archive/restore | Literal goal/recommendation enums, bounded text/counts, parameterized IDs and values |
+| Adaptive intelligence | overview/catalogue, daily/weekly plans, item create/update, recommendation preferences | Date/range/enumeration validation, bounded plans and item fields, deterministic local logic |
+| Career studios | catalogue, session create/list/read/answer/feedback/retry/delete | Versioned authored content, bounded answer length, fixed studio/difficulty IDs, session state checks, turn cascade |
+| Voice | engine status, streamed transcription, local TTS | 12 MiB cap, 60-second decode bound, TTS text cap, explicit remote STT status/disclosure, timeout handling, no raw-audio files |
+| Data portability | status/export/restore | Fixed table list, schema/column/type validation, 25 MiB/200,000-row caps, staged DB, integrity/FK checks |
+
+SQL value inputs are parameterized. The few dynamic SQL identifiers are constrained to internal constants: Memory update fields are a fixed tuple; portability table names are a fixed tuple and column names come from the freshly initialized internal schema. No client-provided SQL identifier is accepted.
+
 ## Personal-data lifecycle
 
 The complete inventory and retention/export/deletion/recipient table is maintained in RELEASE_HARDENING.md under Personal-data inventory and lifecycle.

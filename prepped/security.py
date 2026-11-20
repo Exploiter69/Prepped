@@ -20,7 +20,7 @@ class RequestSizeLimitMiddleware:
         self.app = app
 
     async def __call__(self, scope: dict[str, Any], receive: Callable[..., Any], send: Callable[..., Any]) -> None:
-        if scope.get("type") != "http" or scope.get("method") not in {"POST", "PUT", "PATCH"}:
+        if scope.get("type") != "http" or scope.get("method") not in {"POST", "PUT", "PATCH", "DELETE"}:
             await self.app(scope, receive, send)
             return
         path = scope.get("path", "")

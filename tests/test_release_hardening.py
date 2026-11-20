@@ -95,3 +95,34 @@ def test_request_size_middleware_rejects_invalid_content_length(tmp_path: Path) 
             headers={"Content-Type": "application/json", "Content-Length": "not-a-number"},
         )
     assert response.status_code == 400
+
+
+def test_chunked_api_body_limit_is_enforced_without_content_length() -> None:
+    import asyncio
+    from prepped.security import RequestSizeLimitMiddleware
+
+    messages = iter((
+        {"type": "http.request", "body": b"a" * 700_000, "more_body": True},
+        {"type": "http.request", "body": b"b" * 400_000, "more_body": False},
+    ))
+    sent = []
+
+    async def receive():
+        return next(messages)
+
+    async def send(message):
+        sent.append(message)
+
+    async def app(scope, receive, send):
+        await receive()
+        await receive()
+
+    middleware = RequestSizeLimitMiddleware(app)
+    scope = {
+        "type": "http",
+        "method": "POST",
+        "path": "/api/profile",
+        "headers": [],
+    }
+    asyncio.run(middleware(scope, receive, send))
+    assert sent[0]["status"] == 413

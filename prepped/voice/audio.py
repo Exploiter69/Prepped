@@ -63,12 +63,10 @@ def decode_audio_to_pcm(
         ) from exc
 
     if result.returncode != 0:
-        detail = result.stderr.decode("utf-8", errors="replace").strip()
-        if detail:
-            detail = detail.splitlines()[-1][:240]
+        # Decoder diagnostics can contain user-controlled container metadata.
+        # Keep those details out of API responses and logs.
         raise InvalidAudio(
             "The browser recording could not be decoded. Try recording again or type your answer instead."
-            + (f" Decoder detail: {detail}" if detail else "")
         )
 
     pcm = result.stdout

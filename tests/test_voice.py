@@ -382,3 +382,29 @@ def test_remote_stt_status_discloses_remote_audio_processing() -> None:
 
     service = VoiceService(GroqWhisperSTT("test-key"), FakeTTS())
     assert "sent to Groq" in service.status()["privacy"]
+
+
+def test_decoder_failure_does_not_echo_user_controlled_diagnostics(monkeypatch: pytest.MonkeyPatch) -> None:
+    from types import SimpleNamespace
+    from prepped.voice.audio import decode_audio_to_pcm
+
+    monkeypatch.setattr("prepped.voice.audio.shutil.which", lambda _: "/usr/bin/ffmpeg")
+    monkeypatch.setattr(
+        "prepped.voice.audio.subprocess.run",
+        lambda *args, **kwargs: SimpleNamespace(
+            returncode=1,
+            stdout=b"",
+            stderr=b"PRIVATE_CONTAINER_METADATA",
+        ),
+    )
+    with pytest.raises(InvalidAudio) as raised:
+        decode_audio_to_pcm(b"browser-recording")
+    assert "PRIVATE_CONTAINER_METADATA" not in str(raised.value)
+
+
+def test_remote_stt_status_never_exposes_configured_api_key() -> None:
+    from prepped.voice.stt import GroqWhisperSTT
+
+    secret = "prepped-test-secret-do-not-disclose"
+    service = VoiceService(GroqWhisperSTT(secret), FakeTTS())
+    assert secret not in repr(service.status())
