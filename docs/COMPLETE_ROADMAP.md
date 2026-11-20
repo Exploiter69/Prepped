@@ -1,7 +1,7 @@
 # Prepped — Complete Project Roadmap
 
 **Status:** Phases A–F are implemented; Phase G engineering hardening is implemented and automated CI is green. Target-device acceptance remains open. Phase G.1 microphone lifecycle implementation and browser regressions are added and passed CI. Phase H implementation is added and its full automated suite is green; target-device and learner acceptance remain open. The text MVP is frozen except for material bugs.<br>
-**Updated:** 2026-11-20<br>
+**Updated:** 2026-11-20<br>**Future plan:** Phases I–L are now defined as planned work in section 19; none has started.<br>
 **Planning basis:** B.Tech semester 3 now; TDP continues through the final year. Dates are decision gates, not promises.<br>
 **Companion documents:** [Product Blueprint](PRODUCT_BLUEPRINT.md) · [Current State](CURRENT_STATE.md) · [Voice Setup](VOICE.md) · [ADR-002](ADR-002-LOCAL-VOICE-SLICE.md)
 
@@ -600,3 +600,292 @@ Before beginning adaptive learning work, verify the microphone lifecycle fix acr
 **Phase H implementation note (2026-11-20):** The evidence model, deterministic recommendations, daily/weekly plans, Progress UI, additive schema-4 plan tables, backup migration from schema 3, and API/browser regression tests have been added. No difficulty adaptation is claimed because the authored curriculum has no difficulty metadata. Do not mark H accepted until the exact final commit has green CI and the later Omarchy acceptance is recorded.
 
 **Final automated evidence (2026-11-20):** [GitHub Actions run 44732997261](https://github.com/Exploiter69/Prepped/actions/runs/44732997261), commit ba5d4091c3679afe6b261852ca87f2940ba40877 — 134 passed, 2 skipped, 1 warning. Python compilation, seven JavaScript syntax checks, dependency consistency, pip-audit, Chromium setup, API tests, and browser acceptance passed. Manual Omarchy/device acceptance remains open.
+
+---
+
+## 19. Future execution roadmap — Phases I–L (planned; not started)
+
+**Planning status (2026-11-20):** Phases I–L are now defined as the next proposed execution sequence after Phase H. This section is a plan, not evidence that any of these capabilities exist. Start each phase only after reviewing the preceding phase's exit evidence and confirming the scope. Do not mark a phase complete from documentation, a mock-up, or passing isolated unit tests alone.
+
+### Roadmap intent and ordering
+
+The next four phases move Prepped from a feature-rich local prototype toward a trustworthy, coherent, locally usable release candidate:
+
+- **I — Voice Intelligence & Coaching:** make the existing voice and scenario flows feel like a coherent turn-based practice experience, with contextual coaching grounded in the learner's actual responses.
+- **J — Curriculum Quality & Learning Validation:** improve the authored learning experience and establish what learners can and cannot reliably achieve with it through content review and carefully bounded evaluation.
+- **K — Security, Privacy & Reliability:** review and harden the application and its data lifecycle before calling it release-candidate safe.
+- **L — Release Candidate, Packaging & Operations:** make installation, use, recovery, maintenance, and demonstration reproducible, with a release decision based on evidence.
+
+The sequence is deliberate. Better coaching should use stable voice/session behaviour (I); curriculum quality and evaluation should build on coherent practice (J); security and reliability review should consider the actual product surface after those changes (K); packaging and release operations should be completed against the hardened product (L). Critical security or privacy defects discovered earlier must be fixed immediately rather than deferred to K.
+
+### Non-negotiable constraints for every phase
+
+- Maintain the ₹0 mandatory development and operating-cost target. No required paid API, model endpoint, subscription, hosted database, paid hosting, or pay-per-use service.
+- Preserve the FastAPI + SQLite + plain HTML/CSS/JavaScript modular monolith, versioned local JSON content, and one application/data store.
+- Do not introduce React/Vue/Svelte, Redis, Kafka, Celery, Kubernetes, microservices, a vector database, or a second workflow engine.
+- Prefer deterministic, inspectable local behaviour. Optional local models may be evaluated only when their installation, hardware cost, licence, resource use, fallback, and privacy implications are documented.
+- Remote processing must remain explicitly optional, disclosed before capture/submission, and never required for the core learner journey.
+- No raw audio persistence by default. Keep transcripts editable and provide text-only alternatives for all essential flows.
+- Preserve existing learner data and compatibility. Use additive SQLite migrations only when necessary; test old backups and existing records before changing formats.
+- Do not infer emotion, personality, accent quality, confidence, hiring suitability, or proficiency from voice. Do not claim CEFR/IELTS certification, placement prediction, learning gains, or validated assessment without a separate defensible study.
+- Keep GitHub as the source of truth. Never discard uncommitted local work or use destructive resets to make a phase fit.
+- Every phase must update CURRENT_STATE.md and its own acceptance record only when evidence exists. Clearly distinguish implemented, automated-tested, manually accepted, observed, and proposed work.
+
+---
+
+### Phase I — Voice Intelligence & Contextual Coaching
+
+**Purpose:** turn the current record/transcribe/playback and scenario flows into a dependable, context-aware, turn-based voice practice experience. The goal is not a general-purpose always-listening chatbot. It is to help a learner practise a defined communication task, understand a response, and make a useful next attempt.
+
+**I0. Baseline and interaction contract**
+1. Audit the existing Learning, Project Practice, and Career voice paths, STT/TTS adapters, browser recording lifecycle, session state, and Phase G.1 regressions before changing code.
+2. Define one shared interaction contract for prompt playback, recording, stop, transcription, transcript editing, submission, feedback, retry, cancellation, navigation, and recovery.
+3. Document which workspace owns each active recording/transcription operation and what happens on navigation, page unload, timeout, permission denial, duplicate clicks, and late provider responses.
+4. Preserve the existing text journey as a first-class path, not merely an emergency error screen.
+5. Record a baseline on the target laptop: supported browser, microphone permission behaviour, configured STT/TTS engines, resource use, and reproducible failure cases. Do not invent latency or accuracy targets before measuring the hardware and current behaviour.
+
+**I1. Voice pipeline reliability and usability**
+1. Consolidate duplicated browser-side recording/transcription lifecycle logic only where the audit proves it can be shared safely; do not perform a broad frontend rewrite.
+2. Make recording states explicit and accessible: idle, requesting permission, recording, stopping, transcribing, transcript ready, failed, and cancelled.
+3. Ensure stop, cancel, retry, navigation, and timeout have distinct semantics. A normal learner-initiated stop must still complete transcription; cancellation must prevent stale results from changing the current screen.
+4. Validate audio type, duration, size, empty/silent payloads, decoder errors, unsupported browsers, missing local models, missing binaries, provider timeouts, and malformed provider responses.
+5. Keep microphone permission requests user-initiated. Never record in the background or leave a stream active after the owning activity ends.
+6. Make transcript correction easy before submission; preserve the learner's edited text as the submitted answer and make clear when a transcript is machine-generated.
+7. Improve TTS prompt playback controls (play, stop, replay, unavailable state) and ensure the prompt text is always visible or otherwise accessible.
+8. Make STT/TTS provider selection and status truthful. Optional Groq use must be disclosed before audio capture; local mode must not silently fall back to a remote provider.
+9. Add bounded timeouts, cancellation, and clear recovery messages without introducing background workers or another job system.
+
+**I2. Contextual, bounded coaching**
+1. Define a small scenario state model for the existing Project Explanation, HR/Behavioural, and Technical Interview studios. The model must track the current authored prompt, previous learner response, follow-up eligibility, and terminal/retry state.
+2. Add contextual follow-up selection using authored follow-up banks and transparent deterministic rules first. A follow-up must relate to the current question or a clearly identified evidence gap; do not invent technical facts.
+3. Allow the learner to request a repeat, clarification, simpler wording, or another attempt without losing the current session.
+4. Provide response coaching tied to the actual submitted answer: identify observable structure or completeness signals, quote the relevant evidence, explain uncertainty, and suggest one actionable improvement.
+5. Keep formative reflection distinct from correctness checking. Technical answers must not be labelled correct unless a reviewed answer key or an explicit deterministic check supports that judgement.
+6. Do not add a composite score, personality/emotion inference, accent judgement, confidence diagnosis, hiring score, or placement prediction.
+7. If an optional local language model is later considered, first write a separate decision record covering licence, model size, RAM/CPU suitability on the target laptop, offline operation, prompt/data boundaries, hallucination tests, deterministic fallback, and zero-cost maintenance. It must not become a mandatory runtime dependency or be allowed to fabricate evidence.
+
+**I3. Connect coaching to the existing learning loop**
+1. Let the learner explicitly save a useful correction, phrase, concept, or next-practice action to the existing Memory editor; never save automatically.
+2. Where a source-linked skill is already defined, associate practice evidence with that existing skill ID. Do not create duplicate learner profiles or a second evidence store.
+3. Allow an accepted coaching action to become a learner-controlled item in an existing daily/weekly plan, with a visible source and reason.
+4. After retry, show the original and revised answer side by side and identify the learner-visible change without claiming measured improvement from one attempt.
+5. Preserve session history, versioned scenario snapshots, deletion behaviour, backup/restore compatibility, and the existing Phase H evidence semantics.
+
+**I4. Tests, documentation, and acceptance**
+- API tests: state transitions, follow-up eligibility, session resume, duplicate submission, invalid input, timeout, provider failure, and data persistence.
+- Browser tests: full voice and text journeys in Learning and each Career studio; permission denial; late permission grant; cancellation; stale response; transcript edit; prompt replay; navigation; keyboard and narrow-screen use.
+- Adapter tests: local STT/TTS unavailable, optional provider unavailable, malformed response, timeout, and no silent remote fallback.
+- Privacy tests/inspection: no raw audio written to disk or database by the default path; remote disclosure appears before capture when applicable.
+- Manual target-device acceptance on the actual laptop with the documented local engines and browser. Record hardware, browser, model versions, observed failures, and limitations.
+- Add a Phase I acceptance document with exact commands, test evidence, manual checklist, and known limitations.
+
+**Phase I deliverables**
+- Shared, documented voice interaction contract and state model.
+- More reliable accessible voice controls and recovery behaviour.
+- Contextual authored follow-ups and evidence-grounded coaching.
+- Explicit learner-controlled handoff into Memory and adaptive plans.
+- API/browser/adapter regressions and a target-device acceptance record.
+
+**Phase I exit gate:** a learner can complete at least one full scenario in text mode and voice mode, correct a transcript, receive response-specific coaching, answer a relevant follow-up, retry, resume, and inspect or explicitly save a useful learning item. Cancellation and navigation cannot leak microphone streams or apply stale results. Automated tests are green and target-device limitations are recorded. No unvalidated score or speech-accuracy claim is introduced.
+
+---
+
+### Phase J — Curriculum Quality, Content Expansion & Learning Validation
+
+**Purpose:** make the learning content coherent, accurate, appropriately sequenced, and useful, then gather bounded evidence about usability and learning experience. This phase is about instructional quality and evaluation—not adding a large number of screens or claiming that the app improves placement outcomes.
+
+**J0. Curriculum audit and learning outcomes**
+1. Inventory every existing track, skill, unit, lesson, exercise, prompt, answer key, example, and follow-up in the versioned curriculum.
+2. Check each item for a clear learner, context, prerequisite, observable outcome, estimated effort, and completion condition.
+3. Identify duplicated, contradictory, under-scaffolded, overly difficult, culturally narrow, or unsupported content.
+4. Map the current English, professional communication, project explanation, HR/behavioural, and technical fundamentals content to a coherent progression.
+5. Distinguish authored content from generated or illustrative examples; no model-generated content is treated as reviewed curriculum by default.
+6. Establish a content review checklist and a versioning policy. Curriculum changes must validate at startup and in CI.
+
+**J1. Instructional design and practice quality**
+1. Improve lesson structure where needed: explain, demonstrate, practise with guidance, retrieve from memory, apply in a new context, reflect, and revisit.
+2. Add worked examples and progressively less-supported practice only where the content author can justify the progression.
+3. Expand retrieval practice, spaced review, mixed practice, and scenario transfer using existing lesson, Memory, and plan infrastructure.
+4. Ensure listening content has transcripts/captions and every essential audio activity has a usable text alternative.
+5. Ensure speaking activities include clear task instructions, reasonable response boundaries, examples where helpful, and a private retry path.
+6. Add realistic Indian college and early-career contexts without assuming a single region, language, institution, gender, or socioeconomic background.
+7. Expand content by demonstrated learner need, not catalogue size. Prioritise depth and completeness of existing tracks before adding new tracks.
+8. Add curriculum linting for missing outcomes, invalid references, broken prerequisites, duplicate IDs, unreviewed answer keys, missing text alternatives, and unsupported exercise types.
+
+**J2. Technical and domain correctness review**
+1. Review grammar explanations, vocabulary usage, sample responses, interview prompts, and CS fundamentals against credible references or qualified human review.
+2. Maintain source notes for claims that depend on external facts; do not embed uncited or outdated technical claims as authoritative teaching material.
+3. Separate questions with objectively checkable answers from open-ended communication prompts.
+4. Define acceptable answer variants and edge cases for deterministic exercises; ambiguous items must use self-review rather than false right/wrong feedback.
+5. Record reviewer, review date, content version, changes, and unresolved disagreements where human review is available.
+6. Do not imply that a single reviewer or a small sample certifies the entire curriculum.
+
+**J3. Accessibility, inclusion, and learner control**
+1. Review keyboard navigation, focus order, semantic structure, screen-reader labels/status announcements, contrast, zoom, and responsive layouts across all learner journeys.
+2. Keep captions/transcripts, playback controls, adjustable practice pace, and text alternatives available.
+3. Make plans, recommendations, reminders (if any), and review schedules controllable and dismissible; avoid guilt-inducing streaks or punitive language.
+4. Provide clear explanations of what is stored, where it is stored, how to export it, and how to delete it.
+5. Avoid collecting demographic or sensitive information unless a clearly justified, consented research protocol requires it; do not use such data for automated profiling.
+
+**J4. Learner validation protocol**
+1. Write a small, consent-based usability protocol before recruiting participants: research question, tasks, inclusion criteria, sample-size rationale, risks, data collected, retention, withdrawal, and reporting plan.
+2. Start with usability questions: can learners find a task, understand the prompt, complete it, correct a transcript, interpret feedback, and recover from a voice failure?
+3. If evaluating learning, define a narrow skill-specific task and an appropriate pre/post or delayed-recall method before collecting results. Do not use placement, hiring, or broad English-proficiency outcomes as proxies.
+4. Use only data necessary for the stated question. Prefer anonymous task observations and learner feedback; do not collect raw voice recordings by default.
+5. Report the actual participant count, recruitment context, task completion, observed issues, missing data, limitations, and negative or mixed findings.
+6. Do not describe a convenience sample as representative. Do not claim causal learning gains from an uncontrolled short pilot.
+7. Keep participation optional and separate from access to the software. Provide a clear withdrawal/deletion path for research notes where applicable.
+
+**J5. Tests and acceptance**
+- Curriculum schema and lint tests cover every authored content object and all references.
+- Exercise tests cover correct answers, acceptable variants, ambiguous answers, empty input, retry, and text alternatives.
+- Browser tests cover complete lesson and scenario journeys, accessibility smoke checks, and responsive behaviour.
+- Content review log records what was reviewed and what remains unreviewed.
+- If a learner pilot is run, its protocol and results are documented separately from engineering test results.
+
+**Phase J deliverables**
+- Audited and versioned curriculum with a documented quality checklist.
+- Improved lesson sequencing, worked examples, retrieval/revision, and scenario transfer where justified.
+- Content source/review records and automated curriculum linting.
+- Accessibility and inclusive-language review.
+- Optional consent-based usability/learning study protocol and honest findings (if participants are available).
+
+**Phase J exit gate:** all content included in the release candidate has valid references, explicit outcomes, reviewed deterministic answer keys, and accessible alternatives. Core learning journeys pass automated tests and accessibility checks. Any learner evaluation has documented consent, method, sample, results, and limitations; if no participants are available, the protocol is ready and the absence of results is stated plainly. No learning-gain or placement claim is required to pass.
+
+---
+
+### Phase K — Security, Privacy, Data Protection & Reliability
+
+**Purpose:** establish a defensible security and privacy baseline for the actual intended distribution model. The first target is a reliable local single-user release. Public or multi-user deployment is not silently included.
+
+**K0. Threat model and scope**
+1. Write a lightweight threat model covering local browser access, loopback networking, Host/Origin handling, malicious websites, untrusted imports, filesystem permissions, local users, backups, optional remote STT, dependency supply chain, and accidental secret exposure.
+2. Define assets, trust boundaries, attackers, impact, mitigations, residual risk, and out-of-scope threats.
+3. Confirm the intended release model: local single-user application. Treat LAN, reverse-proxy, tunnel, public internet, shared computer, and multi-user modes as unsupported unless separately designed and approved.
+4. Review every API route and state-changing operation for authentication assumptions, validation, CSRF/origin handling, resource limits, and safe error responses.
+5. Document the limits of local security: a local application cannot protect data from a fully compromised host account or administrator.
+
+**K1. Application and API security**
+1. Review request parsing, content types, body limits, path/query parameters, SQL access, file handling, template/DOM rendering, and browser storage for injection and abuse paths.
+2. Verify parameterised SQL, strict allowlists, schema validation, safe serialization, and output escaping.
+3. Recheck loopback binding, Host validation, Origin policy, CORS posture, CSP, frame restrictions, MIME sniffing protection, referrer policy, permissions policy, and cache directives.
+4. Test malformed, oversized, deeply nested, truncated, duplicate, and adversarial backup/import payloads; invalid input must fail closed without corrupting live data.
+5. Ensure errors do not expose stack traces, filesystem paths, secrets, raw prompts containing private data, or database contents.
+6. Add rate/size/time bounds appropriate to a local app without introducing a new infrastructure service.
+7. Audit microphone permissions and remote-provider boundaries. Only the explicitly selected provider may receive audio, and only after the learner is informed.
+
+**K2. Privacy and data lifecycle**
+1. Create a data inventory for profile fields, answers, transcripts, learning evidence, Memory items, Career sessions, goals, plans, backups, logs, and optional provider requests.
+2. Document purpose, storage location, retention, export, deletion, and any external recipient for each data category.
+3. Minimise collected fields and avoid collecting sensitive demographic data or raw recordings without a separate justified consent process.
+4. Review permanent deletion and cascading behaviour across sessions, answers, memory, reviews, plans, analytics, and backups.
+5. Decide whether local backup encryption is feasible with standard libraries and a learner-held secret without making recovery fragile. If not implemented, clearly label backups as sensitive and unencrypted.
+6. Review permissions and file locations for SQLite DBs, exported backups, logs, configuration, and model caches. Never commit keys, transcripts, recordings, or personal backups.
+7. Document optional Groq data handling based on current provider terms and configuration; do not make unsupported claims about provider retention.
+8. Provide a privacy notice in the app and a concise data-management/recovery guide.
+
+**K3. Dependency and supply-chain hygiene**
+1. Review direct and transitive dependencies, supported Python versions, licence compatibility, known vulnerabilities, and maintenance status.
+2. Keep a reproducible dependency lock or documented constraints consistent with the repository's existing packaging approach; do not add a second package manager.
+3. Run dependency audit in CI and document exceptions with reason, owner, and review date.
+4. Pin or constrain browser/test tooling as appropriate; keep model weights outside Git and verify download sources/checksums when documented.
+5. Review the licence and redistribution requirements for any bundled content, audio, fonts, models, and third-party assets.
+
+**K4. Reliability and recovery**
+1. Exercise SQLite integrity checks, foreign-key checks, migration from every supported schema, backup export, restore, and rollback-on-invalid-import.
+2. Test process termination during writes, disk full/permission errors, corrupt database handling, missing model files, unavailable audio devices, and provider timeouts.
+3. Confirm graceful startup diagnostics and actionable recovery instructions; do not silently reset or overwrite learner data.
+4. Check concurrency assumptions for one local user and multiple browser tabs. Do not claim multi-user concurrency.
+5. Add bounded performance checks for startup, curriculum loading, progress queries, backup/restore, and representative audio processing on the target laptop.
+6. Review logs for privacy leakage and ensure logs are useful without recording learner content unnecessarily.
+
+**K5. Security verification and acceptance**
+- Automated tests cover API validation, origin/host restrictions, security headers, import abuse, migration, backup/restore, deletion, and failure recovery.
+- Run the repository's dependency audit and review all findings.
+- Perform a documented manual security review of the local application and its filesystem/data permissions.
+- If external penetration testing is unavailable at ₹0, state that clearly; do not call the app penetration-tested or certified.
+- Create a security/privacy acceptance record with findings, severity, remediation, residual risks, and sign-off date.
+
+**Phase K deliverables**
+- Threat model and trust-boundary diagram/record.
+- Data inventory, privacy notice, retention/deletion/export policy.
+- API/security review and regression tests.
+- Dependency/licence audit and documented exceptions.
+- Backup/recovery and local reliability test record.
+- Explicit supported/unsupported deployment boundary and residual-risk register.
+
+**Phase K exit gate:** no unresolved critical/high-severity issue is knowingly shipped; remaining risks are documented and accepted for the local single-user release. Data export, deletion, restore, migrations, and failure recovery are tested. Dependency and licence checks are recorded. The app remains loopback-only unless a separate public/multi-user architecture, threat model, authentication, and privacy review are approved. Passing this gate is not a security certification.
+
+---
+
+### Phase L — Release Candidate, Packaging, Documentation & Operations
+
+**Purpose:** produce a reproducible, maintainable release candidate that another person can install and use locally, recover from failures, and evaluate without relying on undocumented steps or developer-specific state. This is a local release-candidate goal, not an automatic commitment to public cloud deployment or Duolingo-scale operations.
+
+**L0. Release definition and scope**
+1. Define the supported release target(s), initially the developer's Linux/Omarchy environment and any additional platform only after it is actually tested.
+2. Define the release audience and supported mode: local single-user, loopback-only, optional local voice engines, optional explicitly configured remote STT.
+3. Publish a feature matrix separating required core functionality, optional voice dependencies, unsupported configurations, and known limitations.
+4. Freeze scope for the release candidate. New features after the freeze require a material bug, security issue, or explicit scope decision.
+5. Define versioning, changelog, migration policy, compatibility policy, and a reproducible release checklist.
+
+**L1. Installation and packaging**
+1. Make fresh installation reproducible from a clean checkout using documented Python and system prerequisites.
+2. Provide a single clear setup/start/stop/update workflow consistent with the existing project conventions; avoid introducing a service manager or packaging framework without need.
+3. Validate virtual-environment creation, dependency installation, static asset availability, curriculum validation, database initialisation, and readiness checks.
+4. Keep local speech model installation explicit and optional. Do not download large model weights on application startup.
+5. Document supported browser/device combinations based on actual tests, not assumptions.
+6. Consider a simple local launcher or OS package only if it materially improves installation and does not add recurring cost or a heavy dependency.
+7. Verify clean uninstall/update behaviour and explain which learner data is retained or removed.
+
+**L2. Runtime operations and observability**
+1. Provide concise startup diagnostics and a readiness check that covers database integrity, schema version, required tables, curriculum validity, and configured optional engines.
+2. Use structured, local logs with timestamps and severity. Avoid storing answer text, transcripts, audio, API keys, or sensitive profile fields in logs.
+3. Document common failures and recovery: missing dependencies, unavailable microphone, model not installed, TTS failure, database locked/corrupt, failed migration, invalid backup, and disk-space problems.
+4. Define safe update behaviour and a backup-before-migration recommendation. Never silently replace a learner database.
+5. Record basic resource observations on the target laptop: startup time, idle/active memory, representative lesson and progress queries, and optional voice processing. Report measurement conditions; do not call one-off measurements benchmarks.
+6. No hosted telemetry, paid monitoring, analytics SDK, or background service is required. Any optional diagnostic export must be learner-initiated and scrubbed.
+
+**L3. Data portability and recovery operations**
+1. Finalise backup format documentation and compatibility guarantees for supported versions.
+2. Provide a clear backup-before-update and restore-from-backup procedure, with a warning that restore replaces current learner data.
+3. Run a full recovery drill on disposable data after a fresh install, including corrupted/invalid backup rejection and database integrity verification.
+4. Verify that learner data survives application upgrades and that downgrade limitations are documented.
+5. Explain where database, backups, logs, and model files live, and how the learner can move or delete them.
+
+**L4. Release quality and demonstration**
+1. Run the full automated suite, browser acceptance, Python compilation, JavaScript syntax checks, dependency audit, and clean-install test against the exact release commit.
+2. Run the complete manual acceptance checklist on each claimed supported platform/device. Include keyboard, screen reader, contrast, zoom, narrow-screen, microphone permission, STT/TTS, text fallback, and recovery.
+3. Prepare a deterministic demo script that works offline in text mode and identifies which optional voice features require local models or explicit remote configuration.
+4. Prepare a product guide, installation guide, troubleshooting guide, privacy/data guide, architecture overview, known-limitations list, and change log.
+5. Record test environment, commit SHA, commands, pass/fail/skip counts, manual findings, and unresolved issues.
+6. Have a release review that checks scope, evidence, security residual risks, accessibility, documentation, and recovery readiness.
+
+**L5. Deployment boundary and future hosting decision**
+1. The default Phase L target is a local release candidate. No public hosting, LAN exposure, reverse proxy, tunnel, or multi-user service is enabled by this roadmap.
+2. A future public deployment requires a separate approved phase/decision: explicit cost model, authentication and account recovery, multi-user isolation, hosted database and backups, abuse controls, HTTPS, monitoring, incident response, privacy/legal review, and an operations owner.
+3. If those requirements cannot be met within the ₹0 constraint, keep the supported release local and document the limitation rather than quietly adding paid dependencies.
+4. Do not use Duolingo-scale availability, concurrency, security, content volume, or learning outcomes as acceptance criteria for this local project.
+
+**Phase L deliverables**
+- Versioned local release candidate and changelog.
+- Reproducible clean-install/update/uninstall instructions.
+- Supported-platform and optional-dependency matrix.
+- Readiness diagnostics, privacy-safe logs, troubleshooting and recovery guides.
+- Verified backup/restore drill and upgrade compatibility record.
+- Complete automated and manual release acceptance evidence.
+- Demo script, product documentation, known limitations, and release sign-off.
+
+**Phase L exit gate:** a new clean environment on each claimed supported platform can install and run the app using documented steps; the core learning journey works without paid services or external accounts; optional voice behaviour is explicit and recoverable; backup/restore and upgrade paths pass a documented drill; the exact release commit passes automated checks and manual acceptance; known risks and unsupported deployment modes are clearly stated. Only then may the project be called a local release candidate—not a mature commercial platform or a production-scale service.
+
+---
+
+### Cross-phase completion rules for I–L
+
+1. **One phase at a time:** complete its scoped implementation, tests, docs, and acceptance record before starting the next phase, except for urgent security/privacy fixes.
+2. **No speculative expansion:** do not add avatars, real-time streaming, always-on microphones, emotion analysis, pronunciation scoring, institution dashboards, mobile apps, cloud accounts, or generated curriculum unless a separate evidence-backed decision justifies them.
+3. **No scope laundering:** a feature is not complete because a UI exists, a mock works, a unit test passes, or a provider reports available. Require end-to-end evidence and manual acceptance where hardware or learner behaviour matters.
+4. **Preserve working behaviour:** protect existing text practice, session history, curriculum, Memory, Career, Progress, backup/restore, and Phase H evidence semantics with regression tests.
+5. **Keep research separate from engineering:** a learner study can be optional when participants are unavailable; never fabricate findings or block engineering on a study that cannot yet be run.
+6. **Report honestly:** every phase report must list what shipped, exact commit and CI run, tests and skips, manual checks, limitations, and deferred work.
+7. **Release is a gate, not a promise:** failure to meet an exit criterion means the phase remains open. A strong local release candidate is a valid outcome under the zero-cost constraint; public production hosting is not assumed.
