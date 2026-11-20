@@ -10,7 +10,7 @@
 The current branch now includes the first complete Phase I implementation slice:
 
 - Browser TTS requests and in-flight STT transcription requests are abortable in the Project Practice voice controller. Workspace cancellation increments the request generation, aborts outstanding fetches, stops active recording streams, and ignores stale results.
-- Career Studio prompt playback has request identity, AbortController cancellation, object-URL cleanup, and stale completion guards. Leaving Career, changing prompt, stopping playback, or unloading the page cancels pending synthesis.
+- Career Studio TTS and STT requests have request identity, AbortController cancellation, object-URL cleanup, and stale completion guards. Leaving Career, changing prompt, stopping playback, or unloading the page cancels pending synthesis or transcription.
 - Career curriculum version 1.2.0 adds an authored contextual follow-up rule, simpler wording, and clarification hint for each primary question/follow-up across Project Explanation, HR/Behavioural, and Technical Fundamentals. Deterministic text-cue rules choose a contextual prompt or the existing difficulty-specific fallback; the UI explains the cue and its limitations.
 - Career feedback now includes one response-specific next action per turn, grounded in the saved answer excerpt and explicit cue limitations. A retry review compares prior/current answer text side by side without claiming measured improvement. It remains formative reflection, not correctness grading or a score.
 - Learners can explicitly save a coaching action to existing Learning Memory or add the next studio practice to the existing daily adaptive plan. No new table or migration was added.
