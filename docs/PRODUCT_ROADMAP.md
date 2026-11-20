@@ -275,7 +275,7 @@ Keep the existing Python + FastAPI + plain HTML/CSS/JavaScript + SQLite modular 
 
 ### Phase B implementation status — Learning Engine
 
-**Implementation in progress; automated and manual acceptance pending.** The first complete vertical slice is now in the branch:
+**Implementation delivered; automated coverage passes in the current full-suite CI run. Target-laptop acceptance remains open.** The first complete vertical slice is in the branch:
 
 - Versioned curriculum/curriculum.v1.json now defines 14 stable skill IDs, one foundation level, nine units, four tracks, 13 authored lessons plus one diagnostic check, outcomes, prerequisites, examples, and authored exercises.
 - prepped/learning.py validates skill/track/level/unit/lesson references and supported exercise shapes, exposes a reusable lesson-attempt API, enforces exercise order, presents prerequisites as recommended learning order without blocking lesson access, withholds answer keys from catalogue responses, and produces deterministic feedback for authored choice, vocabulary, listening, and ordering exercises. Open responses are stored for learner self-review; they are not automatically graded.
@@ -284,7 +284,7 @@ Keep the existing Python + FastAPI + plain HTML/CSS/JavaScript + SQLite modular 
 - A new Learning workspace provides skill-map and unit browsing, profile-based recommendations, lesson exercises, local spoken listening and pronunciation playback with text alternatives, optional spoken responses through the configured STT provider, feedback, progress counts, next-lesson navigation, and resume controls. It uses plain HTML/CSS/JavaScript and keeps the existing practice room available.
 - API and Chromium acceptance tests cover curriculum validation, answer-key isolation, profile routing, exercise validation/order, prerequisites, completion, persistence, progress events, resume, and legacy-data preservation.
 
-**Remaining Phase B gates:** successful latest CI run; target-laptop browser check for navigation, all seven exercise formats, listening text alternatives, optional voice controls, next-lesson navigation, reload/resume, and responsive layout; review of lesson wording and learning usefulness. A short, low-stakes starting-point check is now included after the exercise loop was implemented. It stores observable responses and task completion, can be repeated/reviewed, and assigns no proficiency level or overall score. More advanced diagnostic interpretation remains deferred.
+**Remaining Phase B gates:** target-laptop browser check for navigation, all seven exercise formats, listening text alternatives, optional voice controls, next-lesson navigation, reload/resume, and responsive layout; review of lesson wording and learning usefulness. A short, low-stakes starting-point check is now included after the exercise loop was implemented. It stores observable responses and task completion, can be repeated/reviewed, and assigns no proficiency level or overall score. More advanced diagnostic interpretation remains deferred.
 
 The English starter path is expanded under Phase C. Advanced diagnostic interpretation remains deferred; learner-controlled revision is implemented under Phase D; dedicated HR, project, and technical interview studios are implemented under Phase E.
 
