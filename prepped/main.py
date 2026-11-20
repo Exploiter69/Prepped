@@ -1,6 +1,7 @@
 """FastAPI entry point for the Prepped local practice application."""
 from __future__ import annotations
 
+import ipaddress
 import json
 import sqlite3
 from contextlib import asynccontextmanager
@@ -26,6 +27,7 @@ from prepped.progress import create_progress_router, initialize_progress_databas
 from prepped.intelligence import create_intelligence_router, initialize_intelligence_database
 from prepped.portability import create_portability_router
 from prepped.scenarios import DEFAULT_SCENARIO_PATH, ScenarioValidationError, load_scenario
+from prepped.security import RequestSizeLimitMiddleware
 from prepped.voice import VoiceService, build_voice_service
 from prepped.voice.routes import create_voice_router
 
@@ -115,6 +117,7 @@ def create_app(
         version="0.3.0",
         lifespan=lifespan,
     )
+    application.add_middleware(RequestSizeLimitMiddleware)
     @application.middleware("http")
     async def local_security_headers(request, call_next):
         host_header = request.headers.get("host", "")
@@ -142,7 +145,15 @@ def create_app(
             and request.client is not None
             and request.client.host == "testclient"
         )
-        if not loopback_host and not in_process_test:
+        loopback_peer = False
+        if request.client is not None:
+            try:
+                loopback_peer = ipaddress.ip_address(request.client.host).is_loopback
+            except ValueError:
+                loopback_peer = False
+        # A spoofed loopback Host is not enough if Uvicorn is accidentally
+        # exposed on a wildcard/LAN interface: require a loopback TCP peer.
+        if not (loopback_host and loopback_peer) and not in_process_test:
             return PlainTextResponse("Prepped accepts local connections only.", status_code=400)
 
         if request.method in {"POST", "PUT", "PATCH", "DELETE"}:

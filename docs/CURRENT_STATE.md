@@ -5,6 +5,12 @@
 **Product direction:** Voice-first, personalised practice and learning platform for Indian engineering students. The text practice loop is a reliable fallback and is frozen for feature development except material bugs.<br>
 **Engineering stage:** Phases A–H implementation is present. Phase I implementation is present; local pytest on commit `c4200e5` reports 145 passed, 0 failed, 1 warning. Exact-commit GitHub Actions [run 44742961672](https://github.com/Exploiter69/Prepped/actions/runs/44742961672) passed with 143 passed, 2 optional voice skips, 1 warning. Manual target-device acceptance remains pending. By explicit user decision, Phase J implementation is proceeding while Phase I remains open. See [Phase I acceptance](PHASE_I_ACCEPTANCE.md) and [Phase J acceptance](PHASE_J_ACCEPTANCE.md).
 
+## Phase K — Security, Privacy, Data Protection & Reliability (engineering implementation added; verification pending)
+
+Phase K now adds actual TCP-peer loopback enforcement, bounded request bodies, private SQLite file permissions and symlink rejection, privacy-safe voice error logging, rollback/cascade regressions, a threat model and personal-data inventory, an explicit unencrypted-backup decision, and CI vulnerability/licence inventory artifacts. Exact-commit local tests, CI results/artifact review, and disposable-data failure/recovery drills remain open. No security certification or public deployment approval is claimed.
+
+See [Phase K Acceptance](PHASE_K_ACCEPTANCE.md) and [Release Hardening](RELEASE_HARDENING.md).
+
 ## Phase J — Curriculum Quality, Content Expansion & Learning Validation (implementation started; acceptance pending)
 
 The initial inventory found 14 lessons, 14 skills, 4 tracks, 9 units, and 49 exercises across seven exercise types. Four interview-related skills are mapped to existing Career Studios rather than duplicated as lessons. Phase J implementation now includes source registers, explicit completion conditions, review disclosure, cross-file skill coverage validation, a CI/startup content linter, and exercise-level outcomes, effort estimates, and inherited lesson skill/source context for all 49 exercises. The loader and regression tests enforce these exercise metadata rules and lesson effort budgets. Exact-commit automated verification of this latest slice is pending; human subject-matter review, accessibility review, manual journeys, and learner validation remain open.

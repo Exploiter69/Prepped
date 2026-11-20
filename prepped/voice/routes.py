@@ -65,7 +65,7 @@ def create_voice_router(service: VoiceService) -> APIRouter:
         except VoiceError as exc:
             raise HTTPException(status_code=exc.status_code, detail=exc.public_message) from exc
         except Exception as exc:  # unexpected engine bug: keep learner on text mode
-            logger.exception("Unexpected local transcription failure")
+            logger.error("Unexpected local transcription failure (%s)", type(exc).__name__)
             raise HTTPException(
                 status_code=500,
                 detail="Local speech-to-text failed unexpectedly. You can type your answer instead.",
@@ -78,7 +78,7 @@ def create_voice_router(service: VoiceService) -> APIRouter:
         except VoiceError as exc:
             raise HTTPException(status_code=exc.status_code, detail=exc.public_message) from exc
         except Exception as exc:
-            logger.exception("Unexpected local text-to-speech failure")
+            logger.error("Unexpected local text-to-speech failure (%s)", type(exc).__name__)
             raise HTTPException(
                 status_code=500,
                 detail="Local spoken prompts failed unexpectedly. Read the question on screen.",

@@ -307,3 +307,38 @@ def test_restore_enforces_record_count_and_content_length_limits(tmp_path: Path)
         assert malformed_length.status_code == 400
     finally:
         client.__exit__(None, None, None)
+
+
+def test_user_deletions_cascade_to_dependent_answers_turns_and_reviews(tmp_path: Path) -> None:
+    database = tmp_path / "delete-cascade.sqlite3"
+    client = client_for(database)
+    try:
+        practice = client.post("/api/sessions").json()
+        client.post(f"/api/sessions/{practice['id']}/answers", json={
+            "question_id": practice["current_question"]["id"],
+            "answer_text": "A saved answer that should be removed with its session.",
+        })
+        studio = client.get("/api/career/studios").json()["studios"][0]
+        career = client.post("/api/career/sessions", json={
+            "studio_id": studio["id"], "difficulty": "guided",
+        }).json()
+        client.post(f"/api/career/sessions/{career['id']}/answers", json={
+            "answer_text": "A saved interview turn that should be removed.",
+        })
+        memory = client.post("/api/memory/items", json={
+            "item_type": "phrase", "front": "Please clarify", "back": "Ask for more detail.",
+        }).json()["item"]
+        client.post(f"/api/memory/items/{memory['id']}/review", json={"rating": "good"})
+
+        assert client.delete(f"/api/sessions/{practice['id']}").status_code == 204
+        assert client.delete(f"/api/career/sessions/{career['id']}").status_code == 204
+        assert client.delete(f"/api/memory/items/{memory['id']}").status_code == 204
+
+        with sqlite3.connect(database) as connection:
+            assert connection.execute("SELECT COUNT(*) FROM answers").fetchone()[0] == 0
+            assert connection.execute("SELECT COUNT(*) FROM career_turns").fetchone()[0] == 0
+            assert connection.execute("SELECT COUNT(*) FROM learning_memory_reviews").fetchone()[0] == 0
+            assert connection.execute("SELECT COUNT(*) FROM learning_memory").fetchone()[0] == 0
+            assert connection.execute("PRAGMA foreign_key_check").fetchall() == []
+    finally:
+        client.__exit__(None, None, None)

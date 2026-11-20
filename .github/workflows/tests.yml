@@ -50,9 +50,20 @@ jobs:
         run: python -m pip check
       - name: Audit installed Python dependencies
         run: |
-          python -m pip install --upgrade "setuptools>=84.1.0" pip-audit
-          pip-audit --skip-editable
+          python -m pip install --upgrade "setuptools>=84.1.0" pip-audit pip-licenses
+          pip-audit --skip-editable --format=json --output=pip-audit.json
+          pip-licenses --format=json --output-file=dependency-licenses.json
       - name: Install Chromium for browser acceptance tests
         run: python -m playwright install --with-deps chromium
       - name: Run tests
         run: python -m pytest -q
+      - name: Publish dependency audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-k-dependency-audit
+          path: |
+            pip-audit.json
+            dependency-licenses.json
+          if-no-files-found: warn
+          retention-days: 30

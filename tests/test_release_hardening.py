@@ -55,3 +55,43 @@ def test_core_dark_theme_text_tokens_meet_wcag_aa_contrast_against_panel() -> No
     for token in ("text", "muted", "accent", "danger"):
         ratio = _contrast_ratio(tokens[token], panel)
         assert ratio >= 4.5, f"--{token} contrast is {ratio:.2f}:1"
+
+
+def test_loopback_host_is_not_enough_when_peer_is_remote(tmp_path: Path) -> None:
+    from fastapi.testclient import TestClient
+    from prepped.main import create_app
+
+    client = TestClient(
+        create_app(db_path=tmp_path / "remote-peer.sqlite3"),
+        client=("192.0.2.10", 43123),
+    )
+    with client:
+        response = client.get("/api/health", headers={"Host": "127.0.0.1"})
+    assert response.status_code == 400
+    assert "local connections only" in response.text
+
+
+def test_general_api_request_body_limit_is_enforced_before_json_parsing(tmp_path: Path) -> None:
+    from fastapi.testclient import TestClient
+    from prepped.main import create_app
+
+    with TestClient(create_app(db_path=tmp_path / "body-limit.sqlite3")) as client:
+        response = client.put(
+            "/api/profile",
+            content=b"x" * (1024 * 1024 + 1),
+            headers={"Content-Type": "application/json"},
+        )
+    assert response.status_code == 413
+
+
+def test_request_size_middleware_rejects_invalid_content_length(tmp_path: Path) -> None:
+    from fastapi.testclient import TestClient
+    from prepped.main import create_app
+
+    with TestClient(create_app(db_path=tmp_path / "bad-length.sqlite3")) as client:
+        response = client.post(
+            "/api/profile",
+            content=b"{}",
+            headers={"Content-Type": "application/json", "Content-Length": "not-a-number"},
+        )
+    assert response.status_code == 400

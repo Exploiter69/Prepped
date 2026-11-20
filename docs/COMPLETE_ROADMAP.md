@@ -1,7 +1,7 @@
 # Prepped — Complete Project Roadmap
 
 **Status:** Phases A–H implementation is present. Phase I implementation is present; local pytest reports 145 passed and exact-commit GitHub Actions run [44742961672](https://github.com/Exploiter69/Prepped/actions/runs/44742961672) passed with 143 passed, 2 optional skips, and 1 warning. Target-device acceptance remains pending. Phase J implementation includes curriculum/studio source registers, explicit outcomes and completion conditions, cross-file coverage linting, and per-exercise outcomes, effort estimates, and inherited skill/source context for all 49 exercises. Exact-commit verification and human content/accessibility review remain pending; no learner study has been run. The text MVP is frozen except for material bugs.<br>
-**Updated:** 2026-11-20<br>**Future plan:** Phase I acceptance remains open; Phase J is in progress; Phases K–L remain planned.<br>
+**Updated:** 2026-11-20<br>**Future plan:** Phase I acceptance remains open; Phase J human acceptance remains open; Phase K engineering controls and acceptance documentation are implemented, with exact-commit verification and manual failure drills pending; Phase L remains planned.<br>
 **Planning basis:** B.Tech semester 3 now; TDP continues through the final year. Dates are decision gates, not promises.<br>
 **Companion documents:** [Product Blueprint](PRODUCT_BLUEPRINT.md) · [Current State](CURRENT_STATE.md) · [Voice Setup](VOICE.md) · [ADR-002](ADR-002-LOCAL-VOICE-SLICE.md)
 
@@ -893,3 +893,10 @@ The sequence is deliberate. Better coaching should use stable voice/session beha
 5. **Keep research separate from engineering:** a learner study can be optional when participants are unavailable; never fabricate findings or block engineering on a study that cannot yet be run.
 6. **Report honestly:** every phase report must list what shipped, exact commit and CI run, tests and skips, manual checks, limitations, and deferred work.
 7. **Release is a gate, not a promise:** failure to meet an exit criterion means the phase remains open. A strong local release candidate is a valid outcome under the zero-cost constraint; public production hosting is not assumed.
+
+
+## Phase K implementation update (2026-11-20)
+
+Phase K's engineering slice is now present on feature/learner-profile: loopback peer validation in addition to Host checks, bounded API request bodies with dedicated voice/restore limits, private default SQLite file permissions, symlink/non-regular DB rejection, privacy-safe voice exception logging, rollback and cascade tests, threat model, personal-data lifecycle inventory, backup encryption decision, and CI vulnerability/licence inventory artifacts.
+
+This does not close Phase K yet. Exact-commit local tests and GitHub Actions must pass; the generated vulnerability/licence artifacts must be reviewed; and disposable-data disk-full, permission-denied, interrupted-restore, and schema-upgrade rehearsals remain manual acceptance items. See [Phase K Acceptance](PHASE_K_ACCEPTANCE.md).

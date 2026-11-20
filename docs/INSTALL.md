@@ -87,7 +87,7 @@ Backups contain personal text. They are unencrypted JSON; protect them as you wo
 
 Restore replaces all current local learner data with the backup. It is not a merge. Prepped validates the format, schema version, table/column set, record types, SQLite constraints, and foreign-key relationships in a temporary database before replacing the active database. A failed validation leaves the current database untouched.
 
-The current backup format version is 1 and database schema version is 3. A backup from a future or incompatible schema is rejected rather than guessed or partially imported. Keep a copy of the original file before attempting migration between future releases.
+The current backup format version is 1 and database schema version is 4. A backup from a future or incompatible schema is rejected rather than guessed or partially imported. Keep a copy of the original file before attempting migration between future releases.
 
 ## Supported environment and boundaries
 
@@ -106,3 +106,13 @@ The current backup format version is 1 and database schema version is 3. A backu
 - Restore only from a backup you trust and have kept privately.
 - Do not delete `data/prepped.sqlite3` as a generic troubleshooting step; it contains the learner's saved work.
 - If the backup itself is the only copy, duplicate the file before trying restore.
+
+
+## Local data protection
+
+- The default data directory is created/restricted to POSIX mode 0700; the SQLite database is created/restricted to 0600. Existing default data-directory permissions are tightened on startup. This is a local filesystem safeguard, not encryption.
+- Keep the operating-system account private and the disk protected. Anyone who can read files as the same OS user can read the database.
+- Backups downloaded by the browser are unencrypted JSON. Their permissions and location are controlled by the browser/desktop environment, not by the server. Move them to a private location and do not commit/share them.
+- Deleting records removes them from the live SQLite tables and dependent rows; it is not a forensic secure-erase guarantee for filesystem snapshots, old backups, or storage media.
+- The server rejects non-loopback TCP peers even if they send a loopback Host header. Keep Uvicorn bound to 127.0.0.1; this does not make LAN/public deployment supported.
+- JSON API request bodies are limited to 1 MiB, audio transcription uploads to 12 MiB, and backup restore to 25 MiB.
