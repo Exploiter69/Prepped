@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
+from datetime import date
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -41,7 +42,7 @@ def test_export_and_restore_round_trip_all_local_user_tables(tmp_path: Path) -> 
             "reason": "A short, learner-chosen target makes the next action clear.",
         })
         source.post("/api/intelligence/plan/generate", json={
-            "plan_date": "2026-11-20", "available_minutes": 30,
+            "plan_date": date.today().isoformat(), "available_minutes": 30,
         })
         exported = source.get("/api/data/export")
         assert exported.status_code == 200
