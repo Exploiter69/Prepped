@@ -360,7 +360,7 @@ This is the authoritative A–G execution sequence. Earlier sections are the ori
 | D | Personal learning memory | Learner-approved saved words, phrases, corrections and review cards | CRUD, source context, review queue and scheduler tests |
 | E | Career & interview studios | Project, HR/behavioural and technical scenarios with follow-ups | Multiple scenario families on shared infrastructure |
 | F | Progress & portability | Skill evidence, goals, recommendations, export/backup/restore | Reproducible data recovery and explainable progress |
-| G | Release hardening and acceptance (not started) | Target-device, accessibility, privacy/security, performance, fresh-install and release-candidate verification | Manual acceptance record, green CI, recovery rehearsal, limitations and release checklist |
+| G | Release hardening and acceptance (engineering in progress) | Security/data edge cases, automated regression, browser/accessibility checks, target-device verification | Phase G acceptance record, green final CI, recovery rehearsal, limitations and release checklist |
 
 ### Relationship to the original Phase 0–8 planning model
 
