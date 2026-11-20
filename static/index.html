@@ -13,6 +13,7 @@
     <script src="/static/memory.js?v=phase-d-2" defer></script>
     <script src="/static/career.js?v=phase-f-1" defer></script>
     <script src="/static/progress.js?v=phase-f-3" defer></script>
+    <script src="/static/intelligence.js?v=phase-h-1" defer></script>
   </head>
   <body>
     <header class="site-header">
@@ -178,6 +179,28 @@
         <h2 id="progress-title">See the work you have put in.</h2>
         <p class="scenario-description">A record of completed practice, lessons, interviews and reviews. These counts show activity, not proficiency, confidence, learning gains or placement readiness.</p>
         <div id="progress-summary" class="progress-summary" aria-live="polite"></div>
+        <section class="progress-section intelligence-section" aria-labelledby="intelligence-title">
+          <div class="learning-section-heading"><div><span class="meta-label">PHASE H · ADAPTIVE LEARNING</span><h3 id="intelligence-title">Understand your practice and choose what comes next.</h3></div><span id="intelligence-status" class="status" role="status" aria-live="polite">Loading evidence…</span></div>
+          <p class="section-help">This view connects saved practice to curriculum skills. It separates authored closed-exercise responses from open self-review and practice activity. It does not estimate mastery, fluency, confidence, or placement readiness.</p>
+          <div id="intelligence-summary" class="progress-summary"></div>
+          <div class="intelligence-columns">
+            <section aria-labelledby="intelligence-skills-title"><h4 id="intelligence-skills-title">Skill evidence</h4><div id="intelligence-skills" class="intelligence-skill-list"></div></section>
+            <section aria-labelledby="intelligence-recommendations-title"><h4 id="intelligence-recommendations-title">Explainable next steps</h4><div id="intelligence-recommendations" class="progress-list"></div><button id="intelligence-dismissed-toggle" class="button button-quiet" type="button" aria-expanded="false">Show dismissed suggestions</button><div id="intelligence-dismissed" class="progress-list hidden"></div></section>
+          </div>
+          <section class="intelligence-plan" aria-labelledby="intelligence-plan-title">
+            <div class="learning-section-heading"><div><span class="meta-label">LEARNER-CONTROLLED</span><h4 id="intelligence-plan-title">Daily learning plan</h4></div><span id="intelligence-plan-date-label" class="status"></span></div>
+            <div class="intelligence-plan-controls">
+              <div><label for="intelligence-plan-date">Plan date</label><input id="intelligence-plan-date" type="date"></div>
+              <div><label for="intelligence-plan-minutes">Available minutes</label><input id="intelligence-plan-minutes" type="number" min="5" max="180" step="5" value="30"></div>
+              <div class="action-group"><button id="intelligence-generate-day" class="button button-secondary" type="button">Build daily plan</button><button id="intelligence-generate-week" class="button button-primary" type="button">Build weekly plan</button></div>
+            </div>
+            <p class="section-help">Plans combine due learner-saved revisions, a suitable lesson, and optional interview practice. You can add a different lesson or activity, reorder items, or skip suggestions. Items complete only when the linked activity is saved.</p>
+            <div id="intelligence-plan-items" class="progress-list"></div>
+          </section>
+          <section class="intelligence-plan" aria-labelledby="intelligence-week-title"><h4 id="intelligence-week-title">Weekly plan</h4><p class="section-help">A seven-day view with no background jobs or notifications. Each day keeps its own time budget.</p><div id="intelligence-week" class="intelligence-week"></div></section>
+          <section class="intelligence-plan" aria-labelledby="intelligence-analytics-title"><h4 id="intelligence-analytics-title">Thirty-day activity history</h4><p class="section-help">Saved events and reviews over time, not a learning-gain chart.</p><div id="intelligence-activity" class="progress-week"></div></section>
+          <p id="intelligence-note" class="section-help">Skill states are calculated from your saved local evidence. Sparse or old evidence is shown as such.</p>
+        </section>
         <section class="progress-section" aria-labelledby="progress-recommendations-title">
           <h3 id="progress-recommendations-title">Useful next steps</h3>
           <div id="progress-recommendations" class="progress-list"></div>
