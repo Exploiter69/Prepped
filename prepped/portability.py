@@ -15,10 +15,12 @@ from fastapi.responses import Response
 from prepped.database import connect_database, initialize_database
 from prepped.career import initialize_career_database
 from prepped.progress import initialize_progress_database
+from prepped.intelligence import initialize_intelligence_database
 
 BACKUP_FORMAT = "prepped-local-backup"
 BACKUP_FORMAT_VERSION = 1
-DATABASE_SCHEMA_VERSION = 3
+DATABASE_SCHEMA_VERSION = 4
+LEGACY_SCHEMA_VERSION = 3
 MAX_BACKUP_BYTES = 25 * 1024 * 1024
 MAX_BACKUP_ROWS = 200_000
 TABLES = (
@@ -33,6 +35,8 @@ TABLES = (
     "career_turns",
     "learner_goals",
     "recommendation_dismissals",
+    "adaptive_plans",
+    "adaptive_plan_items",
 )
 INSERT_ORDER = (
     "learner_profile",
@@ -46,6 +50,8 @@ INSERT_ORDER = (
     "learning_memory",
     "career_turns",
     "learning_memory_reviews",
+    "adaptive_plans",
+    "adaptive_plan_items",
 )
 
 def _stamp() -> str:
@@ -113,13 +119,21 @@ def create_portability_router(db_path: Path) -> APIRouter:
         expected_keys = {"format", "format_version", "database_schema_version", "app_version", "exported_at", "tables", "confirm_replace"}
         if not isinstance(payload, dict) or set(payload) != expected_keys or payload.get("format") != BACKUP_FORMAT:
             raise HTTPException(status_code=400, detail="This file is not a complete Prepped backup.")
-        if type(payload.get("format_version")) is not int or type(payload.get("database_schema_version")) is not int or payload.get("format_version") != BACKUP_FORMAT_VERSION or payload.get("database_schema_version") != DATABASE_SCHEMA_VERSION:
+        backup_schema = payload.get("database_schema_version")
+        if (type(payload.get("format_version")) is not int or type(backup_schema) is not int
+                or payload.get("format_version") != BACKUP_FORMAT_VERSION
+                or backup_schema not in {LEGACY_SCHEMA_VERSION, DATABASE_SCHEMA_VERSION}):
             raise HTTPException(status_code=409, detail="This backup format or database version is not supported by this Prepped build.")
         if payload.get("confirm_replace") is not True:
             raise HTTPException(status_code=400, detail="Explicit confirmation is required because restore replaces all current local learning data.")
         tables = payload.get("tables")
-        if not isinstance(tables, dict) or set(tables) != set(TABLES):
+        expected_tables = set(TABLES) if backup_schema == DATABASE_SCHEMA_VERSION else set(TABLES) - {"adaptive_plans", "adaptive_plan_items"}
+        if not isinstance(tables, dict) or set(tables) != expected_tables:
             raise HTTPException(status_code=400, detail="Backup is missing required data tables or contains unsupported tables.")
+        # Version 3 backups predate adaptive plans; preserve original records and
+        # initialise the new learner-owned plan tables empty during migration.
+        if backup_schema == LEGACY_SCHEMA_VERSION:
+            tables = {**tables, "adaptive_plans": [], "adaptive_plan_items": []}
         total_rows = 0
         for table in TABLES:
             if not isinstance(tables[table], list):
@@ -136,6 +150,7 @@ def create_portability_router(db_path: Path) -> APIRouter:
                 initialize_database(staged_path)
                 initialize_career_database(staged_path)
                 initialize_progress_database(staged_path)
+                initialize_intelligence_database(staged_path)
                 with connect_database(staged_path) as staged:
                     column_map = {table: _columns(staged, table) for table in TABLES}
                     for table in TABLES:
