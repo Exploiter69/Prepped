@@ -30,6 +30,7 @@ def test_learner_content_is_not_written_through_html_string_sinks() -> None:
         "memory.js",
         "career.js",
         "progress.js",
+        "intelligence.js",
     )
     forbidden = re.compile(
         r"\.(?:innerHTML|outerHTML)\s*(?:=|\+=)|"
