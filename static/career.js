@@ -399,6 +399,7 @@
   window.addEventListener("prepped:viewchange", event => {
     if (event.detail?.view !== "career-view") stopRecording(true);
   });
+  window.addEventListener("pagehide", () => stopRecording(true));
 
   async function refreshVoiceStatus() {
     try {
