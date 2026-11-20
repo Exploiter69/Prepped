@@ -22,6 +22,7 @@ from prepped.profile import create_profile_router
 from prepped.learning import DEFAULT_CURRICULUM_PATH, create_learning_router, load_curriculum
 from prepped.memory import create_memory_router
 from prepped.progress import create_progress_router, initialize_progress_database
+from prepped.intelligence import create_intelligence_router, initialize_intelligence_database
 from prepped.portability import create_portability_router
 from prepped.scenarios import DEFAULT_SCENARIO_PATH, ScenarioValidationError, load_scenario
 from prepped.voice import VoiceService, build_voice_service
@@ -103,6 +104,7 @@ def create_app(
         initialize_database(Path(db_path))
         initialize_career_database(Path(db_path))
         initialize_progress_database(Path(db_path))
+        initialize_intelligence_database(Path(db_path))
         load_curriculum(Path(curriculum_path))
         yield
 
@@ -181,6 +183,7 @@ def create_app(
     application.include_router(create_learning_router(Path(db_path), Path(curriculum_path)))
     application.include_router(create_memory_router(Path(db_path)))
     application.include_router(create_progress_router(Path(db_path), Path(curriculum_path)))
+    application.include_router(create_intelligence_router(Path(db_path), Path(curriculum_path)))
     application.include_router(create_portability_router(Path(db_path)))
     application.include_router(create_career_router(Path(db_path)))
 
@@ -199,7 +202,7 @@ def create_app(
                 integrity = connection.execute("PRAGMA quick_check").fetchone()[0]
                 required = {"sessions", "answers", "learner_profile", "learning_attempts",
                             "learning_events", "learning_memory", "learning_memory_reviews",
-                            "career_sessions", "career_turns", "learner_goals", "recommendation_dismissals"}
+                            "career_sessions", "career_turns", "learner_goals", "recommendation_dismissals", "adaptive_plans", "adaptive_plan_items"}
                 existing = {row["name"] for row in connection.execute(
                     "SELECT name FROM sqlite_master WHERE type='table'"
                 )}
