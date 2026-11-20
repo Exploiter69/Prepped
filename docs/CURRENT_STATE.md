@@ -3,9 +3,9 @@
 **Updated:** 2026-11-20<br>
 **Source of truth:** GitHub `feature/learner-profile` (working branch; `main` remains the last synced baseline)<br>
 **Product direction:** Voice-first, personalised practice and learning platform for Indian engineering students. The text practice loop is a reliable fallback and is frozen for feature development except material bugs.<br>
-**Engineering stage:** Phases A–F are implemented. Phase G engineering hardening is in progress on `feature/learner-profile`; the final Phase G CI run is pending. The last pre-Phase-G baseline run was [44655380427](https://github.com/Exploiter69/Prepped/actions/runs/44655380427) — 100 passed, 2 skipped, 1 warning. Target-laptop acceptance remains open. Track Phase G work and evidence in [PHASE_G_ACCEPTANCE.md](PHASE_G_ACCEPTANCE.md).
+**Engineering stage:** Phases A–F are implemented. Phase G engineering hardening is implemented and its full CI run is green: [44721637341](https://github.com/Exploiter69/Prepped/actions/runs/44721637341) — 112 passed, 2 skipped, 1 warning. Target-laptop acceptance remains open. The next engineering prerequisite is Phase G.1 recording lifecycle hardening; Phase H is planned but not started.
 
-## Phase G — release hardening in progress
+## Phase G — release hardening implemented; device acceptance open
 
 The current working branch now includes:
 - Strict Host authority parsing and same-origin scheme/authority validation, with controlled 400/403 responses for malformed values.
@@ -14,7 +14,7 @@ The current working branch now includes:
 - Expanded security-header, no-store, and no-CORS checks.
 - Static checks against unsafe HTML string sinks, Git ignore coverage for private local data and exported backups, and contrast checks for core dark-theme text/status tokens.
 - Browser acceptance for keyboard-only focus/navigation, profile labels, and 375 px viewport overflow across the main workspaces.
-- A dedicated [Phase G acceptance record](PHASE_G_ACCEPTANCE.md). Final CI verification and all target-device checks remain pending.
+- A dedicated [Phase G acceptance record](PHASE_G_ACCEPTANCE.md). Final automated CI verification is green; target-device checks remain pending.
 
 ## Foundation and A–F automated verification
 
@@ -34,7 +34,7 @@ The `feature/learner-profile` branch now contains:
 - Profile setup/edit UI with optional name, study year, branch, target role, primary goal, confidence, and improvement areas. Profile setup can be skipped; the existing practice flow is not gated.
 - `tests/test_profile.py` covering initial state, save/read, updates, restart persistence, invalid input, and legacy session/answer preservation.
 
-**Validation status:** The current full-suite GitHub Actions run [44655380427](https://github.com/Exploiter69/Prepped/actions/runs/44655380427) passes 100 tests with 2 optional `espeak-ng` skips and 1 warning. This includes the profile journeys; target-laptop manual acceptance remains outstanding.
+**Validation status:** The current full-suite GitHub Actions run [44721637341](https://github.com/Exploiter69/Prepped/actions/runs/44721637341) passes 112 tests with 2 optional `espeak-ng` skips and 1 warning. This includes the profile journeys; target-laptop manual acceptance remains outstanding.
 
 ## What this milestone is
 
@@ -346,3 +346,10 @@ New additive SQLite tables: `career_sessions` and `career_turns`. Existing pract
 ### Scope and limitations
 
 Prepped remains a local single-user loopback application with no authentication or multi-user isolation. Do not expose it on a LAN, public internet, reverse proxy, or tunnel. Progress is saved-activity evidence, not proficiency or learning gain. Backups are not encrypted and currently support backup format version 1 with database schema version 3. See [INSTALL.md](INSTALL.md), [RELEASE_HARDENING.md](RELEASE_HARDENING.md), and [ACCEPTANCE_CHECKLIST.md](ACCEPTANCE_CHECKLIST.md).
+
+
+## Next engineering sequence — recording hardening, then Phase H
+
+**Phase G.1 is the immediate prerequisite and is not yet implemented.** Learning and Career recording must invalidate pending microphone permission requests on navigation/exit, stop tracks from late permission grants, stop active streams on all workspace transitions, and abort/ignore stale transcription work. Deferred-permission browser regressions must cover both workspaces. Ordinary Stop must continue to support transcription while the learner stays in the active exercise.
+
+**Phase H — Adaptive Learning Intelligence is planned, not started.** Its scope is (1) an evidence-backed learner skill profile with source/freshness/quantity and explicit uncertainty; (2) deterministic, explainable adaptation using prerequisites, observed attempts, repeated errors, goals, and due reviews; (3) a learner-controlled daily/weekly plan; and (4) source-linked skill timelines and analytics. It must reuse the current FastAPI + SQLite + plain JavaScript modular monolith, keep ₹0 mandatory cost, avoid new infrastructure and opaque mastery scores, and remain honest about sparse evidence. Do not begin H until G.1 tests and CI pass.
