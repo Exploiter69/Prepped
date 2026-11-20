@@ -14,6 +14,18 @@
     return body;
   }
 
+  window.addEventListener("prepped:open-learning-source", async event => {
+    const attemptId = event.detail?.attemptId;
+    if (typeof attemptId !== "string" || !attemptId) return;
+    if ($("#learning-view").classList.contains("hidden")) showLearning();
+    try {
+      const attempt = await request("/api/learning/attempts/" + encodeURIComponent(attemptId));
+      renderAttempt(attempt);
+    } catch (error) {
+      $("#learning-status").textContent = error.message;
+    }
+  });
+
   function showLearning() {
     window.dispatchEvent(new CustomEvent("prepped:viewchange", { detail: { view: "learning-view" } }));
     window.PreppedVoice?.stopAll();
