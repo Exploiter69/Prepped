@@ -6,9 +6,9 @@
     <meta name="theme-color" content="#F6F2E8">
     <meta name="description" content="Private, local-first practice for placement conversations.">
     <title>Prepped — Practice with purpose</title>
-    <link rel="stylesheet" href="/static/style.css?v=ui-stage-2-1">
-    <script src="/static/voice.js?v=phase-i-1" defer></script>
-    <script src="/static/app.js?v=ui-foundation-1" defer></script>
+    <link rel="stylesheet" href="/static/style.css?v=ui-stage-3-1">
+    <script src="/static/voice.js?v=ui-stage-3-1" defer></script>
+    <script src="/static/app.js?v=ui-stage-3-1" defer></script>
     <script src="/static/learning.js?v=ui-stage-2-1" defer></script>
     <script src="/static/memory.js?v=phase-d-2" defer></script>
     <script src="/static/career.js?v=phase-i-1" defer></script>
@@ -323,45 +323,47 @@
         <div class="notice"><strong>Honest by design.</strong><span>Feedback uses a transparent text checklist. Speech recognition is an editable first draft and its accuracy has not been validated. This is not an assessment, placement predictor, or measure of speaking ability.</span></div>
         <div class="primary-action"><button id="start-button" class="button button-primary" type="button" disabled>Start practice <span aria-hidden="true">→</span></button><span class="action-note">Your answers stay in this local app.</span></div>
       </section>
-      <section id="practice-view" class="scenario-panel hidden" aria-labelledby="practice-title">
-        <div class="panel-topline"><span class="eyebrow">LIVE PRACTICE</span><span id="practice-progress" class="status">Question 1 of 5</span></div>
-        <div class="progress-track" aria-hidden="true"><div id="progress-bar" class="progress-bar"></div></div>
-        <h2 id="practice-title">Question</h2><p id="question-prompt" class="question-prompt"></p>
-        <div class="spoken-prompt" aria-label="Spoken question controls">
-          <div class="voice-actions">
-            <button id="tts-play-button" class="button button-secondary" type="button" disabled>Play question aloud</button>
-            <button id="tts-stop-button" class="button button-quiet" type="button" disabled>Stop</button>
-            <button id="tts-replay-button" class="button button-quiet" type="button" disabled>Replay</button>
-          </div>
-          <span id="tts-status" class="voice-status" role="status" aria-live="polite">Checking local speech…</span>
-          <audio id="tts-audio" preload="none" class="hidden"></audio>
+      <section id="practice-view" class="practice-room scenario-panel hidden" aria-labelledby="practice-title">
+        <div class="practice-room-topline">
+          <div><span class="eyebrow">PRACTICE STUDIO / PROJECT EXPLANATION</span><span class="practice-session-label"><span aria-hidden="true"></span> PRIVATE LOCAL SESSION</span></div>
+          <span id="practice-progress" class="status">Question 1 of 5</span>
         </div>
-        <form id="answer-form">
-          <section class="voice-recorder" aria-labelledby="voice-answer-title">
-            <div class="voice-recorder-heading">
-              <div>
-                <h3 id="voice-answer-title">Speak your answer <span class="optional-label">(optional)</span></h3>
-                <p>Record, stop, then review and edit the transcript before saving. Prepped does not store raw audio.</p>
-              </div>
-              <div class="voice-actions">
-                <button id="record-button" class="button button-secondary" type="button" disabled>Start recording</button>
-                <button id="stop-recording-button" class="button button-quiet" type="button" disabled>Stop recording</button>
-              </div>
+        <div id="practice-progress-track" class="practice-progress-track" role="progressbar" aria-label="Practice questions completed" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0" aria-valuetext="0 of 5 questions saved"><div id="progress-bar" class="progress-bar"></div></div>
+        <div class="practice-question-card">
+          <div class="practice-question-kicker"><span>YOUR PROMPT</span><span id="practice-question-index">01 / 05</span></div>
+          <h2 id="practice-title">Question</h2><p id="question-prompt" class="question-prompt"></p>
+          <div class="spoken-prompt" aria-label="Spoken question controls">
+            <div class="spoken-prompt-copy"><span class="meta-label">LISTEN TO THE QUESTION</span><span class="spoken-prompt-hint">Prefer listening? Play the prompt aloud.</span></div>
+            <div class="voice-actions">
+              <button id="tts-play-button" class="button button-secondary" type="button" disabled>▶ Play question</button>
+              <button id="tts-stop-button" class="button button-quiet" type="button" disabled>Stop</button>
+              <button id="tts-replay-button" class="button button-quiet" type="button" disabled>Replay</button>
             </div>
-            <p id="record-status" class="voice-status" role="status" aria-live="polite">Checking microphone and local model…</p>
-            <p id="voice-error" class="inline-error voice-error" role="alert"></p>
+            <span id="tts-status" class="voice-status" role="status" aria-live="polite">Checking local speech…</span>
+            <audio id="tts-audio" preload="none" class="hidden"></audio>
+          </div>
+        </div>
+        <form id="answer-form" class="practice-answer-form">
+          <div class="practice-response-heading"><div><span class="meta-label">YOUR RESPONSE</span><h3 id="voice-answer-title">Say it in your own words</h3><p>Speak naturally, or type if that feels easier. You can edit everything before saving.</p></div><span class="practice-input-choice">VOICE + TEXT</span></div>
+          <section class="voice-recorder" aria-label="Optional voice response">
+            <div class="voice-recorder-heading">
+              <div class="voice-recorder-intro"><span class="voice-recorder-icon" aria-hidden="true">◖</span><div><h4>Record your answer <span class="optional-label">· optional</span></h4><p>Short, clear thoughts are enough. Stop when you're done.</p></div></div>
+              <div class="voice-actions"><button id="record-button" class="button button-primary" type="button" disabled>Start recording</button><button id="stop-recording-button" class="button button-quiet" type="button" disabled>Stop recording</button></div>
+            </div>
+            <div class="recording-stage"><div id="recording-visualizer" class="recording-visualizer" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div><span id="recording-clock" class="recording-clock">00:00 / 01:00</span></div>
+            <p id="record-status" class="voice-status" role="status" aria-live="polite">Checking microphone and speech provider…</p><p id="voice-error" class="inline-error voice-error" role="alert"></p>
           </section>
-          <label for="answer-input">Your answer</label>
-          <textarea id="answer-input" name="answer" rows="7" maxlength="6000" placeholder="Speak using the controls above, then edit the transcript here. You can also type your answer. Specific details are useful; do not invent results." aria-describedby="answer-help answer-count"></textarea>
-          <div class="input-meta"><span id="answer-help">Up to 6,000 characters. Edit the transcript before saving. You can skip a question.</span><span id="answer-count">0 / 6000</span></div>
+          <div class="practice-transcript-heading"><label for="answer-input">Your answer</label><span id="response-draft-state" class="response-draft-state">Nothing saved for this question yet.</span></div>
+          <textarea id="answer-input" name="answer" rows="6" maxlength="6000" placeholder="Your answer will appear here after transcription. You can also type directly. Add specific details, and do not invent results." aria-describedby="answer-help answer-count response-draft-state"></textarea>
+          <div class="input-meta"><span id="answer-help">Up to 6,000 characters. Your transcript is a draft—review it before saving.</span><span id="answer-count">0 / 6000</span></div>
           <p id="answer-error" class="inline-error" role="alert"></p>
-          <div class="form-actions"><button id="cancel-button" class="button button-quiet" type="button">End session</button><div class="action-group"><button id="skip-button" class="button button-secondary" type="button">Skip</button><button id="submit-button" class="button button-primary" type="submit">Save answer <span aria-hidden="true">→</span></button></div></div>
+          <div class="practice-submit-row"><button id="cancel-button" class="button button-quiet" type="button">End session</button><div class="action-group"><button id="skip-button" class="button button-secondary" type="button">Skip question</button><button id="submit-button" class="button button-primary" type="submit">Save answer <span aria-hidden="true">→</span></button></div></div>
         </form>
-        <p class="privacy-note" id="privacy-note">Checking speech and data handling…</p>
+        <details class="practice-privacy"><summary>How your voice and answers are handled</summary><p class="privacy-note" id="privacy-note">Checking speech and data handling…</p></details>
       </section>
-      <section id="feedback-view" class="scenario-panel hidden" aria-labelledby="feedback-title">
-        <div class="panel-topline"><span class="eyebrow">SESSION REVIEW</span><span id="attempt-label" class="status"></span></div>
-        <h2 id="feedback-title">Review your practice</h2><p id="feedback-summary" class="scenario-description"></p>
+      <section id="feedback-view" class="practice-review scenario-panel hidden" aria-labelledby="feedback-title">
+        <div class="panel-topline"><span class="eyebrow">PRACTICE STUDIO / YOUR REVIEW</span><span id="attempt-label" class="status"></span></div>
+        <div class="practice-review-heading"><span class="practice-review-mark" aria-hidden="true">✦</span><div><h2 id="feedback-title">A moment to reflect.</h2><p id="feedback-summary" class="scenario-description"></p></div></div>
         <div id="feedback-limitations" class="notice"></div><div class="divider"></div>
         <h3>Question-by-question notes</h3><div id="question-feedback" class="feedback-list"></div>
         <div class="divider"></div><h3>Transparent checklist</h3><p class="section-help">These are simple text signals, not grades. Read the evidence and decide what is useful.</p><div id="rubric-feedback" class="feedback-list"></div>
