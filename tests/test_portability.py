@@ -353,7 +353,8 @@ def test_interrupted_restore_keeps_active_database_and_trusted_backup_restores(
     import prepped.portability as portability
 
     database = tmp_path / "interrupted-restore.sqlite3"
-    client = client_for(database)
+    client = TestClient(create_app(db_path=database), raise_server_exceptions=False)
+    client.__enter__()
     try:
         client.put("/api/profile", json={"display_name": "Trusted backup learner"})
         trusted_backup = client.get("/api/data/export").json()
@@ -363,8 +364,8 @@ def test_interrupted_restore_keeps_active_database_and_trusted_backup_restores(
             raise RuntimeError("simulated worker interruption before restore commit")
 
         monkeypatch.setattr(portability, "_commit_staged_restore", interrupt_before_commit)
-        with pytest.raises(RuntimeError, match="simulated worker interruption"):
-            client.post("/api/data/restore", json={**trusted_backup, "confirm_replace": True})
+        interrupted = client.post("/api/data/restore", json={**trusted_backup, "confirm_replace": True})
+        assert interrupted.status_code == 500
 
         # The staged temporary database is discarded and the active database
         # remains readable and unchanged when execution stops before commit.
