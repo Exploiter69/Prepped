@@ -140,7 +140,18 @@ def test_security_headers_and_local_origin_guard(tmp_path: Path) -> None:
         assert readiness.json()["status"] == "ready"
         assert response.headers["x-frame-options"] == "DENY"
         assert response.headers["cache-control"] == "no-store"
-        assert "frame-ancestors 'none'" in response.headers["content-security-policy"]
+        assert response.headers["referrer-policy"] == "no-referrer"
+        assert response.headers["cross-origin-resource-policy"] == "same-origin"
+        assert response.headers["cross-origin-opener-policy"] == "same-origin"
+        assert response.headers["permissions-policy"] == "camera=(), microphone=(self), geolocation=()"
+        policy = response.headers["content-security-policy"]
+        assert "default-src 'self'" in policy
+        assert "script-src 'self'" in policy
+        assert "connect-src 'self'" in policy
+        assert "frame-ancestors 'none'" in policy
+        assert "access-control-allow-origin" not in response.headers
+        assert client.get("/api/profile").headers["cache-control"] == "no-store"
+        assert client.get("/api/data/export").headers["cache-control"] == "no-store"
         denied = client.put("/api/profile", headers={"Origin": "http://attacker.example"}, json={"primary_goal": "english_fluency"})
         assert denied.status_code == 403
         assert client.get("/api/profile").json()["configured"] is False
