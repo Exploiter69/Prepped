@@ -83,15 +83,17 @@ Application-level backup encryption is deferred. Adding encryption without a rel
 | Dependency vulnerabilities | CI pip-audit scanned 73 resolved dependencies | 0 known vulnerabilities |
 | Dependency licences | CI inventory reviewed: 68 distributions; local prepped package UNKNOWN; optional Piper GPL-3.0-or-later | Reviewed; project licence decision required before redistribution |
 
-## Manual acceptance — must use disposable data
+## Manual acceptance — remaining target-device checks
 
-- [ ] Verify default data/ mode 0700 and DB mode 0600 on the target Linux machine.
-- [ ] On a disposable copy, simulate an unwritable data directory and confirm a clear startup failure without modifying unrelated files.
-- [ ] On a disposable copy, approach disk exhaustion and record the SQLite/API error and recovery behaviour; do not use the only live DB.
+Automated failure simulations and regression tests are recorded in the exact CI run. The remaining checks below must use disposable data and must not endanger the only learner database.
+
+- [ ] On the target Linux machine, verify default data/ mode 0700 and DB mode 0600 after starting Prepped.
+- [x] POSIX permission-denied simulation: a custom read-only database directory rejects creation cleanly; passed in CI. Target-device confirmation is optional.
+- [x] SQLite disk-full simulation: PRAGMA max_page_count forces a bounded database-full failure; transaction rolls back and integrity_check remains ok. No real filesystem was filled.
 - [ ] Interrupt a restore while using a disposable DB, then check /api/ready, SQLite integrity, and restore from a trusted backup.
-- [ ] Upgrade a copy of a schema-3 database to current schema and verify preserved profile, sessions, answers, and foreign keys.
-- [ ] Verify remote Groq disclosure and provider selection only if the optional key is configured; never use confidential audio.
-- [x] Inspect the exact CI dependency audit and licence artifacts: 0 known vulnerabilities across 73 dependencies; 68 licence records; Piper GPL-3.0-or-later; project package UNKNOWN.
+- [x] Schema-3 upgrade regression test: preserved session/answer data, adaptive tables recreated, foreign keys and integrity pass in CI. A real user DB must still be backed up before any local upgrade.
+- [ ] Verify remote Groq disclosure/provider selection only if the optional key is already configured; never use confidential audio.
+- [x] CI audit artifacts reviewed: 0 known vulnerabilities across 73 dependencies; 68 licence records; Piper GPL-3.0-or-later; project package UNKNOWN.
 - [ ] Recheck backup confidentiality, delete/cascade semantics, and the limitations in this document.
 - [ ] Choose and declare a project licence before any package/source redistribution; do not treat the current UNKNOWN metadata as permission.
 

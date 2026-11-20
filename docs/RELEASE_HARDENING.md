@@ -127,9 +127,9 @@ Phase K does not add application-level backup encryption. A password-based schem
 
 ### Reliability verification and manual limits
 
-Automated tests cover: rollback on a process-level exception, SQLite integrity and foreign-key checks, private DB modes and symlink rejection on POSIX, remote-peer rejection, malformed Host/Origin and Content-Length values, request-size caps, staged restore rejection without replacement, version-3 backup migration, cascade deletion, and readiness failure when required tables are missing.
+Automated tests cover: rollback on a process-level exception, SQLite integrity and foreign-key checks, private DB modes and symlink rejection on POSIX, read-only-directory permission failure, simulated database-full rollback using SQLite max_page_count, remote-peer rejection, malformed Host/Origin and Content-Length values, fixed and chunked request-size caps, staged restore rejection without replacement, schema-3 additive/idempotent migration, cascade deletion, provider timeout mapping, API-key/status non-disclosure, decoder metadata suppression, voice log redaction, and readiness failure when required tables are missing.
 
-Still requires target-machine rehearsal before a release candidate: deliberately test a full/near-full disk on disposable data; deny write permission to a disposable data directory; interrupt a disposable restore process; perform an actual old-schema database upgrade; and verify restore/recovery from a second trusted backup. Never perform destructive tests on the only copy of real learner data.
+Still requires target-machine rehearsal before a release candidate: verify actual data/ and DB modes, interrupt a restore on a disposable DB, and verify restore/recovery from a second trusted backup. The disk-full test is a safe SQLite limit simulation, not a real filesystem exhaustion test. The permission-denied regression uses a disposable custom directory, not the user's live data directory. Never perform destructive tests on the only copy of real learner data.
 
 This is an engineering threat model and control review, not a penetration test, legal privacy review, dependency guarantee, or security certification.
 
