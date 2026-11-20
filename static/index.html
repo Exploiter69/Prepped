@@ -7,11 +7,11 @@
     <meta name="description" content="Private, local-first practice for placement conversations.">
     <title>Prepped — Practice with purpose</title>
     <link rel="stylesheet" href="/static/style.css?v=phase-h-12">
-    <script src="/static/voice.js?v=profile-toggle-2" defer></script>
+    <script src="/static/voice.js?v=phase-i-1" defer></script>
     <script src="/static/app.js?v=phase-h-1" defer></script>
     <script src="/static/learning.js?v=phase-h-2" defer></script>
     <script src="/static/memory.js?v=phase-d-2" defer></script>
-    <script src="/static/career.js?v=phase-h-1" defer></script>
+    <script src="/static/career.js?v=phase-i-1" defer></script>
     <script src="/static/progress.js?v=phase-h-1" defer></script>
     <script src="/static/intelligence.js?v=phase-h-3" defer></script>
   </head>
@@ -150,6 +150,7 @@
         <section id="career-active" class="career-active hidden" aria-labelledby="career-prompt-title">
           <div class="panel-topline"><span id="career-turn-label" class="eyebrow">QUESTION 1</span><span id="career-progress" class="status"></span></div>
           <h3 id="career-prompt-title" class="career-prompt"></h3>
+          <p id="career-followup-context" class="section-help hidden" role="status" aria-live="polite"></p>
           <div class="voice-actions career-voice-actions">
             <button id="career-speak" class="button button-secondary" type="button">Play question aloud</button>
             <button id="career-replay" class="button button-quiet" type="button">Replay</button>
@@ -169,7 +170,7 @@
           <p id="career-review-disclaimer" class="section-help"></p>
           <div id="career-review-notes" class="career-review-notes"></div>
           <div id="career-next-steps" class="notice"></div>
-          <div class="form-actions"><button id="career-back" class="button button-quiet" type="button">Back to studios</button><button id="career-retry" class="button button-primary" type="button">Try this studio again →</button></div>
+          <div class="form-actions"><button id="career-add-plan" class="button button-secondary" type="button">Add next practice to today's plan</button><button id="career-back" class="button button-quiet" type="button">Back to studios</button><button id="career-retry" class="button button-primary" type="button">Try this studio again →</button></div>
         </section>
         <section class="career-history" aria-labelledby="career-history-title"><div class="divider"></div><div class="learning-section-heading"><h3 id="career-history-title">Recent interview practice</h3><button id="career-refresh" class="button button-quiet" type="button">Refresh</button></div><div id="career-history-list" class="career-history-list"></div></section>
         <div class="form-actions"><button id="career-home" class="button button-quiet" type="button">Back to practice room</button></div>
