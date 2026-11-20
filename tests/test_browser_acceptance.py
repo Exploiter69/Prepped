@@ -901,25 +901,34 @@ def test_career_review_can_add_next_practice_to_adaptive_plan(local_app_url: str
     page.locator("#career-simpler-prompt").click()
     assert page.locator("#career-prompt-title").inner_text() == original_prompt
 
-    for index in range(4):
-        page.locator("#career-answer").fill(
-            f"For example, I built and tested project feature {index} because it addressed a user need. "
-            "The result was verified with a repeatable test."
-        )
-        page.locator("#career-submit").click()
-        page.wait_for_function(
-            "() => document.querySelector('#career-turn-label').textContent.includes('FOLLOW-UP')"
-        )
-        page.locator("#career-answer").fill(
-            "For example, I checked the result because the user journey mattered, then tested the change."
-        )
-        page.locator("#career-submit").click()
-        if index < 3:
-            page.wait_for_function(
-                "() => document.querySelector('#career-turn-label').textContent.includes('MAIN QUESTION')"
+    for attempt_label in ("first", "second"):
+        for index in range(4):
+            page.locator("#career-answer").fill(
+                f"For example, I built and tested the {attempt_label} project feature {index} because it addressed a user need. "
+                "The result was verified with a repeatable test."
             )
+            page.locator("#career-submit").click()
+            page.wait_for_function(
+                "() => document.querySelector('#career-turn-label').textContent.includes('FOLLOW-UP')"
+            )
+            page.locator("#career-answer").fill(
+                f"For example, I checked the {attempt_label} result because the user journey mattered, then tested the change."
+            )
+            page.locator("#career-submit").click()
+            if index < 3:
+                page.wait_for_function(
+                    "() => document.querySelector('#career-turn-label').textContent.includes('MAIN QUESTION')"
+                )
+        page.locator("#career-review").wait_for(state="visible")
+        if attempt_label == "first":
+            page.locator("#career-retry").click()
+            page.locator("#career-active").wait_for(state="visible")
 
-    page.locator("#career-review").wait_for(state="visible")
+    assert page.locator("#career-attempt-comparison").is_visible()
+    comparison_text = page.locator("#career-attempt-comparison").inner_text()
+    assert "first project feature" in comparison_text
+    assert "second project feature" in comparison_text
+    assert "not a measured improvement" in comparison_text.lower()
     page.locator("#career-add-plan").click()
     page.wait_for_function(
         """() => document.querySelector('#career-status').textContent.includes("today's plan")"""
