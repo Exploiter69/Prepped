@@ -1162,10 +1162,10 @@ def test_groq_audio_disclosure_is_visible_before_microphone_capture(local_app_ur
     )
     page.add_init_script("""
         (() => {
+          window.__captureRequests = 0;
           const media = navigator.mediaDevices;
           if (!media?.getUserMedia) return;
           const original = media.getUserMedia.bind(media);
-          window.__captureRequests = 0;
           media.getUserMedia = (...args) => {
             window.__captureRequests += 1;
             return original(...args);
