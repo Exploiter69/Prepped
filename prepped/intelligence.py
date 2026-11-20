@@ -489,7 +489,8 @@ def _add_plan_item(conn: sqlite3.Connection, plan_date: date, item_type: str, ta
 
 def _generate_day(conn: sqlite3.Connection, curriculum: dict[str, Any], plan_date: date,
                   minutes: int, used_memory: set[str] | None = None,
-                  used_lessons: set[str] | None = None, include_career: bool = True) -> dict[str, Any]:
+                  used_lessons: set[str] | None = None, include_career: bool = True,
+                  include_project: bool = True) -> dict[str, Any]:
     plan = _ensure_plan(conn, plan_date, minutes)
     skills, _ = _skill_evidence(conn, curriculum, _now())
     recommendations = _recommendations(conn, curriculum, skills)
@@ -544,7 +545,7 @@ def _generate_day(conn: sqlite3.Connection, curriculum: dict[str, Any], plan_dat
                            "Practise an interview scenario",
                            "This optional session matches your saved interview-preparation goal.", 15)
             remaining -= 15
-    if project_goal and remaining >= 15:
+    if include_project and project_goal and remaining >= 15:
         _add_plan_item(conn, plan_date, "project_practice", "project-explanation",
                        "Project explanation practice",
                        "This practice supports your active project-practice goal.", 15)
@@ -649,7 +650,8 @@ def create_intelligence_router(db_path: Path, curriculum_path: Path = DEFAULT_CU
             for offset in range(7):
                 target = payload.week_start + timedelta(days=offset)
                 days.append(_generate_day(conn, data(), target, payload.available_minutes_per_day,
-                                          used_memory, used_lessons, include_career=(offset == 4)))
+                                          used_memory, used_lessons, include_career=(offset == 4),
+                                          include_project=(offset == 2)))
         return {"week_start": payload.week_start.isoformat(), "days": days}
 
     @router.post("/plan/items", status_code=201)
