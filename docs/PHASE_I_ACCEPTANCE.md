@@ -22,6 +22,7 @@
 
 - Career content version 1.2.0 adds an authored contextual follow-up rule, simpler wording, and a clarification hint for each of the 12 primary questions and their follow-ups across Project Explanation, HR/Behavioural, and Technical Fundamentals.
 - Learners can switch between original and simpler wording, reveal/hide an authored prompt hint, and replay the spoken prompt. The selected wording is recorded with the answer so review reflects the prompt actually shown.
+- After a retry, the review compares matching previous/current answer pairs side by side. The comparison is descriptive and carries an explicit no-measured-improvement statement.
 - The backend validates each contextual rule against an explicit trigger allowlist.
 - Follow-up selection checks a small set of text cues (example, first-person action, reasoning, evidence, sequence, reflection, preparation, and trade-off markers). If the cue is not detected, the authored contextual prompt is selected; otherwise the existing guided/standard/challenging prompt remains the fallback.
 - The UI displays why a contextual follow-up was selected and states that the cue may miss equivalent wording and is not an assessment.
