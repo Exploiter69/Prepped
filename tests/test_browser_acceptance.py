@@ -980,3 +980,70 @@ def test_project_prompt_audio_request_is_aborted_when_leaving_practice(local_app
     page.locator("#career-toggle").click()
     assert page.evaluate("window.__practiceTtsSignal.aborted") is True
     assert page.locator("#career-view").is_visible()
+
+
+def _recording_and_deferred_transcription_script(signal_name: str) -> str:
+    return f"""
+    (() => {{
+      Object.defineProperty(navigator.mediaDevices, "getUserMedia", {{
+        configurable: true,
+        value: async () => ({{ getTracks: () => [{{ stop() {{}} }}] }})
+      }});
+      window.MediaRecorder = class {{
+        constructor() {{ this.state = "inactive"; this.mimeType = "audio/webm"; }}
+        static isTypeSupported() {{ return true; }}
+        start() {{ this.state = "recording"; }}
+        stop() {{
+          this.state = "inactive";
+          this.ondataavailable?.({{ data: new Blob(["captured-audio"], {{ type: "audio/webm" }}) }});
+          this.onstop?.();
+        }}
+      }};
+      const originalFetch = window.fetch.bind(window);
+      window.fetch = (input, init = {{}}) => {{
+        if (String(input).includes("/api/voice/transcribe")) {{
+          window.{signal_name} = init.signal;
+          return new Promise((resolve, reject) => {{
+            init.signal?.addEventListener("abort", () => {{
+              reject(new DOMException("Aborted", "AbortError"));
+            }}, {{ once: true }});
+          }});
+        }}
+        return originalFetch(input, init);
+      }};
+    }})();
+    """
+
+
+def test_career_transcription_request_is_aborted_when_leaving_workspace(local_app_url: str, browser_page) -> None:
+    page = browser_page
+    _mock_available_voice_status(page)
+    page.add_init_script(_recording_and_deferred_transcription_script("__careerSttSignal"))
+    page.goto(local_app_url)
+    page.locator("#career-toggle").click()
+    page.locator(".career-studio-card button").first.click()
+    page.locator("#career-start").click()
+    page.locator("#career-active").wait_for(state="visible")
+    page.locator("#career-record").click()
+    page.wait_for_function("() => document.querySelector('#career-voice-status').textContent.startsWith('Recording')")
+    page.locator("#career-stop-record").click()
+    page.wait_for_function("() => window.__careerSttSignal !== undefined")
+    page.locator("#learning-toggle").click()
+    assert page.evaluate("window.__careerSttSignal.aborted") is True
+    assert page.locator("#learning-view").is_visible()
+
+
+def test_project_transcription_request_is_aborted_when_leaving_practice(local_app_url: str, browser_page) -> None:
+    page = browser_page
+    _mock_available_voice_status(page)
+    page.add_init_script(_recording_and_deferred_transcription_script("__practiceSttSignal"))
+    page.goto(local_app_url)
+    page.locator("#start-button").click()
+    page.locator("#practice-view").wait_for(state="visible")
+    page.locator("#record-button").click()
+    page.wait_for_function("() => document.querySelector('#record-status').textContent.startsWith('Recording')")
+    page.locator("#stop-recording-button").click()
+    page.wait_for_function("() => window.__practiceSttSignal !== undefined")
+    page.locator("#career-toggle").click()
+    assert page.evaluate("window.__practiceSttSignal.aborted") is True
+    assert page.locator("#career-view").is_visible()
