@@ -1,5 +1,5 @@
 const $ = (selector) => document.querySelector(selector);
-const views = ["home-view", "practice-view", "feedback-view", "history-view", "learning-view", "career-view", "progress-view"];
+const views = ["dashboard-view", "home-view", "practice-view", "feedback-view", "history-view", "learning-view", "career-view", "progress-view"];
 let scenario = null;
 let activeSession = null;
 let activeFeedback = null;
@@ -19,11 +19,13 @@ function showView(viewId) {
   $("#learning-toggle")?.setAttribute("aria-expanded", String(viewId === "learning-view"));
   $("#career-toggle")?.setAttribute("aria-expanded", String(viewId === "career-view"));
   $("#progress-toggle")?.setAttribute("aria-expanded", String(viewId === "progress-view"));
+  window.dispatchEvent(new CustomEvent("prepped:navigation", { detail: { view: viewId } }));
   setStatus("");
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 window.addEventListener("prepped:open-practice", () => showView("home-view"));
+window.PreppedApp = { showView };
 
 async function api(url, options = {}) {
   const response = await fetch(url, {
@@ -489,5 +491,6 @@ $("#history-home-button").addEventListener("click", () => showView("home-view"))
 $("#answer-input").addEventListener("input", () => { $("#answer-count").textContent = $("#answer-input").value.length + " / 6000"; });
 
 window.PreppedVoice?.init();
+showView("dashboard-view");
 loadStarterData();
 loadProfile();

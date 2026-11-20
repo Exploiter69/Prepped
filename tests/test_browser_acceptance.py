@@ -81,6 +81,19 @@ def complete_lesson_in_browser(page, lesson_id: str, answers: list[str | list[st
             )
 
 
+def test_dashboard_is_the_landing_view_and_uses_real_learning_data(local_app_url: str, browser_page) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+    page.locator("#dashboard-view").wait_for(state="visible")
+    page.wait_for_function("() => document.querySelector('#dashboard-track-description').textContent !== 'Loading your recommended learning path…'")
+    assert page.locator("#dashboard-hero-title").is_visible()
+    assert page.locator("#dashboard-path-preview .dashboard-lesson").count() > 0
+    assert page.locator("#home-toggle").get_attribute("aria-current") == "page"
+    page.locator("#learning-toggle").click()
+    page.locator("#learning-view").wait_for(state="visible")
+    assert not page.locator("#dashboard-view").is_visible()
+
+
 def test_profile_setup_edit_cancel_save_and_reload(local_app_url: str, browser_page) -> None:
     page = browser_page
     page.goto(local_app_url)
@@ -148,6 +161,7 @@ def test_practice_room_is_not_gated_by_profile_and_text_flow_completes(local_app
         "() => document.querySelector('#profile-save-status').textContent === 'Not set up'"
     )
     assert page.locator("#profile-form").is_hidden()
+    page.locator("#practice-toggle").click()
     page.locator("#start-button").click()
     page.locator("#practice-view").wait_for(state="visible")
 
@@ -984,6 +998,7 @@ def test_project_prompt_audio_request_is_aborted_when_leaving_practice(local_app
         })();
     """)
     page.goto(local_app_url)
+    page.locator("#practice-toggle").click()
     page.locator("#start-button").click()
     page.locator("#practice-view").wait_for(state="visible")
     page.locator("#tts-play-button").click()
@@ -1054,6 +1069,7 @@ def test_project_transcription_request_is_aborted_when_leaving_practice(local_ap
     _mock_available_voice_status(page)
     page.add_init_script(_recording_and_deferred_transcription_script("__practiceSttSignal"))
     page.goto(local_app_url)
+    page.locator("#practice-toggle").click()
     page.locator("#start-button").click()
     page.locator("#practice-view").wait_for(state="visible")
     page.locator("#record-button").click()

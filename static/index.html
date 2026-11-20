@@ -3,28 +3,40 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#111111">
+    <meta name="theme-color" content="#F6F2E8">
     <meta name="description" content="Private, local-first practice for placement conversations.">
     <title>Prepped — Practice with purpose</title>
-    <link rel="stylesheet" href="/static/style.css?v=phase-i-1">
+    <link rel="stylesheet" href="/static/style.css?v=ui-foundation-1">
     <script src="/static/voice.js?v=phase-i-1" defer></script>
-    <script src="/static/app.js?v=phase-h-1" defer></script>
+    <script src="/static/app.js?v=ui-foundation-1" defer></script>
     <script src="/static/learning.js?v=phase-h-2" defer></script>
     <script src="/static/memory.js?v=phase-d-2" defer></script>
     <script src="/static/career.js?v=phase-i-1" defer></script>
     <script src="/static/progress.js?v=phase-h-1" defer></script>
     <script src="/static/intelligence.js?v=phase-h-3" defer></script>
+    <script src="/static/dashboard.js?v=ui-foundation-1" defer></script>
   </head>
   <body>
-    <header class="site-header">
+    <header class="site-header" aria-label="Main navigation">
       <a class="wordmark" href="/" aria-label="Prepped home">prepped<span>.</span></a>
-      <div class="header-actions"><span class="header-note">LOCAL PRACTICE · 0.3.0</span><button id="learning-toggle" class="button button-quiet" type="button" aria-controls="learning-view" aria-expanded="false">Learning</button><button id="career-toggle" class="button button-quiet" type="button" aria-controls="career-view" aria-expanded="false">Career</button><button id="progress-toggle" class="button button-quiet" type="button" aria-controls="progress-view" aria-expanded="false">Progress</button><button id="history-toggle" class="button button-quiet" type="button">History</button></div>
+      <p class="sidebar-caption">YOUR LEARNING SPACE</p>
+      <nav class="header-actions" aria-label="Primary">
+        <button id="home-toggle" class="nav-button is-active" type="button" aria-controls="dashboard-view" aria-current="page"><span aria-hidden="true">⌂</span><span>Home</span></button>
+        <button id="learning-toggle" class="nav-button" type="button" aria-controls="learning-view" aria-expanded="false"><span aria-hidden="true">◎</span><span>Learn</span></button>
+        <button id="practice-toggle" class="nav-button" type="button" aria-controls="home-view"><span aria-hidden="true">◉</span><span>Practice</span></button>
+        <button id="career-toggle" class="nav-button" type="button" aria-controls="career-view" aria-expanded="false"><span aria-hidden="true">◇</span><span>Career</span></button>
+        <button id="progress-toggle" class="nav-button" type="button" aria-controls="progress-view" aria-expanded="false"><span aria-hidden="true">▥</span><span>Progress</span></button>
+        <button id="history-toggle" class="nav-button" type="button"><span aria-hidden="true">↺</span><span>History</span></button>
+      </nav>
+      <div class="sidebar-footer"><span class="sidebar-local-dot"></span><span>Private · stored locally</span></div>
     </header>
-    <main>
+    <main class="app-main">
+      <section id="dashboard-view" class="dashboard-view" aria-labelledby="page-title">
       <section class="intro" aria-labelledby="page-title">
         <p class="eyebrow">PRACTICE ROOM / 001</p>
-        <h1 id="page-title">Get better at explaining<br>the work you do.</h1>
-        <p class="intro-copy">A private practice space for engineering students preparing for real placement conversations. Speak or type your answer, review and edit the transcript, then try again. Text always remains available.</p>
+        <p id="dashboard-greeting" class="eyebrow">YOUR NEXT SMALL STEP</p>
+        <h1 id="page-title">Make progress,<br>one practice at a time.</h1>
+        <p class="intro-copy" id="dashboard-goal">Build the communication skills you want, at your own pace.</p>
       </section>
       <section id="profile-panel" class="scenario-panel profile-panel" aria-labelledby="profile-title">
         <div class="panel-topline"><span class="eyebrow">YOUR LEARNING PROFILE</span><span id="profile-save-status" class="status">Stored on this device</span></div>
@@ -54,6 +66,35 @@
           <p id="profile-error" class="inline-error" role="alert"></p>
           <div class="form-actions"><button id="profile-cancel" class="button button-quiet" type="button">Cancel</button><button class="button button-primary" type="submit">Save my profile</button></div>
         </form>
+      </section>
+      <section class="dashboard-hero" aria-labelledby="dashboard-hero-title">
+        <div class="dashboard-hero-copy"><span class="dashboard-kicker">A LITTLE PRACTICE GOES A LONG WAY</span><h2 id="dashboard-hero-title">Ready for your next step?</h2>
+          <p>Pick up where you left off or choose a focused activity for today. Every step counts.</p>
+          <div class="dashboard-hero-actions"><button id="dashboard-learn-button" class="button button-primary" type="button">Explore learning path <span aria-hidden="true">→</span></button><button id="dashboard-practice-button" class="button button-light" type="button">Practise speaking</button></div>
+        </div>
+        <div class="dashboard-mascot-wrap"><img class="dashboard-mascot" src="/static/assets/prepped-owl-welcome.svg" alt="A friendly Prepped owl mascot waving hello" width="176" height="176"><span class="mascot-caption">You've got this.</span></div>
+      </section>
+      <section class="dashboard-stats" aria-label="Your learning at a glance">
+        <article class="dashboard-stat"><span class="dashboard-stat-icon mint" aria-hidden="true">✓</span><div><strong id="dashboard-lessons-completed">—</strong><span>Lessons completed</span></div></article>
+        <article class="dashboard-stat"><span class="dashboard-stat-icon lavender" aria-hidden="true">✦</span><div><strong id="dashboard-skills-active">—</strong><span>Skills with activity</span></div></article>
+        <article class="dashboard-stat"><span class="dashboard-stat-icon amber" aria-hidden="true">↻</span><div><strong id="dashboard-reviews-due">—</strong><span>Reviews due</span></div></article>
+      </section>
+      <div class="dashboard-columns">
+        <section class="dashboard-card dashboard-path-card" aria-labelledby="dashboard-path-title">
+          <div class="dashboard-card-heading"><div><span class="dashboard-kicker">YOUR LEARNING JOURNEY</span><h2 id="dashboard-path-title">Your path</h2></div><button id="dashboard-path-link" class="text-link" type="button">View all lessons <span aria-hidden="true">→</span></button></div>
+          <p id="dashboard-track-description" class="dashboard-muted">Loading your recommended learning path…</p><div id="dashboard-path-preview" class="dashboard-path-preview" aria-live="polite"></div>
+        </section>
+        <aside class="dashboard-side-column">
+          <section class="dashboard-card dashboard-plan-card" aria-labelledby="dashboard-plan-title">
+            <div class="dashboard-card-heading"><div><span class="dashboard-kicker">A PLAN THAT FITS YOUR DAY</span><h2 id="dashboard-plan-title">Today's plan</h2></div><span class="dashboard-plan-mark" aria-hidden="true">✦</span></div>
+            <div id="dashboard-plan-preview" class="dashboard-plan-preview"><p class="dashboard-muted">Checking your saved plan…</p></div>
+            <button id="dashboard-progress-link" class="button button-secondary dashboard-full-button" type="button">Open my progress</button>
+          </section>
+          <section class="dashboard-card dashboard-coach-card" aria-labelledby="dashboard-coach-title">
+            <img src="/static/assets/prepped-owl-thinking.svg" alt="" width="58" height="58" loading="lazy"><div><h3 id="dashboard-coach-title">A gentle reminder</h3><p id="dashboard-coach-copy">You don't need a perfect answer. You just need a place to begin.</p></div>
+          </section>
+        </aside>
+      </div>
       </section>
       <section id="learning-view" class="scenario-panel learning-panel hidden" aria-labelledby="learning-title">
         <div class="panel-topline"><span class="eyebrow">LEARNING ENGINE / PHASE B</span><span id="learning-status" class="status">Loading curriculum…</span></div>

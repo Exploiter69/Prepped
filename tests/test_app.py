@@ -46,8 +46,11 @@ def test_health_homepage_and_database_initialization(tmp_path: Path) -> None:
         assert health.json() == {"status": "ok", "application": "Prepped"}
         assert db_path.is_file()
         assert "Start practice" in home.text
+        assert "dashboard-view" in home.text and "Explore learning path" in home.text
+        mascot = client.get("/static/assets/prepped-owl-welcome.svg")
+        assert mascot.status_code == 200 and "<svg" in mascot.text
         assert "practice flow and feedback engine are not implemented yet" not in home.text
-        assert css.status_code == 200 and "color-scheme: dark" in css.text
+        assert css.status_code == 200 and "--brand-forest" in css.text and "prefers-reduced-motion" in css.text
         assert js.status_code == 200 and "/api/sessions" in js.text
 
         with sqlite3.connect(db_path) as connection:
