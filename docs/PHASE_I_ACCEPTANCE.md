@@ -1,6 +1,6 @@
 # Phase I — Voice Intelligence & Contextual Coaching
 
-**Status:** Implementation added to `feature/learner-profile`; local pytest on commit `c4200e5fc06ccfcd06c9b49fadc6cc8d6ac9afdc` reports 145 passed, 0 failed, and one Starlette/httpx deprecation warning. Exact-commit GitHub Actions remains pending; manual target-laptop acceptance is open. This record must be updated with the final CI run and observed device checks before Phase I is marked accepted.  
+**Status:** Implementation added to `feature/learner-profile`; local pytest on commit `c4200e5fc06ccfcd06c9b49fadc6cc8d6ac9afdc` reports 145 passed, 0 failed, and one Starlette/httpx deprecation warning. Exact-commit GitHub Actions [run 44742961672](https://github.com/Exploiter69/Prepped/actions/runs/44742961672) passed with 143 passed, 2 optional voice skips, and 1 warning. Manual target-laptop acceptance remains open. This record must be updated with the final CI run and observed device checks before Phase I is marked accepted.  
 **Architecture:** Existing FastAPI + SQLite + plain HTML/CSS/JavaScript modular monolith.  
 **Persistence:** No Phase I database migration or new table. Existing saved session JSON snapshots remain readable.  
 **Cost:** No new paid API, subscription, hosting, model, or required service.
@@ -46,7 +46,7 @@
 - `tests/test_browser_acceptance.py`: Career prompt synthesis is aborted on navigation; Project Practice prompt synthesis is aborted on navigation; completed Career review can add the next practice to the existing adaptive plan.
 - Existing browser tests continue to cover deferred microphone permission cancellation and stream cleanup in Learning and Career.
 - **Local verification:** commit `c4200e5fc06ccfcd06c9b49fadc6cc8d6ac9afdc`; `python -m pytest -q` — **145 passed, 0 failed, 1 warning** (170.29s). The warning is Starlette's deprecation notice for httpx-backed TestClient use.
-- **Exact-commit GitHub Actions:** pending. Add the final run URL and result after CI completes. A passing test suite does not replace target-device acceptance.
+- **Exact-commit GitHub Actions:** [run 44742961672](https://github.com/Exploiter69/Prepped/actions/runs/44742961672) — **143 passed, 2 skipped, 1 warning** on the exact Phase I commit. The two skips require optional `espeak-ng` on the hosted runner; the warning is Starlette/httpx TestClient deprecation. Python compilation, JavaScript syntax checks, dependency consistency, dependency audit, Chromium setup, and browser tests passed. A passing test suite does not replace target-device acceptance.
 
 ## Manual target-laptop acceptance checklist
 

@@ -1,6 +1,6 @@
 # Prepped — Complete Project Roadmap
 
-**Status:** Phases A–H implementation is present. Phase I implementation is present; local pytest on `c4200e5` reports 145 passed, while exact-commit GitHub Actions and target-device acceptance remain pending. Phase J implementation has started; human content review and learner validation remain pending. The text MVP is frozen except for material bugs.<br>
+**Status:** Phases A–H implementation is present. Phase I implementation is present; local pytest reports 145 passed and exact-commit GitHub Actions run [44742961672](https://github.com/Exploiter69/Prepped/actions/runs/44742961672) passed with 143 passed, 2 optional skips, and 1 warning. Target-device acceptance remains pending. Phase J implementation has started; human content review and learner validation remain pending. The text MVP is frozen except for material bugs.<br>
 **Updated:** 2026-11-20<br>**Future plan:** Phase I acceptance remains open; Phase J is in progress; Phases K–L remain planned.<br>
 **Planning basis:** B.Tech semester 3 now; TDP continues through the final year. Dates are decision gates, not promises.<br>
 **Companion documents:** [Product Blueprint](PRODUCT_BLUEPRINT.md) · [Current State](CURRENT_STATE.md) · [Voice Setup](VOICE.md) · [ADR-002](ADR-002-LOCAL-VOICE-SLICE.md)
@@ -635,7 +635,7 @@ The sequence is deliberate. Better coaching should use stable voice/session beha
 
 ### Phase I — Voice Intelligence & Contextual Coaching
 
-**Status (2026-11-20):** Implementation is present. Local pytest on commit `c4200e5fc06ccfcd06c9b49fadc6cc8d6ac9afdc` reports 145 passed, 0 failed, and one Starlette/httpx deprecation warning. Exact-commit GitHub Actions and manual target-device acceptance remain pending. The user authorised Phase J implementation to begin while Phase I manual checks are deferred; Phase I remains open. See [Phase I Acceptance](PHASE_I_ACCEPTANCE.md).
+**Status (2026-11-20):** Implementation is present. Local pytest on commit `c4200e5fc06ccfcd06c9b49fadc6cc8d6ac9afdc` reports 145 passed, 0 failed, and one Starlette/httpx deprecation warning. Exact-commit GitHub Actions [run 44742961672](https://github.com/Exploiter69/Prepped/actions/runs/44742961672) passed: 143 passed, 2 optional voice skips, 1 warning. Manual target-device acceptance remains pending. The user authorised Phase J implementation to begin while Phase I manual checks are deferred; Phase I remains open. See [Phase I Acceptance](PHASE_I_ACCEPTANCE.md).
 
 **Purpose:** turn the current record/transcribe/playback and scenario flows into a dependable, context-aware, turn-based voice practice experience. The goal is not a general-purpose always-listening chatbot. It is to help a learner practise a defined communication task, understand a response, and make a useful next attempt.
 
