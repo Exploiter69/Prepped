@@ -48,6 +48,7 @@ def test_export_and_restore_round_trip_all_local_user_tables(tmp_path: Path) -> 
         assert set(backup["tables"]) == {
             "learner_profile", "sessions", "answers", "learning_attempts", "learning_events",
             "learning_memory", "learning_memory_reviews", "career_sessions", "career_turns", "learner_goals", "recommendation_dismissals",
+            "adaptive_plans", "adaptive_plan_items",
         }
         assert backup["tables"]["sessions"]
         assert backup["tables"]["answers"]
@@ -76,10 +77,31 @@ def test_export_and_restore_round_trip_all_local_user_tables(tmp_path: Path) -> 
         assert status["counts"]["career_turns"] == 1
         assert status["counts"]["learner_goals"] == 1
         assert status["counts"]["recommendation_dismissals"] == 1
-        assert status["database_schema_version"] == 3
+        assert status["counts"]["adaptive_plans"] == 0
+        assert status["counts"]["adaptive_plan_items"] == 0
+        assert status["database_schema_version"] == 4
     finally:
         source.__exit__(None, None, None)
         target.__exit__(None, None, None)
+
+
+def test_version_three_backup_restores_with_empty_adaptive_plan_tables(tmp_path: Path) -> None:
+    client = client_for(tmp_path / "legacy-v3.sqlite3")
+    try:
+        client.put("/api/profile", json={"display_name": "Legacy learner"})
+        backup = client.get("/api/data/export").json()
+        backup["database_schema_version"] = 3
+        backup["tables"].pop("adaptive_plans")
+        backup["tables"].pop("adaptive_plan_items")
+        restored = client.post("/api/data/restore", json={**backup, "confirm_replace": True})
+        assert restored.status_code == 200, restored.text
+        assert client.get("/api/profile").json()["profile"]["display_name"] == "Legacy learner"
+        status = client.get("/api/data/status").json()
+        assert status["database_schema_version"] == 4
+        assert status["counts"]["adaptive_plans"] == 0
+        assert status["counts"]["adaptive_plan_items"] == 0
+    finally:
+        client.__exit__(None, None, None)
 
 
 def test_restore_requires_explicit_confirmation_and_rejects_wrong_format(tmp_path: Path) -> None:
