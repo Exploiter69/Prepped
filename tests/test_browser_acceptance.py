@@ -883,3 +883,47 @@ def test_career_prompt_audio_request_is_aborted_when_leaving_workspace(local_app
     page.locator("#learning-toggle").click()
     assert page.evaluate("window.__careerTtsSignal.aborted") is True
     assert page.locator("#learning-view").is_visible()
+
+
+def test_career_review_can_add_next_practice_to_adaptive_plan(local_app_url: str, browser_page) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+    page.locator("#career-toggle").click()
+    page.locator(".career-studio-card button").first.click()
+    page.locator("#career-start").click()
+    page.locator("#career-active").wait_for(state="visible")
+
+    for index in range(4):
+        page.locator("#career-answer").fill(
+            f"For example, I built and tested project feature {index} because it addressed a user need. "
+            "The result was verified with a repeatable test."
+        )
+        page.locator("#career-submit").click()
+        page.wait_for_function(
+            "() => document.querySelector('#career-turn-label').textContent.includes('FOLLOW-UP')"
+        )
+        page.locator("#career-answer").fill(
+            "For example, I checked the result because the user journey mattered, then tested the change."
+        )
+        page.locator("#career-submit").click()
+        if index < 3:
+            page.wait_for_function(
+                "() => document.querySelector('#career-turn-label').textContent.includes('MAIN QUESTION')"
+            )
+
+    page.locator("#career-review").wait_for(state="visible")
+    page.locator("#career-add-plan").click()
+    page.wait_for_function(
+        "() => document.querySelector('#career-status').textContent.includes('Added a new')"
+    )
+    plan = page.evaluate("""async () => {
+      const now = new Date();
+      const date = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, "0"), String(now.getDate()).padStart(2, "0")].join("-");
+      const response = await fetch("/api/intelligence/plan?plan_date=" + date);
+      return (await response.json()).plan;
+    }""")
+    assert any(
+        item["item_type"] == "career_practice"
+        and item["target_id"] == "project-explanation"
+        for item in plan["items"]
+    )
