@@ -712,7 +712,8 @@ def test_keyboard_navigation_exposes_focus_and_profile_labels(local_app_url: str
     assert page.evaluate("document.activeElement.classList.contains('wordmark')")
     assert page.evaluate("getComputedStyle(document.activeElement).outlineStyle") == "solid"
 
-    for _ in range(4):
+    # Wordmark is followed by six primary navigation destinations.
+    for _ in range(5):
         page.keyboard.press("Tab")
     assert page.locator("#history-toggle").evaluate(
         "(element) => document.activeElement === element"
