@@ -241,7 +241,7 @@ Deliver a coherent first track rather than a large empty catalogue.
 - [ ] Complete target-Omarchy fresh-install and manual end-to-end acceptance for progress, goals, backup/restore, keyboard/screen-reader use, contrast, and responsive layout.
 - [ ] Run the optional consent-based usability study only when participants are available; record method, sample size, failures, and limitations. No pilot results are claimed.
 
-**Known boundaries:** backups are unencrypted JSON and contain personal answers; the current 25 MiB / 200,000-record limits and backup format version 1 / database schema version 3 compatibility are deliberate. Restore replaces all current local data. Prepped remains a single-user loopback application, not a public or multi-user deployment.
+**Known boundaries:** backups are unencrypted JSON and contain personal answers; the current 25 MiB / 200,000-record limits and backup format version 1 / database schema version 4 compatibility; version 3 backups migrate with empty adaptive-plan tables are deliberate. Restore replaces all current local data. Prepped remains a single-user loopback application, not a public or multi-user deployment.
 
 **Exit gate:** feature implementation, automated suite and CI pass, core journeys are accepted manually, data backup/restore works, known limitations are documented, and no unsupported product claims remain. Manual target-device acceptance is not claimed until recorded.
 
@@ -339,7 +339,7 @@ The English starter path is expanded under Phase C. Advanced diagnostic interpre
 
 Before Phase H, verify the browser recording lifecycle hardening across Learning and Career. Navigation, lesson/interview exit, and page unload must invalidate pending microphone permission requests; late permission grants must stop their tracks without creating a recorder. Active streams must stop on every workspace transition. In-flight transcription must be abortable and stale responses must never update a hidden or different exercise. A normal learner-initiated Stop must still allow transcription to complete while the learner remains in that exercise.
 
-Automated browser tests must use deferred `getUserMedia()` promises to verify late permission grants are discarded in both workspaces, media tracks are stopped, and no recorder or transcription request starts after navigation. CI must pass before Phase H begins. Manual Omarchy microphone acceptance remains a separate later check.
+Automated browser tests now use deferred getUserMedia() promises to verify late permission grants are discarded in both workspaces, media tracks are stopped, and no recorder starts after navigation. Exact-commit CI verification remains pending. Phase H implementation has been added; its own final CI and later manual acceptance gates are tracked in PHASE_H_ACCEPTANCE.md.
 
 ## Phase H — Adaptive Learning Intelligence (implementation added; automated verification pending)
 
@@ -352,7 +352,7 @@ Automated browser tests must use deferred `getUserMedia()` promises to verify la
 
 **Guardrails:** zero mandatory cost; existing FastAPI + SQLite + plain JavaScript modular monolith; existing skill IDs and evidence first; additive migrations only when necessary; deterministic, inspectable logic; no required LLM, external API, Redis, queues, Celery, vector database, new service, proficiency certification, emotion/personality inference, learning-gain claim, or placement prediction.
 
-**Exit gate:** learners can inspect the evidence behind their skill states, understand and override next-step recommendations, use a realistic daily plan, and trace analytics to source activity. Tests cover sparse/conflicting/stale evidence, prerequisites, repeated attempts, overrides, backup/restore, and legacy data. Phase H starts only after Phase G.1 is implemented and CI is green.
+**Exit gate:** learners can inspect the evidence behind their skill states, understand and override next-step recommendations, use a realistic daily plan, and trace analytics to source activity. Tests cover sparse/conflicting/stale evidence, prerequisites, repeated attempts, overrides, backup/restore, and legacy data. Phase H implementation is now present. Its acceptance remains gated on green exact-commit CI (including Phase G.1 regressions) and later manual device/learner validation.
 
 
 ### Phase H implementation record
