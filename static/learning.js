@@ -629,10 +629,7 @@
         state.recordTimer = null;
         const blob = new Blob(state.chunks, { type: recorder.mimeType || "audio/webm" });
         state.chunks = [];
-        if (requestId !== state.recordingRequestId || state.discardRecording) {
-          state.discardRecording = false;
-          return;
-        }
+        if (requestId !== state.recordingRequestId) return;
         if (!learningRecordingRequestIsCurrent(requestId)) return;
         if (!blob.size) {
           status.textContent = "No audio was captured. Type your response instead.";
