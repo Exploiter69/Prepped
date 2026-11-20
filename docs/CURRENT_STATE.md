@@ -13,6 +13,14 @@ The restore regression simulates a worker failure after staging and before commi
 
 The project licence remains undeclared, so do not redistribute the source/package until the owner selects a licence and checks optional Piper terms. No security certification or public deployment approval is claimed. See [Phase K Acceptance](PHASE_K_ACCEPTANCE.md) and [Release Hardening](RELEASE_HARDENING.md).
 
+## UI redesign — Stage 2: guided learning path and lesson journey (implementation committed; visual acceptance pending)
+
+Stage 2 is implemented on `feature/learner-profile` after the dashboard foundation. The Learning workspace now has a responsive learning-path introduction with original Prepped mascot art, live activity summaries, per-track completion progress derived from saved lesson completion, and a guided lesson step indicator with accessible progress semantics. Lesson completion receives a supportive review note while retaining existing feedback, next-lesson handoff, retry, Memory-save, audio/text alternatives, and learner progress behaviour.
+
+No API, database schema, curriculum content, provider, or runtime dependency was added. Progress indicators report recorded activity only; there are no points, streaks, proficiency scores, or inferred mastery claims. Browser regression coverage checks the live summary, three learner-facing curriculum paths, and exercise-step progress. Exact-commit CI and target-laptop visual/responsive acceptance are pending; Stage 2 should not be called accepted until those checks pass.
+
+Stage 1 dashboard visual acceptance also remains pending. Continue the gradual screen-by-screen sequence with Practice, Career, Memory, Progress, and responsive/accessibility polish only after the relevant preceding stage is reviewed.
+
 ## Phase L — Release Candidate, Packaging, Documentation & Operations (implementation in progress)
 
 The source-checkout workflow helper is available in scripts/prepped.sh: setup, loopback-only start, health/readiness/voice checks, full local verification, and explicit optional voice setup. The supported install is a source checkout; wheel/binary packaging is not claimed. CHANGELOG.md, the offline text-mode demo, and PHASE_L_ACCEPTANCE.md now record scope, operations, verification, and remaining gates.
