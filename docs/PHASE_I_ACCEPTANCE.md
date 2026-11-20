@@ -20,11 +20,13 @@
 
 ### I2 — Contextual follow-ups and response coaching
 
-- Career content version 1.1.0 adds an authored contextual follow-up rule for each of the 12 primary questions across Project Explanation, HR/Behavioural, and Technical Fundamentals.
+- Career content version 1.2.0 adds an authored contextual follow-up rule, simpler wording, and a clarification hint for each of the 12 primary questions and their follow-ups across Project Explanation, HR/Behavioural, and Technical Fundamentals.
+- Learners can switch between original and simpler wording, reveal/hide an authored prompt hint, and replay the spoken prompt. The selected wording is recorded with the answer so review reflects the prompt actually shown.
 - The backend validates each contextual rule against an explicit trigger allowlist.
 - Follow-up selection checks a small set of text cues (example, first-person action, reasoning, evidence, sequence, reflection, preparation, and trade-off markers). If the cue is not detected, the authored contextual prompt is selected; otherwise the existing guided/standard/challenging prompt remains the fallback.
 - The UI displays why a contextual follow-up was selected and states that the cue may miss equivalent wording and is not an assessment.
 - Every Career feedback turn now includes one possible next action, a short basis/limitation statement, and (when available) a relevant excerpt from the learner's own answer.
+- When a learner retries a completed studio, the next review shows previous and current answers side by side for matching prompts. It explicitly avoids claiming that differences are measured improvement.
 - Existing checks remain text-cue reflections. No overall score, correctness rating, technical answer key, proficiency level, pronunciation score, or hiring prediction was introduced.
 
 ### I3 — Learner-controlled Memory and plan handoff
@@ -37,7 +39,7 @@
 
 ## Automated verification added
 
-- `tests/test_career.py`: contextual cue selection versus difficulty fallback; authored contextual prompt validation; answer-specific coaching structure and absence of an aggregate score.
+- `tests/test_career.py`: contextual cue selection versus difficulty fallback; authored contextual prompt validation; simpler-prompt persistence; retry comparison; answer-specific coaching structure and absence of an aggregate score.
 - `tests/test_voice.py`: browser voice source exposes abortable TTS/STT request controllers.
 - `tests/test_browser_acceptance.py`: Career prompt synthesis is aborted on navigation; Project Practice prompt synthesis is aborted on navigation; completed Career review can add the next practice to the existing adaptive plan.
 - Existing browser tests continue to cover deferred microphone permission cancellation and stream cleanup in Learning and Career.
@@ -51,10 +53,12 @@
 - [ ] Cancel/navigation during transcription; confirm no stale transcript is inserted into a different question or workspace.
 - [ ] Deny microphone permission, disconnect/unavailable microphone, and retry. Confirm a clear recovery message and usable text fallback.
 - [ ] In Career, repeat the playback stop/replay/navigation checks. Confirm microphone tracks stop when leaving the workspace.
+- [ ] For each studio, toggle simpler wording, reveal/hide the authored prompt hint, replay the prompt, and confirm the answer review records the wording actually shown.
 - [ ] Complete one session in each of the three studios. Confirm follow-ups remain relevant and the explanation is shown when a contextual cue selects one.
 - [ ] Try equivalent wording without the literal cue phrases. Observe where the heuristic misses it; record findings without treating them as learner errors.
 - [ ] Review coaching for each answer. Confirm it refers to the submitted answer, is phrased as one possible improvement, and does not present correctness or a score.
 - [ ] Explicitly save an answer and a coaching action to Memory. Confirm each appears with Career source metadata; edit and delete them.
+- [ ] Complete a studio, retry it, and compare the previous/current answer pairs. Confirm the UI makes no automatic improvement claim.
 - [ ] Add a future studio practice to today's plan. Complete a new session after the plan item exists and confirm plan completion derives from that saved session.
 - [ ] If Groq is configured, verify disclosure appears before capture and that only the selected provider receives the recording. Otherwise verify Vosk remains local.
 - [ ] Confirm no raw audio file or database row is created by the default transcription path.
