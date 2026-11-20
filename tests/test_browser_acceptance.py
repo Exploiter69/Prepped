@@ -892,6 +892,14 @@ def test_career_review_can_add_next_practice_to_adaptive_plan(local_app_url: str
     page.locator(".career-studio-card button").first.click()
     page.locator("#career-start").click()
     page.locator("#career-active").wait_for(state="visible")
+    original_prompt = page.locator("#career-prompt-title").inner_text()
+    page.locator("#career-simpler-prompt").click()
+    assert page.locator("#career-prompt-title").inner_text() != original_prompt
+    page.locator("#career-clarify-prompt").click()
+    assert page.locator("#career-prompt-help").is_visible()
+    assert page.locator("#career-prompt-help").inner_text()
+    page.locator("#career-simpler-prompt").click()
+    assert page.locator("#career-prompt-title").inner_text() == original_prompt
 
     for index in range(4):
         page.locator("#career-answer").fill(
