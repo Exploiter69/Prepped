@@ -1,4 +1,4 @@
-# Prepped — A–F and Pre-Release Acceptance Checklist
+# Prepped — A–F Learner Acceptance Checklist
 
 **Purpose:** Record repeatable acceptance evidence for the implemented Phases A–F before beginning Phase G release hardening. This checklist includes the foundation, Learning Engine, English curriculum, memory, Career studios, Progress, portability, voice, privacy, and device acceptance.
 **Environment:** Local FastAPI app, SQLite database, current `feature/learner-profile` branch.
