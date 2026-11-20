@@ -120,7 +120,7 @@
       row.append(node("p", item.estimated_minutes + " min · " + item.source.replaceAll("_", " ")));
       const actions = node("div", undefined, "intelligence-plan-item-actions");
       if (["lesson", "career_practice", "project_practice"].includes(item.kind)) {
-        const add = node("button", "Add to today's plan", "button button-secondary");
+        const add = node("button", "Add to selected plan", "button button-secondary");
         add.type = "button";
         add.addEventListener("click", () => addToPlan(item.kind, item.target_id));
         actions.append(add);
@@ -399,6 +399,7 @@
     }
     if (item.item_type === "project_practice") {
       window.dispatchEvent(new CustomEvent("prepped:open-practice"));
+      window.setTimeout(() => $("#start-button")?.click(), 80);
       return;
     }
     if (item.item_type === "career_practice") {
