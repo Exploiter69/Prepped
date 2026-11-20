@@ -13,6 +13,7 @@
 
   function showProgress() {
     for (const id of viewIds) $("#" + id)?.classList.toggle("hidden", id !== "progress-view");
+    window.dispatchEvent(new CustomEvent("prepped:viewchange", { detail: { view: "progress-view" } }));
     $("#progress-toggle")?.setAttribute("aria-expanded", "true");
     $("#learning-toggle")?.setAttribute("aria-expanded", "false");
     $("#career-toggle")?.setAttribute("aria-expanded", "false");
