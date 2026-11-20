@@ -54,7 +54,7 @@ Prepped has no user authentication, multi-user isolation, account system, CSRF t
 
 - [x] Restore validates format/schema/table/column sets, scalar values, record limits, foreign keys, and staged SQLite integrity before replacement.
 - [x] Restore requires explicit user confirmation and is a full replacement, not a merge.
-- [x] Numeric edge cases and deeply nested JSON have regression tests.
+- [x] Numeric edge cases, deeply nested JSON, invalid Content-Length, and the 200,000-record cap have regression tests.
 - [x] Readiness checks SQLite quick-check, required tables, and curriculum loading.
 - [ ] Run an export/restore rehearsal on a disposable target-laptop database.
 - [ ] Confirm a failed restore leaves the original database and learner data unchanged on the target laptop.
