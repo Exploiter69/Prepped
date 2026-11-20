@@ -105,10 +105,10 @@
       row.append(node("p", item.reason));
       row.append(node("p", item.estimated_minutes + " min · " + item.source.replaceAll("_", " ")));
       const actions = node("div", undefined, "intelligence-plan-item-actions");
-      if (item.kind === "lesson") {
+      if (["lesson", "career_practice", "project_practice"].includes(item.kind)) {
         const add = node("button", "Add to today's plan", "button button-secondary");
         add.type = "button";
-        add.addEventListener("click", () => addToPlan("lesson", item.target_id));
+        add.addEventListener("click", () => addToPlan(item.kind, item.target_id));
         actions.append(add);
       } else if (item.kind === "review_memory") {
         const open = node("button", "Open revision queue", "button button-secondary");
@@ -383,10 +383,13 @@
       openLearning();
       return;
     }
-    if (item.item_type === "career_practice" || item.item_type === "project_practice") {
+    if (item.item_type === "project_practice") {
+      window.dispatchEvent(new CustomEvent("prepped:open-practice"));
+      return;
+    }
+    if (item.item_type === "career_practice") {
       $("#career-toggle")?.click();
-      const studioId = item.item_type === "project_practice" ? "project-explanation" : item.target_id;
-      const studioTitle = studioId.replaceAll("-", " ").toLowerCase();
+      const studioTitle = item.target_id.replaceAll("-", " ").toLowerCase();
       const card = await waitFor(() => [...document.querySelectorAll(".career-studio-card")].find(
         element => element.textContent.toLowerCase().includes(studioTitle)
       ));
