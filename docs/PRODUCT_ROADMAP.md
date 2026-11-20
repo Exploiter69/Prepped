@@ -138,7 +138,7 @@ The learner profile remains a preference record, but its stated goal and focus a
 
 - [x] Confirm profile setup, edit, cancel, save, reload, and persistence in automated Chromium browser tests in CI; target-laptop manual spot check remains.
 - [x] Confirm the profile toggle opens/closes, updates `aria-expanded`, and persists edits in automated Chromium; target-laptop manual spot check remains.
-- [x] Run the complete pytest suite, Python compilation, and JavaScript syntax checks (GitHub Actions: 41 passed, 2 skipped because espeak-ng is not installed in the runner; one Starlette/httpx deprecation warning).
+- [x] Run the complete pytest suite, Python compilation, and JavaScript syntax checks; the current full suite is [100 passed, 2 skipped, 1 warning](https://github.com/Exploiter69/Prepped/actions/runs/44653868798).
 - [ ] Complete the outstanding voice browser acceptance checklist and document microphone, transcription, transcript correction, submission, TTS, and text fallback results.
 - [x] Verify CI and a clean-checkout install (GitHub Actions completed successfully on the feature branch; dependency install, compilation, JavaScript syntax, and pytest all passed).
 - [x] Keep the existing practice room and saved sessions intact; regression tests cover the text-only journey and additive profile migration.
@@ -176,7 +176,7 @@ Deliver a coherent first track rather than a large empty catalogue.
 
 ### Phase C implementation status — English and communication studio
 
-**Implementation added; automated CI and target-laptop acceptance are pending.** The initial English path is now authored in the versioned curriculum and uses the existing Phase B lesson runner.
+**Implementation added; automated coverage passes in the current full-suite CI run.** The initial English path is authored in the versioned curriculum and uses the existing Phase B lesson runner. Target-laptop acceptance remains pending.
 
 - The curriculum contains 14 stable skills, one foundation stage, nine units, four tracks, 13 authored lessons plus the separate low-stakes baseline check. Every unit and lesson has explicit learning outcomes; the lesson runner displays the outcomes before exercises. The English foundations track contains 11 sequenced lessons across sentence construction, grammar, vocabulary, listening, speaking, and pronunciation.
 - Grammar and sentence work covers complete sentences; expansion, combining, shortening, and clarification; past and future tense in context; articles; prepositions; question formation; and authored error explanations.
@@ -199,7 +199,7 @@ Deliver a coherent first track rather than a large empty catalogue.
 - [x] Allow edit, dismiss/restore, delete, suspend/resume, and duplicate resolution.
 - [x] Build a transparent local interval scheduler, due queue, rating controls, and review history.
 - [x] Keep uncertain automated feedback as an editable suggestion; nothing is saved without learner action.
-- [x] GitHub Actions passes on the final Phase D implementation (79 passed, 2 skipped; both require espeak-ng).
+- [x] Current full-suite GitHub Actions passes: [100 passed, 2 skipped, 1 warning](https://github.com/Exploiter69/Prepped/actions/runs/44653868798); both skips require `espeak-ng`.
 - [ ] Complete target-laptop manual acceptance.
 
 **Exit gate:** learners can create/edit/dismiss/suspend/delete review items, complete due reviews, inspect history and scheduling behaviour; tests cover validation, duplicate handling, dates, retries, persistence, and legacy-data compatibility.
