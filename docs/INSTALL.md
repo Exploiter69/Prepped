@@ -10,6 +10,7 @@
 - A modern Chromium- or Firefox-based browser.
 - SQLite through Python's standard library; no separate database server.
 - Git for source checkout.
+- Node.js for the local JavaScript syntax checks in the full verification helper (not required to run the application).
 
 Optional voice support:
 - `ffmpeg` to decode browser-recorded audio.
