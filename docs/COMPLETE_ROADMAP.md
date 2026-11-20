@@ -1,6 +1,6 @@
 # Prepped — Complete Project Roadmap
 
-**Status:** Phases A–F are implemented; Phase G engineering hardening is implemented and automated CI is green. Target-device acceptance remains open. Phase G.1 microphone lifecycle implementation and browser regressions are added; final CI verification is pending. Phase H implementation is now added on the working branch; its final automated verification and later target-device acceptance remain open. The text MVP is frozen except for material bugs.<br>
+**Status:** Phases A–F are implemented; Phase G engineering hardening is implemented and automated CI is green. Target-device acceptance remains open. Phase G.1 microphone lifecycle implementation and browser regressions are added and passed CI. Phase H implementation is added and its full automated suite is green; target-device and learner acceptance remain open. The text MVP is frozen except for material bugs.<br>
 **Updated:** 2026-11-20<br>
 **Planning basis:** B.Tech semester 3 now; TDP continues through the final year. Dates are decision gates, not promises.<br>
 **Companion documents:** [Product Blueprint](PRODUCT_BLUEPRINT.md) · [Current State](CURRENT_STATE.md) · [Voice Setup](VOICE.md) · [ADR-002](ADR-002-LOCAL-VOICE-SLICE.md)
@@ -333,21 +333,21 @@ Do not convert “the model ran” into “speech accuracy is good.” Do not co
 4. **Review limitations and evidence**; do not claim speech accuracy, proficiency, learning gains, placement outcomes, or security certification without validation.
 5. **Keep the optional student pilot separate** from engineering. Run it only with consent and available participants; no results are currently claimed.
 
-**Current gate:** Phases A–F are implemented, and Phase G engineering hardening has passed its recorded CI run. Phase G.1 recording lifecycle changes and deferred-permission browser regressions are now added to the branch; CI verification for these new changes is pending. Manual target-device acceptance remains open and is a release-candidate sign-off gate. See [Phase G Acceptance](PHASE_G_ACCEPTANCE.md).
+**Current gate:** Phases A–F are implemented, and Phase G engineering hardening has passed its recorded CI run. Phase G.1 recording lifecycle changes and deferred-permission browser regressions are added and passed in [the final Phase H CI run](https://github.com/Exploiter69/Prepped/actions/runs/44732997261). Manual target-device acceptance remains open and is a release-candidate sign-off gate. See [Phase G Acceptance](PHASE_G_ACCEPTANCE.md).
 
 
 ---
 
 ## 18. Updated product completion plan (2026-11-19)
 
-This is the authoritative execution sequence. Earlier sections are the original research/planning model and historical baseline; use this section plus CURRENT_STATE.md for present implementation truth. Phases A–F are implemented. Phase G engineering is implemented and automated CI is green; target-device acceptance remains a release gate. Phase G.1 code and deferred-permission browser regressions are now present; CI verification is pending. Phase H implementation is added below, with its automated exit gate still open.
+This is the authoritative execution sequence. Earlier sections are the original research/planning model and historical baseline; use this section plus CURRENT_STATE.md for present implementation truth. Phases A–F are implemented. Phase G engineering is implemented and automated CI is green; target-device acceptance remains a release gate. Phase G.1 code and deferred-permission browser regressions are present and green in CI. Phase H implementation and its automated regression suite are also green; later device acceptance remains open.
 
 ### Current truth
 
 - The app has the original project-explanation practice scenario, a local session/history flow, formative feedback, a bounded voice record/stop slice, a learner profile, and a reusable Learning Engine.
 - The profile goal and focus areas select transparent starter routes through the versioned curriculum; they do not infer ability or adapt difficulty.
 - The branch now contains the initial English and communication curriculum, learner-controlled memory and spaced revision, three interview studios, and the Phase F progress/goals/backup/restore workspace. Target-device acceptance for Phases D–F remains outstanding.
-- Latest full CI is green: [run 44721637341](https://github.com/Exploiter69/Prepped/actions/runs/44721637341) — 112 passed, 2 skipped, 1 warning. Target-device acceptance for Phases A–F remains outstanding.
+- Latest full CI for Phase H and G.1: [run 44732997261](https://github.com/Exploiter69/Prepped/actions/runs/44732997261) — 134 passed, 2 skipped, 1 warning. The two skips require espeak-ng, unavailable on the hosted runner. Target-device acceptance remains outstanding.
 - Do not label this product market-ready or complete.
 
 ### Build sequence
@@ -361,8 +361,8 @@ This is the authoritative execution sequence. Earlier sections are the original 
 | E | Career & interview studios | Project, HR/behavioural and technical scenarios with follow-ups | Multiple scenario families on shared infrastructure |
 | F | Progress & portability | Skill evidence, goals, recommendations, export/backup/restore | Reproducible data recovery and explainable progress |
 | G | Release hardening (engineering implemented; device acceptance open) | Security/data edge cases, automated regression, browser/accessibility checks, target-device verification | Phase G acceptance record, green final CI, recovery rehearsal, limitations and release checklist |
-| G.1 | Recording lifecycle hardening (implementation and browser regressions added; CI pending) | Cancel pending microphone permission, stop streams on every navigation path, abort stale transcription, and protect against late callbacks in Learning and Career | Deferred-permission browser regression tests and green CI |
-| H | Adaptive Learning Intelligence (implementation added; CI pending) | Evidence-backed skill profile, explainable recommendations, learner-controlled daily/weekly plans, and source-linked analytics | Phase H acceptance record, API/browser regression tests, schema-4 backup compatibility, and green CI |
+| G.1 | Recording lifecycle hardening (implementation, browser regressions, and CI green) | Cancel pending microphone permission, stop streams on every navigation path, abort stale transcription, and protect against late callbacks in Learning and Career | Deferred-permission browser regression tests and green CI |
+| H | Adaptive Learning Intelligence (implementation and automated CI green; manual acceptance open) | Evidence-backed skill profile, explainable recommendations, learner-controlled daily/weekly plans, and source-linked analytics | Phase H acceptance record, API/browser regression tests, schema-4 backup compatibility, and green CI |
 
 ### Relationship to the original Phase 0–8 planning model
 
@@ -543,7 +543,7 @@ Delivered: evidence-linked skill/activity progress; learner-owned goals; explain
 
 ---
 
-## Phase G.1 — Recording lifecycle and privacy hardening (implementation and browser regressions added; CI verification pending)
+## Phase G.1 — Recording lifecycle and privacy hardening (implementation, browser regressions, and CI green)
 
 Before beginning adaptive learning work, verify the microphone lifecycle fix across Learning and Career:
 
@@ -556,7 +556,7 @@ Before beginning adaptive learning work, verify the microphone lifecycle fix acr
 
 **Exit gate:** automated browser tests prove that late permission grants do not start recording, all returned tracks are stopped, navigation cancels capture/transcription, and ordinary record/stop/transcript editing still works. This engineering prerequisite does not replace later manual device acceptance.
 
-## Phase H — Adaptive Learning Intelligence (implementation added; automated verification pending)
+## Phase H — Adaptive Learning Intelligence (implementation and automated CI green; manual acceptance open)
 
 **Purpose:** turn the existing profile, curriculum, lesson attempts, memory reviews, career sessions, and progress events into a coherent, explainable learning loop. Phase H must reuse the current FastAPI + SQLite modular monolith and existing evidence; it must not introduce a second learner-state system or opaque ability score.
 
@@ -594,7 +594,9 @@ Before beginning adaptive learning work, verify the microphone lifecycle fix acr
 - Tests must cover sparse data, conflicting/stale evidence, repeated attempts, prerequisites, learner overrides, backup/restore compatibility, and legacy records.
 - Exit only when a learner can understand their evidence, receive a defensible next-step plan, override it, and see why the system changed its recommendation. Manual user validation remains separate from engineering completion.
 
-**Status:** Phase H implementation is added to the working branch. Final automated CI verification remains pending, including Phase G.1 deferred-permission browser regressions. Manual target-device acceptance remains a separate later gate. See [Phase H Acceptance](PHASE_H_ACCEPTANCE.md).
+**Status:** Phase H implementation and Phase G.1 recording lifecycle regressions pass the full automated suite: [run 44732997261](https://github.com/Exploiter69/Prepped/actions/runs/44732997261) — 134 passed, 2 optional espeak-ng skips, 1 Starlette deprecation warning. Manual target-device and learner acceptance remain separate later gates. See [Phase H Acceptance](PHASE_H_ACCEPTANCE.md).
 
 
 **Phase H implementation note (2026-11-20):** The evidence model, deterministic recommendations, daily/weekly plans, Progress UI, additive schema-4 plan tables, backup migration from schema 3, and API/browser regression tests have been added. No difficulty adaptation is claimed because the authored curriculum has no difficulty metadata. Do not mark H accepted until the exact final commit has green CI and the later Omarchy acceptance is recorded.
+
+**Final automated evidence (2026-11-20):** [GitHub Actions run 44732997261](https://github.com/Exploiter69/Prepped/actions/runs/44732997261), commit ba5d4091c3679afe6b261852ca87f2940ba40877 — 134 passed, 2 skipped, 1 warning. Python compilation, seven JavaScript syntax checks, dependency consistency, pip-audit, Chromium setup, API tests, and browser acceptance passed. Manual Omarchy/device acceptance remains open.
