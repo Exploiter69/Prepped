@@ -67,6 +67,8 @@ Application-level backup encryption is deferred. Adding encryption without a rel
 - CI produces pip-audit.json and dependency-licenses.json artifacts (30-day retention) using pip-licenses.
 - Review the generated artifact for the exact workflow run. Optional model files are separately licensed; do not redistribute them without checking their own terms.
 - There is no lockfile; repeatable resolution is not claimed.
+- The first generated inventory (workflow run 44748989457) contained 54 distributions; 53 had licence metadata and the local prepped distribution was UNKNOWN. The repository has no LICENSE file or project licence declaration. Do not assume the project grants reuse or redistribution rights; the owner must select and add a licence before distributing the package. This is an explicit unresolved owner decision, not an approved exception.
+- The first inventory covered dev/browser dependencies but not the optional Vosk/Piper extras. The workflow is being expanded to install and audit every declared extra before the final Phase K dependency review.
 
 ## Automated acceptance matrix
 

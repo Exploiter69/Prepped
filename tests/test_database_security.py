@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import sqlite3
 import stat
 from pathlib import Path
 
@@ -47,6 +48,7 @@ def test_transaction_rolls_back_on_process_level_exception_and_database_remains_
     with connect_database(database) as connection:
         assert connection.execute("SELECT COUNT(*) FROM rollback_probe").fetchone()[0] == 0
         assert connection.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
+        assert connection.execute("PRAGMA trusted_schema").fetchone()[0] == 0
 
 
 def test_unusable_database_parent_fails_without_touching_unrelated_file(tmp_path: Path) -> None:
@@ -91,4 +93,36 @@ def test_schema_three_database_upgrade_is_additive_and_idempotent(tmp_path: Path
         assert connection.execute("PRAGMA user_version").fetchone()[0] == 4
         assert connection.execute("SELECT name FROM sqlite_master WHERE name='adaptive_plans'").fetchone()
         assert connection.execute("PRAGMA foreign_key_check").fetchall() == []
+        assert connection.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
+
+
+@pytest.mark.skipif(os.name != "posix" or os.geteuid() == 0, reason="Requires an unprivileged POSIX user")
+def test_read_only_custom_database_directory_fails_cleanly(tmp_path: Path) -> None:
+    directory = tmp_path / "read-only-store"
+    directory.mkdir()
+    os.chmod(directory, 0o500)
+    database = directory / "prepped.sqlite3"
+    try:
+        with pytest.raises(PermissionError):
+            initialize_database(database)
+        assert not database.exists()
+    finally:
+        os.chmod(directory, 0o700)
+
+
+def test_simulated_sqlite_disk_full_rolls_back_and_preserves_integrity(tmp_path: Path) -> None:
+    database = tmp_path / "disk-full.sqlite3"
+    initialize_database(database)
+    with connect_database(database) as connection:
+        connection.execute("CREATE TABLE disk_probe (payload BLOB NOT NULL)")
+    with pytest.raises(sqlite3.OperationalError, match="full"):
+        with connect_database(database) as connection:
+            pages = connection.execute("PRAGMA page_count").fetchone()[0]
+            connection.execute(f"PRAGMA max_page_count = {pages}")
+            connection.execute(
+                "INSERT INTO disk_probe(payload) VALUES (?)",
+                (b"x" * (4 * 1024 * 1024),),
+            )
+    with connect_database(database) as connection:
+        assert connection.execute("SELECT COUNT(*) FROM disk_probe").fetchone()[0] == 0
         assert connection.execute("PRAGMA integrity_check").fetchone()[0] == "ok"

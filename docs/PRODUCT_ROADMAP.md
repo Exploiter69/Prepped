@@ -418,7 +418,7 @@ The following phases extend the active A–H build sequence. Phase I implementat
 - Test disk-full/permission failures, process interruption, DB integrity, schema migration, missing voice engines, provider timeouts, and recovery.
 - **Exit:** no knowingly unresolved critical/high-severity issue; remaining risks accepted and documented; data lifecycle, import/export, migration, and recovery tests pass; dependency/licence review is recorded. This is not a security certification.
 
-**Implementation update (2026-11-20):** local-only peer verification, bounded API request bodies, private SQLite file modes, symlink rejection, safer voice error logging, cascade/rollback regression tests, a written threat model and data inventory, explicit unencrypted-backup decision, and CI vulnerability/licence artifacts are implemented on feature/learner-profile. Exact-commit tests, CI artifact review, and disposable-data manual failure drills remain pending. See [Phase K Acceptance](PHASE_K_ACCEPTANCE.md).
+**Implementation update (2026-11-20):** local-only peer verification, bounded API request bodies, private SQLite file modes, symlink rejection, safer voice error logging, cascade/rollback regression tests, a written threat model and data inventory, explicit unencrypted-backup decision, and CI vulnerability/licence artifacts are implemented on feature/learner-profile. Exact-commit tests, CI artifact review, and disposable-data manual failure drills remain pending. The first licence inventory also found the project package licence undeclared; no redistribution permission is implied. See [Phase K Acceptance](PHASE_K_ACCEPTANCE.md).
 
 ### Phase L — Release Candidate, Packaging, Documentation & Operations
 

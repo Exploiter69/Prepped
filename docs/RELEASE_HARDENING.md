@@ -121,6 +121,7 @@ Phase K does not add application-level backup encryption. A password-based schem
 - Declared version ranges are bounded in pyproject.toml; there is no lockfile, so the resolved transitive set can change. CI audits the resolved install with pip-audit.
 - CI generates JSON evidence for all installed distribution licence metadata using pip-licenses and uploads both the vulnerability and licence inventories as a 30-day workflow artifact. Review distribution metadata and upstream licence texts before redistributing optional packages or model weights.
 - Optional Piper/Vosk model files are not bundled; each model's own licence and redistribution terms must be checked separately. No unresolved vulnerability or licence exception is pre-approved by this document; inspect the artifact for the exact commit/run.
+- The repository currently has no LICENSE file and pyproject.toml declares no project licence; pip-licenses therefore reports the local prepped distribution as UNKNOWN. No reuse or redistribution permission should be inferred. The owner must choose and add a licence before distributing the package.
 
 ### Reliability verification and manual limits
 

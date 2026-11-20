@@ -25,9 +25,9 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7.1.0
         with:
           python-version: "3.11"
           cache: pip
@@ -43,7 +43,7 @@ jobs:
           node --check static/progress.js
           node --check static/intelligence.js
       - name: Install project and test dependencies
-        run: python -m pip install -e ".[dev,browser-test]"
+        run: python -m pip install -e ".[dev,browser-test,voice,voice-piper,voice-cloud]"
       - name: Validate versioned curriculum and Career Studio content
         run: python -m prepped.content_lint
       - name: Check dependency consistency
@@ -53,7 +53,7 @@ jobs:
       - name: Audit installed Python dependencies
         run: |
           pip-audit --skip-editable --format=json --output=pip-audit.json || audit_status=$?
-          pip-licenses --format=json --output-file=dependency-licenses.json
+          pip-licenses --format=json --with-urls --output-file=dependency-licenses.json
           exit "${audit_status:-0}"
       - name: Install Chromium for browser acceptance tests
         run: python -m playwright install --with-deps chromium
@@ -61,7 +61,7 @@ jobs:
         run: python -m pytest -q
       - name: Publish dependency audit evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: phase-k-dependency-audit
           path: |

@@ -408,3 +408,60 @@ def test_remote_stt_status_never_exposes_configured_api_key() -> None:
     secret = "prepped-test-secret-do-not-disclose"
     service = VoiceService(GroqWhisperSTT(secret), FakeTTS())
     assert secret not in repr(service.status())
+
+
+def test_groq_timeout_is_mapped_without_leaking_provider_details(monkeypatch: pytest.MonkeyPatch) -> None:
+    import httpx
+    from prepped.voice.errors import SpeechEngineError
+    from prepped.voice.stt import GroqWhisperSTT
+
+    class FakeClient:
+        def __init__(self, **kwargs: object) -> None:
+            pass
+
+        def __enter__(self) -> "FakeClient":
+            return self
+
+        def __exit__(self, *args: object) -> None:
+            return None
+
+        def post(self, *args: object, **kwargs: object) -> object:
+            request = httpx.Request("POST", GroqWhisperSTT.endpoint)
+            raise httpx.ReadTimeout("PRIVATE_PROVIDER_RESPONSE", request=request)
+
+    monkeypatch.setattr(httpx, "Client", FakeClient)
+    with pytest.raises(SpeechEngineError) as raised:
+        GroqWhisperSTT("test-key").transcribe(b"\\x00\\x00" * 16_000)
+    assert "timed out" in str(raised.value).lower()
+    assert "PRIVATE_PROVIDER_RESPONSE" not in str(raised.value)
+
+
+def test_unexpected_voice_failures_do_not_log_private_exception_text(tmp_path: Path, caplog: pytest.LogCaptureFixture) -> None:
+    import logging
+
+    class PrivateFailureSTT(FakeSTT):
+        def transcribe(self, pcm: bytes) -> str:
+            raise RuntimeError("PRIVATE_ANSWER_AND_SECRET")
+
+    caplog.set_level(logging.ERROR, logger="prepped.voice.routes")
+    client, _ = make_client(tmp_path / "stt", stt=PrivateFailureSTT())
+    try:
+        response = client.post("/api/voice/transcribe", content=b"browser-recording")
+        assert response.status_code == 500
+        assert "PRIVATE_ANSWER_AND_SECRET" not in caplog.text
+        assert "RuntimeError" in caplog.text
+    finally:
+        client.__exit__(None, None, None)
+
+    caplog.clear()
+    tts_client, _ = make_client(
+        tmp_path / "tts",
+        tts=FakeTTS(error=RuntimeError("PRIVATE_TTS_SECRET")),
+    )
+    try:
+        response = tts_client.post("/api/voice/tts", json={"text": "Read this prompt."})
+        assert response.status_code == 500
+        assert "PRIVATE_TTS_SECRET" not in caplog.text
+        assert "RuntimeError" in caplog.text
+    finally:
+        tts_client.__exit__(None, None, None)
