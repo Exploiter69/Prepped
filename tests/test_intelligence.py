@@ -90,6 +90,49 @@ def test_repeated_closed_exercise_misses_suggest_revisiting_linked_lesson(tmp_pa
         client.__exit__(None, None, None)
 
 
+def test_mixed_closed_exercise_outcomes_are_not_collapsed_into_a_single_score(tmp_path: Path) -> None:
+    client = client_for(tmp_path / "intelligence-mixed.sqlite3")
+    try:
+        raw_lesson = next(item for item in load_curriculum()["lessons"] if item["id"] == "sentence-building")
+        exercise = raw_lesson["exercises"][0]
+        wrong = next(option["id"] for option in exercise["options"] if option["id"] != exercise["answer"])
+        for answer in (exercise["answer"], wrong):
+            attempt = client.post("/api/learning/attempts", json={"lesson_id": "sentence-building"}).json()
+            result = client.post(f"/api/learning/attempts/{attempt['id']}/responses", json={
+                "exercise_id": exercise["id"], "answer": answer,
+            })
+            assert result.status_code == 200
+        skill = next(item for item in client.get("/api/intelligence/overview").json()["skills"]
+                     if item["skill_id"] == "english.sentence-structure")
+        assert skill["state"] == "mixed_closed_exercise_evidence"
+        assert skill["correct_response_count"] == 1
+        assert skill["review_needed_count"] == 1
+        assert "score" not in skill
+    finally:
+        client.__exit__(None, None, None)
+
+
+def test_linked_learner_memory_reviews_appear_as_revision_activity_not_mastery(tmp_path: Path) -> None:
+    client = client_for(tmp_path / "intelligence-revision.sqlite3")
+    try:
+        attempt = complete_sentence_lesson(client)
+        memory = client.post("/api/memory/items", json={
+            "item_type": "correction", "front": "Use a complete sentence",
+            "back": "Include a subject and a finite verb.",
+            "source_type": "lesson_attempt", "source_id": attempt["id"],
+            "source_title": "Build a clear sentence",
+        }).json()["item"]
+        reviewed = client.post(f"/api/memory/items/{memory['id']}/review", json={"rating": "good"})
+        assert reviewed.status_code == 200
+        skill = next(item for item in client.get("/api/intelligence/overview").json()["skills"]
+                     if item["skill_id"] == "english.sentence-structure")
+        assert any(item["kind"] == "revision_activity" and item["outcome"] == "good"
+                   for item in skill["evidence"])
+        assert skill["correct_response_count"] == 2
+    finally:
+        client.__exit__(None, None, None)
+
+
 def test_evidence_freshness_is_visible_and_old_evidence_is_not_called_current(tmp_path: Path) -> None:
     db_path = tmp_path / "intelligence-stale.sqlite3"
     client = client_for(db_path)
