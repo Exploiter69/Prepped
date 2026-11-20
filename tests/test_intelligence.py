@@ -186,6 +186,34 @@ def test_daily_plan_completion_is_derived_from_saved_source_activity(tmp_path: P
         client.__exit__(None, None, None)
 
 
+def test_regeneration_preserves_completed_and_skipped_items_and_moves_forward(tmp_path: Path) -> None:
+    client = client_for(tmp_path / "intelligence-regenerate.sqlite3")
+    try:
+        client.put("/api/profile", json={"primary_goal": "english_fluency"})
+        target = date.today().isoformat()
+        first = client.post("/api/intelligence/plan/generate", json={
+            "plan_date": target, "available_minutes": 60,
+        }).json()["plan"]
+        first_lesson = next(item for item in first["items"] if item["item_type"] == "lesson")
+        complete_sentence_lesson(client, first_lesson["target_id"])
+        added = client.post("/api/intelligence/plan/items", json={
+            "plan_date": target, "item_type": "career_practice", "target_id": "hr-behavioural",
+        }).json()["plan"]
+        skipped = next(item for item in added["items"] if item["target_id"] == "hr-behavioural")
+        client.patch(f"/api/intelligence/plan/items/{skipped['id']}", json={"skipped": True})
+        regenerated = client.post("/api/intelligence/plan/generate", json={
+            "plan_date": target, "available_minutes": 60, "regenerate": True,
+        }).json()["plan"]
+        preserved_lesson = next(item for item in regenerated["items"] if item["id"] == first_lesson["id"])
+        preserved_skip = next(item for item in regenerated["items"] if item["id"] == skipped["id"])
+        assert preserved_lesson["status"] == "completed"
+        assert preserved_skip["status"] == "skipped"
+        assert any(item["item_type"] == "lesson" and item["target_id"] != first_lesson["target_id"]
+                   for item in regenerated["items"])
+    finally:
+        client.__exit__(None, None, None)
+
+
 def test_due_memory_review_is_included_and_only_real_review_completes_it(tmp_path: Path) -> None:
     db_path = tmp_path / "intelligence-memory-plan.sqlite3"
     client = client_for(db_path)
