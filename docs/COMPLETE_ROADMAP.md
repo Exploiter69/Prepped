@@ -1,7 +1,7 @@
 # Prepped — Complete Project Roadmap
 
-**Status:** Active engineering roadmap for a voice-first practice platform. The text MVP is frozen except for material bugs.<br>
-**Updated:** 2026-11-19<br>
+**Status:** Active roadmap. Phases A–F are implemented on `feature/learner-profile`; Phase G is the not-yet-started release-hardening and acceptance milestone. The text MVP is frozen except for material bugs.<br>
+**Updated:** 2026-11-20<br>
 **Planning basis:** B.Tech semester 3 now; TDP continues through the final year. Dates are decision gates, not promises.<br>
 **Companion documents:** [Product Blueprint](PRODUCT_BLUEPRINT.md) · [Current State](CURRENT_STATE.md) · [Voice Setup](VOICE.md) · [ADR-002](ADR-002-LOCAL-VOICE-SLICE.md)
 
@@ -26,7 +26,7 @@ The long-term direction may include more scenarios, English fluency practice, te
 
 The first proof is this loop working locally with voice, not an avatar, dashboard, or large architecture diagram.
 
-## 2. Current baseline and truth reset
+## 2. Historical baseline snapshot (2026-11-04; superseded by section 18 and CURRENT_STATE.md)
 
 **Status updated 2026-11-04.**
 
@@ -132,7 +132,7 @@ Delivered:
 
 **Status:** complete enough to serve as the fallback. Feature development is frozen except material bugs.
 
-## 7. Phase 2 — First voice slice (current milestone)
+## 7. Phase 2 — First voice slice (implemented baseline)
 
 **Purpose:** make the existing scenario genuinely voice-enabled, with a reliable optional free-tier cloud STT path and a local offline fallback.
 
@@ -153,7 +153,7 @@ Delivered:
 
 **Exit gate:** the scenario can be completed through voice on the target machine, transcript errors can be corrected, prompts can be stopped/replayed, failures fall back to text, and automated tests cover the integration boundaries. The API/adapters are verified; **real browser microphone acceptance is still required** before calling the interaction fully accepted.
 
-## 8. Phase 3 — Voice hardening and target-device acceptance (next)
+## 8. Phase 3 — Voice hardening and target-device acceptance (pre-release acceptance gate)
 
 **Purpose:** turn the first working slice into something reliable enough to build on.
 
@@ -325,30 +325,29 @@ Every project statement must be one of:
 
 Do not convert “the model ran” into “speech accuracy is good.” Do not convert “a learner liked it” into “placement outcomes improved.” Do not report a percentage without a denominator, method, and source. Do not describe one-off timings as benchmarks.
 
-## 17. Immediate next actions
+## 17. Pre-Phase-G completion gates (updated 2026-11-20)
 
-1. **Complete browser/microphone acceptance** using the checklist in [VOICE.md](VOICE.md) on the target laptop. Record actual results, including failures.
-2. **Run GitHub Actions** on the pushed voice commit; fix any CI issue before merge.
-3. **Run a fresh-checkout setup** with `.[dev]`, then voice setup, and confirm text mode still works without models.
-4. **Record voice observations** (latency, memory, transcript errors) with the method and environment; do not call them benchmarks yet.
-5. **Decide Phase 3 scope from observed failures**, not from novelty. Keep text fallback and editing mandatory.
-6. **Run user validation only when feasible.** It is valuable, but it is not a blocker for engineering.
+1. **Automated verification is green:** [run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798) — 100 passed, 2 skipped, 1 warning; compilation, JavaScript syntax, dependency audit, API tests, and Chromium acceptance passed.
+2. **Complete manual target-laptop acceptance** for Phases A–F using [ACCEPTANCE_CHECKLIST.md](ACCEPTANCE_CHECKLIST.md), including browser, microphone/STT/TTS, keyboard, screen-reader, contrast, responsive, and data-recovery checks.
+3. **Complete a clean install and recovery rehearsal** on the target Omarchy laptop using [INSTALL.md](INSTALL.md), with backups tested only against disposable data.
+4. **Review limitations and evidence**; do not claim speech accuracy, proficiency, learning gains, placement outcomes, or security certification without validation.
+5. **Keep the optional student pilot separate** from engineering. Run it only with consent and available participants; no results are currently claimed.
 
-**Current gate:** record/stop slice and mocked Groq adapter implemented; live provider, real browser/microphone acceptance, and CI are outstanding. Speech accuracy and learning outcomes are not validated and must not be claimed.
+**Current gate:** Phases A–F implementation and automated verification are complete on the working branch. Manual target-device acceptance remains open. Phase G has not started.
 
 
 ---
 
 ## 18. Updated product completion plan (2026-11-19)
 
-This section is the active execution order for turning the current practice foundation into the complete learning product. It refines the earlier future-work phases: the learner profile now exists, so the next product milestone is to make it drive a real learning experience. The earlier Phase 5/6 ideas remain valid, but implementation must follow the gates below.
+This is the authoritative A–G execution sequence. Earlier sections are the original research/planning model and historical baseline; use this section plus CURRENT_STATE.md for present implementation truth. Phases A–F are implemented; Phase G is deliberately held until the pre-release manual acceptance gates are complete.
 
 ### Current truth
 
 - The app has the original project-explanation practice scenario, a local session/history flow, formative feedback, a bounded voice record/stop slice, a learner profile, and a reusable Learning Engine.
 - The profile goal and focus areas select transparent starter routes through the versioned curriculum; they do not infer ability or adapt difficulty.
 - The branch now contains the initial English and communication curriculum, learner-controlled memory and spaced revision, three interview studios, and the Phase F progress/goals/backup/restore workspace. Target-device acceptance for Phases D–F remains outstanding.
-- Foundation and Learning Engine browser tests exist; latest CI and target-laptop acceptance must be confirmed before the milestones are closed.
+- Latest full CI is green: [run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798) — 100 passed, 2 skipped, 1 warning. Target-device acceptance for Phases A–F remains outstanding.
 - Do not label this product market-ready or complete.
 
 ### Build sequence
@@ -361,7 +360,7 @@ This section is the active execution order for turning the current practice foun
 | D | Personal learning memory | Learner-approved saved words, phrases, corrections and review cards | CRUD, source context, review queue and scheduler tests |
 | E | Career & interview studios | Project, HR/behavioural and technical scenarios with follow-ups | Multiple scenario families on shared infrastructure |
 | F | Progress & portability | Skill evidence, goals, recommendations, export/backup/restore | Reproducible data recovery and explainable progress |
-| G | Release hardening | Accessibility, security, performance, fresh install and usability evidence | Release checklist and documented limitations |
+| G | Release hardening and acceptance (not started) | Target-device, accessibility, privacy/security, performance, fresh-install and release-candidate verification | Manual acceptance record, green CI, recovery rehearsal, limitations and release checklist |
 
 ### Milestone B — Learning Engine detailed tasks
 
@@ -412,14 +411,14 @@ Every unit needs an outcome, authored examples, exercises, feedback, tests, and 
 
 ### Milestone F — Progress and portability
 
-**Implementation added on `feature/learner-profile`; automated CI and target-device acceptance are separate gates.**
+**Implementation added on `feature/learner-profile`; automated CI is green, while target-device acceptance remains a separate gate.**
 
 - [x] Evidence-based skill coverage linked to completed curriculum lessons, plus activity counts for project practice, interviews, and memory reviews.
 - [x] Learner-created goals with create/edit/archive/restore/delete and counts scoped from goal creation time.
 - [x] Explainable recommendations from profile preferences, unfinished lessons/practice/interviews, due memory reviews, and active goals, with persistent dismiss/restore controls.
 - [x] Full local JSON export and staged, validated full-replacement restore for every learner-data table.
 - [x] Backup format/schema versioning, size/record limits, integrity and foreign-key validation, and failure-without-replacement tests.
-- [ ] Record final CI pass for the exact implementation commit.
+- [x] Final automated CI pass for the current implementation commit: [run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798) — 100 passed, 2 skipped, 1 warning.
 - [ ] Complete target-laptop progress and data-recovery acceptance.
 
 ### Milestone G — Release hardening and validation
@@ -456,7 +455,7 @@ The initial Phase C curriculum has been added to the existing `feature/learner-p
 - **Personalisation:** profile goals and focus areas now explain matching English lessons; no ability or proficiency is inferred.
 - **Compatibility:** existing project-communication tracks and the original practice room remain in place. No new database service, paid API requirement, or database migration was introduced.
 
-Automated API and Chromium coverage has been added for curriculum inventory, profile focus routing, question/grammar/vocabulary handling, listening alternatives, and pronunciation self-review. The latest GitHub Actions run must pass before this implementation is described as automated-tested. Target-laptop browser, audio, microphone/STT disclosure, transcript-editing, keyboard, and responsive acceptance remain manual gates.
+Automated API and Chromium coverage for curriculum inventory, profile focus routing, question/grammar/vocabulary handling, listening alternatives, and pronunciation self-review passes in [the current full-suite CI run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798). Target-laptop browser, audio, microphone/STT disclosure, transcript-editing, keyboard, and responsive acceptance remain manual gates.
 
 The Phase C implementation does not claim certified English proficiency, pronunciation accuracy, improved learning outcomes, or hiring/placement probability. Open speaking responses are retained as learner work and are not automatically graded.
 
@@ -470,7 +469,7 @@ The FastAPI learning router validates the manifest and provides catalogue, recom
 
 Profile goal/focus preferences select a transparent route with per-lesson reasons. The browser workspace supports skill and unit browsing, recommended lessons, all seven exercise formats, local TTS listening and pronunciation playback with text alternatives, optional STT responses, next-lesson navigation, response feedback, progress counts, and resuming unfinished lessons. Choice and ordering items have deterministic answer feedback; open responses are saved for self-review without automatic grading or proficiency claims.
 
-Automated API and Chromium tests have been added. This update is implementation in progress, not a passed release gate until the latest GitHub Actions run and target-laptop browser acceptance are recorded. A low-stakes starting-point check is included. It records sentence, ordering, listening, and project-response tasks; attempts can be repeated and reviewed. It assigns no proficiency level or overall score. More advanced diagnostic interpretation remains future work. Dedicated HR, project, and technical interview studios are now implemented under Phase E. Learner-controlled revision is implemented under Phase D; its automated and target-laptop acceptance gates remain open.
+Automated API and Chromium tests have been added. This implementation is included in the green [full-suite CI run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798). Target-laptop browser acceptance remains a separate open gate. A low-stakes starting-point check is included. It records sentence, ordering, listening, and project-response tasks; attempts can be repeated and reviewed. It assigns no proficiency level or overall score. More advanced diagnostic interpretation remains future work. Dedicated HR, project, and technical interview studios are now implemented under Phase E. Learner-controlled revision is implemented under Phase D; its automated and target-laptop acceptance gates remain open.
 
 
 ---
@@ -508,4 +507,17 @@ The Career workspace is implemented on `feature/learner-profile`. GitHub Actions
 - Question-by-question reflection uses transparent text signals and exact answer evidence. It does not claim technical correctness, expert recruiter evaluation, interview success, or placement probability.
 - Learners can explicitly send an answer into the Phase D memory editor with its question/session source context. The learner must review and submit the item; no automatic memory writes occur.
 
-The automated suite covers the API state machine, all studio content, difficulty-specific follow-ups, persistence, retry, deletion cascade, legacy practice preservation, browser completion/resume/review, and the memory handoff. The final GitHub Actions result and target-laptop acceptance must be recorded before Phase E is called closed.
+The automated suite covers the API state machine, all studio content, difficulty-specific follow-ups, persistence, retry, deletion cascade, legacy practice preservation, browser completion/resume/review, and the memory handoff. The full current implementation suite passes in [CI run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798); target-laptop acceptance remains open before Phase E can be called fully accepted.
+
+
+---
+
+## Phase F — Progress, portability, and hardening foundations (2026-11-20)
+
+Phase F is implemented on `feature/learner-profile`. The complete current CI workflow passes on [run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798): 100 passed, 2 skipped, 1 warning. The workflow completed Python compilation, all six JavaScript syntax checks, dependency installation, `pip-audit`, Chromium installation, API tests, and browser acceptance.
+
+Delivered: evidence-linked skill/activity progress; learner-owned goals; explainable recommendations with persistent dismiss/restore; JSON export and staged full-replacement restore covering every learner-data table; schema/format version checks; local Host/Origin restrictions; security headers/CSP; readiness checks; and install/recovery/security documentation.
+
+**Still open:** target-laptop acceptance for all A–F learner journeys, fresh-install/recovery rehearsal, voice hardware/provider checks, keyboard/screen-reader/contrast/responsive review, and any fixes arising from those checks. The two CI skips require `espeak-ng` and are not counted as passes. The student pilot remains optional future validation, not a prerequisite to engineering.
+
+**Phase G has not started.** It is reserved for closing the release-hardening and acceptance gates after the manual A–F evidence is recorded.
