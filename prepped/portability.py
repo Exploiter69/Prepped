@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import math
 import sqlite3
 import tempfile
 from datetime import datetime, timezone
@@ -107,7 +108,7 @@ def create_portability_router(db_path: Path) -> APIRouter:
             chunks.append(chunk)
         try:
             payload = json.loads(b"".join(chunks))
-        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        except (UnicodeDecodeError, json.JSONDecodeError, RecursionError) as exc:
             raise HTTPException(status_code=400, detail="The selected file is not valid Prepped backup JSON.") from exc
         expected_keys = {"format", "format_version", "database_schema_version", "app_version", "exported_at", "tables", "confirm_replace"}
         if not isinstance(payload, dict) or set(payload) != expected_keys or payload.get("format") != BACKUP_FORMAT:
@@ -145,6 +146,13 @@ def create_portability_router(db_path: Path) -> APIRouter:
                                 raise ValueError(f"Record {index + 1} in {table} has an unexpected field set.")
                             if any(not isinstance(value, (str, int, float, bool, type(None))) for value in record.values()):
                                 raise ValueError(f"Record {index + 1} in {table} contains a non-scalar value.")
+                            if any(
+                                (isinstance(value, float) and not math.isfinite(value))
+                                or (isinstance(value, int) and not isinstance(value, bool)
+                                    and not -(2**63) <= value < 2**63)
+                                for value in record.values()
+                            ):
+                                raise ValueError(f"Record {index + 1} in {table} contains a non-finite or out-of-range number.")
                             if any(isinstance(value, str) and len(value) > 2_000_000 for value in record.values()):
                                 raise ValueError(f"Record {index + 1} in {table} contains an oversized text field.")
                     for table in reversed(INSERT_ORDER):
@@ -171,7 +179,7 @@ def create_portability_router(db_path: Path) -> APIRouter:
                     source.close()
         except HTTPException:
             raise
-        except (sqlite3.Error, ValueError, KeyError, TypeError) as exc:
+        except (sqlite3.Error, ValueError, KeyError, TypeError, OverflowError) as exc:
             raise HTTPException(status_code=422, detail=f"Backup validation failed; current data was not replaced. {exc}") from exc
 
         return {"restored": True, "records_restored": total_rows,
