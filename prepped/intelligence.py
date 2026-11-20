@@ -588,8 +588,8 @@ def _overview(conn: sqlite3.Connection, curriculum: dict[str, Any]) -> dict[str,
         next_day = day + timedelta(days=1)
         count = conn.execute(
             "SELECT (SELECT COUNT(*) FROM learning_events WHERE occurred_at>=? AND occurred_at<?) + "
-            "(SELECT COUNT(*) FROM sessions WHERE completed_at>=? AND completed_at<?) + "
-            "(SELECT COUNT(*) FROM career_sessions WHERE completed_at>=? AND completed_at<?) + "
+            "(SELECT COUNT(*) FROM sessions WHERE COALESCE(completed_at,created_at)>=? AND COALESCE(completed_at,created_at)<?) + "
+            "(SELECT COUNT(*) FROM career_sessions WHERE COALESCE(completed_at,created_at)>=? AND COALESCE(completed_at,created_at)<?) + "
             "(SELECT COUNT(*) FROM learning_memory_reviews WHERE reviewed_at>=? AND reviewed_at<?) AS n",
             (day.isoformat(), next_day.isoformat(), day.isoformat(), next_day.isoformat(),
              day.isoformat(), next_day.isoformat(), day.isoformat(), next_day.isoformat()),
