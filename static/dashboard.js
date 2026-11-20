@@ -39,10 +39,18 @@ $("#dashboard-learn-button")?.addEventListener("click",()=>$("#learning-toggle")
 $("#dashboard-path-link")?.addEventListener("click",()=>$("#learning-toggle")?.click());
 $("#dashboard-practice-button")?.addEventListener("click",()=>openView("home-view"));
 $("#dashboard-progress-link")?.addEventListener("click",()=>$("#progress-toggle")?.click());
-window.addEventListener("prepped:viewchange",event=>{const view=event.detail?.view;if(view!=="dashboard-view")$("#dashboard-view")?.classList.add("hidden");});
-window.addEventListener("prepped:navigation",event=>{
- const view=event.detail?.view,active=view==="dashboard-view"?"home-toggle":view==="learning-view"?"learning-toggle":view==="career-view"?"career-toggle":view==="progress-view"?"progress-toggle":view==="history-view"?"history-toggle":["home-view","practice-view","feedback-view"].includes(view)?"practice-toggle":null;
+function updateNavigation(view){
+ const active=view==="dashboard-view"?"home-toggle":view==="learning-view"?"learning-toggle":view==="career-view"?"career-toggle":view==="progress-view"?"progress-toggle":view==="history-view"?"history-toggle":["home-view","practice-view","feedback-view"].includes(view)?"practice-toggle":null;
  for(const id of ["home-toggle","learning-toggle","practice-toggle","career-toggle","progress-toggle","history-toggle"]){const button=$("#"+id);if(!button)continue;button.classList.toggle("is-active",id===active);if(id===active)button.setAttribute("aria-current","page");else button.removeAttribute("aria-current");}
+}
+window.addEventListener("prepped:viewchange",event=>{
+ const view=event.detail?.view;
+ if(view!=="dashboard-view")$("#dashboard-view")?.classList.add("hidden");
+ updateNavigation(view);
+});
+window.addEventListener("prepped:navigation",event=>{
+ const view=event.detail?.view;
+ updateNavigation(view);
  if(view==="dashboard-view"){ $("#dashboard-view")?.classList.remove("hidden");loadDashboard(); }
 });
 loadDashboard();window.PreppedDashboard={refresh:loadDashboard};
