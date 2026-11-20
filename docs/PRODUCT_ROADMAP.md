@@ -335,13 +335,13 @@ The English starter path is expanded under Phase C. Advanced diagnostic interpre
 
 ---
 
-## Phase G.1 — Recording lifecycle hardening (implementation and browser regressions added; CI verification pending)
+## Phase G.1 — Recording lifecycle hardening (implementation, browser regressions, and CI green)
 
 Before Phase H, verify the browser recording lifecycle hardening across Learning and Career. Navigation, lesson/interview exit, and page unload must invalidate pending microphone permission requests; late permission grants must stop their tracks without creating a recorder. Active streams must stop on every workspace transition. In-flight transcription must be abortable and stale responses must never update a hidden or different exercise. A normal learner-initiated Stop must still allow transcription to complete while the learner remains in that exercise.
 
-Automated browser tests now use deferred getUserMedia() promises to verify late permission grants are discarded in both workspaces, media tracks are stopped, and no recorder starts after navigation. Exact-commit CI verification remains pending. Phase H implementation has been added; its own final CI and later manual acceptance gates are tracked in PHASE_H_ACCEPTANCE.md.
+Automated browser tests now use deferred getUserMedia() promises to verify late permission grants are discarded in both workspaces, media tracks are stopped, and no recorder starts after navigation. Exact-commit CI is green: [run 44732997261](https://github.com/Exploiter69/Prepped/actions/runs/44732997261) — 134 passed, 2 skipped, 1 warning. Phase H automated acceptance is green; later manual device/learner acceptance is tracked in PHASE_H_ACCEPTANCE.md.
 
-## Phase H — Adaptive Learning Intelligence (implementation added; automated verification pending)
+## Phase H — Adaptive Learning Intelligence (implementation and automated CI green; manual acceptance open)
 
 **Purpose:** make the current Learning, Memory, Career, and Progress modules work as one explainable learning loop.
 
@@ -359,4 +359,4 @@ Automated browser tests now use deferred getUserMedia() promises to verify late 
 
 The working branch now includes the evidence-backed skill profile, deterministic recommendation engine, learner-controlled daily and weekly plans, source-linked analytics, the Progress workspace UI, additive schema-4 plan persistence, and backup compatibility for existing schema-3 exports. See [Phase H Acceptance](PHASE_H_ACCEPTANCE.md) for the API, evidence rules, tests, limitations, and remaining gates.
 
-The implementation intentionally adapts ordering and selection only. The curriculum has no authored difficulty metadata, so difficulty changes and generated exercises are not claimed. Automated CI for the exact final Phase H commit remains pending; manual Omarchy acceptance remains later.
+The implementation intentionally adapts ordering and selection only. The curriculum has no authored difficulty metadata, so difficulty changes and generated exercises are not claimed. Automated CI for the Phase H/G.1 implementation is green: [run 44732997261](https://github.com/Exploiter69/Prepped/actions/runs/44732997261). Manual Omarchy acceptance remains later.
