@@ -117,7 +117,6 @@ def create_app(
         version="0.3.0",
         lifespan=lifespan,
     )
-    application.add_middleware(RequestSizeLimitMiddleware)
     @application.middleware("http")
     async def local_security_headers(request, call_next):
         host_header = request.headers.get("host", "")
@@ -188,6 +187,8 @@ def create_app(
         if request.url.path.startswith("/api/"):
             response.headers["Cache-Control"] = "no-store"
         return response
+
+    application.add_middleware(RequestSizeLimitMiddleware)
 
     application.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")
     application.include_router(create_voice_router(voice_service or build_voice_service()))

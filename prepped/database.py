@@ -13,10 +13,10 @@ def _prepare_database_file(db_path: Path) -> Path:
     """Create a private SQLite file and reject symlink/non-regular targets."""
     path = Path(db_path)
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-    if path.parent.name == "data":
-        os.chmod(path.parent, 0o700)
     if path.parent.is_symlink() or path.is_symlink():
         raise OSError("SQLite database paths must not traverse a symlink.")
+    if path.parent.name == "data":
+        os.chmod(path.parent, 0o700)
     try:
         descriptor = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
     except FileExistsError:
