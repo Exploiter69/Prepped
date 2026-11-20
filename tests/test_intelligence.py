@@ -196,8 +196,6 @@ def test_plan_supports_learner_override_skip_and_reordering(tmp_path: Path) -> N
         item = next(item for item in plan["items"] if item["target_id"] == "hr-behavioural")
         updated = client.patch(f"/api/intelligence/plan/items/{item['id']}", json={"skipped": True, "position": 0})
         assert updated.status_code == 200
-        changed = next(item for item in updated.json()["plan"]["items"] if item["id"] == item["id"])
-        assert changed["status"] in {"skipped", "planned"}
         assert any(item["status"] == "skipped" and item["target_id"] == "hr-behavioural"
                    for item in updated.json()["plan"]["items"])
         assert client.post("/api/intelligence/plan/items", json={
