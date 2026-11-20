@@ -22,8 +22,9 @@
 - [x] Keep local voice model downloads explicit and outside application startup.
 - [x] State the supported packaging boundary: source checkout is the supported install; wheel/binary packaging is not claimed because static assets and versioned content are repository-root resources and the project licence is unresolved.
 - [ ] Complete a fresh install on the target Omarchy laptop from a clean checkout and verify text mode without voice dependencies.
-- [ ] Verify clean update on a disposable checkout with a pre-update backup and post-update readiness check.
-- [ ] Verify uninstall instructions preserve learner data unless the learner explicitly removes it.
+- [x] Document safe fast-forward update with pre-update backup, clean-working-tree check, and post-update readiness verification.
+- [x] Document uninstall choices so removing the virtual environment preserves data/ and removing the checkout requires a private export first.
+- [ ] Perform the documented update/uninstall rehearsal on a disposable target-laptop checkout.
 
 ## L2 — Runtime operations and observability
 
@@ -64,6 +65,7 @@
 | Check | Evidence | Status |
 |---|---|---|
 | Phase K exact code CI | GitHub Actions run 44754505687, commit cff67fb | Passed |
+| Phase L helper/CI verification | GitHub Actions run 44756776414, commit a599d2c; shell syntax, compile, JS, content lint, dependency audit, Chromium and pytest | Passed: 172 passed, 2 optional voice skips |
 | Target-laptop focused portability tests | python -m pytest -q tests/test_portability.py — 17 passed | Passed |
 | Target-laptop full test suite | python -m pytest -q — 172 passed, 0 failed | Passed |
 | Target-laptop filesystem modes | data/ 0700; SQLite file 0600 (recorded in Phase K) | Passed |
@@ -75,4 +77,4 @@
 
 ## Release decision
 
-Phase L implementation is in progress. Do not call this a release candidate yet. A release tag/archive is blocked until the project owner chooses a licence and the manual release gates are passed or explicitly deferred with an approved reason. The source-checkout workflow is the only supported packaging model. This document is an acceptance record, not a certification or promise of future hosting.
+Phase L engineering/documentation implementation is in progress. The source helper and its smoke tests pass in GitHub Actions run 44756776414 (172 passed, 2 optional voice skips); local target-laptop verification of the new helper is still required. Do not call this a release candidate yet. A release tag/archive is blocked until the project owner chooses a licence and the manual release gates are passed or explicitly deferred with an approved reason. The source-checkout workflow is the only supported packaging model. This document is an acceptance record, not a certification or promise of future hosting.
