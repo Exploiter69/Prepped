@@ -168,9 +168,13 @@
       comparison.append(make("p", feedback.comparison_note || "Compare the wording yourself; no improvement score is calculated.", "section-help"));
       for (const item of comparisons) {
         const pair = make("article", null, "career-comparison-card");
-        pair.append(make("strong", item.question_id.replaceAll("-", " ") + " · " + item.turn_type));
+        pair.append(make("strong", item.question_id.replace(/-/g, " ") + " · " + item.turn_type));
+        pair.append(make("span", "Previous prompt", "meta-label"));
+        pair.append(make("p", item.previous_prompt, "section-help"));
         pair.append(make("span", "Previous attempt", "meta-label"));
         pair.append(make("blockquote", item.previous_answer, "career-answer-quote"));
+        pair.append(make("span", "Current prompt", "meta-label"));
+        pair.append(make("p", item.current_prompt, "section-help"));
         pair.append(make("span", "This attempt", "meta-label"));
         pair.append(make("blockquote", item.current_answer, "career-answer-quote"));
         comparison.append(pair);
