@@ -145,7 +145,7 @@ The text feedback system is frozen for this phase. Do not keep adding phrase heu
 - TTS quality and the first-token/load latency have not been benchmarked across devices.
 - The first milestone is record/stop only. There is no streaming, interruption handling, VAD, or realtime agent.
 - A browser microphone session must still be checked manually on the target machine; automated tests cover the API, adapters, failure paths, and a synthetic real-model integration check.
-- No LLM feedback, adaptive intelligence, pronunciation scoring, or emotion/personality inference is added in this phase.
+- No LLM feedback, pronunciation scoring, or emotion/personality inference is added to the voice pipeline.
 
 ## Privacy
 
