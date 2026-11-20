@@ -405,7 +405,7 @@ def _recommendations(conn: sqlite3.Connection, curriculum: dict[str, Any], skill
     ).fetchall()
     for item in due:
         candidates.insert(0, {"kind": "review_memory", "target_id": item["id"],
-            "title": "Review: " + item["front"], "reason": "This learner-saved item is due for revision.",
+            "title": ("Review: " + item["front"])[:160], "reason": "This learner-saved item is due for revision.",
             "estimated_minutes": 5, "source": "due_memory"})
     dismissed = {row["recommendation_key"] for row in conn.execute(
         "SELECT recommendation_key FROM recommendation_dismissals"
