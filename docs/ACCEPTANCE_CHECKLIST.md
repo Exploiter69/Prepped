@@ -369,7 +369,7 @@ Use a disposable database. Automated Chromium coverage does not replace checking
 - [ ] Complete the manual target-laptop checks above. CI does not prove fresh-install operation on the user's device, microphone permission, speech recognition quality, TTS output, screen-reader behaviour, or device-specific responsive layout.
 
 
-## Pre-Phase-G sign-off record
+## A–F baseline sign-off record
 
 **Automated evidence (2026-11-20):** [GitHub Actions run 44655380427](https://github.com/Exploiter69/Prepped/actions/runs/44655380427) — 100 passed, 2 skipped, 1 warning. The two skips require `espeak-ng`, unavailable on the hosted runner. Dependency audit, Python compilation, all JavaScript syntax checks, API tests, and Chromium browser acceptance passed.
 
