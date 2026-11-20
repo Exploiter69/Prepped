@@ -14,6 +14,7 @@ This repository does **not** claim validated speech accuracy, placement improvem
 - [A–F learner acceptance checklist](docs/ACCEPTANCE_CHECKLIST.md)
 - [Phase G release hardening and acceptance record](docs/PHASE_G_ACCEPTANCE.md)
 - [Phase H adaptive learning implementation and acceptance gates](docs/PHASE_H_ACCEPTANCE.md)
+- [Phase I voice intelligence implementation and acceptance gates](docs/PHASE_I_ACCEPTANCE.md)
 - [Voice setup, privacy, and troubleshooting](docs/VOICE.md)
 - [ADR-002: local voice slice](docs/ADR-002-LOCAL-VOICE-SLICE.md)
 - [ADR-003: optional Groq Whisper transcription](docs/ADR-003-GROQ-WHISPER-TRANSCRIPTION.md)
