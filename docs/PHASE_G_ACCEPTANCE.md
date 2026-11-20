@@ -42,8 +42,8 @@ The checked items above describe code and tests added during Phase G; they do no
 - [x] Host allowlisting and same-origin checks are implemented as defence-in-depth.
 - [x] Security headers and API `Cache-Control: no-store` are implemented.
 - [x] Malformed Host/Origin parsing is handled without leaking tracebacks.
-- [ ] Review all state-changing routes for input bounds and expected error responses.
-- [ ] Verify no permissive CORS configuration, debug server, public tunnel, or external deployment instructions have been introduced.
+- [x] Review state-changing request models across practice, profile, learning, memory, career, progress, and voice routes; fields are bounded or constrained by enums/allowlists, and existing API tests cover validation/error paths.
+- [x] Review middleware, workflow, README, and install instructions: no permissive CORS, debug server, public tunnel, or external deployment path is enabled or documented.
 - [ ] Verify secrets, local databases, backups, personal answers, and voice models are not tracked by Git.
 
 ### Explicit security boundary
