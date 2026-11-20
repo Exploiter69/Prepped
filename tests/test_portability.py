@@ -242,3 +242,23 @@ def test_readiness_fails_closed_when_a_required_table_is_missing(tmp_path: Path)
         assert "not ready" in response.json()["detail"].lower()
     finally:
         client.__exit__(None, None, None)
+
+
+
+def test_restore_enforces_record_count_and_content_length_limits(tmp_path: Path) -> None:
+    client = client_for(tmp_path / "restore-limits.sqlite3")
+    try:
+        backup = client.get("/api/data/export").json()
+        too_many = {**backup, "confirm_replace": True}
+        too_many["tables"]["sessions"] = [{}] * 200_001
+        row_limit = client.post("/api/data/restore", json=too_many)
+        assert row_limit.status_code == 413
+
+        malformed_length = client.post(
+            "/api/data/restore",
+            content=b"{}",
+            headers={"Content-Length": "not-a-number"},
+        )
+        assert malformed_length.status_code == 400
+    finally:
+        client.__exit__(None, None, None)
