@@ -222,6 +222,7 @@
         setTtsStatus("The local audio could not be played. Read the question on screen.", "error");
       };
       await ui.audio.play();
+      if (requestGeneration !== state.generation || controller.signal.aborted) return;
       setTtsStatus("Speaking the question locally. Use Stop to interrupt.");
     } catch (error) {
       if (error.name !== "AbortError" && requestGeneration === state.generation) {
@@ -240,12 +241,18 @@
   async function replayQuestion() {
     if (!state.questionText || state.busy) return;
     if (state.audioUrl && ui.audio.src) {
+      const generation = state.generation;
+      const audio = ui.audio;
       try {
-        ui.audio.currentTime = 0;
-        await ui.audio.play();
-        setTtsStatus("Replaying the question locally. Use Stop to interrupt.");
+        audio.currentTime = 0;
+        await audio.play();
+        if (generation === state.generation && audio === ui.audio && audio.src) {
+          setTtsStatus("Replaying the question locally. Use Stop to interrupt.");
+        }
       } catch (error) {
-        setTtsStatus("The local audio could not be replayed. Press Play question aloud.", "error");
+        if (generation === state.generation) {
+          setTtsStatus("The local audio could not be replayed. Press Play question aloud.", "error");
+        }
       }
     } else {
       await playQuestion();
