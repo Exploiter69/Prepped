@@ -3,17 +3,21 @@
 **Updated:** 2026-11-20<br>
 **Source of truth:** GitHub `feature/learner-profile` (working branch; `main` remains the last synced baseline)<br>
 **Product direction:** Voice-first, personalised practice and learning platform for Indian engineering students. The text practice loop is a reliable fallback and is frozen for feature development except material bugs.<br>
-**Engineering stage:** Phases A–H implementation is present. Phase I implementation is present; local pytest on commit `c4200e5` reports 145 passed, 0 failed, 1 warning. Exact-commit GitHub Actions [run 44742961672](https://github.com/Exploiter69/Prepped/actions/runs/44742961672) passed with 143 passed, 2 optional voice skips, 1 warning. Manual target-device acceptance remains pending. By explicit user decision, Phase J implementation is proceeding while Phase I remains open. See [Phase I acceptance](PHASE_I_ACCEPTANCE.md) and [Phase J acceptance](PHASE_J_ACCEPTANCE.md).
+**Engineering stage:** Phases A–H implementation is present. Phase I implementation is present; manual target-device voice acceptance remains open. Phase J implementation is present; human content/accessibility review and learner validation remain open. Phase K engineering verification is complete on cff67fb: target laptop 172 passed, exact-commit GitHub Actions [run 44754505687](https://github.com/Exploiter69/Prepped/actions/runs/44754505687) succeeded. Phase L local release-candidate workflow and documentation are in progress; no release is claimed.
 
-## Phase K — Security, Privacy, Data Protection & Reliability (engineering implementation complete; final verification in progress)
+## Phase K — Security, Privacy, Data Protection & Reliability (engineering verification complete; release acceptance remains open)
 
-The user ran the full suite on commit ec623c4: 170 passed, 0 failed, no warnings. On the target Linux machine, `stat` confirmed data/ mode 0700 and data/prepped.sqlite3 mode 0600. Exact-commit CI for the additional restore-interruption and backup-confidentiality tests is running on commit 1405129.
+The target laptop passed 17 focused portability tests and 172 tests in the full suite on commit cff67fb. Exact-commit GitHub Actions [run 44754505687](https://github.com/Exploiter69/Prepped/actions/runs/44754505687) succeeded. The laptop previously confirmed data/ mode 0700 and the SQLite file mode 0600. CI dependency review found 0 known vulnerabilities across 73 resolved dependencies and inventoried 68 licence records.
 
-The new restore regression simulates a worker failure after a backup has been staged but before commit; it checks that the active database remains intact and that a trusted backup can subsequently be restored. This is not a real OS-level kill/power-loss rehearsal. Backup export tests check that environment-secret canaries and audio/secret columns are excluded. Earlier CI dependency review found 0 known vulnerabilities across 73 dependencies and reviewed 68 licence records.
+The restore regression simulates a worker failure after staging and before commit, confirms the active DB remains intact, then restores a trusted backup. This is not a real OS-level kill/power-loss rehearsal. Backup export tests check that environment-secret canaries and audio/secret columns are excluded. A real interrupted-restore recovery rehearsal and optional Groq/device checks remain manual.
 
-The project licence remains undeclared, so do not redistribute the source/package until the owner selects a licence and checks optional Piper terms. Groq-specific manual checks are conditional on that optional provider being configured. A real interrupted-restore recovery rehearsal remains a target-device check; no security certification or public deployment approval is claimed.
+The project licence remains undeclared, so do not redistribute the source/package until the owner selects a licence and checks optional Piper terms. No security certification or public deployment approval is claimed. See [Phase K Acceptance](PHASE_K_ACCEPTANCE.md) and [Release Hardening](RELEASE_HARDENING.md).
 
-See [Phase K Acceptance](PHASE_K_ACCEPTANCE.md) and [Release Hardening](RELEASE_HARDENING.md).
+## Phase L — Release Candidate, Packaging, Documentation & Operations (implementation in progress)
+
+The source-checkout workflow helper is available in scripts/prepped.sh: setup, loopback-only start, health/readiness/voice checks, full local verification, and explicit optional voice setup. The supported install is a source checkout; wheel/binary packaging is not claimed. CHANGELOG.md, the offline text-mode demo, and PHASE_L_ACCEPTANCE.md now record scope, operations, verification, and remaining gates.
+
+A clean target-laptop install/update/uninstall rehearsal, fresh-install backup recovery drill, target-device performance observations, full accessibility/voice checks, and release review remain open. No release tag/archive is created; the project licence is unresolved and redistribution remains blocked.
 
 ## Phase J — Curriculum Quality, Content Expansion & Learning Validation (implementation started; acceptance pending)
 
