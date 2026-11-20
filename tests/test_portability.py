@@ -196,3 +196,35 @@ def test_same_origin_state_change_and_no_origin_local_client_remain_supported(tm
         assert no_origin.status_code == 200, no_origin.text
     finally:
         client.__exit__(None, None, None)
+
+
+
+def test_restore_rejects_non_finite_and_out_of_range_numbers_without_replacing_data(tmp_path: Path) -> None:
+    client = client_for(tmp_path / "numeric-restore.sqlite3")
+    try:
+        client.put("/api/profile", json={"display_name": "Keep this data"})
+        original = client.get("/api/data/export").json()
+
+        non_finite = {**original, "confirm_replace": True}
+        non_finite["tables"]["learner_profile"][0]["study_year"] = float("nan")
+        rejected_nan = client.post("/api/data/restore", json=non_finite)
+        assert rejected_nan.status_code == 422
+
+        out_of_range = {**original, "confirm_replace": True}
+        out_of_range["tables"]["learner_profile"][0]["study_year"] = 2**80
+        rejected_integer = client.post("/api/data/restore", json=out_of_range)
+        assert rejected_integer.status_code == 422
+
+        assert client.get("/api/profile").json()["profile"]["display_name"] == "Keep this data"
+    finally:
+        client.__exit__(None, None, None)
+
+
+def test_restore_rejects_excessively_nested_json_as_client_error(tmp_path: Path) -> None:
+    client = client_for(tmp_path / "nested-restore.sqlite3")
+    try:
+        nested = b"[" * 1500 + b"0" + b"]" * 1500
+        response = client.post("/api/data/restore", content=nested)
+        assert response.status_code == 400
+    finally:
+        client.__exit__(None, None, None)
