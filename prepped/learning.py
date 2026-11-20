@@ -131,6 +131,7 @@ def load_curriculum(path: Path = DEFAULT_CURRICULUM_PATH) -> dict[str, Any]:
         if any(prereq not in lessons or prereq == lesson["id"] for prereq in lesson.get("prerequisites", [])):
             raise CurriculumValidationError(f"Lesson {lesson['id']} has an invalid prerequisite.")
         seen: set[str] = set()
+        exercise_minutes = 0
         for exercise in lesson["exercises"]:
             if not isinstance(exercise, dict):
                 raise CurriculumValidationError(f"Lesson {lesson['id']} contains an invalid exercise object.")
@@ -138,6 +139,17 @@ def load_curriculum(path: Path = DEFAULT_CURRICULUM_PATH) -> dict[str, Any]:
             if not exercise.get("prompt") or not eid or eid in seen or kind not in EXERCISE_TYPES:
                 raise CurriculumValidationError(f"Lesson {lesson['id']} has an invalid exercise.")
             seen.add(eid)
+            outcome = exercise.get("learning_outcome")
+            effort = exercise.get("estimated_minutes")
+            if not isinstance(outcome, str) or not outcome.strip():
+                raise CurriculumValidationError(f"Exercise {eid} needs an observable learning outcome.")
+            if isinstance(effort, bool) or not isinstance(effort, int) or not 1 <= effort <= 10:
+                raise CurriculumValidationError(f"Exercise {eid} needs an effort estimate from 1 to 10 minutes.")
+            exercise_minutes += effort
+            if exercise.get("skill_ids") != lesson.get("skill_ids", []):
+                raise CurriculumValidationError(f"Exercise {eid} must inherit its lesson skill context.")
+            if exercise.get("source_ids") != lesson.get("source_ids", []):
+                raise CurriculumValidationError(f"Exercise {eid} must inherit its lesson source references.")
             if kind in {"choice", "vocabulary", "listening"}:
                 ids = [option.get("id") for option in exercise.get("options", [])]
                 if (len(ids) < 2 or len(ids) != len(set(ids)) or exercise.get("answer") not in ids
@@ -158,6 +170,11 @@ def load_curriculum(path: Path = DEFAULT_CURRICULUM_PATH) -> dict[str, Any]:
                     raise CurriculumValidationError(f"Ordering exercise {eid} has invalid tokens or answer.")
             elif not exercise.get("guidance"):
                 raise CurriculumValidationError(f"Reflection exercise {eid} needs self-review guidance.")
+        if exercise_minutes > lesson["estimated_minutes"]:
+            raise CurriculumValidationError(
+                f"Lesson {lesson['id']} exercise effort ({exercise_minutes} minutes) exceeds its lesson estimate "
+                f"({lesson['estimated_minutes']} minutes)."
+            )
     def reject_cycles(graph: dict[str, list[str]], label: str) -> None:
         visiting: set[str] = set()
         visited: set[str] = set()
