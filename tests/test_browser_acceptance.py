@@ -1182,3 +1182,22 @@ def test_groq_audio_disclosure_is_visible_before_microphone_capture(local_app_ur
     assert disclosure.is_visible()
     assert "microphone audio is sent to Groq" in disclosure.inner_text()
     assert page.evaluate("window.__captureRequests") == 0
+
+
+def test_practice_navigation_stops_live_visualizer_and_discards_capture(local_app_url: str, browser_page) -> None:
+    page = browser_page
+    _mock_available_voice_status(page)
+    page.add_init_script(_recording_and_deferred_transcription_script("__practiceNavigationSttSignal"))
+    page.goto(local_app_url)
+    page.locator("#practice-toggle").click()
+    page.locator("#start-button").click()
+    page.locator("#practice-view").wait_for(state="visible")
+
+    page.locator("#record-button").click()
+    page.wait_for_function("() => document.querySelector('#record-status').textContent.startsWith('Recording')")
+    assert "is-active" in (page.locator("#recording-visualizer").get_attribute("class") or "")
+    page.locator("#career-toggle").click()
+
+    assert page.locator("#career-view").is_visible()
+    assert "is-active" not in (page.locator("#recording-visualizer").get_attribute("class") or "")
+    assert page.evaluate("window.__practiceNavigationSttSignal === undefined")
