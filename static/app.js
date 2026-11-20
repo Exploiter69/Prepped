@@ -178,11 +178,22 @@ async function saveProfile(event) {
 function renderQuestion(session) {
   activeSession = session;
   const current = session.current_question;
+  const answered = Math.min(session.answered_count || 0, session.question_count || 0);
+  const total = session.question_count || 0;
+  const currentNumber = Math.min(answered + 1, total || 1);
+  const percent = total ? Math.round((answered / total) * 100) : 0;
   $("#answer-error").textContent = "";
   $("#answer-input").value = "";
   $("#answer-count").textContent = "0 / 6000";
-  $("#practice-progress").textContent = "Question " + Math.min(session.answered_count + 1, session.question_count) + " of " + session.question_count;
-  $("#progress-bar").style.width = ((session.answered_count / session.question_count) * 100) + "%";
+  $("#response-draft-state").textContent = "Nothing saved for this question yet.";
+  $("#practice-progress").textContent = "Question " + currentNumber + " of " + total;
+  $("#practice-question-index").textContent = String(currentNumber).padStart(2, "0") + " / " + String(total).padStart(2, "0");
+  $("#progress-bar").style.width = percent + "%";
+  const progress = $("#practice-progress-track");
+  progress.setAttribute("aria-valuemin", "0");
+  progress.setAttribute("aria-valuemax", String(total));
+  progress.setAttribute("aria-valuenow", String(answered));
+  progress.setAttribute("aria-valuetext", answered + " of " + total + " questions saved");
   if (!current) {
     $("#practice-title").textContent = "All questions complete";
     $("#question-prompt").textContent = "Preparing your review…";
@@ -191,11 +202,10 @@ function renderQuestion(session) {
     return;
   }
   $("#answer-form").classList.remove("hidden");
-  $("#practice-title").textContent = "Question " + (session.answered_count + 1);
+  $("#practice-title").textContent = "Question " + currentNumber;
   $("#question-prompt").textContent = current.prompt;
   window.PreppedVoice?.setQuestion(current.prompt);
 }
-
 async function startPractice() {
   if (busy) return;
   buttonBusy(true);
@@ -488,7 +498,12 @@ $("#delete-session-button").addEventListener("click", () => { if (activeSession)
 $("#back-home-button").addEventListener("click", () => { activeSession = null; showView("home-view"); });
 $("#history-toggle").addEventListener("click", async () => { await loadHistory(); showView("history-view"); });
 $("#history-home-button").addEventListener("click", () => showView("home-view"));
-$("#answer-input").addEventListener("input", () => { $("#answer-count").textContent = $("#answer-input").value.length + " / 6000"; });
+$("#answer-input").addEventListener("input", () => {
+  $("#answer-count").textContent = $("#answer-input").value.length + " / 6000";
+  $("#response-draft-state").textContent = $("#answer-input").value.trim()
+    ? "Draft in progress · not saved"
+    : "Nothing saved for this question yet.";
+});
 
 window.PreppedVoice?.init();
 showView("dashboard-view");
