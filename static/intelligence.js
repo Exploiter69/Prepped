@@ -83,9 +83,20 @@
       const list = node("ul");
       for (const item of skill.evidence) {
         const dateLabel = item.occurred_at ? new Date(item.occurred_at).toLocaleString() : "Date unavailable";
-        list.append(node("li", item.title + " · " + item.kind.replaceAll("_", " ") +
+        const entry = node("li", item.title + " · " + item.kind.replaceAll("_", " ") +
           " · " + item.outcome + " · " + dateLabel + " · Source: " + item.source_type +
-          " / " + item.source_id + ". " + item.note));
+          " / " + item.source_id + ". " + item.note);
+        const linkedAttempt = item.linked_source_id ||
+          (["lesson_attempt", "lesson_response"].includes(item.source_type) ? item.source_id : null);
+        if (linkedAttempt) {
+          const open = node("button", "Open source attempt", "button button-quiet");
+          open.type = "button";
+          open.addEventListener("click", () => window.dispatchEvent(new CustomEvent(
+            "prepped:open-learning-source", { detail: { attemptId: linkedAttempt } }
+          )));
+          entry.append(" ", open);
+        }
+        list.append(entry);
       }
       if (!skill.evidence.length) list.append(node("li", "No linked saved activity yet."));
       details.append(list);
