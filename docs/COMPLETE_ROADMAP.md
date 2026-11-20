@@ -451,7 +451,7 @@ A release candidate requires all of the following:
 - [ ] Interview scenarios reuse the common engine.
 - [x] Progress is evidence-based and understandable in the implementation; target-device acceptance remains pending.
 - [x] Export/backup/restore is implemented with API round-trip and failure-path tests; target-device acceptance remains pending.
-- [ ] Automated tests and CI pass on the final Phase F implementation commit.
+- [ ] Automated tests and CI pass on the final Phase G implementation commit.
 - [ ] Fresh-install and target-device checks pass.
 - [ ] Accessibility, privacy, security, and failure states are reviewed.
 - [ ] Claims and limitations match demonstrated evidence.
