@@ -170,6 +170,8 @@
     state.ttsController = null;
     if (ui.audio) {
       ui.audio.pause();
+      ui.audio.onended = null;
+      ui.audio.onerror = null;
       ui.audio.currentTime = 0;
       ui.audio.removeAttribute("src");
       ui.audio.load();
