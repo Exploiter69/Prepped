@@ -520,7 +520,11 @@ def _generate_day(conn: sqlite3.Connection, curriculum: dict[str, Any], plan_dat
             if item["status"] == "completed" or item["status"] == "skipped":
                 continue
             conn.execute("DELETE FROM adaptive_plan_items WHERE id=?", (item["id"],))
-    remaining = int(plan["available_minutes"])
+    used_minutes = conn.execute(
+        "SELECT COALESCE(SUM(estimated_minutes),0) AS n FROM adaptive_plan_items WHERE plan_date=? AND skipped_at IS NULL",
+        (plan_date.isoformat(),),
+    ).fetchone()["n"]
+    remaining = max(0, int(plan["available_minutes"]) - int(used_minutes))
     day_end = datetime.combine(plan_date + timedelta(days=1), time.min, tzinfo=timezone.utc).isoformat()
     due_rows = conn.execute(
         "SELECT id,front FROM learning_memory WHERE status='active' AND dismissed_at IS NULL AND due_at<? ORDER BY due_at LIMIT 10",
