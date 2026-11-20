@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "studios": [
     {
       "id": "project-explanation",
@@ -25,12 +25,18 @@
               "guided": "What problem were you trying to solve? Who experiences it, and what does your project help them do?",
               "standard": "What is one concrete user journey that shows the problem and how your project addresses it?",
               "challenging": "What evidence supports the problem being worth solving, and what alternative solution did you reject?"
-            }
+            },
+            "simpler_prompt": "Describe one user journey. What does the user do, and how does your project help?",
+            "clarification": "Start with the user's first step, then explain what your project changes for them."
           },
           "contextual_followup": {
             "trigger": "no_example_marker",
-            "prompt": "Can you walk me through one specific user journey, from the user's problem to what they do in your project?"
-          }
+            "prompt": "Can you walk me through one specific user journey, from the user's problem to what they do in your project?",
+            "simpler_prompt": "Describe one user journey. What does the user do, and how does your project help?",
+            "clarification": "Start with the user's first step, then explain what your project changes for them."
+          },
+          "simpler_prompt": "What problem does your project solve? Who uses it? What can they do with it?",
+          "clarification": "Think of one person who uses the project. What do they need, and how does your project help?"
         },
         {
           "id": "personal-contribution",
@@ -41,12 +47,18 @@
               "guided": "Which part did you personally work on? What did you do first, and what changed?",
               "standard": "Pick one part you personally implemented. What did you change, and how can someone verify it?",
               "challenging": "What was the hardest engineering decision in your contribution, and how would you defend it in a code review?"
-            }
+            },
+            "simpler_prompt": "What part did you build yourself? How could someone check that it works?",
+            "clarification": "Name your own change and one file, feature, test, or result that could verify it."
           },
           "contextual_followup": {
             "trigger": "no_first_person_action",
-            "prompt": "Which exact change did you personally make, and what file, feature, or test would let someone verify it?"
-          }
+            "prompt": "Which exact change did you personally make, and what file, feature, or test would let someone verify it?",
+            "simpler_prompt": "What change did you make yourself? How could someone check it?",
+            "clarification": "Name your own change and one file, feature, test, or result that could verify it."
+          },
+          "simpler_prompt": "What work did you do yourself? What did you build, design, or test?",
+          "clarification": "Separate your own work from the team's work. Name one thing you personally changed."
         },
         {
           "id": "technical-decision",
@@ -57,12 +69,18 @@
               "guided": "What options did you have, and what made you choose this one?",
               "standard": "If the main constraint changed, what would you reconsider and why?",
               "challenging": "What failure mode or scale limit could invalidate this choice, and how would you test that?"
-            }
+            },
+            "simpler_prompt": "What made you choose this option instead of another one?",
+            "clarification": "Think about one constraint, such as time, complexity, reliability, or resources."
           },
           "contextual_followup": {
             "trigger": "no_reasoning_marker",
-            "prompt": "What constraint or trade-off led you to choose this option over the alternative?"
-          }
+            "prompt": "What constraint or trade-off led you to choose this option over the alternative?",
+            "simpler_prompt": "What made you choose this option instead of another one?",
+            "clarification": "Think about one constraint, such as time, complexity, reliability, or resources."
+          },
+          "simpler_prompt": "What technical choice did you make? What other options did you consider?",
+          "clarification": "Name the choice, one alternative, and the main reason for choosing it."
         },
         {
           "id": "testing-limitations",
@@ -73,12 +91,18 @@
               "guided": "What did you test, what happened, and what is still not checked?",
               "standard": "Tell me about one failure or limitation you found. How did you investigate it, and what would you do next?",
               "challenging": "Which result is strongest evidence that it works, what does that evidence not prove, and what experiment comes next?"
-            }
+            },
+            "simpler_prompt": "Describe one problem or limitation you found. How did you investigate it?",
+            "clarification": "Explain what happened, what evidence you checked, and what you would try next."
           },
           "contextual_followup": {
             "trigger": "no_evidence_marker",
-            "prompt": "What specific test or observation supports your claim, and what does that evidence still not prove?"
-          }
+            "prompt": "What specific test or observation supports your claim, and what does that evidence still not prove?",
+            "simpler_prompt": "What test or observation supports your answer? What does it not prove?",
+            "clarification": "Explain what happened, what evidence you checked, and what you would try next."
+          },
+          "simpler_prompt": "How did you test the project? What did the tests show? What still needs work?",
+          "clarification": "Name one test or observation, its result, and one thing it does not prove."
         }
       ]
     },
@@ -105,12 +129,18 @@
               "guided": "What is one experience that shows the kind of work you enjoy?",
               "standard": "Which experience or project best supports that introduction, and what was your specific contribution?",
               "challenging": "What differentiates your experience from another candidate's, and what evidence can you point to?"
-            }
+            },
+            "simpler_prompt": "Which experience supports what you said? What did you do in it?",
+            "clarification": "Choose one real experience and explain your own contribution."
           },
           "contextual_followup": {
             "trigger": "no_example_marker",
-            "prompt": "Which specific experience best demonstrates one strength you mentioned, and what did you personally do?"
-          }
+            "prompt": "Which specific experience best demonstrates one strength you mentioned, and what did you personally do?",
+            "simpler_prompt": "Which experience shows one strength you mentioned? What did you do?",
+            "clarification": "Choose one real experience and explain your own contribution."
+          },
+          "simpler_prompt": "Tell me about yourself. What kind of role are you preparing for?",
+          "clarification": "Choose a few relevant details about your studies, interests, projects, or experience."
         },
         {
           "id": "teamwork",
@@ -121,12 +151,18 @@
               "guided": "What was the shared goal, and what part did you take responsibility for?",
               "standard": "How did you coordinate when people had different priorities or working styles?",
               "challenging": "Describe a disagreement that changed the plan. How did you reach a decision and what was the outcome?"
-            }
+            },
+            "simpler_prompt": "How did you work with people who had different priorities?",
+            "clarification": "Describe one moment when you had to coordinate, listen, or agree on a decision."
           },
           "contextual_followup": {
             "trigger": "no_first_person_action",
-            "prompt": "What action did you personally take when coordinating with the team, and how did others respond?"
-          }
+            "prompt": "What action did you personally take when coordinating with the team, and how did others respond?",
+            "simpler_prompt": "What did you personally do to help the team work together?",
+            "clarification": "Describe one moment when you had to coordinate, listen, or agree on a decision."
+          },
+          "simpler_prompt": "Tell me about a time you worked with a team. What was your role?",
+          "clarification": "Set the scene briefly, then explain your own action and the shared goal."
         },
         {
           "id": "challenge",
@@ -137,12 +173,18 @@
               "guided": "What happened, what did you do, and what did you learn?",
               "standard": "What would the people involved say you handled well, and what would you change next time?",
               "challenging": "What assumption failed, how did you respond under pressure, and what process change prevents recurrence?"
-            }
+            },
+            "simpler_prompt": "What did you learn, and what would you change next time?",
+            "clarification": "Focus on one lesson you can use in a similar situation."
           },
           "contextual_followup": {
             "trigger": "no_reflection_marker",
-            "prompt": "What did this experience change about how you would approach a similar problem next time?"
-          }
+            "prompt": "What did this experience change about how you would approach a similar problem next time?",
+            "simpler_prompt": "What did you learn, and what would you do differently next time?",
+            "clarification": "Focus on one lesson you can use in a similar situation."
+          },
+          "simpler_prompt": "Tell me about a difficult problem or mistake. What did you do?",
+          "clarification": "Choose a real challenge. Explain the situation, your action, and what happened."
         },
         {
           "id": "motivation",
@@ -153,12 +195,18 @@
               "guided": "What interests you about this role, and what would you like to learn?",
               "standard": "What have you done so far to understand the role or build the skills it needs?",
               "challenging": "Which part of the role will be most challenging for you initially, and what is your concrete plan to close that gap?"
-            }
+            },
+            "simpler_prompt": "What have you done to learn about this role or build its skills?",
+            "clarification": "Mention one concrete step, such as a project, course, conversation, or practice task."
           },
           "contextual_followup": {
             "trigger": "no_preparation_marker",
-            "prompt": "What have you already done to learn about this role, and what did that teach you?"
-          }
+            "prompt": "What have you already done to learn about this role, and what did that teach you?",
+            "simpler_prompt": "What have you done to learn about this role? What did you learn?",
+            "clarification": "Mention one concrete step, such as a project, course, conversation, or practice task."
+          },
+          "simpler_prompt": "Why do you want this role? What would you like to learn?",
+          "clarification": "Connect the role to your interests and name one skill you want to develop."
         }
       ]
     },
@@ -185,12 +233,18 @@
               "guided": "Can you give a small example of each structure and how you would use it?",
               "standard": "What is the cost of accessing an element by index in each structure, and why?",
               "challenging": "How do insertion patterns and memory locality affect the choice between these structures?"
-            }
+            },
+            "simpler_prompt": "Can you give a small example of each structure?",
+            "clarification": "Use a short list of values and describe how you would read or insert one value."
           },
           "contextual_followup": {
             "trigger": "no_example_marker",
-            "prompt": "Can you illustrate both structures with a small operation and explain what happens step by step?"
-          }
+            "prompt": "Can you illustrate both structures with a small operation and explain what happens step by step?",
+            "simpler_prompt": "Can you show a small example of each structure?",
+            "clarification": "Use a short list of values and describe how you would read or insert one value."
+          },
+          "simpler_prompt": "How are arrays and linked lists different? When would you use each?",
+          "clarification": "Compare how each structure stores items and how you access an item."
         },
         {
           "id": "http-api",
@@ -201,12 +255,18 @@
               "guided": "Can you describe the request and response using a simple example?",
               "standard": "Where would you investigate first if the request returns a 500 response, and what evidence would you inspect?",
               "challenging": "How would you distinguish a client error, server error, network failure, and timeout in an investigation?"
-            }
+            },
+            "simpler_prompt": "Can you walk through one request and response step by step?",
+            "clarification": "Name the route, the work the server does, and the response the browser receives."
           },
           "contextual_followup": {
             "trigger": "no_sequence_marker",
-            "prompt": "Can you trace one request from the browser through the API and back, naming the main steps?"
-          }
+            "prompt": "Can you trace one request from the browser through the API and back, naming the main steps?",
+            "simpler_prompt": "Can you trace one request from the browser to the API and back?",
+            "clarification": "Name the route, the work the server does, and the response the browser receives."
+          },
+          "simpler_prompt": "What happens after a browser sends a request to an API?",
+          "clarification": "Trace the request from the browser to the server and then back to the browser."
         },
         {
           "id": "database",
@@ -217,12 +277,18 @@
               "guided": "Can you explain what the index stores and why that helps a lookup?",
               "standard": "Why might an index fail to improve a particular query, or even make writes slower?",
               "challenging": "How would you use a query plan to decide whether an index is useful, and what would you measure?"
-            }
+            },
+            "simpler_prompt": "Why might an index not help a query or make writes slower?",
+            "clarification": "Think about query shape, extra storage, and the work needed when data changes."
           },
           "contextual_followup": {
             "trigger": "no_tradeoff_marker",
-            "prompt": "What cost does an index introduce, and when might that cost outweigh faster reads?"
-          }
+            "prompt": "What cost does an index introduce, and when might that cost outweigh faster reads?",
+            "simpler_prompt": "What is one cost of using an index?",
+            "clarification": "Think about query shape, extra storage, and the work needed when data changes."
+          },
+          "simpler_prompt": "What does a database index do? What is one downside?",
+          "clarification": "Explain how an index helps a lookup and what extra work it creates."
         },
         {
           "id": "operating-systems",
@@ -233,12 +299,18 @@
               "guided": "Can you give an example of work that belongs to a process and work that belongs to a thread?",
               "standard": "What kinds of problems can occur when threads share mutable data, and how can a program reduce that risk?",
               "challenging": "Compare a lock and message passing for coordinating concurrent work. What trade-offs would guide your choice?"
-            }
+            },
+            "simpler_prompt": "Can you give a program example of a process and a thread?",
+            "clarification": "Use one application and describe which work runs together and which memory is shared."
           },
           "contextual_followup": {
             "trigger": "no_example_marker",
-            "prompt": "Can you give a concrete program example showing what belongs to a process and what belongs to a thread?"
-          }
+            "prompt": "Can you give a concrete program example showing what belongs to a process and what belongs to a thread?",
+            "simpler_prompt": "Can you show a simple example of a process and a thread?",
+            "clarification": "Use one application and describe which work runs together and which memory is shared."
+          },
+          "simpler_prompt": "How is a process different from a thread? Give an example.",
+          "clarification": "Explain what a process owns and what threads inside it share."
         }
       ]
     }
