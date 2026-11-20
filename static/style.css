@@ -168,8 +168,12 @@ footer { border-top:1px solid var(--line); border-bottom:0; color:var(--muted); 
 .career-prompt { font-size:1.35rem; line-height:1.5; margin:1.1rem 0; }
 .career-voice-actions { justify-content:flex-start; flex-wrap:wrap; margin:1rem 0; }
 #career-answer { display:block; width:100%; min-height:150px; resize:vertical; background:#101010; color:var(--text); border:1px solid #484848; border-radius:8px; padding:.85rem; font:inherit; }
-.career-review-notes { display:grid; gap:1rem; margin:1.2rem 0; }
+.career-review-notes,.career-attempt-comparison { display:grid; gap:1rem; margin:1.2rem 0; }
 .career-review-card h4 { margin:.6rem 0; line-height:1.4; }
+.career-comparison-card { border:1px solid var(--line); border-radius:10px; background:var(--raised); padding:1rem; overflow-wrap:anywhere; }
+.career-comparison-card .meta-label { display:block; margin-top:.8rem; }
+.career-prompt-help-actions { justify-content:flex-start; flex-wrap:wrap; margin:.5rem 0; }
+.career-coaching { margin-top:1rem; }
 .career-answer-quote { margin:.8rem 0; padding:.8rem 1rem; border-left:2px solid var(--accent); background:#20221a; color:var(--text); overflow-wrap:anywhere; }
 .career-check { border-top:1px solid var(--line); padding:.8rem 0 .2rem; }
 .career-check strong { font-size:.88rem; }
