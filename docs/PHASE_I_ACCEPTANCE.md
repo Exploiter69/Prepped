@@ -41,6 +41,7 @@
 ## Automated verification added
 
 - `tests/test_career.py`: contextual cue selection versus difficulty fallback; authored contextual prompt validation; simpler-prompt persistence; retry comparison; answer-specific coaching structure and absence of an aggregate score.
+- `tests/test_browser_acceptance.py`: Career and Project Practice TTS cancellation; Career and Project Practice STT cancellation; prompt-hint/simpler-wording controls; retry comparison rendering; adaptive-plan handoff.
 - `tests/test_voice.py`: browser voice source exposes abortable TTS/STT request controllers.
 - `tests/test_browser_acceptance.py`: Career prompt synthesis is aborted on navigation; Project Practice prompt synthesis is aborted on navigation; completed Career review can add the next practice to the existing adaptive plan.
 - Existing browser tests continue to cover deferred microphone permission cancellation and stream cleanup in Learning and Career.
