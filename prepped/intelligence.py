@@ -533,8 +533,21 @@ def create_intelligence_router(db_path: Path, curriculum_path: Path = DEFAULT_CU
         with connect_database(Path(db_path)) as conn:
             return _overview(conn, data())
 
+    @router.get("/catalog")
+    def activity_catalog() -> dict[str, Any]:
+        curriculum = data()
+        return {
+            "lessons": [{"id": item["id"], "title": item["title"],
+                         "estimated_minutes": item.get("estimated_minutes", 8)}
+                        for item in curriculum["lessons"] if item.get("kind") != "diagnostic"],
+            "career_studios": [{"id": key, "title": key.replace("-", " ").title()}
+                               for key in STUDIO_SKILLS],
+            "project_practice": {"id": "project-explanation", "title": "Project explanation practice"},
+        }
+
     @router.get("/plan")
-    def daily_plan(plan_date: date = Query(default_factory=date.today)) -> dict[str, Any]:
+    def daily_plan(plan_date: date | None = Query(default=None)) -> dict[str, Any]:
+        plan_date = plan_date or date.today()
         with connect_database(Path(db_path)) as conn:
             row = conn.execute("SELECT * FROM adaptive_plans WHERE plan_date=?", (plan_date.isoformat(),)).fetchone()
             return {"plan": _plan_view(conn, row) if row else None, "plan_date": plan_date.isoformat()}
@@ -554,7 +567,8 @@ def create_intelligence_router(db_path: Path, curriculum_path: Path = DEFAULT_CU
             return {"plan": result}
 
     @router.get("/plan/week")
-    def weekly_plan(week_start: date = Query(default_factory=lambda: date.today() - timedelta(days=date.today().weekday()))) -> dict[str, Any]:
+    def weekly_plan(week_start: date | None = Query(default=None)) -> dict[str, Any]:
+        week_start = week_start or (date.today() - timedelta(days=date.today().weekday()))
         if week_start.weekday() != 0:
             raise HTTPException(status_code=422, detail="Choose a Monday as the start of the learning week.")
         with connect_database(Path(db_path)) as conn:
