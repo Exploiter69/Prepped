@@ -2,7 +2,7 @@
   "use strict";
   const $ = (selector) => document.querySelector(selector);
   const viewIds = ["home-view", "practice-view", "feedback-view", "history-view", "learning-view", "career-view", "progress-view"];
-  const state = { overview: null, editingGoalId: null, archivedVisible: false, dismissedVisible: false };
+  const state = { overview: null, editingGoalId: null, archivedVisible: false, dismissedVisible: false, dismissedCount: 0 };
 
   async function request(url, options = {}) {
     const response = await fetch(url, options);
@@ -254,6 +254,7 @@
     }
     if (!items.length) target.append(node("p", "progress-empty", "No suggested next steps right now. Your saved work remains available from Learning, Career, and History."));
     const dismissedTarget = $("#progress-dismissed-recommendations");
+    state.dismissedCount = dismissed.length;
     dismissedTarget.replaceChildren();
     dismissedTarget.classList.toggle("hidden", !state.dismissedVisible);
     $("#progress-dismissed-toggle").textContent = (state.dismissedVisible ? "Hide dismissed suggestions (" : "Show dismissed suggestions (") + dismissed.length + ")";
@@ -392,6 +393,11 @@
   $("#progress-refresh")?.addEventListener("click", load);
   $("#progress-dismissed-toggle")?.addEventListener("click", () => {
     state.dismissedVisible = !state.dismissedVisible;
+    const target = $("#progress-dismissed-recommendations");
+    const toggle = $("#progress-dismissed-toggle");
+    target?.classList.toggle("hidden", !state.dismissedVisible);
+    toggle?.setAttribute("aria-expanded", String(state.dismissedVisible));
+    toggle.textContent = (state.dismissedVisible ? "Hide dismissed suggestions (" : "Show dismissed suggestions (") + state.dismissedCount + ")";
     if (state.overview) load();
   });
   $("#progress-home")?.addEventListener("click", () => { for (const id of viewIds) $("#" + id)?.classList.toggle("hidden", id !== "home-view"); $("#progress-toggle")?.setAttribute("aria-expanded", "false"); });
