@@ -27,7 +27,7 @@ Expected:
 - The complete test suite passes. The Playwright browser tests exercise profile open/save/edit/cancel/reload, the text-only practice journey, and the Phase B–F learner flows in Chromium. The profile unit tests also assert the served page's accessible toggle/form contract. CI installs the optional browser-test extra and Chromium; the application itself does not require Playwright. Record the exact pass/skip count and any warnings.
 - A skipped real-model integration test is recorded as skipped, not passed.
 
-Latest full-suite Chromium CI acceptance: [run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798) — 100 passed, 2 skipped, 1 warning. The skips require `espeak-ng`, unavailable on the hosted runner. CI runs on pushes to `feature/**` and pull requests targeting `feature/learner-profile` or `main`. A green CI run is evidence for the checked commit only.
+Latest full-suite Chromium CI acceptance: [run 44655380427](https://github.com/Exploiter69/Prepped/actions/runs/44655380427) — 100 passed, 2 skipped, 1 warning. The skips require `espeak-ng`, unavailable on the hosted runner. CI runs on pushes to `feature/**` and pull requests targeting `feature/learner-profile` or `main`. A green CI run is evidence for the checked commit only.
 
 ## 2. Learner profile — browser acceptance
 
@@ -310,7 +310,7 @@ Use a disposable database. Automated Chromium coverage does not replace checking
 
 ### Phase E automated evidence
 
-- [x] Current full-suite GitHub Actions covers Phase E: [run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798) — 100 passed, 2 skipped, 1 warning.
+- [x] Current full-suite GitHub Actions covers Phase E: [run 44655380427](https://github.com/Exploiter69/Prepped/actions/runs/44655380427) — 100 passed, 2 skipped, 1 warning.
 - [ ] Complete the manual target-laptop checks above. CI does not prove microphone permission, live transcription quality, local TTS availability, or device-specific responsive behaviour.
 
 
@@ -363,15 +363,15 @@ Use a disposable database. Automated Chromium coverage does not replace checking
 
 ### Phase F automated evidence
 
-- [x] GitHub Actions passes on current Phase A–F implementation commit: [run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798) — 100 passed, 2 skipped, 1 warning; pip-audit, Python compilation, all JavaScript syntax checks, API tests, and Chromium browser acceptance passed.
+- [x] GitHub Actions passes on current Phase A–F implementation commit: [run 44655380427](https://github.com/Exploiter69/Prepped/actions/runs/44655380427) — 100 passed, 2 skipped, 1 warning; pip-audit, Python compilation, all JavaScript syntax checks, API tests, and Chromium browser acceptance passed.
 - [ ] API tests cover all progress counters/goals, baseline exclusion, recommendation reasons, complete backup table coverage including dismissed recommendation preferences, round-trip restore, invalid backup rollback, size limits, readiness, Host/Origin checks, and security headers.
-- [x] Browser tests cover Progress navigation, immediate dismissed-suggestion expansion, goal create/edit/archive/restore, backup download/restore, and cross-workspace navigation (run 44653868798).
+- [x] Browser tests cover Progress navigation, immediate dismissed-suggestion expansion, goal create/edit/archive/restore, backup download/restore, and cross-workspace navigation (run 44655380427).
 - [ ] Complete the manual target-laptop checks above. CI does not prove fresh-install operation on the user's device, microphone permission, speech recognition quality, TTS output, screen-reader behaviour, or device-specific responsive layout.
 
 
 ## Pre-Phase-G sign-off record
 
-**Automated evidence (2026-11-20):** [GitHub Actions run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798) — 100 passed, 2 skipped, 1 warning. The two skips require `espeak-ng`, unavailable on the hosted runner. Dependency audit, Python compilation, all JavaScript syntax checks, API tests, and Chromium browser acceptance passed.
+**Automated evidence (2026-11-20):** [GitHub Actions run 44655380427](https://github.com/Exploiter69/Prepped/actions/runs/44655380427) — 100 passed, 2 skipped, 1 warning. The two skips require `espeak-ng`, unavailable on the hosted runner. Dependency audit, Python compilation, all JavaScript syntax checks, API tests, and Chromium browser acceptance passed.
 
 **Manual target-laptop evidence:** not yet recorded. Leave the relevant boxes unchecked until each check is actually performed on the target Omarchy laptop. Do not treat CI as microphone, audio-device, screen-reader, contrast, or responsive acceptance.
 
