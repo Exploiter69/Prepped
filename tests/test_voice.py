@@ -281,6 +281,9 @@ def test_frontend_serves_voice_controls_and_script(tmp_path: Path) -> None:
         assert "permissionPending" in script.text
         assert "requestGeneration !== state.generation" in script.text
         assert "const requestGeneration = state.generation" in script.text
+        assert "state.transcriptionController?.abort()" in script.text
+        assert "state.ttsController?.abort()" in script.text
+        assert "signal: controller.signal" in script.text
     finally:
         client.__exit__(None, None, None)
 
