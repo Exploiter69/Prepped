@@ -409,3 +409,12 @@ Learning and Career recording now invalidate pending microphone permission reque
 ## Remaining product acceptance
 
 Phase A–G manual target-laptop checks remain open, including microphone/STT/TTS, recovery rehearsal, keyboard/screen-reader review, contrast, and narrow-screen behaviour. Phase H needs its own manual review after CI. The student usability pilot has not been run; no learning-gain or placement-outcome claims are made.
+
+
+## UI Stage 3 — Practice Room redesign (implementation added; acceptance pending)
+
+The Project Explanation Practice Room now has a focused voice-and-text practice layout: clearer prompt hierarchy, accessible question progress, optional spoken prompt playback, microphone capture with a live-only waveform visualizer, recording timer, editable transcript draft state, persistent text fallback, and an expandable explanation of voice/data handling. The visualizer reads the active microphone stream in the browser through Web Audio when available; it does not record, transmit, or persist additional audio. If Web Audio is unavailable, it uses a restrained CSS activity fallback. The review screen has a clearer reflection header while retaining the existing evidence-based notes, transparent checklist, attempt comparison, memory handoff, retry, history and deletion flows.
+
+No API, database schema, curriculum, voice provider, or runtime dependency changed. Existing microphone permission, stale-request cancellation, STT abort, raw-audio non-persistence, Groq disclosure, and text fallback behaviour are retained.
+
+Automated browser coverage was added for progress semantics, editable draft state, text-first completion, and visualizer activation/cleanup. Exact-commit CI and target-laptop visual/accessibility acceptance must be recorded before this stage is considered accepted. See [UI_STAGE_3_ACCEPTANCE.md](UI_STAGE_3_ACCEPTANCE.md).
