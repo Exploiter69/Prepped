@@ -196,6 +196,11 @@
             </div>
             <p class="section-help">Plans combine due learner-saved revisions, a suitable lesson, and optional interview practice. You can add a different lesson or activity, reorder items, or skip suggestions. Items complete only when the linked activity is saved.</p>
             <div id="intelligence-plan-items" class="progress-list"></div>
+            <div class="intelligence-plan-controls">
+              <div><label for="intelligence-add-type">Activity type</label><select id="intelligence-add-type"><option value="lesson">Lesson</option><option value="career_practice">Interview practice</option><option value="project_practice">Project practice</option></select></div>
+              <div><label for="intelligence-add-target">Choose activity</label><select id="intelligence-add-target"></select></div>
+              <button id="intelligence-add-activity" class="button button-quiet" type="button">Add selected activity</button>
+            </div>
           </section>
           <section class="intelligence-plan" aria-labelledby="intelligence-week-title"><h4 id="intelligence-week-title">Weekly plan</h4><p class="section-help">A seven-day view with no background jobs or notifications. Each day keeps its own time budget.</p><div id="intelligence-week" class="intelligence-week"></div></section>
           <section class="intelligence-plan" aria-labelledby="intelligence-analytics-title"><h4 id="intelligence-analytics-title">Thirty-day activity history</h4><p class="section-help">Saved events and reviews over time, not a learning-gain chart.</p><div id="intelligence-activity" class="progress-week"></div></section>
