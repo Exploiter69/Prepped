@@ -1,7 +1,7 @@
 (() => {
   "use strict";
   const $ = (selector) => document.querySelector(selector);
-  const state = { overview: null, plan: null, week: null, dismissed: [], loading: false };
+  const state = { overview: null, plan: null, week: null, dismissed: [], catalog: null, loading: false };
 
   async function request(url, options = {}) {
     const response = await fetch(url, {
@@ -191,33 +191,7 @@
       row.append(details, actions);
       target.append(row);
     });
-    const addRow = node("div", undefined, "intelligence-plan-item");
-    const select = node("select");
-    select.setAttribute("aria-label", "Choose an activity to add");
-    [
-      ["", "Add another activity…"],
-      ["lesson", "Choose a lesson"],
-      ["career_practice", "Interview practice"],
-      ["project_practice", "Project explanation practice"],
-    ].forEach(([value, label]) => {
-      const option = node("option", label);
-      option.value = value;
-      select.append(option);
-    });
-    const add = node("button", "Add", "button button-secondary");
-    add.type = "button";
-    add.addEventListener("click", async () => {
-      if (!select.value) return;
-      if (select.value === "lesson") {
-        const lessonId = window.prompt("Enter a lesson ID from the Learning workspace:");
-        if (lessonId) await addPlanItem(select.value, lessonId);
-      } else if (select.value === "career_practice") {
-        const studio = window.prompt("Enter studio ID: project-explanation, hr-behavioural, or technical-fundamentals");
-        if (studio) await addPlanItem(select.value, studio);
-      } else await addPlanItem(select.value, "project-explanation");
-    });
-    addRow.append(select, add);
-    target.append(addRow);
+
   }
 
   function renderWeek(week) {
@@ -254,6 +228,20 @@
     }
   }
 
+  function renderAddActivityOptions() {
+    const type = $("#intelligence-add-type");
+    const target = $("#intelligence-add-target");
+    if (!type || !target || !state.catalog) return;
+    target.replaceChildren();
+    const values = type.value === "lesson" ? state.catalog.lessons :
+      type.value === "career_practice" ? state.catalog.career_studios : [state.catalog.project_practice];
+    for (const item of values) {
+      const option = node("option", item.title);
+      option.value = item.id;
+      target.append(option);
+    }
+  }
+
   async function loadPlan(targetDate = $("#intelligence-plan-date").value) {
     const planDate = targetDate || localDate();
     const result = await request("/api/intelligence/plan?plan_date=" + encodeURIComponent(planDate));
@@ -271,11 +259,14 @@
     state.loading = true;
     setStatus("Updating evidence…");
     try {
-      const [overview, dismissed] = await Promise.all([
+      const [overview, dismissed, catalog] = await Promise.all([
         request("/api/intelligence/overview"),
         request("/api/progress/recommendations/dismissed"),
+        request("/api/intelligence/catalog"),
       ]);
       state.overview = overview;
+      state.catalog = catalog;
+      renderAddActivityOptions();
       state.dismissed = dismissed.recommendations.filter(item =>
         ["lesson", "review_memory", "career_practice", "project_practice"].includes(item.kind));
       renderSummary(overview.summary);
@@ -392,6 +383,12 @@
     }
     if (item.item_type === "career_practice" || item.item_type === "project_practice") {
       $("#career-toggle")?.click();
+      const studioId = item.item_type === "project_practice" ? "project-explanation" : item.target_id;
+      const studioTitle = studioId.replaceAll("-", " ").toLowerCase();
+      const card = await waitFor(() => [...document.querySelectorAll(".career-studio-card")].find(
+        element => element.textContent.toLowerCase().includes(studioTitle)
+      ));
+      card?.querySelector("button")?.click();
       return;
     }
     openLearning();
@@ -401,7 +398,10 @@
     found?.click();
   }
 
-  function openLearning() { $("#learning-toggle")?.click(); }
+  function openLearning() {
+    $("#learning-toggle")?.click();
+    window.setTimeout(() => $("#memory-view")?.scrollIntoView({ behavior: "smooth", block: "start" }), 250);
+  }
 
   async function waitFor(callback) {
     for (let index = 0; index < 180; index += 1) {
@@ -412,6 +412,12 @@
     return null;
   }
 
+  $("#intelligence-add-type")?.addEventListener("change", renderAddActivityOptions);
+  $("#intelligence-add-activity")?.addEventListener("click", () => {
+    const type = $("#intelligence-add-type").value;
+    const target = $("#intelligence-add-target").value;
+    if (type && target) addToPlan(type, target);
+  });
   $("#intelligence-generate-day")?.addEventListener("click", generateDay);
   $("#intelligence-generate-week")?.addEventListener("click", generateWeek);
   $("#intelligence-plan-date")?.addEventListener("change", async () => {
