@@ -225,6 +225,22 @@ def test_active_practice_goal_influences_recommendations_and_daily_plan(tmp_path
         client.__exit__(None, None, None)
 
 
+def test_manual_plan_addition_cannot_exceed_available_time(tmp_path: Path) -> None:
+    client = client_for(tmp_path / "intelligence-budget.sqlite3")
+    try:
+        target = date.today().isoformat()
+        created = client.post("/api/intelligence/plan/generate", json={
+            "plan_date": target, "available_minutes": 5,
+        })
+        assert created.status_code == 200
+        rejected = client.post("/api/intelligence/plan/items", json={
+            "plan_date": target, "item_type": "career_practice", "target_id": "hr-behavioural",
+        })
+        assert rejected.status_code == 422
+    finally:
+        client.__exit__(None, None, None)
+
+
 def test_adaptive_recommendations_can_be_dismissed_and_restored(tmp_path: Path) -> None:
     client = client_for(tmp_path / "intelligence-dismiss.sqlite3")
     try:
