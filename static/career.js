@@ -122,6 +122,8 @@
   }
   function renderReview(feedback) {
     $("#career-review-disclaimer").textContent = feedback.disclaimer;
+    $("#career-add-plan").disabled = false;
+    $("#career-add-plan").textContent = "Add next practice to today's plan";
     const notes = $("#career-review-notes");
     notes.replaceChildren();
     for (const note of feedback.notes) {
@@ -203,19 +205,32 @@
           body: JSON.stringify({ plan_date: planDate, available_minutes: 30 }),
         })).plan;
       }
-      const alreadyAdded = plan.items.some(item =>
-        item.item_type === "career_practice" && item.target_id === state.session.studio_id && item.status !== "skipped"
+      const existing = plan.items.find(item =>
+        item.item_type === "career_practice" && item.target_id === state.session.studio_id
       );
-      if (!alreadyAdded) {
+      let outcome = "added";
+      if (existing?.status === "skipped") {
+        await api("/api/intelligence/plan/items/" + existing.id, {
+          method: "PATCH",
+          body: JSON.stringify({ skipped: false }),
+        });
+        outcome = "restored";
+      } else if (existing) {
+        outcome = "already-present";
+      } else {
         await api("/api/intelligence/plan/items", {
           method: "POST",
           body: JSON.stringify({ plan_date: planDate, item_type: "career_practice", target_id: state.session.studio_id }),
         });
       }
-      status(alreadyAdded
+      status(outcome === "already-present"
         ? "This studio is already in today's plan."
-        : "Added a new " + state.session.studio_title + " practice to today's plan. Complete a new session to finish it.");
-      button.textContent = alreadyAdded ? "Already in today's plan" : "Added to today's plan";
+        : outcome === "restored"
+          ? "Restored this studio to today's plan. Complete a new session to finish it."
+          : "Added a new " + state.session.studio_title + " practice to today's plan. Complete a new session to finish it.");
+      button.textContent = outcome === "already-present"
+        ? "Already in today's plan"
+        : outcome === "restored" ? "Restored to today's plan" : "Added to today's plan";
     } catch (error) {
       status(error.message + " You can add this studio from the Progress plan instead.", true);
       button.textContent = original;
