@@ -612,7 +612,9 @@ def test_career_interview_can_resume_at_saved_followup(local_app_url: str, brows
     page.wait_for_function(
         "() => document.querySelector('#career-turn-label').textContent.includes('FOLLOW-UP')"
     )
-    assert "which experience or project" in page.locator("#career-prompt-title").inner_text().lower()
+    resumed_prompt = page.locator("#career-prompt-title").inner_text().lower()
+    assert resumed_prompt.startswith("which specific experience")
+    assert "strength you mentioned" in resumed_prompt
 
 
 def test_progress_goals_and_backup_restore_in_browser(local_app_url: str, browser_page, tmp_path: Path) -> None:
@@ -999,13 +1001,18 @@ def _recording_and_deferred_transcription_script(signal_name: str) -> str:
         value: async () => ({{ getTracks: () => [{{ stop() {{}} }}] }})
       }});
       window.MediaRecorder = class {{
-        constructor() {{ this.state = "inactive"; this.mimeType = "audio/webm"; }}
+        constructor() {{ this.state = "inactive"; this.mimeType = "audio/webm"; this.listeners = {{}}; }}
         static isTypeSupported() {{ return true; }}
+        addEventListener(name, callback) {{ (this.listeners[name] ||= []).push(callback); }}
+        dispatch(name, event = {{}}) {{
+          for (const callback of this.listeners[name] || []) callback(event);
+          this["on" + name]?.(event);
+        }}
         start() {{ this.state = "recording"; }}
         stop() {{
           this.state = "inactive";
-          this.ondataavailable?.({{ data: new Blob(["captured-audio"], {{ type: "audio/webm" }}) }});
-          this.onstop?.();
+          this.dispatch("dataavailable", {{ data: new Blob(["captured-audio"], {{ type: "audio/webm" }}) }});
+          this.dispatch("stop");
         }}
       }};
       const originalFetch = window.fetch.bind(window);
