@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "studios": [
     {
       "id": "project-explanation",
@@ -26,6 +26,10 @@
               "standard": "What is one concrete user journey that shows the problem and how your project addresses it?",
               "challenging": "What evidence supports the problem being worth solving, and what alternative solution did you reject?"
             }
+          },
+          "contextual_followup": {
+            "trigger": "no_example_marker",
+            "prompt": "Can you walk me through one specific user journey, from the user's problem to what they do in your project?"
           }
         },
         {
@@ -38,6 +42,10 @@
               "standard": "Pick one part you personally implemented. What did you change, and how can someone verify it?",
               "challenging": "What was the hardest engineering decision in your contribution, and how would you defend it in a code review?"
             }
+          },
+          "contextual_followup": {
+            "trigger": "no_first_person_action",
+            "prompt": "Which exact change did you personally make, and what file, feature, or test would let someone verify it?"
           }
         },
         {
@@ -50,6 +58,10 @@
               "standard": "If the main constraint changed, what would you reconsider and why?",
               "challenging": "What failure mode or scale limit could invalidate this choice, and how would you test that?"
             }
+          },
+          "contextual_followup": {
+            "trigger": "no_reasoning_marker",
+            "prompt": "What constraint or trade-off led you to choose this option over the alternative?"
           }
         },
         {
@@ -62,6 +74,10 @@
               "standard": "Tell me about one failure or limitation you found. How did you investigate it, and what would you do next?",
               "challenging": "Which result is strongest evidence that it works, what does that evidence not prove, and what experiment comes next?"
             }
+          },
+          "contextual_followup": {
+            "trigger": "no_evidence_marker",
+            "prompt": "What specific test or observation supports your claim, and what does that evidence still not prove?"
           }
         }
       ]
@@ -90,6 +106,10 @@
               "standard": "Which experience or project best supports that introduction, and what was your specific contribution?",
               "challenging": "What differentiates your experience from another candidate's, and what evidence can you point to?"
             }
+          },
+          "contextual_followup": {
+            "trigger": "no_example_marker",
+            "prompt": "Which specific experience best demonstrates one strength you mentioned, and what did you personally do?"
           }
         },
         {
@@ -102,6 +122,10 @@
               "standard": "How did you coordinate when people had different priorities or working styles?",
               "challenging": "Describe a disagreement that changed the plan. How did you reach a decision and what was the outcome?"
             }
+          },
+          "contextual_followup": {
+            "trigger": "no_first_person_action",
+            "prompt": "What action did you personally take when coordinating with the team, and how did others respond?"
           }
         },
         {
@@ -114,6 +138,10 @@
               "standard": "What would the people involved say you handled well, and what would you change next time?",
               "challenging": "What assumption failed, how did you respond under pressure, and what process change prevents recurrence?"
             }
+          },
+          "contextual_followup": {
+            "trigger": "no_reflection_marker",
+            "prompt": "What did this experience change about how you would approach a similar problem next time?"
           }
         },
         {
@@ -126,6 +154,10 @@
               "standard": "What have you done so far to understand the role or build the skills it needs?",
               "challenging": "Which part of the role will be most challenging for you initially, and what is your concrete plan to close that gap?"
             }
+          },
+          "contextual_followup": {
+            "trigger": "no_preparation_marker",
+            "prompt": "What have you already done to learn about this role, and what did that teach you?"
           }
         }
       ]
@@ -154,6 +186,10 @@
               "standard": "What is the cost of accessing an element by index in each structure, and why?",
               "challenging": "How do insertion patterns and memory locality affect the choice between these structures?"
             }
+          },
+          "contextual_followup": {
+            "trigger": "no_example_marker",
+            "prompt": "Can you illustrate both structures with a small operation and explain what happens step by step?"
           }
         },
         {
@@ -166,6 +202,10 @@
               "standard": "Where would you investigate first if the request returns a 500 response, and what evidence would you inspect?",
               "challenging": "How would you distinguish a client error, server error, network failure, and timeout in an investigation?"
             }
+          },
+          "contextual_followup": {
+            "trigger": "no_sequence_marker",
+            "prompt": "Can you trace one request from the browser through the API and back, naming the main steps?"
           }
         },
         {
@@ -178,6 +218,10 @@
               "standard": "Why might an index fail to improve a particular query, or even make writes slower?",
               "challenging": "How would you use a query plan to decide whether an index is useful, and what would you measure?"
             }
+          },
+          "contextual_followup": {
+            "trigger": "no_tradeoff_marker",
+            "prompt": "What cost does an index introduce, and when might that cost outweigh faster reads?"
           }
         },
         {
@@ -190,6 +234,10 @@
               "standard": "What kinds of problems can occur when threads share mutable data, and how can a program reduce that risk?",
               "challenging": "Compare a lock and message passing for coordinating concurrent work. What trade-offs would guide your choice?"
             }
+          },
+          "contextual_followup": {
+            "trigger": "no_example_marker",
+            "prompt": "Can you give a concrete program example showing what belongs to a process and what belongs to a thread?"
           }
         }
       ]
