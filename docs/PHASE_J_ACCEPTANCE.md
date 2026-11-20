@@ -41,7 +41,7 @@ No learner study has been run and no learning gain is claimed. The protocol in [
 
 - [ ] `python -m prepped.content_lint` passes on the exact commit.
 - [ ] Full pytest, Python compilation, JavaScript syntax checks, and GitHub Actions pass on the exact commit.
-- [ ] Exercise-level outcomes, inherited context/prerequisites, and effort estimates are checked as part of the lesson review record.
+- [x] All 49 exercises declare a task-specific outcome, bounded effort estimate, and inherited lesson skill/source context; loader validation and regression tests enforce completeness and lesson effort budgets. Exact-commit CI remains required before this automated gate is accepted. Human confirmation that estimates and outcomes are instructionally appropriate remains pending.
 - [ ] Human language/grammar review records reviewer, date, version, corrections, and unresolved disagreements.
 - [ ] Human CS review records reviewer, date, version, corrections, and unresolved disagreements.
 - [ ] Keyboard, screen-reader, contrast, zoom, captions/transcripts, and responsive review is recorded.
