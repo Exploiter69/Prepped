@@ -115,16 +115,52 @@ def create_app(
     @application.middleware("http")
     async def local_security_headers(request, call_next):
         host_header = request.headers.get("host", "")
-        hostname = urlsplit("//" + host_header).hostname
-        loopback_host = hostname in {"127.0.0.1", "localhost", "::1"}
-        in_process_test = hostname == "testserver" and request.client is not None and request.client.host == "testclient"
+        try:
+            parsed_host = urlsplit("//" + host_header)
+            hostname = parsed_host.hostname
+            # Accessing .port validates malformed/out-of-range ports as well.
+            parsed_host.port
+            valid_host_authority = (
+                bool(parsed_host.netloc)
+                and parsed_host.netloc == host_header
+                and parsed_host.username is None
+                and parsed_host.password is None
+                and not parsed_host.path
+                and not parsed_host.query
+                and not parsed_host.fragment
+            )
+        except ValueError:
+            return PlainTextResponse("Invalid local Host header.", status_code=400)
+
+        loopback_host = valid_host_authority and hostname in {"127.0.0.1", "localhost", "::1"}
+        in_process_test = (
+            valid_host_authority
+            and hostname == "testserver"
+            and request.client is not None
+            and request.client.host == "testclient"
+        )
         if not loopback_host and not in_process_test:
             return PlainTextResponse("Prepped accepts local connections only.", status_code=400)
+
         if request.method in {"POST", "PUT", "PATCH", "DELETE"}:
             origin = request.headers.get("origin")
             if origin:
-                parsed_origin = urlsplit(origin)
-                if parsed_origin.scheme not in {"http", "https"} or parsed_origin.netloc.lower() != host_header.lower():
+                try:
+                    parsed_origin = urlsplit(origin)
+                    parsed_origin.port
+                    valid_origin = (
+                        parsed_origin.scheme in {"http", "https"}
+                        and bool(parsed_origin.hostname)
+                        and parsed_origin.username is None
+                        and parsed_origin.password is None
+                        and not parsed_origin.path
+                        and not parsed_origin.query
+                        and not parsed_origin.fragment
+                        and parsed_origin.netloc.lower() == host_header.lower()
+                    )
+                except ValueError:
+                    valid_origin = False
+                if not valid_origin:
                     return PlainTextResponse("Cross-origin state changes are not allowed.", status_code=403)
         response = await call_next(request)
         response.headers.setdefault("X-Content-Type-Options", "nosniff")
