@@ -145,7 +145,6 @@ def _skill_evidence(conn: sqlite3.Connection, curriculum: dict[str, Any], now: d
     evidence: dict[str, list[dict[str, Any]]] = {key: [] for key in skills}
     activity: dict[str, int] = {key: 0 for key in skills}
     objective: dict[str, list[dict[str, Any]]] = {key: [] for key in skills}
-    mistakes: dict[str, dict[tuple[str, str], int]] = {key: {} for key in skills}
 
     attempts = conn.execute(
         "SELECT id,lesson_id,status,lesson_json,responses_json,feedback_json,started_at,completed_at "
@@ -204,10 +203,6 @@ def _skill_evidence(conn: sqlite3.Connection, curriculum: dict[str, Any], now: d
                 evidence[sid].append(event)
                 if exercise_type in CLOSED_EXERCISES and outcome in {"correct", "review"}:
                     objective[sid].append(event)
-                    if outcome == "review":
-                        exid = str(response.get("exercise_id") or "unknown")
-                        mistake_key = (row["lesson_id"], exid)
-                        mistakes[sid][mistake_key] = mistakes[sid].get(mistake_key, 0) + 1
 
     # Learner-approved memory reviews contribute revision activity only when
     # their stored source can be linked unambiguously to a lesson or attempt.
