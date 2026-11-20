@@ -264,6 +264,27 @@ def test_long_memory_front_is_safe_in_adaptive_recommendation_dismissal(tmp_path
         client.__exit__(None, None, None)
 
 
+def test_regeneration_with_smaller_budget_preserves_completed_work_without_overflow(tmp_path: Path) -> None:
+    client = client_for(tmp_path / "intelligence-smaller-budget.sqlite3")
+    try:
+        client.put("/api/profile", json={"primary_goal": "english_fluency"})
+        target = date.today().isoformat()
+        initial = client.post("/api/intelligence/plan/generate", json={
+            "plan_date": target, "available_minutes": 30,
+        }).json()["plan"]
+        lesson = next(item for item in initial["items"] if item["item_type"] == "lesson")
+        complete_sentence_lesson(client, lesson["target_id"])
+        regenerated = client.post("/api/intelligence/plan/generate", json={
+            "plan_date": target, "available_minutes": 5, "regenerate": True,
+        })
+        assert regenerated.status_code == 200, regenerated.text
+        plan = regenerated.json()["plan"]
+        assert plan["available_minutes"] == 5
+        assert next(item for item in plan["items"] if item["id"] == lesson["id"])["status"] == "completed"
+    finally:
+        client.__exit__(None, None, None)
+
+
 def test_due_memory_review_is_included_and_only_real_review_completes_it(tmp_path: Path) -> None:
     db_path = tmp_path / "intelligence-memory-plan.sqlite3"
     client = client_for(db_path)
