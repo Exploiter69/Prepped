@@ -929,6 +929,15 @@ def test_career_review_can_add_next_practice_to_adaptive_plan(local_app_url: str
     assert "first project feature" in comparison_text
     assert "second project feature" in comparison_text
     assert "not a measured improvement" in comparison_text.lower()
+    page.evaluate("""async () => {
+      const now = new Date();
+      const date = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, "0"), String(now.getDate()).padStart(2, "0")].join("-");
+      await fetch("/api/intelligence/plan/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan_date: date, available_minutes: 180 })
+      });
+    }""")
     page.locator("#career-add-plan").click()
     page.wait_for_function(
         """() => document.querySelector('#career-status').textContent.includes("today's plan")"""
