@@ -205,6 +205,26 @@ def test_plan_supports_learner_override_skip_and_reordering(tmp_path: Path) -> N
         client.__exit__(None, None, None)
 
 
+def test_active_practice_goal_influences_recommendations_and_daily_plan(tmp_path: Path) -> None:
+    client = client_for(tmp_path / "intelligence-goal.sqlite3")
+    try:
+        client.put("/api/profile", json={"primary_goal": "english_fluency"})
+        goal = client.post("/api/goals", json={
+            "title": "Practise project explanations", "goal_type": "practice_sessions", "target_count": 3,
+        }).json()["goal"]
+        overview = client.get("/api/intelligence/overview").json()
+        suggestion = next(item for item in overview["recommendations"]
+                          if item["kind"] == "project_practice")
+        assert suggestion["source"] == "active_learner_goal"
+        assert goal["id"] == suggestion["goal_id"]
+        plan = client.post("/api/intelligence/plan/generate", json={
+            "plan_date": date.today().isoformat(), "available_minutes": 60,
+        }).json()["plan"]
+        assert any(item["item_type"] == "project_practice" for item in plan["items"])
+    finally:
+        client.__exit__(None, None, None)
+
+
 def test_adaptive_recommendations_can_be_dismissed_and_restored(tmp_path: Path) -> None:
     client = client_for(tmp_path / "intelligence-dismiss.sqlite3")
     try:
