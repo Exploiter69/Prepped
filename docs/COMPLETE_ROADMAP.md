@@ -188,11 +188,11 @@ Record only the minimum anonymised observations. Do not collect raw audio, names
 
 Also use future validation to check whether students value voice enough to justify further personalisation work. Do not assume it.
 
-## 10. Phase 5 — Personalisation and learning loop (future)
+## 10. Original Phase 5 proposal — Personalisation and learning loop (core scope delivered under B–F)
 
 **Purpose:** move from one-off practice toward a personalised learning platform without turning uncertain model output into learner traits.
 
-Only start after the voice loop is usable and user value is demonstrated.
+This was a research-era future proposal. Its core learner-controlled memory, review, route selection, and progress scope is now implemented across Phases B–F; future expansion remains evidence-gated.
 
 Candidate steps:
 
@@ -206,9 +206,9 @@ Candidate steps:
 
 **Exit gate:** review items are accurate, useful, non-duplicative, and reused. If they are noisy, keep a manual/rules-based list or stop.
 
-## 11. Phase 6 — Second scenario and fluency practice (future)
+## 11. Original Phase 6 proposal — Second scenario and fluency practice (starter scope delivered under C and E)
 
-**Purpose:** prove the scenario/voice layer generalises without becoming a generic platform.
+**Purpose:** prove the scenario/voice layer generalises without becoming a generic platform. The initial communication curriculum and three interview studios now provide the first expansion; broader scenario packs remain future work.
 
 Candidate scenarios:
 
