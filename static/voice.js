@@ -109,11 +109,11 @@
     }
     try {
       const context = new AudioContextClass();
+      state.audioContext = context;
       const analyser = context.createAnalyser();
       analyser.fftSize = 128;
       const source = context.createMediaStreamSource(stream);
       source.connect(analyser);
-      state.audioContext = context;
       state.analyser = analyser;
       state.visualizerSource = source;
       const samples = new Uint8Array(analyser.fftSize);
@@ -141,7 +141,8 @@
       };
       state.visualizerFrame = window.requestAnimationFrame(draw);
     } catch (error) {
-      ui.visualizer.classList.add("is-fallback");
+      stopVisualizer();
+      ui.visualizer.classList.add("is-active", "is-fallback");
     }
   }
 
