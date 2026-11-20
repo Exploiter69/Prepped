@@ -305,6 +305,8 @@
       if (state.stream === stream) state.stream = null;
       if (requestId === state.recordingRequestId) {
         state.recordingPending = false;
+        state.recorder = null;
+        state.chunks = [];
         if (careerRecordingRequestIsCurrent(requestId)) {
           $("#career-voice-status").textContent = (error.message || "Microphone permission was not available.") + " You can type instead.";
         }
