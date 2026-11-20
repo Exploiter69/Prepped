@@ -684,3 +684,62 @@ def test_progress_navigation_and_security_headers_are_accessible(local_app_url: 
     page.locator("#learning-toggle").click()
     assert toggle.get_attribute("aria-expanded") == "false"
     assert page.locator("#learning-view").is_visible()
+
+
+
+def test_keyboard_navigation_exposes_focus_and_profile_labels(local_app_url: str, browser_page) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+
+    # The complete header-to-profile path is reachable without a pointer.
+    page.keyboard.press("Tab")
+    assert page.evaluate("document.activeElement.classList.contains('wordmark')")
+    assert page.evaluate("getComputedStyle(document.activeElement).outlineStyle") == "solid"
+
+    for _ in range(4):
+        page.keyboard.press("Tab")
+    assert page.locator("#history-toggle").evaluate(
+        "(element) => document.activeElement === element"
+    )
+    page.keyboard.press("Tab")
+    assert page.locator("#profile-edit-toggle").evaluate(
+        "(element) => document.activeElement === element"
+    )
+    page.keyboard.press("Enter")
+    assert page.locator("#profile-form").is_visible()
+    assert page.locator("#profile-edit-toggle").get_attribute("aria-expanded") == "true"
+    assert page.locator("#profile-name").evaluate(
+        "(element) => document.activeElement === element"
+    )
+    assert page.get_by_label("Name (optional)").count() == 1
+    assert page.get_by_label("Current study year").count() == 1
+    assert page.get_by_label("Primary learning goal").count() == 1
+
+
+def test_mobile_layout_has_no_horizontal_page_overflow(local_app_url: str, browser_page) -> None:
+    page = browser_page
+    page.set_viewport_size({"width": 375, "height": 812})
+    page.goto(local_app_url)
+
+    def assert_no_horizontal_overflow() -> None:
+        dimensions = page.evaluate(
+            "() => ({width: window.innerWidth, scrollWidth: document.documentElement.scrollWidth})"
+        )
+        assert dimensions["scrollWidth"] <= dimensions["width"], dimensions
+
+    assert_no_horizontal_overflow()
+    page.locator("#learning-toggle").click()
+    page.wait_for_function(
+        "() => document.querySelector('#learning-status').textContent.includes('skills')"
+    )
+    assert_no_horizontal_overflow()
+    page.locator("#career-toggle").click()
+    page.wait_for_function(
+        "() => document.querySelector('#career-status').textContent.toLowerCase().includes('studios')"
+    )
+    assert_no_horizontal_overflow()
+    page.locator("#progress-toggle").click()
+    page.wait_for_function(
+        "() => document.querySelector('#progress-status').textContent.startsWith('Updated')"
+    )
+    assert_no_horizontal_overflow()
