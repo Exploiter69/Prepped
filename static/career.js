@@ -159,6 +159,22 @@
         }}));
       });
       card.append(save);
+      if (note.coaching) {
+        const saveCoaching = make("button", "Save coaching action to learning memory", "button button-quiet");
+        saveCoaching.type = "button";
+        saveCoaching.addEventListener("click", () => {
+          document.dispatchEvent(new CustomEvent("prepped:memory-save", { detail: {
+            item_type: "correction",
+            front: ("Next step for: " + note.prompt).slice(0, 240),
+            back: note.coaching.action,
+            source_type: "career_coaching",
+            source_id: state.session?.id || "",
+            source_title: state.session?.studio_title || "Career coaching",
+            source_excerpt: note.answer,
+          }}));
+        });
+        card.append(saveCoaching);
+      }
       notes.append(card);
     }
     const steps = $("#career-next-steps");
