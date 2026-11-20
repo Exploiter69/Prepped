@@ -370,7 +370,7 @@ def _recommendations(conn: sqlite3.Connection, curriculum: dict[str, Any], skill
     for skill in skills:
         if skill.get("curriculum_status") == "planned":
             continue
-        for prerequisite in skill["prerequisites"]:
+        for prerequisite in skill.get("prerequisites", []):
             prereq_state = by_skill.get(prerequisite)
             if prereq_state and prereq_state["closed_response_count"] == 0:
                 lesson = next((item for item in curriculum["lessons"]
