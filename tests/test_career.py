@@ -149,3 +149,51 @@ def test_difficulty_modes_select_distinct_authored_followups(tmp_path: Path) -> 
     assert "What problem were you trying to solve?" in prompts["guided"]
     assert "user journey" in prompts["standard"].lower() or "concrete user journey" in prompts["standard"].lower()
     assert "evidence" in prompts["challenging"].lower()
+
+
+
+def test_contextual_followup_uses_authored_prompt_when_expected_cue_is_not_detected(tmp_path: Path) -> None:
+    with client_for(tmp_path) as client:
+        session = start(client, "project-explanation", "guided").json()
+        response = client.post(
+            f"/api/career/sessions/{session['id']}/answers",
+            json={"answer_text": "Our project helps students find campus notices in one place."},
+        )
+        assert response.status_code == 200
+        prompt = response.json()["current_prompt"]
+        assert "specific user journey" in prompt["prompt"].lower()
+        assert "example cue was not detected" in prompt["context_note"].lower()
+
+        with_example = start(client, "project-explanation", "guided").json()
+        response = client.post(
+            f"/api/career/sessions/{with_example['id']}/answers",
+            json={"answer_text": "For example, a student opens the feed and finds a current notice."},
+        )
+        assert response.status_code == 200
+        fallback = response.json()["current_prompt"]
+        assert "what problem were you trying to solve" in fallback["prompt"].lower()
+        assert "selected practice level" in fallback["context_note"].lower()
+
+
+def test_career_feedback_has_one_evidence_grounded_coaching_action_per_turn(tmp_path: Path) -> None:
+    with client_for(tmp_path) as client:
+        session = start(client, "project-explanation").json()
+        session_id = session["id"]
+        for index in range(4):
+            first = client.post(
+                f"/api/career/sessions/{session_id}/answers",
+                json={"answer_text": f"I worked on the project feature {index} and helped the team."},
+            )
+            assert first.status_code == 200
+            second = client.post(
+                f"/api/career/sessions/{session_id}/answers",
+                json={"answer_text": "The feature helps students complete a task with fewer steps."},
+            )
+            assert second.status_code == 200
+        feedback = client.get(f"/api/career/sessions/{session_id}/feedback").json()
+        assert len(feedback["notes"]) == 8
+        coaching = feedback["notes"][0]["coaching"]
+        assert "specific example" in coaching["action"].lower()
+        assert "not detected" in coaching["basis"].lower()
+        assert "overall_score" not in feedback
+        assert "rating" not in feedback
