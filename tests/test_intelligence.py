@@ -260,6 +260,11 @@ def test_active_practice_goal_influences_recommendations_and_daily_plan(tmp_path
                           if item["kind"] == "project_practice")
         assert suggestion["source"] == "active_learner_goal"
         assert goal["id"] == suggestion["goal_id"]
+        preference = {key: suggestion[key] for key in ("kind", "target_id", "title", "reason")}
+        assert client.post("/api/intelligence/recommendations/dismiss", json=preference).status_code == 200
+        assert client.post("/api/progress/recommendations/restore", json={
+            "kind": preference["kind"], "target_id": preference["target_id"],
+        }).status_code == 200
         plan = client.post("/api/intelligence/plan/generate", json={
             "plan_date": date.today().isoformat(), "available_minutes": 60,
         }).json()["plan"]
