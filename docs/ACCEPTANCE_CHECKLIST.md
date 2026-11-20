@@ -380,7 +380,7 @@ Use a disposable database. Automated Chromium coverage does not replace checking
 
 ## Phase H automated and manual acceptance
 
-- [ ] Final GitHub Actions run is green for the exact Phase H commit, including Python compilation, seven browser JavaScript syntax checks, pip-audit, API tests, and Chromium browser journeys.
+- [x] Final GitHub Actions run is green: [run 44732997261](https://github.com/Exploiter69/Prepped/actions/runs/44732997261) — 134 passed, 2 optional espeak-ng skips, 1 Starlette warning; Python compilation, seven JavaScript syntax checks, pip-audit, API tests, and Chromium browser journeys passed.
 - [ ] Confirm evidence distinguishes closed-exercise outcomes, open self-review, practice activity, and learner-linked revision; sparse and stale evidence remains cautious.
 - [ ] Confirm repeated review-needed responses, prerequisites, profile routes, due revision, and active goals produce explained next steps.
 - [ ] Confirm daily and weekly plans respect per-day time budgets, avoid duplicate weekly lesson/revision targets, preserve completed/skipped items, and derive completion from saved source activity.
@@ -389,4 +389,4 @@ Use a disposable database. Automated Chromium coverage does not replace checking
 - [ ] On Omarchy, manually inspect evidence labels, Progress layout, plan generation/controls, lesson/interview/project handoffs, keyboard operation, screen-reader announcements, and 375 px layout.
 - [ ] Keep student pilot and learning-outcome claims unreported until actual consented learner validation occurs.
 
-See [Phase H Acceptance](PHASE_H_ACCEPTANCE.md). The recorded green run 44721637341 predates Phase G.1 and Phase H changes; it is not evidence that these new tests pass.
+See [Phase H Acceptance](PHASE_H_ACCEPTANCE.md). The green run 44732997261 covers Phase G.1 and Phase H implementation on commit ba5d4091c3679afe6b261852ca87f2940ba40877. Manual device and learner acceptance remain separate.
