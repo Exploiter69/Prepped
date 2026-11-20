@@ -58,6 +58,16 @@
 - Chromium acceptance covers navigation, goals, backup download/restore, and workspace transitions.
 - Real keyboard-only, screen-reader, contrast, and target-device responsive checks remain manual release gates.
 
+## Phase G implementation notes
+
+- Host and Origin parsing now validates authority syntax, rejects malformed IPv6/ports, user-info, and non-origin path/query/fragment values, and returns controlled 400/403 responses.
+- Backup restore rejects non-finite floating-point values, integers outside SQLite's signed 64-bit range, and excessive JSON nesting before replacing active learner data.
+- Regression tests cover valid local clients, malformed Host/Origin headers, invalid backup numerics, nested JSON, restore rollback, and missing-table readiness.
+- Browser acceptance now includes keyboard-only navigation to the profile form, visible focus, primary form labels, and a 375 px viewport overflow check across Home, Learning, Career, and Progress.
+- The final Phase G CI run and target-device acceptance are tracked in [PHASE_G_ACCEPTANCE.md](PHASE_G_ACCEPTANCE.md).
+
+These are implementation changes, not a completed security audit or target-device sign-off. See the Phase G record for outstanding checks.
+
 ## Claims and non-goals
 
 Prepped does not provide a validated language assessment, pronunciation/accent score, emotion/personality inference, technical correctness grading, recruiter rating, placement probability, or measured learning gains. Progress is based on saved activity and linked lesson evidence only. The student usability pilot has not been run; no results or participant sample are claimed.
