@@ -1,15 +1,15 @@
 # Prepped — Current State
 
-**Updated:** 2026-11-19<br>
+**Updated:** 2026-11-20<br>
 **Source of truth:** GitHub `feature/learner-profile` (working branch; `main` remains the last synced baseline)<br>
 **Product direction:** Voice-first, personalised practice and learning platform for Indian engineering students. The text practice loop is a reliable fallback and is frozen for feature development except material bugs.<br>
-**Engineering stage:** Phase B Learning Engine and Phase C English/Communication curriculum implementations are on the working branch; the latest automated validation must pass before those milestones are called automated-tested. Target-laptop browser, microphone, and live-provider acceptance remain.
+**Engineering stage:** Phases A–F feature implementation is present on `feature/learner-profile`. Latest full GitHub Actions run: [44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798) — **100 passed, 2 skipped, 1 warning**; Python compilation, all six JavaScript syntax checks, dependency audit, and Chromium browser tests passed. The two skips require `espeak-ng`, unavailable on the hosted runner. Target-laptop manual acceptance for the implemented phases remains open; Phase G has not started.
 
-## Foundation acceptance — automated checks and CI passing
+## Foundation and A–F automated verification
 
 - GitHub Actions now runs on `feature/**`, including this working branch, and on pull requests targeting `main` or `feature/learner-profile`.
 - The workflow performs a clean checkout, installs `.[dev,browser-test]`, compiles Python modules, checks both browser JavaScript files, installs Chromium, and runs pytest including the Playwright browser journeys.
-- Latest recorded run: [GitHub Actions run 44534499386](https://github.com/Exploiter69/Prepped/actions/runs/44534499386) — **41 passed, 2 skipped, 1 warning**. Both skips are voice tests requiring `espeak-ng`, which is not installed on the hosted runner. The warning is Starlette's deprecation notice for the httpx-backed TestClient.
+- Latest complete run: [GitHub Actions run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798) — **100 passed, 2 skipped, 1 warning**. Python compilation, all six JavaScript syntax checks, dependency installation, `pip-audit`, Chromium setup, API tests, and browser acceptance all passed. The two skips require `espeak-ng`, unavailable on the hosted runner; the warning is Starlette's httpx-backed TestClient deprecation.
 - A repeatable [Foundation Acceptance Checklist](ACCEPTANCE_CHECKLIST.md) now covers profile setup/edit/cancel/save/reload, existing text practice, optional voice acceptance, and data preservation. Playwright/Chromium browser tests now exercise profile open, save, edit, cancel, reload and persistence, plus the complete text-only practice flow without a profile. These tests passed in CI. The target-laptop browser and voice/microphone checks remain separate manual acceptance.
 - Headless Chromium confirms the profile and text-practice interactions in CI. A manual spot check on the target Omarchy laptop and microphone/STT/TTS acceptance remain outstanding; CI does not establish hardware or device acceptance.
 
@@ -169,7 +169,7 @@ Prepped is a practice prototype, not an official assessment, hiring decision, pl
 
 ---
 
-## Product status and next build sequence (2026-11-19)
+## Product status and next build sequence (2026-11-20)
 
 ### Honest product status
 
@@ -177,24 +177,23 @@ Prepped is **not yet a complete or market-ready learning platform**. It is a loc
 
 The learner profile stores preferences such as goal, study year, branch, confidence, and focus areas. The goal and focus areas now select an explainable starter route through the Learning Engine and English curriculum. They do not infer ability, adapt difficulty, or certify proficiency.
 
-### Not implemented yet
+### Implemented on the working branch
 
-- Career and interview studios with multi-turn follow-ups.
-- Evidence-based skill progress dashboard and goal tracking.
-- Local export, backup and restore.
-- Full release-grade accessibility, security, fresh-install and target-device acceptance.
+- **A — Foundation:** profile, original practice loop, and bounded voice record/stop slice.
+- **B — Learning Engine:** versioned curriculum, lesson runner, exercises, progress events, and transparent profile-based routes.
+- **C — English and communication:** authored foundations curriculum, listening, speaking, and pronunciation self-review.
+- **D — Learning memory:** learner-approved notes, source evidence, duplicate handling, and local review scheduling.
+- **E — Career studios:** project, HR/behavioural, and technical interview practice with follow-ups.
+- **F — Progress and portability:** activity evidence, goals, explainable recommendations, local backup/restore, and initial operational hardening controls.
 
-### Active implementation order
+### Remaining before Phase G
 
-Follow [PRODUCT_ROADMAP.md](PRODUCT_ROADMAP.md) and [COMPLETE_ROADMAP.md](COMPLETE_ROADMAP.md) as the detailed execution plan.
+1. Complete the target-Omarchy manual acceptance in [ACCEPTANCE_CHECKLIST.md](ACCEPTANCE_CHECKLIST.md): Learning, memory/review, all Career studios, Progress/goals, backup/restore, voice permission/disclosure, keyboard/screen-reader, contrast, and responsive behaviour.
+2. Record fresh-install and recovery results on the target laptop. Keep the backup/restore test on disposable data.
+3. Review the known single-user loopback, unencrypted-backup, optional-Groq, and voice-engine limitations; do not expose the app publicly.
+4. Run the optional consent-based student pilot only when participants are available. It is not an engineering blocker and has no results yet.
 
-1. **Foundation acceptance:** verify profile setup/edit/save/reload and the existing practice/voice flows in a real browser; rerun automated checks and CI.
-2. **Learning Engine:** complete automated and target-device acceptance of the implemented skill taxonomy, versioned JSON curriculum, reusable lesson runner, exercise types, progress events and profile-driven starter paths.
-3. **English & communication studio:** implementation is on the branch; complete CI and target-laptop acceptance before closing Phase C.
-4. **Personal learning memory:** implementation added; complete CI, browser acceptance, and target-laptop review for learner-approved cards, source context, duplicate handling, dismissal, and the local scheduler.
-5. **Career & interview studios:** project, HR/behavioural and technical tracks using shared scenario infrastructure.
-6. **Progress & portability:** skill evidence, goals, explainable recommendations, export, backup and restore.
-7. **Release hardening:** accessibility, security, responsive UX, fresh install, target-device acceptance and documented limitations.
+The latest automated gate is green for the exact implementation commit. Phase G is the next, separate release-hardening/acceptance milestone; it has not started.
 
 ### Profile toggle — automated browser acceptance passing
 
@@ -216,7 +215,7 @@ The feature/learner-profile branch now includes the first Phase B implementation
 - Learning workspace UI for the skill map, levels/units, recommended tracks, the optional baseline check/history, all seven exercise formats, local TTS listening/pronunciation playback with revealable text alternatives, optional STT spoken responses, feedback, next-lesson navigation, progress, and resuming unfinished lessons.
 - Choice, vocabulary, listening, and ordering feedback compares a response to authored answer keys. Short responses are saved for learner self-review with an illustrative example and are never automatically graded. No overall or proficiency score is generated.
 
-**Validation in progress:** API tests and a Chromium end-to-end learning journey have been added, including reload/resume. The latest CI run must pass before this milestone is marked automated-tested. Target-laptop browser/responsive acceptance remains a separate manual check.
+**Automated verification:** included in [the latest green CI run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798), with API and Chromium learning journeys passing. Target-laptop browser/responsive acceptance remains a separate manual check.
 
 ### Phase B boundaries
 
@@ -224,7 +223,7 @@ Phase B provides the reusable learning foundation, not advanced adaptive instruc
 
 ## Phase C — English and communication studio implementation update
 
-**Implementation added; CI and manual target-device acceptance are pending.**
+**Implementation added; automated coverage passes in the latest CI run. Target-device acceptance remains pending.**
 
 The English foundations path now contains 11 sequenced lessons across six units. The complete curriculum manifest has 14 stable skills, one foundation stage, nine units, four tracks, 13 authored lessons, and the separate baseline diagnostic. Every unit and lesson has explicit learning outcomes, and the lesson runner displays lesson outcomes before exercises.
 
@@ -240,7 +239,7 @@ Implemented content:
 
 The work reuses the existing versioned JSON curriculum, FastAPI lesson runner, SQLite attempt/event persistence, and plain JavaScript UI. No new paid service or infrastructure dependency was introduced. The original practice room and text-only route remain available.
 
-**Automated coverage added:** curriculum coverage and validation, profile-focus recommendation reasons, article/tense/question/vocabulary answer handling, listening text alternatives, pronunciation self-review feedback, and Chromium flows for the expanded track, listening conversations, and pronunciation. These tests still require a successful latest CI run before they can be reported as passing.
+**Automated coverage added:** curriculum coverage and validation, profile-focus recommendation reasons, article/tense/question/vocabulary answer handling, listening text alternatives, pronunciation self-review feedback, and Chromium flows for the expanded track, listening conversations, and pronunciation. These tests passed in [the latest CI run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798).
 
 **Manual acceptance still required:** target-laptop browser review of all units, TTS replay, microphone permission and optional STT disclosure, transcript correction, text fallback, keyboard use, and narrow-screen layout. No speech-recognition accuracy or learning-outcome claim is made.
 
@@ -253,7 +252,7 @@ The user confirmed GET /api/voice/status reports groq-whisper / whisper-large-v3
 
 ## Phase D — Personal learning memory and revision (2026-11-19)
 
-**Implementation status: added on `feature/learner-profile`; GitHub Actions passes (79 passed, 2 skipped); target-device manual acceptance remains pending.**
+**Implementation status: added on `feature/learner-profile`; the complete current suite passes in [CI run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798); target-device manual acceptance remains pending.**
 
 CI evidence: [run 44561847713](https://github.com/Exploiter69/Prepped/actions/runs/44561847713). The two skips require `espeak-ng`, which is not installed on the hosted runner.
 
@@ -276,7 +275,7 @@ No mandatory paid service, external model, raw audio storage, login, or new infr
 
 ## Phase E — Career & Interview Studios (2026-11-19)
 
-**Implemented on `feature/learner-profile`; GitHub Actions passes (88 passed, 2 skipped); target-laptop acceptance pending.** Phase D target-laptop acceptance remains a separate open gate.
+**Implemented on `feature/learner-profile`; the complete current suite passes in [CI run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798); target-laptop acceptance pending.** Phase D target-laptop acceptance remains a separate open gate.
 
 The Career header entry opens a local workspace with three studios:
 
@@ -299,7 +298,7 @@ New additive SQLite tables: `career_sessions` and `career_turns`. Existing pract
 
 ## Phase F — Progress, portability, and release hardening (2026-11-19)
 
-**Implementation added on `feature/learner-profile`; final CI evidence and target-laptop manual acceptance are pending.** Phase D and Phase E target-laptop acceptance remain separate open gates.
+**Implementation added on `feature/learner-profile`; [final automated CI is green (100 passed, 2 skipped)](https://github.com/Exploiter69/Prepped/actions/runs/44653868798). Target-laptop manual acceptance remains pending. Phase D and Phase E device checks remain separate open gates.
 
 ### Progress and goals
 
