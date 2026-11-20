@@ -52,7 +52,7 @@
 - [ ] Start Prepped from the documented clean local setup; confirm text practice works with STT and TTS unavailable.
 - [ ] In Project Practice, play a prompt, stop it, replay it, and navigate to Career while a prompt request is pending. Confirm no late audio starts.
 - [ ] Record a short Project Practice answer using the configured local STT engine. Confirm the transcript is editable and only the edited text is submitted.
-- [ ] Cancel/navigation during transcription; confirm no stale transcript is inserted into a different question or workspace.
+- [ ] Cancel/navigation during transcription in both Project Practice and Career; confirm the in-flight request is aborted and no stale transcript is inserted into a different question or workspace.
 - [ ] Deny microphone permission, disconnect/unavailable microphone, and retry. Confirm a clear recovery message and usable text fallback.
 - [ ] In Career, repeat the playback stop/replay/navigation checks. Confirm microphone tracks stop when leaving the workspace.
 - [ ] For each studio, toggle simpler wording, reveal/hide the authored prompt hint, replay the prompt, and confirm the answer review records the wording actually shown.
