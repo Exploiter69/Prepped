@@ -325,7 +325,7 @@ Every project statement must be one of:
 
 Do not convert “the model ran” into “speech accuracy is good.” Do not convert “a learner liked it” into “placement outcomes improved.” Do not report a percentage without a denominator, method, and source. Do not describe one-off timings as benchmarks.
 
-## 17. Pre-Phase-G completion gates (updated 2026-11-20)
+## 17. Pre-release sign-off gates (updated 2026-11-20)
 
 1. **Automated verification is green:** [run 44655380427](https://github.com/Exploiter69/Prepped/actions/runs/44655380427) — 100 passed, 2 skipped, 1 warning; compilation, JavaScript syntax, dependency audit, API tests, and Chromium acceptance passed.
 2. **Complete manual target-laptop acceptance** for Phases A–F using [ACCEPTANCE_CHECKLIST.md](ACCEPTANCE_CHECKLIST.md), including browser, microphone/STT/TTS, keyboard, screen-reader, contrast, responsive, and data-recovery checks.
