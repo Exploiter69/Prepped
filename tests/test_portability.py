@@ -360,10 +360,10 @@ def test_interrupted_restore_keeps_active_database_and_trusted_backup_restores(
         client.put("/api/profile", json={"display_name": "Newer active learner"})
 
         def interrupt_before_commit(staged_path: Path, target_path: Path) -> None:
-            raise KeyboardInterrupt("simulated process interruption before restore commit")
+            raise RuntimeError("simulated worker interruption before restore commit")
 
         monkeypatch.setattr(portability, "_commit_staged_restore", interrupt_before_commit)
-        with pytest.raises(KeyboardInterrupt, match="simulated process interruption"):
+        with pytest.raises(RuntimeError, match="simulated worker interruption"):
             client.post("/api/data/restore", json={**trusted_backup, "confirm_replace": True})
 
         # The staged temporary database is discarded and the active database
