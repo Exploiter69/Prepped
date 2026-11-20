@@ -112,6 +112,36 @@ def test_mixed_closed_exercise_outcomes_are_not_collapsed_into_a_single_score(tm
         client.__exit__(None, None, None)
 
 
+def test_project_and_career_memory_reviews_link_to_their_practice_skills(tmp_path: Path) -> None:
+    client = client_for(tmp_path / "intelligence-career-provenance.sqlite3")
+    try:
+        project = client.post("/api/sessions")
+        assert project.status_code == 201
+        project_id = project.json()["id"]
+        career = client.post("/api/career/sessions", json={"studio_id": "hr-behavioural"})
+        assert career.status_code == 201, career.text
+        career_id = career.json()["id"]
+        for source_type, source_id, front in (
+            ("practice", project_id, "Project practice correction"),
+            ("career_interview", career_id, "Interview practice correction"),
+        ):
+            memory = client.post("/api/memory/items", json={
+                "item_type": "correction", "front": front, "back": "Review the saved example.",
+                "source_type": source_type, "source_id": source_id, "source_title": front,
+            }).json()["item"]
+            assert client.post(f"/api/memory/items/{memory['id']}/review", json={"rating": "good"}).status_code == 200
+        skills = client.get("/api/intelligence/overview").json()["skills"]
+        project_skill = next(item for item in skills if item["skill_id"] == "communication.project-summary")
+        career_skill = next(item for item in skills if item["skill_id"] == "interview.hr-behavioural")
+        assert any(item["kind"] == "revision_activity" for item in project_skill["evidence"])
+        assert career_skill["curriculum_status"] == "planned"
+        assert career_skill["state"] == "practice_recorded"
+        assert career_skill["closed_response_count"] == 0
+        assert any(item["kind"] == "revision_activity" for item in career_skill["evidence"])
+    finally:
+        client.__exit__(None, None, None)
+
+
 def test_linked_learner_memory_reviews_appear_as_revision_activity_not_mastery(tmp_path: Path) -> None:
     client = client_for(tmp_path / "intelligence-revision.sqlite3")
     try:
