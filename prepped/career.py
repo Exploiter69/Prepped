@@ -66,6 +66,8 @@ def _contextual_followup(question: dict[str, Any], answer: str, difficulty: str)
                 "question_id": question["id"],
                 "turn_type": "followup",
                 "prompt": prompt,
+                "simpler_prompt": contextual.get("simpler_prompt", prompt),
+                "clarification": contextual.get("clarification", ""),
                 "context_note": (
                     f"This follow-up invites {rule[1]}. A simple text cue was not detected; "
                     "the heuristic may miss equivalent wording. It is not an assessment of your answer."
@@ -77,6 +79,8 @@ def _contextual_followup(question: dict[str, Any], answer: str, difficulty: str)
         "question_id": question["id"],
         "turn_type": "followup",
         "prompt": variants.get(difficulty, authored["prompt"]),
+        "simpler_prompt": authored.get("simpler_prompt", variants.get(difficulty, authored["prompt"])),
+        "clarification": authored.get("clarification", ""),
         "context_note": "This follow-up follows your selected practice level; it is not a judgement of correctness.",
     }
 
@@ -116,11 +120,18 @@ def load_studios(path: Path = DEFAULT_STUDIOS_PATH) -> dict[str, Any]:
             if contextual is not None:
                 if (
                     not isinstance(contextual, dict)
+                    or not isinstance(contextual.get("trigger"), str)
                     or contextual.get("trigger") not in CONTEXTUAL_TRIGGERS
                     or not isinstance(contextual.get("prompt"), str)
                     or not contextual["prompt"].strip()
                 ):
                     raise ValueError("A contextual follow-up needs a supported trigger and non-empty authored prompt.")
+            for prompt_group in (question, followup, contextual or {}):
+                for optional_text in ("simpler_prompt", "clarification"):
+                    if optional_text in prompt_group and (
+                        not isinstance(prompt_group[optional_text], str) or not prompt_group[optional_text].strip()
+                    ):
+                        raise ValueError("Simpler prompts and clarification text must be non-empty strings.")
     if seen != STUDIO_IDS:
         raise ValueError("The career catalog must include all three studios.")
     return data
@@ -173,6 +184,7 @@ class StartInterview(BaseModel):
 
 class SubmitInterviewAnswer(BaseModel):
     answer_text: str = Field(min_length=1, max_length=6000)
+    prompt_variant: Literal["original", "simplified"] = "original"
 
     @field_validator("answer_text")
     @classmethod
@@ -206,7 +218,11 @@ def _current_prompt(row: sqlite3.Row) -> dict[str, Any] | None:
     if index >= len(studio["questions"]):
         return None
     question = studio["questions"][index]
-    return {"question_id": question["id"], "turn_type": "primary", "prompt": question["prompt"]}
+    return {
+        "question_id": question["id"], "turn_type": "primary", "prompt": question["prompt"],
+        "simpler_prompt": question.get("simpler_prompt", question["prompt"]),
+        "clarification": question.get("clarification", ""),
+    }
 
 
 def _session_view(connection: sqlite3.Connection, row: sqlite3.Row) -> dict[str, Any]:
@@ -224,7 +240,11 @@ def _session_view(connection: sqlite3.Connection, row: sqlite3.Row) -> dict[str,
     }
 
 
-def _feedback(studio: dict[str, Any], turns: list[dict[str, Any]]) -> dict[str, Any]:
+def _feedback(
+    studio: dict[str, Any],
+    turns: list[dict[str, Any]],
+    previous_turns: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
     notes = []
     for turn in turns:
         answer = turn["answer_text"]
@@ -285,10 +305,29 @@ def _feedback(studio: dict[str, Any], turns: list[dict[str, Any]]) -> dict[str, 
             "question_id": turn["question_id"], "turn_type": turn["turn_type"],
             "prompt": turn["prompt"], "answer": answer, "checks": checks, "coaching": coaching,
         })
+    comparisons = []
+    if previous_turns:
+        previous_by_key = {(turn["question_id"], turn["turn_type"]): turn for turn in previous_turns}
+        for turn in turns:
+            previous = previous_by_key.get((turn["question_id"], turn["turn_type"]))
+            if previous:
+                comparisons.append({
+                    "question_id": turn["question_id"],
+                    "turn_type": turn["turn_type"],
+                    "previous_prompt": previous["prompt"],
+                    "current_prompt": turn["prompt"],
+                    "previous_answer": previous["answer_text"],
+                    "current_answer": turn["answer_text"],
+                })
     return {
         "title": "Interview review",
         "disclaimer": "These are transparent text-based reflection prompts, not an expert interview rating, technical correctness check, hiring decision, or placement prediction. Keyword signals can miss valid answers and can also match weak ones.",
         "notes": notes,
+        "attempt_comparison": comparisons,
+        "comparison_note": (
+            "Compare your wording, examples, reasoning, and evidence for yourself. Differences between attempts are not a measured improvement."
+            if comparisons else None
+        ),
         "next_steps": [
             "Choose one answer and make its example more specific.",
             "Explain one decision and the reason behind it.",
@@ -374,7 +413,8 @@ def create_career_router(db_path: Path, studios_path: Path = DEFAULT_STUDIOS_PAT
                 (id, session_id, turn_index, question_id, turn_type, prompt, answer_text, created_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
                 (str(uuid4()), session_id, len(turns), current["question_id"], current["turn_type"],
-                 current["prompt"], payload.answer_text, _now()),
+                 (current.get("simpler_prompt") if payload.prompt_variant == "simplified" else None) or current["prompt"],
+                 payload.answer_text, _now()),
             )
             studio = json.loads(row["studio_json"])
             pending = None
@@ -406,7 +446,14 @@ def create_career_router(db_path: Path, studios_path: Path = DEFAULT_STUDIOS_PAT
             row = _session(connection, session_id)
             if row["status"] != "completed":
                 raise HTTPException(status_code=409, detail="Complete the interview before reviewing feedback.")
-            return _feedback(json.loads(row["studio_json"]), _turns(connection, session_id))
+            previous = connection.execute(
+                """SELECT id FROM career_sessions
+                WHERE attempt_group_id = ? AND attempt_number < ? AND status = 'completed'
+                ORDER BY attempt_number DESC LIMIT 1""",
+                (row["attempt_group_id"], row["attempt_number"]),
+            ).fetchone()
+            previous_turns = _turns(connection, previous["id"]) if previous else None
+            return _feedback(json.loads(row["studio_json"]), _turns(connection, session_id), previous_turns)
 
     @router.post("/sessions/{session_id}/retry", status_code=201)
     def retry(session_id: str) -> dict[str, Any]:
