@@ -721,6 +721,7 @@
   window.addEventListener("prepped:viewchange", event => {
     if (event.detail?.view !== "learning-view") stopLearningRecording(true);
   });
+  window.addEventListener("pagehide", () => stopLearningRecording(true));
 
   async function startLesson(lessonId) {
     if (state.busy) return;
