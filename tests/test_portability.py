@@ -228,3 +228,17 @@ def test_restore_rejects_excessively_nested_json_as_client_error(tmp_path: Path)
         assert response.status_code == 400
     finally:
         client.__exit__(None, None, None)
+
+
+
+def test_readiness_fails_closed_when_a_required_table_is_missing(tmp_path: Path) -> None:
+    database = tmp_path / "not-ready.sqlite3"
+    client = client_for(database)
+    try:
+        with sqlite3.connect(database) as connection:
+            connection.execute("DROP TABLE recommendation_dismissals")
+        response = client.get("/api/ready")
+        assert response.status_code == 503
+        assert "not ready" in response.json()["detail"].lower()
+    finally:
+        client.__exit__(None, None, None)
