@@ -151,6 +151,11 @@
           <div class="panel-topline"><span id="career-turn-label" class="eyebrow">QUESTION 1</span><span id="career-progress" class="status"></span></div>
           <h3 id="career-prompt-title" class="career-prompt"></h3>
           <p id="career-followup-context" class="section-help hidden" role="status" aria-live="polite"></p>
+          <div class="form-actions career-prompt-help-actions">
+            <button id="career-simpler-prompt" class="button button-quiet hidden" type="button" aria-pressed="false">Show simpler wording</button>
+            <button id="career-clarify-prompt" class="button button-quiet hidden" type="button" aria-expanded="false" aria-controls="career-prompt-help">Show prompt hint</button>
+          </div>
+          <p id="career-prompt-help" class="section-help hidden"></p>
           <div class="voice-actions career-voice-actions">
             <button id="career-speak" class="button button-secondary" type="button">Play question aloud</button>
             <button id="career-replay" class="button button-quiet" type="button">Replay</button>
@@ -168,6 +173,7 @@
         <section id="career-review" class="career-review hidden" aria-labelledby="career-review-title">
           <div class="divider"></div><span class="eyebrow">SESSION COMPLETE</span><h3 id="career-review-title">Review your interview</h3>
           <p id="career-review-disclaimer" class="section-help"></p>
+          <div id="career-attempt-comparison" class="career-attempt-comparison hidden"></div>
           <div id="career-review-notes" class="career-review-notes"></div>
           <div id="career-next-steps" class="notice"></div>
           <div class="form-actions"><button id="career-add-plan" class="button button-secondary" type="button">Add next practice to today's plan</button><button id="career-back" class="button button-quiet" type="button">Back to studios</button><button id="career-retry" class="button button-primary" type="button">Try this studio again →</button></div>
