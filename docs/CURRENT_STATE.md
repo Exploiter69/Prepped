@@ -7,7 +7,7 @@
 
 ## Phase J — Curriculum Quality, Content Expansion & Learning Validation (implementation started; acceptance pending)
 
-The initial inventory found 14 lessons, 14 skills, 4 tracks, 9 units, and 49 exercises across seven exercise types. Four interview-related skills were not linked to dedicated lessons; they are now mapped to the existing Career Studios rather than duplicated as more lessons. Phase J adds source registers, explicit completion conditions, review disclosure, cross-file skill coverage validation, and a CI/startup content linter. Human subject-matter review and any learner study remain pending.
+The initial inventory found 14 lessons, 14 skills, 4 tracks, 9 units, and 49 exercises across seven exercise types. Four interview-related skills are mapped to existing Career Studios rather than duplicated as lessons. Phase J implementation now includes source registers, explicit completion conditions, review disclosure, cross-file skill coverage validation, a CI/startup content linter, and exercise-level outcomes, effort estimates, and inherited lesson skill/source context for all 49 exercises. The loader and regression tests enforce these exercise metadata rules and lesson effort budgets. Exact-commit automated verification of this latest slice is pending; human subject-matter review, accessibility review, manual journeys, and learner validation remain open.
 
 See [Phase J Acceptance](PHASE_J_ACCEPTANCE.md) and [Content Review Log](CONTENT_REVIEW_LOG.md).
 
