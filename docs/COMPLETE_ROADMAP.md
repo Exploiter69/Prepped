@@ -439,7 +439,7 @@ Every unit needs an outcome, authored examples, exercises, feedback, tests, and 
 
 ### Milestone G — Release hardening and validation
 
-Phase F implements the initial hardening foundations: local Host/Origin checks, security headers/CSP, readiness checks, dependency audit in CI, and clean-install/recovery/security documentation. The remaining G/release-candidate work is target-device acceptance, keyboard/screen-reader/contrast review, any necessary security/dependency remediation, performance observations, and optional consent-based usability validation. No public/multi-user deployment is supported. Do not invent pilot results.
+Phase F implemented the initial hardening foundations: local Host/Origin checks, security headers/CSP, readiness checks, dependency audit in CI, and clean-install/recovery/security documentation. Phase G now adds malformed-authority and backup-data edge-case hardening, regression coverage, keyboard/mobile browser acceptance, and a dedicated release record. Remaining release-candidate work includes final CI verification, target-device fresh install and recovery, screen-reader/contrast/voice acceptance, performance observations, and optional consent-based usability validation. No public/multi-user deployment is supported. Do not invent pilot results.
 
 ### Release readiness checklist
 
