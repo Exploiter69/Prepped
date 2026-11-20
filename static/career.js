@@ -1,7 +1,7 @@
 (() => {
   const $ = (selector, root = document) => root.querySelector(selector);
   const MAX_ANSWER_CHARS = 6000;
-  const state = { studios: [], selected: null, session: null, recorder: null, stream: null, chunks: [], timer: null, audioUrl: null, audio: null, ttsController: null, ttsRequestId: 0, stt: null, recordingRequestId: 0, recordingPending: false, transcriptionController: null, transcribing: false };
+  const state = { studios: [], selected: null, session: null, currentPrompt: null, simplifiedPrompt: false, clarificationVisible: false, recorder: null, stream: null, chunks: [], timer: null, audioUrl: null, audio: null, ttsController: null, ttsRequestId: 0, stt: null, recordingRequestId: 0, recordingPending: false, transcriptionController: null, transcribing: false };
   const viewIds = ["home-view", "practice-view", "feedback-view", "history-view", "learning-view", "career-view", "progress-view"];
   async function api(url, options = {}) {
     const response = await fetch(url, { ...options, headers: { "Content-Type": "application/json", ...(options.headers || {}) } });
@@ -93,9 +93,20 @@
     if (!prompt) return;
     stopRecording(true);
     stopPrompt(false);
+    state.currentPrompt = prompt;
+    state.simplifiedPrompt = false;
+    state.clarificationVisible = false;
     $("#career-prompt-title").textContent = prompt.prompt;
     $("#career-followup-context").textContent = prompt.context_note || "";
     $("#career-followup-context").classList.toggle("hidden", !prompt.context_note);
+    $("#career-simpler-prompt").classList.toggle("hidden", !prompt.simpler_prompt || prompt.simpler_prompt === prompt.prompt);
+    $("#career-simpler-prompt").textContent = "Show simpler wording";
+    $("#career-simpler-prompt").setAttribute("aria-pressed", "false");
+    $("#career-clarify-prompt").classList.toggle("hidden", !prompt.clarification);
+    $("#career-clarify-prompt").textContent = "Show prompt hint";
+    $("#career-clarify-prompt").setAttribute("aria-expanded", "false");
+    $("#career-prompt-help").textContent = prompt.clarification || "";
+    $("#career-prompt-help").classList.add("hidden");
     const primary = prompt.turn_type === "primary";
     const current = state.session.answered_primary_count + (primary ? 1 : 0);
     $("#career-turn-label").textContent = primary ? "MAIN QUESTION " + current : "FOLLOW-UP · QUESTION " + state.session.answered_primary_count;
@@ -105,12 +116,35 @@
     $("#career-voice-status").textContent = "Speak or type. Review and edit any transcript before submitting.";
     $("#career-answer").focus();
   }
+  function toggleSimplerPrompt() {
+    if (!state.currentPrompt?.simpler_prompt) return;
+    state.simplifiedPrompt = !state.simplifiedPrompt;
+    $("#career-prompt-title").textContent = state.simplifiedPrompt
+      ? state.currentPrompt.simpler_prompt
+      : state.currentPrompt.prompt;
+    $("#career-simpler-prompt").textContent = state.simplifiedPrompt
+      ? "Show original wording" : "Show simpler wording";
+    $("#career-simpler-prompt").setAttribute("aria-pressed", String(state.simplifiedPrompt));
+  }
+
+  function togglePromptClarification() {
+    if (!state.currentPrompt?.clarification) return;
+    state.clarificationVisible = !state.clarificationVisible;
+    $("#career-prompt-help").classList.toggle("hidden", !state.clarificationVisible);
+    $("#career-clarify-prompt").textContent = state.clarificationVisible
+      ? "Hide prompt hint" : "Show prompt hint";
+    $("#career-clarify-prompt").setAttribute("aria-expanded", String(state.clarificationVisible));
+  }
+
   async function submitAnswer() {
     const answer = $("#career-answer").value.trim();
     if (!answer) { $("#career-answer-error").textContent = "Write or transcribe an answer before continuing."; return; }
     $("#career-submit").disabled = true;
     try {
-      state.session = await api("/api/career/sessions/" + state.session.id + "/answers", { method: "POST", body: JSON.stringify({ answer_text: answer }) });
+      state.session = await api("/api/career/sessions/" + state.session.id + "/answers", {
+        method: "POST",
+        body: JSON.stringify({ answer_text: answer, prompt_variant: state.simplifiedPrompt ? "simplified" : "original" }),
+      });
       if (state.session.status === "completed") {
         const feedback = await api("/api/career/sessions/" + state.session.id + "/feedback");
         renderReview(feedback);
@@ -125,6 +159,23 @@
     $("#career-review-disclaimer").textContent = feedback.disclaimer;
     $("#career-add-plan").disabled = false;
     $("#career-add-plan").textContent = "Add next practice to today's plan";
+    const comparison = $("#career-attempt-comparison");
+    comparison.replaceChildren();
+    const comparisons = feedback.attempt_comparison || [];
+    comparison.classList.toggle("hidden", !comparisons.length);
+    if (comparisons.length) {
+      comparison.append(make("h4", "Compare with your previous attempt"));
+      comparison.append(make("p", feedback.comparison_note || "Compare the wording yourself; no improvement score is calculated.", "section-help"));
+      for (const item of comparisons) {
+        const pair = make("article", null, "career-comparison-card");
+        pair.append(make("strong", item.question_id.replaceAll("-", " ") + " · " + item.turn_type));
+        pair.append(make("span", "Previous attempt", "meta-label"));
+        pair.append(make("blockquote", item.previous_answer, "career-answer-quote"));
+        pair.append(make("span", "This attempt", "meta-label"));
+        pair.append(make("blockquote", item.current_answer, "career-answer-quote"));
+        comparison.append(pair);
+      }
+    }
     const notes = $("#career-review-notes");
     notes.replaceChildren();
     for (const note of feedback.notes) {
@@ -561,6 +612,8 @@
     $("#career-start").addEventListener("click", startInterview);
     $("#career-submit").addEventListener("click", submitAnswer);
     $("#career-speak").addEventListener("click", playPrompt);
+    $("#career-simpler-prompt").addEventListener("click", toggleSimplerPrompt);
+    $("#career-clarify-prompt").addEventListener("click", togglePromptClarification);
     $("#career-replay").addEventListener("click", playPrompt);
     $("#career-stop-speak").addEventListener("click", () => stopPrompt(true));
     $("#career-add-plan").addEventListener("click", addNextPracticeToPlan);
