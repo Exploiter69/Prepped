@@ -68,3 +68,13 @@ This is not a claim of independent teacher, language-specialist, or CS-expert re
 - [ ] CS fundamentals review (data structures, HTTP, indexes, processes/threads).
 - [ ] Interview/behavioural prompt review for clarity, fairness, and cultural breadth.
 - [ ] Accessibility review with keyboard and assistive technology.
+
+
+## Exercise-level review metadata (curriculum 1.2.0)
+
+A follow-up engineering pass added metadata to all 49 exercises:
+- A specific learner-facing outcome derived from the task being practised.
+- A 1–2 minute effort estimate, included within the parent lesson's total estimate.
+- Explicit inherited skill_ids and source_ids, so an exercise cannot silently drift away from the lesson's declared learning context or source register.
+
+The curriculum loader now rejects missing outcomes, invalid effort values, exercise effort totals that exceed the lesson estimate, and mismatched inherited skill/source references. Regression tests cover these conditions. This is structural/editorial quality control, not evidence that the estimates match actual learner time or that the outcomes have been validated with learners. Those require human review and usability evidence.
