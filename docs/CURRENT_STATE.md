@@ -3,7 +3,13 @@
 **Updated:** 2026-11-20<br>
 **Source of truth:** GitHub `feature/learner-profile` (working branch; `main` remains the last synced baseline)<br>
 **Product direction:** Voice-first, personalised practice and learning platform for Indian engineering students. The text practice loop is a reliable fallback and is frozen for feature development except material bugs.<br>
-**Engineering stage:** Phases A–F are implemented. Phase G engineering hardening is implemented; target-laptop acceptance remains open. Phase G.1 recording lifecycle regressions and Phase H automated verification are green on the previously recorded run [44732997261](https://github.com/Exploiter69/Prepped/actions/runs/44732997261) (134 passed, 2 skipped, 1 warning); manual Omarchy and learner acceptance remain deferred. **Phase I implementation is now present on this branch; its exact-commit CI and manual target-device acceptance are pending.** See [Phase I acceptance](PHASE_I_ACCEPTANCE.md).
+**Engineering stage:** Phases A–H implementation is present. Phase I implementation is present and local pytest on commit `c4200e5` reports 145 passed, 0 failed, 1 warning; exact-commit GitHub Actions and manual target-device acceptance remain pending. By explicit user decision, Phase J implementation is proceeding while Phase I remains open. See [Phase I acceptance](PHASE_I_ACCEPTANCE.md) and [Phase J acceptance](PHASE_J_ACCEPTANCE.md).
+
+## Phase J — Curriculum Quality, Content Expansion & Learning Validation (implementation started; acceptance pending)
+
+The initial inventory found 14 lessons, 14 skills, 4 tracks, 9 units, and 49 exercises across seven exercise types. Four interview-related skills were not linked to dedicated lessons; they are now mapped to the existing Career Studios rather than duplicated as more lessons. Phase J adds source registers, explicit completion conditions, review disclosure, cross-file skill coverage validation, and a CI/startup content linter. Human subject-matter review and any learner study remain pending.
+
+See [Phase J Acceptance](PHASE_J_ACCEPTANCE.md) and [Content Review Log](CONTENT_REVIEW_LOG.md).
 
 ## Phase I — Voice Intelligence & Contextual Coaching (implementation added; acceptance pending)
 

@@ -1,7 +1,7 @@
 # Prepped — Complete Project Roadmap
 
-**Status:** Phases A–F are implemented; Phase G engineering hardening is implemented and automated CI is green. Target-device acceptance remains open. Phase G.1 microphone lifecycle implementation and browser regressions are added and passed CI. Phase H implementation is added and its full automated suite is green; target-device and learner acceptance remain open. The text MVP is frozen except for material bugs.<br>
-**Updated:** 2026-11-20<br>**Future plan:** Phases I–L are now defined as planned work in section 19; none has started.<br>
+**Status:** Phases A–H implementation is present. Phase I implementation is present; local pytest on `c4200e5` reports 145 passed, while exact-commit GitHub Actions and target-device acceptance remain pending. Phase J implementation has started; human content review and learner validation remain pending. The text MVP is frozen except for material bugs.<br>
+**Updated:** 2026-11-20<br>**Future plan:** Phase I acceptance remains open; Phase J is in progress; Phases K–L remain planned.<br>
 **Planning basis:** B.Tech semester 3 now; TDP continues through the final year. Dates are decision gates, not promises.<br>
 **Companion documents:** [Product Blueprint](PRODUCT_BLUEPRINT.md) · [Current State](CURRENT_STATE.md) · [Voice Setup](VOICE.md) · [ADR-002](ADR-002-LOCAL-VOICE-SLICE.md)
 
@@ -635,7 +635,7 @@ The sequence is deliberate. Better coaching should use stable voice/session beha
 
 ### Phase I — Voice Intelligence & Contextual Coaching
 
-**Status (2026-11-20):** Implementation has been added to the working branch. Exact-commit automated CI and manual target-device acceptance are pending. See [Phase I Acceptance](PHASE_I_ACCEPTANCE.md). Do not mark the phase fully accepted until those gates are recorded.
+**Status (2026-11-20):** Implementation is present. Local pytest on commit `c4200e5fc06ccfcd06c9b49fadc6cc8d6ac9afdc` reports 145 passed, 0 failed, and one Starlette/httpx deprecation warning. Exact-commit GitHub Actions and manual target-device acceptance remain pending. The user authorised Phase J implementation to begin while Phase I manual checks are deferred; Phase I remains open. See [Phase I Acceptance](PHASE_I_ACCEPTANCE.md).
 
 **Purpose:** turn the current record/transcribe/playback and scenario flows into a dependable, context-aware, turn-based voice practice experience. The goal is not a general-purpose always-listening chatbot. It is to help a learner practise a defined communication task, understand a response, and make a useful next attempt.
 
@@ -693,6 +693,8 @@ The sequence is deliberate. Better coaching should use stable voice/session beha
 ---
 
 ### Phase J — Curriculum Quality, Content Expansion & Learning Validation
+
+**Status (2026-11-20):** Implementation started after the initial curriculum audit. See [Phase J Acceptance](PHASE_J_ACCEPTANCE.md) and [Content Review Log](CONTENT_REVIEW_LOG.md). Human subject-matter review and learner evaluation remain pending.
 
 **Purpose:** make the learning content coherent, accurate, appropriately sequenced, and useful, then gather bounded evidence about usability and learning experience. This phase is about instructional quality and evaluation—not adding a large number of screens or claiming that the app improves placement outcomes.
 
@@ -884,7 +886,7 @@ The sequence is deliberate. Better coaching should use stable voice/session beha
 
 ### Cross-phase completion rules for I–L
 
-1. **One phase at a time:** complete its scoped implementation, tests, docs, and acceptance record before starting the next phase, except for urgent security/privacy fixes.
+1. **Sequential implementation with explicit deferrals:** complete a phase implementation, tests, and documentation before moving on. With explicit user approval, the next phase may begin while non-blocking hardware or participant acceptance from the previous phase is deferred; the earlier phase remains open and must not be described as accepted until its own exit gate is met.
 2. **No speculative expansion:** do not add avatars, real-time streaming, always-on microphones, emotion analysis, pronunciation scoring, institution dashboards, mobile apps, cloud accounts, or generated curriculum unless a separate evidence-backed decision justifies them.
 3. **No scope laundering:** a feature is not complete because a UI exists, a mock works, a unit test passes, or a provider reports available. Require end-to-end evidence and manual acceptance where hardware or learner behaviour matters.
 4. **Preserve working behaviour:** protect existing text practice, session history, curriculum, Memory, Career, Progress, backup/restore, and Phase H evidence semantics with regression tests.

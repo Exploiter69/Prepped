@@ -366,11 +366,11 @@ The implementation intentionally adapts ordering and selection only. The curricu
 
 ## Future delivery sequence — Phases I–L (planned, not implemented)
 
-The following phases extend the active A–H build sequence. They are deliberately detailed enough to guide implementation, but remain **planned** until their code, tests, documentation, and acceptance evidence exist. Use [the Complete Project Roadmap](COMPLETE_ROADMAP.md) for the full task breakdown, constraints, test matrix, and exit gates. Do not treat this section as a status report.
+The following phases extend the active A–H build sequence. Phase I implementation is present but its CI/device acceptance remains open; Phase J implementation is underway with human review and learner validation pending. Phases K–L remain planned. Use [the Complete Project Roadmap](COMPLETE_ROADMAP.md) for the full task breakdown, constraints, test matrix, and exit gates.
 
 ### Phase I — Voice Intelligence & Contextual Coaching
 
-**Status:** Implementation added on the working branch; exact-commit CI and manual target-device acceptance pending. See [Phase I Acceptance](PHASE_I_ACCEPTANCE.md).
+**Status:** Implementation added; local pytest on commit `c4200e5` reports 145 passed. Exact-commit CI and manual target-device acceptance remain pending. Phase J implementation is authorised to proceed while Phase I stays open. See [Phase I Acceptance](PHASE_I_ACCEPTANCE.md).
 
 **Outcome:** a reliable, accessible, turn-based voice practice loop with contextual follow-ups and coaching grounded in the learner's actual submitted response.
 
@@ -387,6 +387,8 @@ The following phases extend the active A–H build sequence. They are deliberate
 - **Exit:** complete text and voice journeys, editable transcript, relevant follow-up, evidence-grounded feedback, retry/resume, safe cancellation/navigation, green API/browser/adapter tests, and recorded target-device acceptance.
 
 ### Phase J — Curriculum Quality, Content Expansion & Learning Validation
+
+**Status:** Implementation started; source/review metadata and curriculum linting are being added. Human subject-matter review and learner validation remain pending. See [Phase J Acceptance](PHASE_J_ACCEPTANCE.md).
 
 **Outcome:** reviewed, accessible, coherent learning content and honest evidence about usability; learning outcomes are evaluated only with a suitable method.
 
