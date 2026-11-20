@@ -1,8 +1,8 @@
 # Prepped — Complete Product and System Blueprint
 
 **Version:** 2.1 — voice-first direction<br>
-**Status:** Active direction. The text loop is implemented and frozen except material bugs; the first record/stop voice slice and optional Groq STT adapter are implemented, with live acceptance outstanding.<br>
-**Last updated:** 2026-11-04<br>
+**Status:** Product destination and system constraints. Phases A–F are implemented on `feature/learner-profile`; current CI is green, while target-device acceptance remains open. Phase G release hardening has not started.<br>
+**Last updated:** 2026-11-20<br>
 **Repository:** Exploiter69/Prepped<br>
 **Companion documents:** [Current State](CURRENT_STATE.md) · [Complete Roadmap](COMPLETE_ROADMAP.md) · [Voice Setup](VOICE.md) · [ADR-002](ADR-002-LOCAL-VOICE-SLICE.md) · [Research Decision Matrix](RESEARCH_DECISION_MATRIX.md)
 
@@ -361,7 +361,7 @@ Candidate review items may include project explanation structure, missing eviden
 
 ## 13. Complete project phases
 
-The detailed gates, tasks, semester map, testing plan, and deliverables live in the [Complete Roadmap](COMPLETE_ROADMAP.md). The overall order is:
+The detailed gates, tasks, semester map, testing plan, and deliverables live in the [Complete Roadmap](COMPLETE_ROADMAP.md). The list below preserves the original research-planning taxonomy; the active implementation sequence is Phases A–F, with Phase G reserved for release hardening and acceptance. See [Current State](CURRENT_STATE.md) for the latest status. The original conceptual order is:
 
 1. **Foundation:** repository truth, scenario, rubric, local app skeleton.
 2. **Text vertical slice:** scenario, answers, feedback, retry, comparison, deletion. Implemented and frozen except material bugs.
