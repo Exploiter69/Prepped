@@ -222,6 +222,7 @@ def _skill_evidence(conn: sqlite3.Connection, curriculum: dict[str, Any], now: d
             activity[sid] += 1
             evidence[sid].append({
                 "source_type": "learner_memory_review", "source_id": row["id"],
+                "linked_source_id": source_id,
                 "title": row["source_title"] or "Learner-saved revision",
                 "occurred_at": row["reviewed_at"], "kind": "revision_activity",
                 "outcome": row["rating"],
