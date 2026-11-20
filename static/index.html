@@ -98,8 +98,19 @@
       </section>
       <section id="learning-view" class="scenario-panel learning-panel hidden" aria-labelledby="learning-title">
         <div class="panel-topline"><span class="eyebrow">LEARNING ENGINE / PHASE B</span><span id="learning-status" class="status">Loading curriculum…</span></div>
-        <h2 id="learning-title">Build skills through practice.</h2>
-        <p class="scenario-description">Short, structured lessons with examples, exercises, saved attempts, and clear next steps. Your route is based on your stated learning goal, not an inferred ability score.</p>
+        <div class="learning-welcome">
+          <div class="learning-welcome-copy">
+            <span class="learning-welcome-kicker">YOUR LEARNING PATH</span>
+            <h2 id="learning-title">Small steps. Stronger communication.</h2>
+            <p class="scenario-description">Follow a clear path, practise one useful skill at a time, and keep your progress on this device. Your route follows your stated goal—not an inferred ability score.</p>
+          </div>
+          <div class="learning-welcome-art"><img src="/static/assets/prepped-owl-welcome.svg" alt="" width="112" height="112"><span>One step at a time.</span></div>
+        </div>
+        <section class="learning-overview" aria-label="Learning activity summary">
+          <article><span class="learning-overview-icon" aria-hidden="true">✓</span><div><strong id="learning-summary-completed">—</strong><span>Lessons completed</span></div></article>
+          <article><span class="learning-overview-icon" aria-hidden="true">↻</span><div><strong id="learning-summary-attempts">—</strong><span>Practice attempts</span></div></article>
+          <article><span class="learning-overview-icon" aria-hidden="true">◎</span><div><strong id="learning-summary-skills">—</strong><span>Skills explored</span></div></article>
+        </section>
         <section class="learning-recommendation" aria-labelledby="learning-route-title">
           <div class="learning-section-heading"><div><span class="meta-label">YOUR STARTING ROUTE</span><h3 id="learning-route-title">Recommended path</h3></div><span id="learning-route-goal" class="status"></span></div>
           <p id="learning-route-description" class="section-help"></p>
@@ -167,6 +178,10 @@
         <section id="learning-runner" class="learning-runner hidden" aria-labelledby="learning-runner-title">
           <div class="divider"></div>
           <div class="panel-topline"><span class="eyebrow">LESSON IN PROGRESS</span><span id="learning-exercise-count" class="status"></span></div>
+          <div class="learning-step-track">
+            <div class="learning-step-labels"><span>YOUR PRACTICE</span><span id="learning-step-label">Getting started</span></div>
+            <div id="learning-step-progress" class="learning-step-progress" role="progressbar" aria-label="Lesson exercise progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="learning-step-progress-fill"></span></div>
+          </div>
           <h3 id="learning-runner-title"></h3>
           <p id="learning-runner-intro" class="scenario-description"></p>
           <div class="learning-outcomes-panel"><strong>In this lesson</strong><ul id="learning-outcomes" aria-label="Lesson learning outcomes"></ul></div>

@@ -94,6 +94,34 @@ def test_dashboard_is_the_landing_view_and_uses_real_learning_data(local_app_url
     assert not page.locator("#dashboard-view").is_visible()
 
 
+def test_learning_path_summary_track_progress_and_guided_step_indicator(
+    local_app_url: str, browser_page
+) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+    page.locator("#learning-toggle").click()
+    page.wait_for_function(
+        "() => document.querySelector('#learning-status').textContent.includes('skills')"
+    )
+
+    assert page.locator("#learning-summary-completed").text_content() == "0"
+    assert page.locator("#learning-summary-skills").text_content().endswith("/ 14")
+    assert page.locator(".learning-track-progressbar[role='progressbar']").count() == 4
+
+    page.locator('button[data-lesson-id="sentence-building"]').first.click()
+    page.locator("#learning-runner").wait_for(state="visible")
+    progress = page.locator("#learning-step-progress")
+    assert progress.get_attribute("role") == "progressbar"
+    assert progress.get_attribute("aria-valuenow") == "0"
+    page.locator('input[name="learning-choice"][value="b"]').check()
+    page.locator("#learning-submit").click()
+    page.wait_for_function(
+        "() => document.querySelector('#learning-exercise-count').textContent === 'Exercise 2 of 3'"
+    )
+    assert progress.get_attribute("aria-valuenow") == "33"
+    assert "Step 2 of 3" in page.locator("#learning-step-label").text_content()
+
+
 def test_profile_setup_edit_cancel_save_and_reload(local_app_url: str, browser_page) -> None:
     page = browser_page
     page.goto(local_app_url)

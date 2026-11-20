@@ -120,6 +120,23 @@
       level.textContent = levels.get(track.level_id)?.title || "Curriculum";
       const description = document.createElement("p");
       description.textContent = track.description;
+      const trackDone = track.lessons.filter((lesson) => completed.has(lesson.id)).length;
+      const trackProgress = document.createElement("div");
+      trackProgress.className = "learning-track-progress";
+      const trackProgressLabel = document.createElement("span");
+      trackProgressLabel.textContent = trackDone + " of " + track.lessons.length + " lessons completed";
+      const trackProgressBar = document.createElement("div");
+      trackProgressBar.className = "learning-track-progressbar";
+      trackProgressBar.setAttribute("role", "progressbar");
+      trackProgressBar.setAttribute("aria-label", track.title + " completion");
+      trackProgressBar.setAttribute("aria-valuemin", "0");
+      trackProgressBar.setAttribute("aria-valuemax", "100");
+      const trackPercent = track.lessons.length ? Math.round((trackDone / track.lessons.length) * 100) : 0;
+      trackProgressBar.setAttribute("aria-valuenow", String(trackPercent));
+      const trackProgressFill = document.createElement("span");
+      trackProgressFill.style.width = trackPercent + "%";
+      trackProgressBar.append(trackProgressFill);
+      trackProgress.append(trackProgressLabel, trackProgressBar);
       const list = document.createElement("div");
       list.className = "learning-track-units";
       for (const unitId of track.unit_ids || []) {
@@ -168,7 +185,7 @@
         unitSection.append(unitHeading, unitDescription, outcomes, cards);
         list.append(unitSection);
       }
-      section.append(heading, level, description, list);
+      section.append(heading, level, description, trackProgress, list);
       container.append(section);
     }
   }
@@ -289,6 +306,9 @@
       state.voiceStatus = await request("/api/voice/status").catch(() => null);
       state.catalog = catalog;
       state.progress = progress;
+      $("#learning-summary-completed").textContent = String(progress.lessons_completed);
+      $("#learning-summary-attempts").textContent = String(progress.attempts_started);
+      $("#learning-summary-skills").textContent = (progress.skills || []).filter((skill) => skill.status !== "planned").length + " / " + catalog.skills.length;
       renderRecommendations(catalog.recommendations, progress);
       renderTracks(catalog.tracks, progress);
       renderSkills(progress.skills);
@@ -539,6 +559,15 @@
     $("#learning-runner").classList.remove("hidden");
     $("#learning-runner-title").textContent = attempt.lesson.title;
     $("#learning-runner-intro").textContent = attempt.lesson.introduction;
+    const stepProgress = $("#learning-step-progress");
+    const stepFill = $("#learning-step-progress-fill");
+    const completedExercises = attempt.status === "completed" ? attempt.exercise_count : attempt.response_count;
+    const stepPercent = attempt.exercise_count ? Math.round((completedExercises / attempt.exercise_count) * 100) : 0;
+    stepProgress.setAttribute("aria-valuenow", String(stepPercent));
+    stepFill.style.width = stepPercent + "%";
+    $("#learning-step-label").textContent = attempt.status === "completed"
+      ? "Lesson complete"
+      : "Step " + Math.min(attempt.response_count + 1, attempt.exercise_count) + " of " + attempt.exercise_count;
     const outcomes = $("#learning-outcomes");
     outcomes.replaceChildren();
     for (const outcome of attempt.lesson.learning_outcomes || []) {
@@ -550,10 +579,14 @@
     $("#learning-feedback").classList.add("hidden");
     if (attempt.status === "completed") {
       $("#learning-exercise").replaceChildren();
+      const completionNote = document.createElement("p");
+      completionNote.className = "learning-completion-note";
+      completionNote.textContent = "You completed this lesson. Take a moment to review what you practised, then choose your next small step.";
       $("#learning-exercise-count").textContent = "Completed";
       $("#learning-submit").disabled = true;
       $("#learning-submit").textContent = "Lesson completed";
       renderFeedback(attempt.feedback);
+      $("#learning-feedback").prepend(completionNote);
       if (attempt.next_lesson) {
         const next = document.createElement("button");
         next.type = "button";
