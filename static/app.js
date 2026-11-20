@@ -23,6 +23,8 @@ function showView(viewId) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+window.addEventListener("prepped:open-practice", () => showView("home-view"));
+
 async function api(url, options = {}) {
   const response = await fetch(url, {
     ...options,
