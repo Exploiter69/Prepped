@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import sqlite3
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -139,7 +139,7 @@ def test_project_and_career_memory_reviews_link_to_their_practice_skills(tmp_pat
         assert career_skill["closed_response_count"] == 0
         assert any(item["kind"] == "revision_activity" for item in career_skill["evidence"])
         today_activity = next(item for item in client.get("/api/intelligence/overview").json()["activity_30_days"]
-                              if item["date"] == date.today().isoformat())
+                              if item["date"] == datetime.now(timezone.utc).date().isoformat())
         assert today_activity["count"] >= 4
     finally:
         client.__exit__(None, None, None)
