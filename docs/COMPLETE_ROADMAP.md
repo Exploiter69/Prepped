@@ -1,6 +1,6 @@
 # Prepped — Complete Project Roadmap
 
-**Status:** Active roadmap. Phases A–F are implemented on `feature/learner-profile`; Phase G is the not-yet-started release-hardening and acceptance milestone. The text MVP is frozen except for material bugs.<br>
+**Status:** Active roadmap. Phases A–F are implemented on `feature/learner-profile`; Phase G release hardening is in progress. Target-device acceptance remains a release sign-off gate. The text MVP is frozen except for material bugs.<br>
 **Updated:** 2026-11-20<br>
 **Planning basis:** B.Tech semester 3 now; TDP continues through the final year. Dates are decision gates, not promises.<br>
 **Companion documents:** [Product Blueprint](PRODUCT_BLUEPRINT.md) · [Current State](CURRENT_STATE.md) · [Voice Setup](VOICE.md) · [ADR-002](ADR-002-LOCAL-VOICE-SLICE.md)
