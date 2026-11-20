@@ -317,6 +317,23 @@ def _skill_evidence(conn: sqlite3.Connection, curriculum: dict[str, Any], now: d
     }
     return output, stats
 
+def _active_goals(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    queries = {
+        "lessons_completed": "SELECT COUNT(DISTINCT lesson_id) AS n FROM learning_attempts WHERE status='completed' AND lesson_id!='baseline-check'",
+        "practice_sessions": "SELECT COUNT(*) AS n FROM sessions WHERE status='completed'",
+        "interviews_completed": "SELECT COUNT(*) AS n FROM career_sessions WHERE status='completed'",
+        "memory_reviews": "SELECT COUNT(*) AS n FROM learning_memory_reviews",
+    }
+    output = []
+    for row in conn.execute("SELECT id,title,goal_type,target_count,baseline_count,due_date FROM learner_goals WHERE status='active' ORDER BY created_at"):
+        item = dict(row)
+        current = int(conn.execute(queries[item["goal_type"]]).fetchone()["n"] or 0)
+        progress = max(0, current - int(item["baseline_count"]))
+        item["current_count"] = progress
+        item["remaining"] = max(0, int(item["target_count"]) - progress)
+        output.append(item)
+    return output
+
 def _recommendations(conn: sqlite3.Connection, curriculum: dict[str, Any], skills: list[dict[str, Any]]) -> list[dict[str, Any]]:
     profile = _profile(conn)
     route = build_recommendations(curriculum, profile)
@@ -362,6 +379,27 @@ def _recommendations(conn: sqlite3.Connection, curriculum: dict[str, Any], skill
                 "reason": item["why"], "estimated_minutes": lesson.get("estimated_minutes", 8),
                 "source": "learner_goal_route"})
             seen.add(key)
+    profile_goal = profile.get("primary_goal") if profile else "placement_interviews"
+    default_studio = "technical-fundamentals" if profile_goal == "technical_interviews" else "project-explanation"
+    for goal in _active_goals(conn):
+        if goal["remaining"] <= 0:
+            continue
+        if goal["goal_type"] == "interviews_completed":
+            key = "career_practice:" + default_studio
+            if key not in seen:
+                candidates.append({"kind": "career_practice", "target_id": default_studio,
+                    "title": "Interview practice for: " + goal["title"],
+                    "reason": f"This activity supports your active goal ({goal['current_count']} of {goal['target_count']} completed).",
+                    "estimated_minutes": 15, "source": "active_learner_goal", "goal_id": goal["id"]})
+                seen.add(key)
+        elif goal["goal_type"] == "practice_sessions":
+            key = "project_practice:project-explanation"
+            if key not in seen:
+                candidates.append({"kind": "project_practice", "target_id": "project-explanation",
+                    "title": "Project explanation practice for: " + goal["title"],
+                    "reason": f"This activity supports your active goal ({goal['current_count']} of {goal['target_count']} completed).",
+                    "estimated_minutes": 15, "source": "active_learner_goal", "goal_id": goal["id"]})
+                seen.add(key)
     now = _now()
     due = conn.execute(
         "SELECT id,front,due_at FROM learning_memory WHERE status='active' AND dismissed_at IS NULL AND due_at<=? ORDER BY due_at LIMIT 5",
@@ -492,7 +530,10 @@ def _generate_day(conn: sqlite3.Connection, curriculum: dict[str, Any], plan_dat
         remaining -= lesson["estimated_minutes"]
     profile = _profile(conn)
     goal = profile.get("primary_goal") if profile else "placement_interviews"
-    if include_career and goal in {"placement_interviews", "technical_interviews"} and remaining >= 15:
+    active_goals = _active_goals(conn)
+    interview_goal = any(item["goal_type"] == "interviews_completed" and item["remaining"] > 0 for item in active_goals)
+    project_goal = any(item["goal_type"] == "practice_sessions" and item["remaining"] > 0 for item in active_goals)
+    if include_career and (goal in {"placement_interviews", "technical_interviews"} or interview_goal) and remaining >= 15:
         recent = conn.execute(
             "SELECT 1 FROM career_sessions WHERE status='completed' AND completed_at>=? LIMIT 1",
             (_stamp(_now() - timedelta(days=14)),),
@@ -502,6 +543,11 @@ def _generate_day(conn: sqlite3.Connection, curriculum: dict[str, Any], plan_dat
             _add_plan_item(conn, plan_date, "career_practice", studio,
                            "Practise an interview scenario",
                            "This optional session matches your saved interview-preparation goal.", 15)
+            remaining -= 15
+    if project_goal and remaining >= 15:
+        _add_plan_item(conn, plan_date, "project_practice", "project-explanation",
+                       "Project explanation practice",
+                       "This practice supports your active project-practice goal.", 15)
     return _plan_view(conn, conn.execute("SELECT * FROM adaptive_plans WHERE plan_date=?", (plan_date.isoformat(),)).fetchone())
 
 def _overview(conn: sqlite3.Connection, curriculum: dict[str, Any]) -> dict[str, Any]:
@@ -528,7 +574,7 @@ def _overview(conn: sqlite3.Connection, curriculum: dict[str, Any]) -> dict[str,
         activity.append({"date": day.isoformat(), "count": int(count)})
     return {"generated_at": _stamp(now), "summary": {**stats, "due_memory_items": int(due),
             "memory_reviews": int(reviews), "evidence_note": "Activity, closed-exercise responses, and open self-review are kept distinct."},
-            "skills": skills, "recommendations": recommendations, "activity_30_days": activity,
+            "active_goals": _active_goals(conn), "skills": skills, "recommendations": recommendations, "activity_30_days": activity,
             "guardrails": ["No composite ability or mastery score.", "Open responses and career feedback are not automatically graded.",
                            "Skill states are derived from saved local evidence and show freshness and coverage limits."]}
 
