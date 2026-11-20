@@ -23,7 +23,7 @@ Expected:
 - The complete test suite passes. The Playwright browser tests exercise profile open/save/edit/cancel/reload, the text-only practice journey, and the Phase B–F learner flows in Chromium. The profile unit tests also assert the served page's accessible toggle/form contract. CI installs the optional browser-test extra and Chromium; the application itself does not require Playwright. Record the exact pass/skip count and any warnings.
 - A skipped real-model integration test is recorded as skipped, not passed.
 
-Latest recorded Chromium CI acceptance: [run 44534499386](https://github.com/Exploiter69/Prepped/actions/runs/44534499386) — 41 passed, 2 skipped, 1 warning. The skips require `espeak-ng`, unavailable on the hosted runner. CI runs on pushes to `feature/**` and pull requests targeting `feature/learner-profile` or `main`. A green CI run is evidence for the checked commit only.
+Latest full-suite Chromium CI acceptance: [run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798) — 100 passed, 2 skipped, 1 warning. The skips require `espeak-ng`, unavailable on the hosted runner. CI runs on pushes to `feature/**` and pull requests targeting `feature/learner-profile` or `main`. A green CI run is evidence for the checked commit only.
 
 ## 2. Learner profile — browser acceptance
 
@@ -306,7 +306,7 @@ Use a disposable database. Automated Chromium coverage does not replace checking
 
 ### Phase E automated evidence
 
-- [x] GitHub Actions passes on the Phase E implementation commit: [run 44568533503](https://github.com/Exploiter69/Prepped/actions/runs/44568533503) — 88 passed, 2 skipped (both require `espeak-ng`); Python compilation, JavaScript syntax, API tests, and Chromium acceptance all passed.
+- [x] Current full-suite GitHub Actions covers Phase E: [run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798) — 100 passed, 2 skipped, 1 warning.
 - [ ] Complete the manual target-laptop checks above. CI does not prove microphone permission, live transcription quality, local TTS availability, or device-specific responsive behaviour.
 
 
