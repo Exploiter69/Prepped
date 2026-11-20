@@ -417,4 +417,4 @@ The Project Explanation Practice Room now has a focused voice-and-text practice 
 
 No API, database schema, curriculum, voice provider, or runtime dependency changed. Existing microphone permission, stale-request cancellation, STT abort, raw-audio non-persistence, Groq disclosure, and text fallback behaviour are retained.
 
-Automated browser coverage was added for progress semantics, editable draft state, text-first completion, and visualizer activation/cleanup. Exact-commit CI and target-laptop visual/accessibility acceptance must be recorded before this stage is considered accepted. See [UI_STAGE_3_ACCEPTANCE.md](UI_STAGE_3_ACCEPTANCE.md).
+Automated browser coverage was added for progress semantics, editable draft state, text-first completion, visualizer activation/cleanup on navigation, and visible Groq disclosure before capture. Exact-commit CI and target-laptop visual/accessibility acceptance must be recorded before this stage is considered accepted. See [UI_STAGE_3_ACCEPTANCE.md](UI_STAGE_3_ACCEPTANCE.md).
