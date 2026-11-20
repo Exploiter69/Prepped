@@ -563,6 +563,9 @@ def _overview(conn: sqlite3.Connection, curriculum: dict[str, Any]) -> dict[str,
         (_stamp(now),),
     ).fetchone()["n"]
     reviews = conn.execute("SELECT COUNT(*) AS n FROM learning_memory_reviews").fetchone()["n"]
+    revision_ratings = {row["rating"]: int(row["n"]) for row in conn.execute(
+        "SELECT rating,COUNT(*) AS n FROM learning_memory_reviews GROUP BY rating"
+    )}
     activity = []
     for offset in range(29, -1, -1):
         day = now.date() - timedelta(days=offset)
@@ -577,7 +580,8 @@ def _overview(conn: sqlite3.Connection, curriculum: dict[str, Any]) -> dict[str,
         ).fetchone()["n"]
         activity.append({"date": day.isoformat(), "count": int(count)})
     return {"generated_at": _stamp(now), "summary": {**stats, "due_memory_items": int(due),
-            "memory_reviews": int(reviews), "evidence_note": "Activity, closed-exercise responses, and open self-review are kept distinct."},
+            "memory_reviews": int(reviews), "revision_ratings": revision_ratings,
+            "evidence_note": "Activity, closed-exercise responses, and open self-review are kept distinct."},
             "active_goals": _active_goals(conn), "skills": skills, "recommendations": recommendations, "activity_30_days": activity,
             "guardrails": ["No composite ability or mastery score.", "Open responses and career feedback are not automatically graded.",
                            "Skill states are derived from saved local evidence and show freshness and coverage limits."]}
