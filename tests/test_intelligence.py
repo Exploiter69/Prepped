@@ -7,6 +7,7 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 
 from prepped.main import create_app
+from prepped.learning import load_curriculum
 
 
 def client_for(path: Path) -> TestClient:
@@ -19,10 +20,9 @@ def complete_sentence_lesson(client: TestClient, lesson_id: str = "sentence-buil
     attempt = client.post("/api/learning/attempts", json={"lesson_id": lesson_id})
     assert attempt.status_code == 201
     result = attempt.json()
-    for exercise in result["lesson"]["exercises"]:
-        if exercise["type"] in {"choice", "vocabulary", "listening"}:
-            answer = exercise["answer"]
-        elif exercise["type"] == "ordering":
+    raw_lesson = next(item for item in load_curriculum()["lessons"] if item["id"] == lesson_id)
+    for exercise in raw_lesson["exercises"]:
+        if exercise["type"] in {"choice", "vocabulary", "listening", "ordering"}:
             answer = exercise["answer"]
         else:
             answer = "I built and tested a small project feature."
@@ -74,7 +74,7 @@ def test_repeated_closed_exercise_misses_suggest_revisiting_linked_lesson(tmp_pa
     try:
         for _ in range(2):
             attempt = client.post("/api/learning/attempts", json={"lesson_id": "sentence-building"}).json()
-            exercise = attempt["lesson"]["exercises"][0]
+            exercise = next(item for item in load_curriculum()["lessons"] if item["id"] == "sentence-building")["exercises"][0]
             wrong = next(option["id"] for option in exercise["options"] if option["id"] != exercise["answer"])
             response = client.post(f"/api/learning/attempts/{attempt['id']}/responses", json={
                 "exercise_id": exercise["id"], "answer": wrong,
