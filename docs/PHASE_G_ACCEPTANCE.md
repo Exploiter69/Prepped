@@ -70,7 +70,7 @@ Automated browser tests are useful regression evidence, not a substitute for ass
 - [x] Primary profile fields have associated labels.
 - [x] Keyboard-only navigation and a narrow 375 px viewport have browser regression tests.
 - [x] Static regression checks reject unsafe HTML string sinks in all six browser scripts.
-- [x] Git ignore rules cover local environment files, databases, and voice model files.
+- [x] Git ignore rules cover local environment files, databases, exported Prepped backups, and voice model files.
 - [x] Core dark-theme text/status tokens are checked for WCAG AA contrast against the panel background.
 - [ ] Complete keyboard-only navigation through Home, Learning, Memory, Career, Progress, History, forms, dialogs, and restore controls.
 - [ ] Complete screen-reader review with Orca or another available screen reader: headings, landmarks, labels, button names, status announcements, errors, and expanded/collapsed states.
