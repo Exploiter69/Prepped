@@ -190,6 +190,7 @@ footer { border-top:1px solid var(--line); border-bottom:0; color:var(--muted); 
   .career-studio-list,.career-setup-row { grid-template-columns:1fr; }
   .career-history-row { align-items:flex-start; flex-wrap:wrap; }
   .career-history-row > div { flex-basis:100%; }
+  .career-review > .form-actions { flex-wrap:wrap; justify-content:flex-start; }
 }
 
 
