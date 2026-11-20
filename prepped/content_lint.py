@@ -7,6 +7,7 @@ from typing import Any
 
 from prepped.career import DEFAULT_STUDIOS_PATH, load_studios
 from prepped.learning import DEFAULT_CURRICULUM_PATH, load_curriculum
+from prepped.intelligence import STUDIO_SKILLS
 
 
 class ContentBundleValidationError(ValueError):
@@ -53,6 +54,17 @@ def validate_content_bundle(
             raise ContentBundleValidationError(
                 f"Active skill {skill_id} is not taught by a lesson or Career Studio."
             )
+
+    declared_studio_skill_map = {
+        studio_id: set(studio["skill_ids"]) for studio_id, studio in studios.items()
+    }
+    intelligence_studio_skill_map = {
+        studio_id: set(skill_ids) for studio_id, skill_ids in STUDIO_SKILLS.items()
+    }
+    if intelligence_studio_skill_map != declared_studio_skill_map:
+        raise ContentBundleValidationError(
+            "Learner evidence mappings do not match the authored Career Studio skill mappings."
+        )
 
     for track in curriculum["tracks"]:
         studio_ids = set(track.get("studio_ids", []))

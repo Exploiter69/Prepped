@@ -134,7 +134,7 @@ def test_project_and_career_memory_reviews_link_to_their_practice_skills(tmp_pat
         project_skill = next(item for item in skills if item["skill_id"] == "communication.project-summary")
         career_skill = next(item for item in skills if item["skill_id"] == "interview.hr-behavioural")
         assert any(item["kind"] == "revision_activity" for item in project_skill["evidence"])
-        assert career_skill["curriculum_status"] == "planned"
+        assert career_skill["curriculum_status"] == "active"
         assert career_skill["state"] == "practice_recorded"
         assert career_skill["closed_response_count"] == 0
         assert any(item["kind"] == "revision_activity" for item in career_skill["evidence"])

@@ -23,8 +23,8 @@ CLOSED_EXERCISES = {"choice", "vocabulary", "listening", "ordering"}
 STUDIO_SKILLS = {
     "project-explanation": ["communication.project-summary", "communication.clarity",
                             "interview.project-explanation", "interview.readiness"],
-    "hr-behavioural": ["interview.hr-behavioural"],
-    "technical-fundamentals": ["interview.technical"],
+    "hr-behavioural": ["interview.hr-behavioural", "communication.professional", "communication.confidence"],
+    "technical-fundamentals": ["interview.technical", "communication.clarity"],
 }
 PLAN_ITEM_TYPES = {"memory_review", "lesson", "career_practice", "project_practice"}
 PLAN_TABLES = """

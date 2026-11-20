@@ -199,7 +199,7 @@ def test_learning_workspace_completes_and_resumes_a_saved_lesson(local_app_url: 
     )
     assert "Placement communication" in page.locator("#learning-route-title").inner_text()
     assert page.locator(".learning-skill").count() >= 14
-    assert "planned" in page.locator("#learning-skill-list").inner_text().lower()
+    assert "active" in page.locator("#learning-skill-list").inner_text().lower()
 
     page.locator('button[data-lesson-id="sentence-building"]').click()
     page.locator("#learning-runner").wait_for(state="visible")

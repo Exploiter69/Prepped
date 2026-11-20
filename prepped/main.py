@@ -209,7 +209,7 @@ def create_app(
                 )}
                 if integrity != "ok" or not required.issubset(existing):
                     raise RuntimeError("Database check failed.")
-            load_curriculum(Path(curriculum_path))
+            validate_content_bundle(Path(curriculum_path))
         except Exception as exc:
             raise HTTPException(status_code=503, detail="Local data or curriculum is not ready. Check the local application files.") from exc
         return {"status": "ready", "application": "Prepped", "database": "ok", "curriculum": "ok"}

@@ -285,7 +285,7 @@ def build_recommendations(curriculum: dict[str, Any], profile: dict[str, Any] | 
                       "estimated_minutes": lesson["estimated_minutes"], "skill_ids": lesson["skill_ids"], "why": why})
     missing = sorted(areas - covered_areas)
     if goal == "technical_interviews":
-        note = "A dedicated technical-interview question bank is planned. This route builds project-explanation foundations first."
+        note = "Technical interview practice is available in Career Studio’s Technical Fundamentals studio. This route also builds supporting project-explanation foundations."
     elif missing:
         note = "These selected focus areas do not yet have dedicated lessons: " + ", ".join(missing) + "."
     else:

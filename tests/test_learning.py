@@ -75,6 +75,16 @@ def test_catalog_hides_answer_keys_and_exposes_profile_based_recommendations(tmp
         assert professional_route["track_id"] == "project-communication"
         assert "confidence" in professional_route["note"]
 
+        client.put("/api/profile", json={
+            "primary_goal": "technical_interviews",
+            "confidence_level": "developing",
+            "improvement_areas": ["project_explanation"],
+        })
+        technical_route = client.get("/api/learning/recommendations").json()
+        assert technical_route["track_id"] == "placement-communication"
+        assert "Technical Fundamentals" in technical_route["note"]
+        assert "planned" not in technical_route["note"]
+
 
 def test_lesson_attempt_enforces_order_persists_feedback_and_updates_progress(tmp_path: Path) -> None:
     db = tmp_path / "prepped.sqlite3"
@@ -124,7 +134,7 @@ def test_lesson_attempt_enforces_order_persists_feedback_and_updates_progress(tm
         assert progress["attempts_started"] == 1
         assert progress["learning_events"] == 5
         assert "sentence-building" in progress["completed_lesson_ids"]
-        assert any(skill["status"] == "planned" for skill in progress["skills"])
+        assert all(skill["status"] == "active" for skill in progress["skills"])
         assert "not proficiency levels" in progress["note"]
 
     with TestClient(create_app(db_path=db)) as restarted:
