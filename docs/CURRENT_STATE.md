@@ -3,7 +3,7 @@
 **Updated:** 2026-11-20<br>
 **Source of truth:** GitHub `feature/learner-profile` (working branch; `main` remains the last synced baseline)<br>
 **Product direction:** Voice-first, personalised practice and learning platform for Indian engineering students. The text practice loop is a reliable fallback and is frozen for feature development except material bugs.<br>
-**Engineering stage:** Phases A–F feature implementation is present on `feature/learner-profile`. Latest full GitHub Actions run: [44655380427](https://github.com/Exploiter69/Prepped/actions/runs/44655380427) — **100 passed, 2 skipped, 1 warning**; Python compilation, all six JavaScript syntax checks, dependency audit, and Chromium browser tests passed. The two skips require `espeak-ng`, unavailable on the hosted runner. Target-laptop manual acceptance for the implemented phases remains open; Phase G has not started.
+**Engineering stage:** Phases A–F are implemented. Phase G engineering hardening is in progress on `feature/learner-profile`; the final Phase G CI run is pending. The last pre-Phase-G baseline run was [44655380427](https://github.com/Exploiter69/Prepped/actions/runs/44655380427) — 100 passed, 2 skipped, 1 warning. Target-laptop acceptance remains open. Track Phase G work and evidence in [PHASE_G_ACCEPTANCE.md](PHASE_G_ACCEPTANCE.md).
 
 ## Foundation and A–F automated verification
 
