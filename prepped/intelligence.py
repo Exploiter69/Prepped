@@ -427,6 +427,19 @@ def _ensure_plan(conn: sqlite3.Connection, plan_date: date, minutes: int) -> sql
 
 def _add_plan_item(conn: sqlite3.Connection, plan_date: date, item_type: str, target_id: str,
                    title: str, reason: str, minutes: int) -> None:
+    existing = conn.execute(
+        "SELECT 1 FROM adaptive_plan_items WHERE plan_date=? AND item_type=? AND target_id=?",
+        (plan_date.isoformat(), item_type, target_id),
+    ).fetchone()
+    if existing:
+        return
+    plan = conn.execute("SELECT available_minutes FROM adaptive_plans WHERE plan_date=?", (plan_date.isoformat(),)).fetchone()
+    used = conn.execute(
+        "SELECT COALESCE(SUM(estimated_minutes),0) AS n FROM adaptive_plan_items WHERE plan_date=? AND skipped_at IS NULL",
+        (plan_date.isoformat(),),
+    ).fetchone()["n"]
+    if plan and int(used) + minutes > int(plan["available_minutes"]):
+        raise HTTPException(status_code=422, detail="This activity would exceed the day's available time. Increase the time budget or remove another activity.")
     count = conn.execute("SELECT COUNT(*) AS n FROM adaptive_plan_items WHERE plan_date=?", (plan_date.isoformat(),)).fetchone()["n"]
     conn.execute(
         """INSERT OR IGNORE INTO adaptive_plan_items
@@ -463,7 +476,7 @@ def _generate_day(conn: sqlite3.Connection, curriculum: dict[str, Any], plan_dat
     for item in due_rows:
         # Reserve enough time for a focused lesson instead of letting a large
         # review backlog consume the entire daily plan.
-        if item["id"] in used_memory or remaining < 15 or daily_reviews >= 2:
+        if item["id"] in used_memory or remaining < 25 or daily_reviews >= 2:
             continue
         _add_plan_item(conn, plan_date, "memory_review", item["id"], "Review: " + item["front"],
                        "This learner-saved item is due on or before this day.", 5)
@@ -631,7 +644,15 @@ def create_intelligence_router(db_path: Path, curriculum_path: Path = DEFAULT_CU
                 conn.execute("UPDATE adaptive_plan_items SET skipped_at=? WHERE id=?",
                              (_stamp() if payload.skipped else None, item_id))
             if payload.position is not None:
-                conn.execute("UPDATE adaptive_plan_items SET position=? WHERE id=?", (payload.position, item_id))
+                siblings = conn.execute(
+                    "SELECT id FROM adaptive_plan_items WHERE plan_date=? ORDER BY position,created_at,id",
+                    (item["plan_date"],),
+                ).fetchall()
+                ordered = [row["id"] for row in siblings]
+                ordered.remove(item_id)
+                ordered.insert(min(payload.position, len(ordered)), item_id)
+                for index, sibling_id in enumerate(ordered):
+                    conn.execute("UPDATE adaptive_plan_items SET position=? WHERE id=?", (index, sibling_id))
             plan = conn.execute("SELECT * FROM adaptive_plans WHERE plan_date=?", (item["plan_date"],)).fetchone()
             return {"plan": _plan_view(conn, plan)}
 
