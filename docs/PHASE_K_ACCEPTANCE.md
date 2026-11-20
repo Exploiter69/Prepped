@@ -1,6 +1,6 @@
 # Phase K — Security, Privacy, Data Protection & Reliability
 
-**Status:** Engineering controls and regression coverage implemented on the current branch; local and exact-commit CI verification are pending until the user runs the branch checks and GitHub Actions completes. Manual disk/permission/interruption recovery rehearsal remains open. This is not a security certification.
+**Status:** Engineering implementation and exact-commit GitHub Actions passed on commit f0d4dd14673392ea90787a7029873be11f89b69b ([run 44750831526](https://github.com/Exploiter69/Prepped/actions/runs/44750831526)): 168 passed, 2 skipped, 0 warnings. pip-audit scanned 73 resolved dependencies with 0 known vulnerabilities; pip-licenses produced 68 distribution records. User laptop verification and disposable-data recovery drills remain open. The repository's own licence is undeclared; no redistribution permission is implied. This is not a security certification.
 
 **Scope:** local, single-user, loopback-only application. No LAN/public deployment, reverse proxy, tunnel, multi-user accounts, authentication, or hosted database is supported or authorised.
 
@@ -62,28 +62,26 @@ Application-level backup encryption is deferred. Adding encryption without a rel
 
 ## Dependency and licence evidence
 
-- Direct dependency roles and version ranges are documented in pyproject.toml.
-- CI runs pip-audit against the resolved non-editable environment.
-- CI produces pip-audit.json and dependency-licenses.json artifacts (30-day retention) using pip-licenses.
-- Review the generated artifact for the exact workflow run. Optional model files are separately licensed; do not redistribute them without checking their own terms.
-- There is no lockfile; repeatable resolution is not claimed.
-- The first generated inventory (workflow run 44748989457) contained 54 distributions; 53 had licence metadata and the local prepped distribution was UNKNOWN. The repository has no LICENSE file or project licence declaration. Do not assume the project grants reuse or redistribution rights; the owner must select and add a licence before distributing the package. This is an explicit unresolved owner decision, not an approved exception.
-- The first inventory covered dev/browser dependencies but not the optional Vosk/Piper extras. The workflow is being expanded to install and audit every declared extra before the final Phase K dependency review.
+- CI installs all declared extras: dev, browser-test, voice, voice-piper, and voice-cloud. The exact run scanned 73 resolved dependencies with pip-audit and reported zero known vulnerabilities.
+- pip-licenses generated a 68-distribution JSON inventory (67 third-party distributions plus the local prepped package). The artifact is available from [workflow run 44750831526](https://github.com/Exploiter69/Prepped/actions/runs/44750831526), retained for 30 days.
+- Notable licence metadata: Vosk 0.3.45 reports Apache Software License; Piper TTS 1.8.0 reports GPL-3.0-or-later; httpx2 2.16.2 reports BSD-3-Clause. Piper is optional and neither Piper nor Vosk model weights are bundled; model assets have separate licence terms.
+- The local prepped 0.3.0 distribution reports UNKNOWN. The repository has no LICENSE file and pyproject.toml has no project licence declaration. Do not assume the project grants reuse or redistribution rights. The owner must choose and add a licence before distributing the package; this is an explicit unresolved owner decision, not an approved exception.
+- There is no lockfile; repeatable dependency resolution is not claimed. GitHub Actions use Node 24 action releases (checkout v7.0.1, setup-python v7.1.0, upload-artifact v7.0.2). httpx2 is included in dev dependencies for Starlette TestClient, eliminating the prior httpx deprecation warning.
 
 ## Automated acceptance matrix
 
-| Requirement | Automated coverage / implementation | Status before user run |
+| Requirement | Automated coverage / implementation | Exact-commit CI status (f0d4dd1) |
 |---|---|---|
-| Loopback Host and actual peer | Host/Origin tests plus remote-peer spoof regression | Implemented; run pending |
-| Request size bounds | 1 MiB JSON, 12 MiB voice, 25 MiB restore ASGI limits | Implemented; run pending |
-| File permissions and symlink | POSIX 0700/0600 assertions, symlink/non-regular rejection | Implemented; run pending |
-| SQL transaction rollback | Process-level exception rollback and subsequent integrity check | Implemented; run pending |
-| Restore validation/rollback | Existing malformed, numeric, nested, size, row, FK and schema-compatibility tests | Existing coverage; run pending |
-| Deletion cascades | Session answers, Career turns, Memory reviews | Implemented; run pending |
-| Safe DOM sinks | Static test across all learner-facing JS modules | Existing coverage; run pending |
-| Voice data disclosure | Existing adapter/status/error tests; raw audio remains in memory | Existing coverage; run pending |
-| Dependency vulnerabilities | CI pip-audit JSON output | CI pending |
-| Dependency licences | CI full installed-distribution licence inventory | CI pending |
+| Loopback Host and actual peer | Host/Origin tests plus remote-peer spoof regression | Passed in CI; laptop run pending |
+| Request size bounds | 1 MiB JSON, 12 MiB voice, 25 MiB restore ASGI limits | Passed in CI; laptop run pending |
+| File permissions and symlink | POSIX 0700/0600 assertions, symlink/non-regular rejection | Passed in CI; laptop run pending |
+| SQL transaction rollback | Process-level exception rollback and subsequent integrity check | Passed in CI; laptop run pending |
+| Restore validation/rollback | Existing malformed, numeric, nested, size, row, FK and schema-compatibility tests | Passed in CI; laptop run pending |
+| Deletion cascades | Session answers, Career turns, Memory reviews | Passed in CI; laptop run pending |
+| Safe DOM sinks | Static test across all learner-facing JS modules | Passed in CI; laptop run pending |
+| Voice data disclosure | Existing adapter/status/error tests; raw audio remains in memory | Passed in CI; laptop run pending |
+| Dependency vulnerabilities | CI pip-audit scanned 73 resolved dependencies | 0 known vulnerabilities |
+| Dependency licences | CI inventory reviewed: 68 distributions; local prepped package UNKNOWN; optional Piper GPL-3.0-or-later | Reviewed; project licence decision required before redistribution |
 
 ## Manual acceptance — must use disposable data
 
@@ -93,8 +91,9 @@ Application-level backup encryption is deferred. Adding encryption without a rel
 - [ ] Interrupt a restore while using a disposable DB, then check /api/ready, SQLite integrity, and restore from a trusted backup.
 - [ ] Upgrade a copy of a schema-3 database to current schema and verify preserved profile, sessions, answers, and foreign keys.
 - [ ] Verify remote Groq disclosure and provider selection only if the optional key is configured; never use confidential audio.
-- [ ] Inspect the exact CI dependency audit and licence artifacts; record any CVE or licence exception with a disposition.
+- [x] Inspect the exact CI dependency audit and licence artifacts: 0 known vulnerabilities across 73 dependencies; 68 licence records; Piper GPL-3.0-or-later; project package UNKNOWN.
 - [ ] Recheck backup confidentiality, delete/cascade semantics, and the limitations in this document.
+- [ ] Choose and declare a project licence before any package/source redistribution; do not treat the current UNKNOWN metadata as permission.
 
 ## Exit decision
 

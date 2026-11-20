@@ -116,3 +116,8 @@ The current backup format version is 1 and database schema version is 4. A backu
 - Deleting records removes them from the live SQLite tables and dependent rows; it is not a forensic secure-erase guarantee for filesystem snapshots, old backups, or storage media.
 - The server rejects non-loopback TCP peers even if they send a loopback Host header. Keep Uvicorn bound to 127.0.0.1; this does not make LAN/public deployment supported.
 - JSON API request bodies are limited to 1 MiB, audio transcription uploads to 12 MiB, and backup restore to 25 MiB.
+
+
+## Project licence
+
+This repository currently has no LICENSE file or project licence declaration. Do not assume that the source or package is licensed for reuse or redistribution. The optional Piper TTS package is GPL-3.0-or-later; its installation does not mean its code or model assets are bundled with Prepped. A project licence and third-party compatibility review are required before distributing the project.

@@ -122,6 +122,8 @@ Phase K does not add application-level backup encryption. A password-based schem
 - CI generates JSON evidence for all installed distribution licence metadata using pip-licenses and uploads both the vulnerability and licence inventories as a 30-day workflow artifact. Review distribution metadata and upstream licence texts before redistributing optional packages or model weights.
 - Optional Piper/Vosk model files are not bundled; each model's own licence and redistribution terms must be checked separately. No unresolved vulnerability or licence exception is pre-approved by this document; inspect the artifact for the exact commit/run.
 - The repository currently has no LICENSE file and pyproject.toml declares no project licence; pip-licenses therefore reports the local prepped distribution as UNKNOWN. No reuse or redistribution permission should be inferred. The owner must choose and add a licence before distributing the package.
+- Exact CI run 44750831526 scanned 73 resolved dependencies with pip-audit and found no known vulnerabilities. The 68-entry licence inventory records 67 third-party distributions and the local prepped package. Vosk 0.3.45 reports Apache Software License; Piper TTS 1.8.0 reports GPL-3.0-or-later; httpx2 2.16.2 reports BSD-3-Clause. Piper/Vosk are optional and no models are bundled. Review the workflow artifact before changing or redistributing these dependencies.
+- CI installs every declared extra (dev, browser-test, voice, voice-piper, voice-cloud). The TestClient backend now uses httpx2 to remove the Starlette/httpx deprecation warning. GitHub Actions are on Node 24 action releases.
 
 ### Reliability verification and manual limits
 
