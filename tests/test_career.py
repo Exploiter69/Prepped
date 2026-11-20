@@ -248,3 +248,18 @@ def test_retry_feedback_compares_previous_answers_without_claiming_improvement(t
         assert feedback["attempt_comparison"][0]["previous_answer"].startswith("For example, I built the first")
         assert feedback["attempt_comparison"][0]["current_answer"].startswith("For example, I built the second")
         assert "not a measured improvement" in feedback["comparison_note"].lower()
+
+
+def test_career_studios_have_observable_outcomes_sources_and_skill_mappings() -> None:
+    catalog = load_studios()
+    assert catalog["version"] == "1.3.0"
+    source_ids = {source["id"] for source in catalog["sources"]}
+    for studio in catalog["studios"]:
+        assert studio["learning_outcomes"]
+        assert studio["skill_ids"]
+        assert studio["content_review"]["human_review_required"] is True
+        assert set(studio["source_ids"]).issubset(source_ids)
+        for question in studio["questions"]:
+            assert question["learning_outcome"]
+            assert question["skill_ids"]
+            assert set(question["skill_ids"]).issubset(set(studio["skill_ids"]))

@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.1.0",
+  "schema_version": "1.2.0",
   "skills": [
     {
       "id": "english.sentence-structure",
@@ -78,6 +78,9 @@
       "status": "active",
       "prerequisites": [
         "communication.project-summary"
+      ],
+      "studio_ids": [
+        "project-explanation"
       ]
     },
     {
@@ -148,6 +151,9 @@
       "status": "active",
       "prerequisites": [
         "communication.project-summary"
+      ],
+      "studio_ids": [
+        "project-explanation"
       ]
     },
     {
@@ -155,20 +161,30 @@
       "title": "HR and behavioural interviews",
       "description": "Prepare specific examples for common behavioural prompts.",
       "outcomes": [
-        "Structure a behavioural example"
+        "Describe a truthful example of teamwork or a challenge",
+        "Explain personal actions and relevant context",
+        "Reflect on a lesson or next step without inventing outcomes"
       ],
       "category": "interview",
-      "status": "planned"
+      "status": "active",
+      "studio_ids": [
+        "hr-behavioural"
+      ]
     },
     {
       "id": "interview.technical",
       "title": "Technical interviews",
       "description": "Explain technical concepts, design choices, and trade-offs.",
       "outcomes": [
-        "Explain a technical concept"
+        "Explain a core CS concept in clear language",
+        "Use a concrete example to illustrate a concept",
+        "Discuss a trade-off or limitation without overstating certainty"
       ],
       "category": "interview",
-      "status": "planned"
+      "status": "active",
+      "studio_ids": [
+        "technical-fundamentals"
+      ]
     }
   ],
   "tracks": [
@@ -208,6 +224,12 @@
         "listening-practice",
         "speaking-practice",
         "pronunciation-practice"
+      ],
+      "studio_ids": [],
+      "learning_outcomes": [
+        "Write and revise clear sentences for familiar study and project contexts",
+        "Identify key details and next actions in short spoken conversations",
+        "Give a short structured response and practise it privately"
       ]
     },
     {
@@ -231,6 +253,14 @@
       "unit_ids": [
         "project-structure",
         "evidence-clarity"
+      ],
+      "studio_ids": [
+        "project-explanation"
+      ],
+      "learning_outcomes": [
+        "Explain a project's problem, approach, and intended users",
+        "Describe personal contribution and make claims specific",
+        "Distinguish what was tested from what remains unknown"
       ]
     },
     {
@@ -256,6 +286,16 @@
       "unit_ids": [
         "project-structure",
         "evidence-clarity"
+      ],
+      "studio_ids": [
+        "project-explanation",
+        "hr-behavioural",
+        "technical-fundamentals"
+      ],
+      "learning_outcomes": [
+        "Explain a project and the learner's own contribution",
+        "Respond to behavioural prompts with truthful, specific examples",
+        "Explain selected CS fundamentals with examples and trade-offs"
       ]
     },
     {
@@ -270,6 +310,10 @@
       ],
       "lesson_ids": [
         "baseline-check"
+      ],
+      "studio_ids": [],
+      "learning_outcomes": [
+        "Capture a private starting snapshot of selected communication tasks without assigning a level or score"
       ]
     }
   ],
@@ -358,7 +402,17 @@
         }
       ],
       "level_id": "foundation",
-      "unit_id": "sentence-foundations"
+      "unit_id": "sentence-foundations",
+      "source_ids": [],
+      "completion_condition": "Submit all three exercises; the open sentence is saved for private self-review rather than automatically graded.",
+      "content_review": {
+        "status": "ai_assisted_editorial_review",
+        "reviewer": "Prepped Phase J editorial audit (AI-assisted)",
+        "reviewed_on": "2026-11-20",
+        "human_review_required": true,
+        "note": "Editorial checks cover clarity, outcome alignment, answer-key consistency, scaffolding, and text alternatives. This is not qualified teacher or domain-expert sign-off.",
+        "scope": "Lesson explanation, worked example, sequence, exercise prompts, answer keys or self-review guidance, and accessibility alternatives."
+      }
     },
     {
       "id": "grammar-in-context",
@@ -487,7 +541,21 @@
         }
       ],
       "level_id": "foundation",
-      "unit_id": "grammar-practice"
+      "unit_id": "grammar-practice",
+      "source_ids": [
+        "bc-present-simple",
+        "bc-past-simple",
+        "bc-questions-negatives"
+      ],
+      "completion_condition": "Submit each objective grammar item and the open correction/reflection prompts; open responses remain self-review.",
+      "content_review": {
+        "status": "ai_assisted_editorial_review",
+        "reviewer": "Prepped Phase J editorial audit (AI-assisted)",
+        "reviewed_on": "2026-11-20",
+        "human_review_required": true,
+        "note": "Editorial checks cover clarity, outcome alignment, answer-key consistency, scaffolding, and text alternatives. This is not qualified teacher or domain-expert sign-off.",
+        "scope": "Lesson explanation, worked example, sequence, exercise prompts, answer keys or self-review guidance, and accessibility alternatives."
+      }
     },
     {
       "id": "structured-project-summary",
@@ -568,7 +636,17 @@
         }
       ],
       "level_id": "foundation",
-      "unit_id": "project-structure"
+      "unit_id": "project-structure",
+      "source_ids": [],
+      "completion_condition": "Complete the objective sequence task and write a project summary using only claims you can support.",
+      "content_review": {
+        "status": "ai_assisted_editorial_review",
+        "reviewer": "Prepped Phase J editorial audit (AI-assisted)",
+        "reviewed_on": "2026-11-20",
+        "human_review_required": true,
+        "note": "Editorial checks cover clarity, outcome alignment, answer-key consistency, scaffolding, and text alternatives. This is not qualified teacher or domain-expert sign-off.",
+        "scope": "Lesson explanation, worked example, sequence, exercise prompts, answer keys or self-review guidance, and accessibility alternatives."
+      }
     },
     {
       "id": "specific-explanations",
@@ -651,7 +729,17 @@
         }
       ],
       "level_id": "foundation",
-      "unit_id": "evidence-clarity"
+      "unit_id": "evidence-clarity",
+      "source_ids": [],
+      "completion_condition": "Complete the objective examples and write one specific claim with its evidence and limitation.",
+      "content_review": {
+        "status": "ai_assisted_editorial_review",
+        "reviewer": "Prepped Phase J editorial audit (AI-assisted)",
+        "reviewed_on": "2026-11-20",
+        "human_review_required": true,
+        "note": "Editorial checks cover clarity, outcome alignment, answer-key consistency, scaffolding, and text alternatives. This is not qualified teacher or domain-expert sign-off.",
+        "scope": "Lesson explanation, worked example, sequence, exercise prompts, answer keys or self-review guidance, and accessibility alternatives."
+      }
     },
     {
       "id": "vocabulary-in-context",
@@ -731,7 +819,17 @@
         }
       ],
       "level_id": "foundation",
-      "unit_id": "vocabulary-practice"
+      "unit_id": "vocabulary-practice",
+      "source_ids": [],
+      "completion_condition": "Complete the contextual vocabulary items and write one true sentence using a selected word.",
+      "content_review": {
+        "status": "ai_assisted_editorial_review",
+        "reviewer": "Prepped Phase J editorial audit (AI-assisted)",
+        "reviewed_on": "2026-11-20",
+        "human_review_required": true,
+        "note": "Editorial checks cover clarity, outcome alignment, answer-key consistency, scaffolding, and text alternatives. This is not qualified teacher or domain-expert sign-off.",
+        "scope": "Lesson explanation, worked example, sequence, exercise prompts, answer keys or self-review guidance, and accessibility alternatives."
+      }
     },
     {
       "id": "listening-for-details",
@@ -814,7 +912,17 @@
         }
       ],
       "level_id": "foundation",
-      "unit_id": "listening-practice"
+      "unit_id": "listening-practice",
+      "source_ids": [],
+      "completion_condition": "Answer both listening checks and write a short summary; the transcript remains available as an equivalent text alternative.",
+      "content_review": {
+        "status": "ai_assisted_editorial_review",
+        "reviewer": "Prepped Phase J editorial audit (AI-assisted)",
+        "reviewed_on": "2026-11-20",
+        "human_review_required": true,
+        "note": "Editorial checks cover clarity, outcome alignment, answer-key consistency, scaffolding, and text alternatives. This is not qualified teacher or domain-expert sign-off.",
+        "scope": "Lesson explanation, worked example, sequence, exercise prompts, answer keys or self-review guidance, and accessibility alternatives."
+      }
     },
     {
       "id": "baseline-check",
@@ -911,7 +1019,17 @@
           "placeholder": "The problem was… I worked on… I checked it by…",
           "guidance": "Use your own current ability. If you have not measured a result, say what you checked and what remains unknown. You may type or record a response."
         }
-      ]
+      ],
+      "source_ids": [],
+      "completion_condition": "Complete the snapshot prompts. Responses are saved for reflection; no level, score, or proficiency judgement is assigned.",
+      "content_review": {
+        "status": "ai_assisted_editorial_review",
+        "reviewer": "Prepped Phase J editorial audit (AI-assisted)",
+        "reviewed_on": "2026-11-20",
+        "human_review_required": true,
+        "note": "Editorial checks cover clarity, outcome alignment, answer-key consistency, scaffolding, and text alternatives. This is not qualified teacher or domain-expert sign-off.",
+        "scope": "Lesson explanation, worked example, sequence, exercise prompts, answer keys or self-review guidance, and accessibility alternatives."
+      }
     },
     {
       "id": "sentence-shaping",
@@ -994,7 +1112,17 @@
           "placeholder": "Because…",
           "guidance": "Keep the cause and result. A possible direction is to replace “due to the fact that” with “because”. This is self-review, not an automatic writing grade."
         }
-      ]
+      ],
+      "source_ids": [],
+      "completion_condition": "Complete the revision/order tasks and submit one concise rewrite that preserves the original meaning.",
+      "content_review": {
+        "status": "ai_assisted_editorial_review",
+        "reviewer": "Prepped Phase J editorial audit (AI-assisted)",
+        "reviewed_on": "2026-11-20",
+        "human_review_required": true,
+        "note": "Editorial checks cover clarity, outcome alignment, answer-key consistency, scaffolding, and text alternatives. This is not qualified teacher or domain-expert sign-off.",
+        "scope": "Lesson explanation, worked example, sequence, exercise prompts, answer keys or self-review guidance, and accessibility alternatives."
+      }
     },
     {
       "id": "question-formation",
@@ -1074,6 +1202,20 @@
         "before": "She works on the API.",
         "after": "What does she work on?",
         "explanation": "Use “does” with “she”, then use the base verb “work” in the question."
+      },
+      "source_ids": [
+        "bc-present-simple",
+        "bc-past-simple",
+        "bc-questions-negatives"
+      ],
+      "completion_condition": "Complete the question-form exercises and write one respectful clarification question.",
+      "content_review": {
+        "status": "ai_assisted_editorial_review",
+        "reviewer": "Prepped Phase J editorial audit (AI-assisted)",
+        "reviewed_on": "2026-11-20",
+        "human_review_required": true,
+        "note": "Editorial checks cover clarity, outcome alignment, answer-key consistency, scaffolding, and text alternatives. This is not qualified teacher or domain-expert sign-off.",
+        "scope": "Lesson explanation, worked example, sequence, exercise prompts, answer keys or self-review guidance, and accessibility alternatives."
       }
     },
     {
@@ -1178,6 +1320,19 @@
         "before": "I did a test before the demo.",
         "after": "I carried out a test before the demo.",
         "explanation": "“Carry out a test” is a natural collocation meaning to perform a test."
+      },
+      "source_ids": [
+        "cambridge-carry-out",
+        "cambridge-look-into"
+      ],
+      "completion_condition": "Complete the phrase checks and write one factual sentence using a selected phrase.",
+      "content_review": {
+        "status": "ai_assisted_editorial_review",
+        "reviewer": "Prepped Phase J editorial audit (AI-assisted)",
+        "reviewed_on": "2026-11-20",
+        "human_review_required": true,
+        "note": "Editorial checks cover clarity, outcome alignment, answer-key consistency, scaffolding, and text alternatives. This is not qualified teacher or domain-expert sign-off.",
+        "scope": "Lesson explanation, worked example, sequence, exercise prompts, answer keys or self-review guidance, and accessibility alternatives."
       }
     },
     {
@@ -1262,6 +1417,16 @@
         "before": "Listen only for individual words.",
         "after": "Listen for the request, the response, and the next action.",
         "explanation": "These three parts help you follow a short team conversation."
+      },
+      "source_ids": [],
+      "completion_condition": "Answer both conversation checks and summarise one agreed next action; transcripts remain available.",
+      "content_review": {
+        "status": "ai_assisted_editorial_review",
+        "reviewer": "Prepped Phase J editorial audit (AI-assisted)",
+        "reviewed_on": "2026-11-20",
+        "human_review_required": true,
+        "note": "Editorial checks cover clarity, outcome alignment, answer-key consistency, scaffolding, and text alternatives. This is not qualified teacher or domain-expert sign-off.",
+        "scope": "Lesson explanation, worked example, sequence, exercise prompts, answer keys or self-review guidance, and accessibility alternatives."
       }
     },
     {
@@ -1323,6 +1488,16 @@
         "before": "I did some work on the form.",
         "after": "I added validation to the form and checked three invalid inputs.",
         "explanation": "The second version gives a concrete action and an observable detail."
+      },
+      "source_ids": [],
+      "completion_condition": "Complete the short response prompts by typing or optional recording; responses are saved for private review, not scored.",
+      "content_review": {
+        "status": "ai_assisted_editorial_review",
+        "reviewer": "Prepped Phase J editorial audit (AI-assisted)",
+        "reviewed_on": "2026-11-20",
+        "human_review_required": true,
+        "note": "Editorial checks cover clarity, outcome alignment, answer-key consistency, scaffolding, and text alternatives. This is not qualified teacher or domain-expert sign-off.",
+        "scope": "Lesson explanation, worked example, sequence, exercise prompts, answer keys or self-review guidance, and accessibility alternatives."
       }
     },
     {
@@ -1384,6 +1559,16 @@
         "before": "This way is better.",
         "after": "I prefer a small example first because it lets me test the basic workflow quickly.",
         "explanation": "A clear opinion states a preference and supports it with a reason."
+      },
+      "source_ids": [],
+      "completion_condition": "Complete the comparison, opinion, follow-up, and clarification prompts; there is no single correct opinion.",
+      "content_review": {
+        "status": "ai_assisted_editorial_review",
+        "reviewer": "Prepped Phase J editorial audit (AI-assisted)",
+        "reviewed_on": "2026-11-20",
+        "human_review_required": true,
+        "note": "Editorial checks cover clarity, outcome alignment, answer-key consistency, scaffolding, and text alternatives. This is not qualified teacher or domain-expert sign-off.",
+        "scope": "Lesson explanation, worked example, sequence, exercise prompts, answer keys or self-review guidance, and accessibility alternatives."
       }
     },
     {
@@ -1440,6 +1625,16 @@
         "before": "Repeat the whole phrase as quickly as possible.",
         "after": "Listen once, repeat at a comfortable pace, and choose one word ending or pause to notice.",
         "explanation": "The aim is understandable, comfortable practice—not accent imitation or a speed target."
+      },
+      "source_ids": [],
+      "completion_condition": "Listen or read each model phrase, practise privately if desired, and choose one feature to revisit; no pronunciation score is produced.",
+      "content_review": {
+        "status": "ai_assisted_editorial_review",
+        "reviewer": "Prepped Phase J editorial audit (AI-assisted)",
+        "reviewed_on": "2026-11-20",
+        "human_review_required": true,
+        "note": "Editorial checks cover clarity, outcome alignment, answer-key consistency, scaffolding, and text alternatives. This is not qualified teacher or domain-expert sign-off.",
+        "scope": "Lesson explanation, worked example, sequence, exercise prompts, answer keys or self-review guidance, and accessibility alternatives."
       }
     }
   ],
@@ -1601,6 +1796,64 @@
         "Listen to model phrases and repeat at a comfortable pace",
         "Choose a private self-review focus without receiving a pronunciation score"
       ]
+    }
+  ],
+  "review": {
+    "status": "ai_assisted_editorial_review",
+    "reviewer": "Prepped Phase J editorial audit (AI-assisted)",
+    "reviewed_on": "2026-11-20",
+    "human_review_required": true,
+    "note": "Editorial checks cover clarity, outcome alignment, answer-key consistency, scaffolding, and text alternatives. This is not qualified teacher or domain-expert sign-off.",
+    "scope": "All skills, tracks, units, lessons, and exercises."
+  },
+  "review_policy": {
+    "factual_claims_require_sources": true,
+    "deterministic_answer_keys_require_explanations": true,
+    "open_responses_are_self_review_only": true,
+    "human_review_required_before_release": true,
+    "source_review_rule": "Record stable source URLs for externally checkable grammar or technical claims; recheck them when relevant content changes.",
+    "answer_key_rule": "Objective exercises may have one explicit key and explanation. Ambiguous or personal responses remain open self-review."
+  },
+  "sources": [
+    {
+      "id": "bc-present-simple",
+      "title": "British Council LearnEnglish — Present simple",
+      "publisher": "British Council",
+      "url": "https://learnenglish.britishcouncil.org/free-resources/grammar/english-grammar-reference/present-simple",
+      "checked_on": "2026-11-20",
+      "supports": "Present-simple forms and do/does question construction."
+    },
+    {
+      "id": "bc-past-simple",
+      "title": "British Council LearnEnglish — Past simple",
+      "publisher": "British Council",
+      "url": "https://learnenglish.britishcouncil.org/free-resources/grammar/english-grammar-reference/past-simple",
+      "checked_on": "2026-11-20",
+      "supports": "Past-simple questions and use of did with the base verb."
+    },
+    {
+      "id": "bc-questions-negatives",
+      "title": "British Council LearnEnglish — Questions and negatives",
+      "publisher": "British Council",
+      "url": "https://learnenglish.britishcouncil.org/free-resources/grammar/english-grammar-reference/questions-negatives",
+      "checked_on": "2026-11-20",
+      "supports": "Auxiliary do/does/did in questions and negatives."
+    },
+    {
+      "id": "cambridge-carry-out",
+      "title": "Cambridge Dictionary — carry something out",
+      "publisher": "Cambridge University Press & Assessment",
+      "url": "https://dictionary.cambridge.org/dictionary/english/carry-out",
+      "checked_on": "2026-11-20",
+      "supports": "Meaning and usage of carry out."
+    },
+    {
+      "id": "cambridge-look-into",
+      "title": "Cambridge Dictionary — look into something",
+      "publisher": "Cambridge University Press & Assessment",
+      "url": "https://dictionary.cambridge.org/dictionary/english/look-into",
+      "checked_on": "2026-11-20",
+      "supports": "Meaning and usage of look into."
     }
   ]
 }

@@ -52,8 +52,8 @@ def load_curriculum(path: Path = DEFAULT_CURRICULUM_PATH) -> dict[str, Any]:
         data = json.loads(Path(path).read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise CurriculumValidationError(f"Cannot read curriculum JSON: {exc}") from exc
-    if not isinstance(data, dict) or data.get("schema_version") != "1.1.0":
-        raise CurriculumValidationError("Unsupported or missing curriculum schema_version.")
+    if not isinstance(data, dict) or data.get("schema_version") != "1.2.0":
+        raise CurriculumValidationError("Unsupported or missing curriculum schema_version (expected 1.2.0).")
     arrays = [data.get(name) for name in ("skills", "tracks", "lessons", "levels", "units")]
     if not all(isinstance(items, list) for items in arrays):
         raise CurriculumValidationError("Curriculum must define skills, tracks, lessons, levels, and units arrays.")
@@ -68,14 +68,35 @@ def load_curriculum(path: Path = DEFAULT_CURRICULUM_PATH) -> dict[str, Any]:
             index[item["id"]] = item
         return index
 
+    sources = data.get("sources")
+    if not isinstance(sources, list) or not sources:
+        raise CurriculumValidationError("Curriculum must include a non-empty source register.")
+    review = data.get("review")
+    policy = data.get("review_policy")
+    if (not isinstance(review, dict) or review.get("status") != "ai_assisted_editorial_review"
+            or not review.get("reviewer") or not review.get("reviewed_on")
+            or review.get("human_review_required") is not True):
+        raise CurriculumValidationError("Curriculum review record must disclose AI-assisted review and pending human sign-off.")
+    if (not isinstance(policy, dict) or policy.get("factual_claims_require_sources") is not True
+            or policy.get("open_responses_are_self_review_only") is not True
+            or policy.get("human_review_required_before_release") is not True):
+        raise CurriculumValidationError("Curriculum review policy is incomplete.")
     skills, tracks, lessons, levels, units = (
         index_items(items, name) for items, name in zip(arrays, ("skill", "track", "lesson", "level", "unit"))
     )
+    source_index = index_items(sources, "source")
+    for source in source_index.values():
+        if (not source.get("title") or not source.get("publisher")
+                or not isinstance(source.get("url"), str) or not source["url"].startswith("https://")
+                or not source.get("checked_on") or not source.get("supports")):
+            raise CurriculumValidationError(f"Source {source['id']} has incomplete citation metadata.")
     if any(not item.get("title") or not item.get("description") for item in levels.values()):
         raise CurriculumValidationError("Every curriculum level needs a title and description.")
     for skill in skills.values():
         if skill.get("status", "active") not in {"active", "planned"} or not skill.get("title") or not skill.get("description") or not skill.get("outcomes"):
             raise CurriculumValidationError(f"Skill {skill['id']} has incomplete metadata.")
+        if not isinstance(skill.get("studio_ids", []), list) or any(not isinstance(item, str) or not item for item in skill.get("studio_ids", [])):
+            raise CurriculumValidationError(f"Skill {skill['id']} has invalid studio references.")
         if any(item not in skills or item == skill["id"] for item in skill.get("prerequisites", [])):
             raise CurriculumValidationError(f"Skill {skill['id']} has an invalid prerequisite.")
     for lesson in lessons.values():
@@ -94,6 +115,17 @@ def load_curriculum(path: Path = DEFAULT_CURRICULUM_PATH) -> dict[str, Any]:
                 or not isinstance(lesson.get("estimated_minutes"), int) or lesson["estimated_minutes"] < 1
                 or not lesson.get("learning_outcomes")):
             raise CurriculumValidationError(f"Lesson {lesson['id']} has invalid metadata or references.")
+        if (not isinstance(lesson.get("source_ids", []), list)
+                or any(source_id not in source_index for source_id in lesson.get("source_ids", []))):
+            raise CurriculumValidationError(f"Lesson {lesson['id']} references an unknown source.")
+        if not isinstance(lesson.get("completion_condition"), str) or not lesson["completion_condition"].strip():
+            raise CurriculumValidationError(f"Lesson {lesson['id']} needs an explicit completion condition.")
+        content_review = lesson.get("content_review")
+        if (not isinstance(content_review, dict)
+                or content_review.get("status") != "ai_assisted_editorial_review"
+                or not content_review.get("reviewer") or not content_review.get("reviewed_on")
+                or content_review.get("human_review_required") is not True):
+            raise CurriculumValidationError(f"Lesson {lesson['id']} needs a transparent review record and human sign-off flag.")
         if any(skill not in skills for skill in lesson.get("skill_ids", [])):
             raise CurriculumValidationError(f"Lesson {lesson['id']} references an unknown skill.")
         if any(prereq not in lessons or prereq == lesson["id"] for prereq in lesson.get("prerequisites", [])):
@@ -108,7 +140,8 @@ def load_curriculum(path: Path = DEFAULT_CURRICULUM_PATH) -> dict[str, Any]:
             seen.add(eid)
             if kind in {"choice", "vocabulary", "listening"}:
                 ids = [option.get("id") for option in exercise.get("options", [])]
-                if len(ids) < 2 or len(ids) != len(set(ids)) or exercise.get("answer") not in ids:
+                if (len(ids) < 2 or len(ids) != len(set(ids)) or exercise.get("answer") not in ids
+                        or not isinstance(exercise.get("explanation"), str) or not exercise["explanation"].strip()):
                     raise CurriculumValidationError(f"Choice exercise {eid} has invalid options or answer.")
                 if kind == "vocabulary" and not exercise.get("context"):
                     raise CurriculumValidationError(f"Vocabulary exercise {eid} needs a context.")
@@ -119,7 +152,9 @@ def load_curriculum(path: Path = DEFAULT_CURRICULUM_PATH) -> dict[str, Any]:
                     raise CurriculumValidationError(f"Pronunciation exercise {eid} needs playable audio, a text alternative, and self-review guidance.")
             elif kind == "ordering":
                 ids, answer = [token.get("id") for token in exercise.get("tokens", [])], exercise.get("answer")
-                if len(ids) < 2 or len(ids) != len(set(ids)) or not isinstance(answer, list) or sorted(answer) != sorted(ids):
+                if (len(ids) < 2 or len(ids) != len(set(ids)) or not isinstance(answer, list)
+                        or sorted(answer) != sorted(ids) or not isinstance(exercise.get("explanation"), str)
+                        or not exercise["explanation"].strip()):
                     raise CurriculumValidationError(f"Ordering exercise {eid} has invalid tokens or answer.")
             elif not exercise.get("guidance"):
                 raise CurriculumValidationError(f"Reflection exercise {eid} needs self-review guidance.")
@@ -158,7 +193,10 @@ def load_curriculum(path: Path = DEFAULT_CURRICULUM_PATH) -> dict[str, Any]:
 
     valid_goals = {"english_fluency", "placement_interviews", "technical_interviews", "project_communication", "professional_communication"}
     for track in tracks.values():
-        if track.get("level_id") not in levels or not track.get("title") or not track.get("description") or not track.get("unit_ids"):
+        if (track.get("level_id") not in levels or not track.get("title") or not track.get("description")
+                or not track.get("unit_ids") or not track.get("learning_outcomes")
+                or not isinstance(track.get("studio_ids", []), list)
+                or any(not isinstance(outcome, str) or not outcome.strip() for outcome in track.get("learning_outcomes", []))):
             raise CurriculumValidationError(f"Track {track['id']} has an invalid level or no units.")
         if len(track["unit_ids"]) != len(set(track["unit_ids"])) or any(
             unit_id not in units or track["id"] not in units[unit_id]["track_ids"]
@@ -171,6 +209,8 @@ def load_curriculum(path: Path = DEFAULT_CURRICULUM_PATH) -> dict[str, Any]:
         if (len(track.get("lesson_ids", [])) != len(set(track.get("lesson_ids", [])))
                 or any(lesson_id not in lessons for lesson_id in track.get("lesson_ids", []))):
             raise CurriculumValidationError(f"Track {track['id']} has an invalid lesson reference.")
+        if any(not isinstance(studio_id, str) or not studio_id for studio_id in track.get("studio_ids", [])):
+            raise CurriculumValidationError(f"Track {track['id']} has an invalid studio reference.")
         if any(skill_id not in skills for skill_id in track.get("skill_ids", [])):
             raise CurriculumValidationError(f"Track {track['id']} references an unknown skill.")
     return data

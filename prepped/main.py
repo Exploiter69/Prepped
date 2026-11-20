@@ -19,7 +19,8 @@ from prepped.database import connect_database, initialize_database
 from prepped.career import create_career_router, initialize_career_database
 from prepped.feedback import build_feedback
 from prepped.profile import create_profile_router
-from prepped.learning import DEFAULT_CURRICULUM_PATH, create_learning_router, load_curriculum
+from prepped.learning import DEFAULT_CURRICULUM_PATH, create_learning_router
+from prepped.content_lint import validate_content_bundle
 from prepped.memory import create_memory_router
 from prepped.progress import create_progress_router, initialize_progress_database
 from prepped.intelligence import create_intelligence_router, initialize_intelligence_database
@@ -105,7 +106,7 @@ def create_app(
         initialize_career_database(Path(db_path))
         initialize_progress_database(Path(db_path))
         initialize_intelligence_database(Path(db_path))
-        load_curriculum(Path(curriculum_path))
+        validate_content_bundle(Path(curriculum_path))
         yield
 
     application = FastAPI(

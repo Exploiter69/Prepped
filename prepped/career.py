@@ -94,8 +94,24 @@ def load_studios(path: Path = DEFAULT_STUDIOS_PATH) -> dict[str, Any]:
         data = json.loads(Path(path).read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise ValueError("Career studio content is missing or invalid.") from exc
-    if not isinstance(data, dict) or not isinstance(data.get("studios"), list):
-        raise ValueError("Career studio catalog must contain a studios list.")
+    if not isinstance(data, dict) or data.get("version") != "1.3.0" or not isinstance(data.get("studios"), list):
+        raise ValueError("Career studio catalog must contain version 1.3.0 and a studios list.")
+    review = data.get("review")
+    if (not isinstance(review, dict) or review.get("status") != "ai_assisted_editorial_review"
+            or not review.get("reviewer") or not review.get("reviewed_on")
+            or review.get("human_review_required") is not True):
+        raise ValueError("Career catalog review record must disclose AI-assisted review and pending human sign-off.")
+    sources = data.get("sources")
+    if not isinstance(sources, list):
+        raise ValueError("Career catalog must include a source register.")
+    source_index = {}
+    for source in sources:
+        if (not isinstance(source, dict) or not isinstance(source.get("id"), str)
+                or source["id"] in source_index or not source.get("title") or not source.get("publisher")
+                or not isinstance(source.get("url"), str) or not source["url"].startswith("https://")
+                or not source.get("checked_on") or not source.get("supports")):
+            raise ValueError("Career source register contains incomplete or duplicate entries.")
+        source_index[source["id"]] = source
     seen: set[str] = set()
     for studio in data["studios"]:
         if not isinstance(studio, dict) or studio.get("id") not in STUDIO_IDS:
@@ -103,6 +119,18 @@ def load_studios(path: Path = DEFAULT_STUDIOS_PATH) -> dict[str, Any]:
         if studio["id"] in seen:
             raise ValueError("Career studio ids must be unique.")
         seen.add(studio["id"])
+        if (not studio.get("title") or not studio.get("description")
+                or not isinstance(studio.get("estimated_minutes"), int) or studio["estimated_minutes"] < 1
+                or not isinstance(studio.get("learning_outcomes"), list) or not studio["learning_outcomes"]
+                or not isinstance(studio.get("skill_ids"), list) or not studio["skill_ids"]
+                or not isinstance(studio.get("source_ids", []), list)
+                or any(source_id not in source_index for source_id in studio.get("source_ids", []))):
+            raise ValueError("Career studio needs outcomes, skill mappings, and valid source references.")
+        content_review = studio.get("content_review")
+        if (not isinstance(content_review, dict) or content_review.get("status") != "ai_assisted_editorial_review"
+                or not content_review.get("reviewer") or not content_review.get("reviewed_on")
+                or content_review.get("human_review_required") is not True):
+            raise ValueError("Career studio needs a transparent review record and human sign-off flag.")
         questions = studio.get("questions")
         if not isinstance(questions, list) or not questions or len(questions) > MAX_QUESTIONS:
             raise ValueError("Each studio must contain between 1 and 8 primary questions.")
@@ -112,6 +140,10 @@ def load_studios(path: Path = DEFAULT_STUDIOS_PATH) -> dict[str, Any]:
                 raise ValueError("Every career question needs an id and prompt.")
             if question["id"] in qids:
                 raise ValueError("Career question ids must be unique within a studio.")
+            if (not isinstance(question.get("learning_outcome"), str) or not question["learning_outcome"].strip()
+                    or not isinstance(question.get("skill_ids"), list) or not question["skill_ids"]
+                    or any(skill_id not in studio["skill_ids"] for skill_id in question["skill_ids"])):
+                raise ValueError("Every career question needs an observable outcome and a valid studio skill mapping.")
             qids.add(question["id"])
             followup = question.get("followup")
             if not isinstance(followup, dict) or not isinstance(followup.get("prompt"), str):

@@ -15,7 +15,7 @@ def client_for(tmp_path: Path) -> TestClient:
 
 def test_curriculum_loads_with_unique_skills_tracks_lessons_and_supported_exercises() -> None:
     data = load_curriculum()
-    assert data["schema_version"] == "1.1.0"
+    assert data["schema_version"] == "1.2.0"
     assert len({item["id"] for item in data["skills"]}) == len(data["skills"])
     assert len({item["id"] for item in data["tracks"]}) == len(data["tracks"])
     assert len({item["id"] for item in data["lessons"]}) == len(data["lessons"])
@@ -512,3 +512,42 @@ def test_curriculum_rejects_a_learning_lesson_without_a_worked_example(tmp_path:
         assert "worked example" in str(exc)
     else:
         raise AssertionError("A learning lesson without a worked example was accepted")
+
+
+def test_curriculum_requires_source_review_and_completion_metadata(tmp_path: Path) -> None:
+    data = load_curriculum()
+    data["lessons"][0].pop("completion_condition")
+    path = tmp_path / "missing-completion.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+    try:
+        load_curriculum(path)
+    except CurriculumValidationError as exc:
+        assert "completion condition" in str(exc)
+    else:
+        raise AssertionError("A lesson without a completion condition was accepted")
+
+
+def test_curriculum_rejects_unresolved_source_reference(tmp_path: Path) -> None:
+    data = load_curriculum()
+    data["lessons"][0]["source_ids"] = ["missing-source"]
+    path = tmp_path / "missing-source.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+    try:
+        load_curriculum(path)
+    except CurriculumValidationError as exc:
+        assert "unknown source" in str(exc)
+    else:
+        raise AssertionError("An unresolved content source was accepted")
+
+
+def test_curriculum_rejects_objective_exercise_without_explanation(tmp_path: Path) -> None:
+    data = load_curriculum()
+    data["lessons"][0]["exercises"][0].pop("explanation")
+    path = tmp_path / "missing-answer-explanation.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+    try:
+        load_curriculum(path)
+    except CurriculumValidationError as exc:
+        assert "invalid options or answer" in str(exc)
+    else:
+        raise AssertionError("An objective answer key without an explanation was accepted")

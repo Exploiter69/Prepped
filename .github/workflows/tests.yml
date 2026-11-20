@@ -44,6 +44,8 @@ jobs:
           node --check static/intelligence.js
       - name: Install project and test dependencies
         run: python -m pip install -e ".[dev,browser-test]"
+      - name: Validate versioned curriculum and Career Studio content
+        run: python -m prepped.content_lint
       - name: Check dependency consistency
         run: python -m pip check
       - name: Audit installed Python dependencies

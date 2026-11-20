@@ -1,5 +1,5 @@
 {
-  "version": "1.2.0",
+  "version": "1.3.0",
   "studios": [
     {
       "id": "project-explanation",
@@ -36,7 +36,11 @@
             "clarification": "Start with the user's first step, then explain what your project changes for them."
           },
           "simpler_prompt": "What problem does your project solve? Who uses it? What can they do with it?",
-          "clarification": "Think of one person who uses the project. What do they need, and how does your project help?"
+          "clarification": "Think of one person who uses the project. What do they need, and how does your project help?",
+          "skill_ids": [
+            "communication.project-summary"
+          ],
+          "learning_outcome": "State the project's problem, intended users, and main capability."
         },
         {
           "id": "personal-contribution",
@@ -58,7 +62,11 @@
             "clarification": "Name your own change and one file, feature, test, or result that could verify it."
           },
           "simpler_prompt": "What work did you do yourself? What did you build, design, or test?",
-          "clarification": "Separate your own work from the team's work. Name one thing you personally changed."
+          "clarification": "Separate your own work from the team's work. Name one thing you personally changed.",
+          "skill_ids": [
+            "interview.project-explanation"
+          ],
+          "learning_outcome": "Identify one specific contribution and how it can be verified."
         },
         {
           "id": "technical-decision",
@@ -80,7 +88,12 @@
             "clarification": "Think about one constraint, such as time, complexity, reliability, or resources."
           },
           "simpler_prompt": "What technical choice did you make? What other options did you consider?",
-          "clarification": "Name the choice, one alternative, and the main reason for choosing it."
+          "clarification": "Name the choice, one alternative, and the main reason for choosing it.",
+          "skill_ids": [
+            "interview.project-explanation",
+            "communication.clarity"
+          ],
+          "learning_outcome": "Explain one design choice, alternative, and relevant constraint."
         },
         {
           "id": "testing-limitations",
@@ -102,9 +115,35 @@
             "clarification": "Explain what happened, what evidence you checked, and what you would try next."
           },
           "simpler_prompt": "How did you test the project? What did the tests show? What still needs work?",
-          "clarification": "Name one test or observation, its result, and one thing it does not prove."
+          "clarification": "Name one test or observation, its result, and one thing it does not prove.",
+          "skill_ids": [
+            "communication.clarity",
+            "interview.readiness"
+          ],
+          "learning_outcome": "Name a test or observation and state what it does not prove."
         }
-      ]
+      ],
+      "skill_ids": [
+        "communication.project-summary",
+        "communication.clarity",
+        "interview.project-explanation",
+        "interview.readiness"
+      ],
+      "learning_outcomes": [
+        "Describe the problem, intended user, and purpose of a project",
+        "Distinguish personal contribution from team work",
+        "Explain a technical decision and its trade-off",
+        "Describe test evidence and one remaining limitation"
+      ],
+      "source_ids": [],
+      "content_review": {
+        "status": "ai_assisted_editorial_review",
+        "reviewer": "Prepped Phase J editorial audit (AI-assisted)",
+        "reviewed_on": "2026-11-20",
+        "human_review_required": true,
+        "note": "Editorial checks cover clarity, outcome alignment, answer-key consistency, scaffolding, and text alternatives. This is not qualified teacher or domain-expert sign-off.",
+        "scope": "Studio outcomes, question sequence, primary prompts, difficulty variants, contextual follow-ups, and non-assessment boundaries."
+      }
     },
     {
       "id": "hr-behavioural",
@@ -140,7 +179,11 @@
             "clarification": "Choose one real experience and explain your own contribution."
           },
           "simpler_prompt": "Tell me about yourself. What kind of role are you preparing for?",
-          "clarification": "Choose a few relevant details about your studies, interests, projects, or experience."
+          "clarification": "Choose a few relevant details about your studies, interests, projects, or experience.",
+          "skill_ids": [
+            "communication.professional"
+          ],
+          "learning_outcome": "Give a concise, truthful introduction linked to a real experience or goal."
         },
         {
           "id": "teamwork",
@@ -162,7 +205,12 @@
             "clarification": "Describe one moment when you had to coordinate, listen, or agree on a decision."
           },
           "simpler_prompt": "Tell me about a time you worked with a team. What was your role?",
-          "clarification": "Set the scene briefly, then explain your own action and the shared goal."
+          "clarification": "Set the scene briefly, then explain your own action and the shared goal.",
+          "skill_ids": [
+            "interview.hr-behavioural",
+            "communication.professional"
+          ],
+          "learning_outcome": "Describe a shared goal and the learner's own contribution."
         },
         {
           "id": "challenge",
@@ -184,7 +232,12 @@
             "clarification": "Focus on one lesson you can use in a similar situation."
           },
           "simpler_prompt": "Tell me about a difficult problem or mistake. What did you do?",
-          "clarification": "Choose a real challenge. Explain the situation, your action, and what happened."
+          "clarification": "Choose a real challenge. Explain the situation, your action, and what happened.",
+          "skill_ids": [
+            "interview.hr-behavioural",
+            "communication.confidence"
+          ],
+          "learning_outcome": "Explain a real challenge, personal response, and lesson learned."
         },
         {
           "id": "motivation",
@@ -206,9 +259,33 @@
             "clarification": "Mention one concrete step, such as a project, course, conversation, or practice task."
           },
           "simpler_prompt": "Why do you want this role? What would you like to learn?",
-          "clarification": "Connect the role to your interests and name one skill you want to develop."
+          "clarification": "Connect the role to your interests and name one skill you want to develop.",
+          "skill_ids": [
+            "interview.hr-behavioural",
+            "communication.professional"
+          ],
+          "learning_outcome": "Connect interest in a role with a concrete preparation or learning step."
         }
-      ]
+      ],
+      "skill_ids": [
+        "interview.hr-behavioural",
+        "communication.professional",
+        "communication.confidence"
+      ],
+      "learning_outcomes": [
+        "Choose a truthful example relevant to a behavioural prompt",
+        "Explain personal actions and how they affected the shared task",
+        "Reflect on learning without inventing outcomes or claiming credit for others' work"
+      ],
+      "source_ids": [],
+      "content_review": {
+        "status": "ai_assisted_editorial_review",
+        "reviewer": "Prepped Phase J editorial audit (AI-assisted)",
+        "reviewed_on": "2026-11-20",
+        "human_review_required": true,
+        "note": "Editorial checks cover clarity, outcome alignment, answer-key consistency, scaffolding, and text alternatives. This is not qualified teacher or domain-expert sign-off.",
+        "scope": "Studio outcomes, question sequence, primary prompts, difficulty variants, contextual follow-ups, and non-assessment boundaries."
+      }
     },
     {
       "id": "technical-fundamentals",
@@ -244,7 +321,11 @@
             "clarification": "Use a short list of values and describe how you would read or insert one value."
           },
           "simpler_prompt": "How are arrays and linked lists different? When would you use each?",
-          "clarification": "Compare how each structure stores items and how you access an item."
+          "clarification": "Compare how each structure stores items and how you access an item.",
+          "skill_ids": [
+            "interview.technical"
+          ],
+          "learning_outcome": "Compare array and linked-list representations using an operation example."
         },
         {
           "id": "http-api",
@@ -266,7 +347,11 @@
             "clarification": "Name the route, the work the server does, and the response the browser receives."
           },
           "simpler_prompt": "What happens after a browser sends a request to an API?",
-          "clarification": "Trace the request from the browser to the server and then back to the browser."
+          "clarification": "Trace the request from the browser to the server and then back to the browser.",
+          "skill_ids": [
+            "interview.technical"
+          ],
+          "learning_outcome": "Trace an HTTP request and response and interpret a common failure status."
         },
         {
           "id": "database",
@@ -288,7 +373,11 @@
             "clarification": "Think about query shape, extra storage, and the work needed when data changes."
           },
           "simpler_prompt": "What does a database index do? What is one downside?",
-          "clarification": "Explain how an index helps a lookup and what extra work it creates."
+          "clarification": "Explain how an index helps a lookup and what extra work it creates.",
+          "skill_ids": [
+            "interview.technical"
+          ],
+          "learning_outcome": "Explain an index's read benefit and storage/write trade-off."
         },
         {
           "id": "operating-systems",
@@ -310,9 +399,78 @@
             "clarification": "Use one application and describe which work runs together and which memory is shared."
           },
           "simpler_prompt": "How is a process different from a thread? Give an example.",
-          "clarification": "Explain what a process owns and what threads inside it share."
+          "clarification": "Explain what a process owns and what threads inside it share.",
+          "skill_ids": [
+            "interview.technical"
+          ],
+          "learning_outcome": "Distinguish process and thread concepts with a practical example."
         }
-      ]
+      ],
+      "skill_ids": [
+        "interview.technical",
+        "communication.clarity"
+      ],
+      "learning_outcomes": [
+        "Explain a selected computer-science concept in clear language",
+        "Use an example or trace to make the explanation concrete",
+        "Discuss a trade-off, limitation, or diagnostic step accurately"
+      ],
+      "source_ids": [
+        "opendsa-lists",
+        "mdn-http-status",
+        "postgresql-indexes",
+        "ostep-processes-threads"
+      ],
+      "content_review": {
+        "status": "ai_assisted_editorial_review",
+        "reviewer": "Prepped Phase J editorial audit (AI-assisted)",
+        "reviewed_on": "2026-11-20",
+        "human_review_required": true,
+        "note": "Editorial checks cover clarity, outcome alignment, answer-key consistency, scaffolding, and text alternatives. This is not qualified teacher or domain-expert sign-off.",
+        "scope": "Studio outcomes, question sequence, primary prompts, difficulty variants, contextual follow-ups, and non-assessment boundaries."
+      }
+    }
+  ],
+  "review": {
+    "status": "ai_assisted_editorial_review",
+    "reviewer": "Prepped Phase J editorial audit (AI-assisted)",
+    "reviewed_on": "2026-11-20",
+    "human_review_required": true,
+    "note": "Editorial checks cover clarity, outcome alignment, answer-key consistency, scaffolding, and text alternatives. This is not qualified teacher or domain-expert sign-off.",
+    "scope": "All three studios and their primary/follow-up prompts."
+  },
+  "sources": [
+    {
+      "id": "opendsa-lists",
+      "title": "OpenDSA — Lists and linked lists",
+      "publisher": "Virginia Tech OpenDSA",
+      "url": "https://opendsa.cs.vt.edu/ODSA/StandaloneModules/20231208145515/html/ListIntro.html",
+      "checked_on": "2026-11-20",
+      "supports": "Array-based and linked list representations and their relative merits."
+    },
+    {
+      "id": "mdn-http-status",
+      "title": "MDN — HTTP response status codes",
+      "publisher": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status",
+      "checked_on": "2026-11-20",
+      "supports": "HTTP response status classes and common client/server error meanings."
+    },
+    {
+      "id": "postgresql-indexes",
+      "title": "PostgreSQL documentation — Indexes",
+      "publisher": "PostgreSQL Global Development Group",
+      "url": "https://www.postgresql.org/docs/current/indexes.html",
+      "checked_on": "2026-11-20",
+      "supports": "Indexes can speed selected reads while adding storage and write overhead."
+    },
+    {
+      "id": "ostep-processes-threads",
+      "title": "Operating Systems: Three Easy Pieces",
+      "publisher": "Remzi H. Arpaci-Dusseau and Andrea C. Arpaci-Dusseau",
+      "url": "https://pages.cs.wisc.edu/~remzi/OSTEP/",
+      "checked_on": "2026-11-20",
+      "supports": "Operating-system process, address-space, and concurrency/thread concepts."
     }
   ]
 }
