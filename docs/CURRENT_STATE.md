@@ -3,7 +3,7 @@
 **Updated:** 2026-11-20<br>
 **Source of truth:** GitHub `feature/learner-profile` (working branch; `main` remains the last synced baseline)<br>
 **Product direction:** Voice-first, personalised practice and learning platform for Indian engineering students. The text practice loop is a reliable fallback and is frozen for feature development except material bugs.<br>
-**Engineering stage:** Phases A–F are implemented. Phase G engineering hardening is implemented and its full CI run is green: [44721637341](https://github.com/Exploiter69/Prepped/actions/runs/44721637341) — 112 passed, 2 skipped, 1 warning. Target-laptop acceptance remains open. Phase G.1 recording lifecycle fixes and deferred-permission browser tests are added; final CI verification is pending. Phase H implementation is also added, with its exact-commit CI verification pending and manual Omarchy acceptance deferred.
+**Engineering stage:** Phases A–F are implemented. Phase G engineering hardening is implemented and its full CI run is green: [44721637341](https://github.com/Exploiter69/Prepped/actions/runs/44721637341) — 112 passed, 2 skipped, 1 warning. Target-laptop acceptance remains open. Phase G.1 recording lifecycle fixes and deferred-permission browser tests are added and green in CI. Phase H implementation and its full automated suite are green; manual Omarchy and learner acceptance remain deferred.
 
 ## Phase G — release hardening implemented; device acceptance open
 
@@ -20,7 +20,7 @@ The current working branch now includes:
 
 - GitHub Actions now runs on `feature/**`, including this working branch, and on pull requests targeting `main` or `feature/learner-profile`.
 - The workflow performs a clean checkout, installs `.[dev,browser-test]`, compiles Python modules, checks both browser JavaScript files, installs Chromium, and runs pytest including the Playwright browser journeys.
-- Latest recorded pre-Phase-H baseline: [GitHub Actions run 44721637341](https://github.com/Exploiter69/Prepped/actions/runs/44721637341) — **112 passed, 2 skipped, 1 warning**. This run predates the Phase G.1 and Phase H changes and is not evidence that the new tests pass. Python compilation, the six JavaScript syntax checks in that baseline run, dependency installation, `pip-audit`, Chromium setup, API tests, and browser acceptance all passed. The two skips require `espeak-ng`, unavailable on the hosted runner; the warning is Starlette's httpx-backed TestClient deprecation.
+- Latest full CI: [GitHub Actions run 44732997261](https://github.com/Exploiter69/Prepped/actions/runs/44732997261) — **134 passed, 2 skipped, 1 warning** on commit ba5d4091c3679afe6b261852ca87f2940ba40877. Python compilation, seven JavaScript syntax checks, dependency consistency, `pip-audit`, Chromium setup, API tests, and browser acceptance passed. The two skips require `espeak-ng`, unavailable on the hosted runner; the pytest warning is Starlette's httpx-backed TestClient deprecation.
 - A repeatable [Foundation Acceptance Checklist](ACCEPTANCE_CHECKLIST.md) now covers profile setup/edit/cancel/save/reload, existing text practice, optional voice acceptance, and data preservation. Playwright/Chromium browser tests now exercise profile open, save, edit, cancel, reload and persistence, plus the complete text-only practice flow without a profile. These tests passed in CI. The target-laptop browser and voice/microphone checks remain separate manual acceptance.
 - Headless Chromium confirms the profile and text-practice interactions in CI. A manual spot check on the target Omarchy laptop and microphone/STT/TTS acceptance remain outstanding; CI does not establish hardware or device acceptance.
 
@@ -352,7 +352,7 @@ Prepped remains a local single-user loopback application with no authentication 
 
 Learning and Career recording now invalidate pending microphone permission requests when leaving the relevant workspace. Late permission grants are discarded with their tracks stopped; active streams are released on workspace changes; in-flight transcription is abortable and stale callbacks are ignored. Deferred-permission Playwright regressions cover both Learning and Career. The exact-commit CI result remains to be confirmed. Manual Omarchy microphone acceptance is still deferred.
 
-## Phase H — Adaptive Learning Intelligence (implementation added; CI pending)
+## Phase H — Adaptive Learning Intelligence (implementation and CI green; manual acceptance pending)
 
 - H1: derived skill evidence across active curriculum skills, lesson attempts, closed-exercise responses, open self-review, project/Career activity, and source-linked learner-approved lesson, project-practice, and Career memory reviews. HR/behavioural and technical Career skills with planned curriculum content are shown as practice-only evidence. Freshness and evidence coverage are visible; no mastery/proficiency score is assigned.
 - H2: deterministic, source-explained recommendations use repeated closed-exercise review needs, prerequisites, profile routes, due revisions, and active learner goals. Learners can dismiss/restore recommendations and override by choosing activities.
@@ -361,7 +361,7 @@ Learning and Career recording now invalidate pending microphone permission reque
 - Additive tables: adaptive_plans and adaptive_plan_items. SQLite schema version 4. Existing schema-3 backups remain restorable and initialise the new plan tables empty.
 - New APIs are under /api/intelligence; the learner-facing workspace is integrated into Progress. See [Phase H Acceptance](PHASE_H_ACCEPTANCE.md).
 
-**Verification:** API, browser, backup/restore, sparse/conflicting/stale evidence, prerequisite, repeated-error, active-goal, and plan controls tests have been added. The latest recorded green CI run predates these changes; do not mark Phase H accepted until the exact final commit passes CI. Target-device acceptance and learner validation remain separate later gates.
+**Verification:** API, browser, backup/restore, sparse/conflicting/stale evidence, prerequisite, repeated-error, active-goal, and plan controls tests have been added. Automated CI is green on the implementation commit: [run 44732997261](https://github.com/Exploiter69/Prepped/actions/runs/44732997261). Target-device acceptance and learner validation remain separate later gates.
 
 ## Remaining product acceptance
 
