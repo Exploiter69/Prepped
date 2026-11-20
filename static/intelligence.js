@@ -87,8 +87,9 @@
         const entry = node("li", item.title + " · " + item.kind.replaceAll("_", " ") +
           " · " + item.outcome + " · " + dateLabel + " · Source: " + item.source_type +
           " / " + item.source_id + ". " + item.note);
-        const linkedAttempt = item.linked_source_id ||
-          (["lesson_attempt", "lesson_response"].includes(item.source_type) ? item.source_id : null);
+        const linkedAttempt = ["lesson", "lesson_attempt", "learning_attempt"].includes(item.linked_source_type)
+          ? item.linked_source_id
+          : (["lesson_attempt", "lesson_response"].includes(item.source_type) ? item.source_id : null);
         if (linkedAttempt) {
           const open = node("button", "Open source attempt", "button button-quiet");
           open.type = "button";
