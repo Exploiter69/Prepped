@@ -914,7 +914,7 @@ def test_career_review_can_add_next_practice_to_adaptive_plan(local_app_url: str
     page.locator("#career-review").wait_for(state="visible")
     page.locator("#career-add-plan").click()
     page.wait_for_function(
-        "() => document.querySelector('#career-status').textContent.includes("today's plan")"
+        """() => document.querySelector('#career-status').textContent.includes("today's plan")"""
     )
     plan = page.evaluate("""async () => {
       const now = new Date();
