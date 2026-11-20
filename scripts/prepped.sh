@@ -36,6 +36,7 @@ die() { printf 'Prepped: %s\n' "$*" >&2; exit 1; }
 
 valid_port() {
   [[ "$PORT" =~ ^[0-9]+$ ]] || die "PREPPED_PORT must be an integer from 1 to 65535."
+  PORT=$((10#$PORT))
   (( PORT >= 1 && PORT <= 65535 )) || die "PREPPED_PORT must be an integer from 1 to 65535."
 }
 
