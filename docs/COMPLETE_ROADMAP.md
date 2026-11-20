@@ -543,9 +543,9 @@ Delivered: evidence-linked skill/activity progress; learner-owned goals; explain
 
 ---
 
-## Phase G.1 — Recording lifecycle and privacy hardening (next prerequisite; not yet implemented)
+## Phase G.1 — Recording lifecycle and privacy hardening (implementation added; automated verification pending)
 
-Before beginning adaptive learning work, close the microphone lifecycle gap across Learning and Career:
+Before beginning adaptive learning work, verify the microphone lifecycle fix across Learning and Career:
 
 - Invalidate a pending `getUserMedia()` request when the learner navigates away, exits a lesson/interview, changes the active workspace, or unloads the page.
 - If a permission request resolves after cancellation, immediately stop every returned media track and never construct/start a `MediaRecorder`.
