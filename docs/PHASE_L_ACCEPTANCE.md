@@ -67,8 +67,9 @@
 | Phase K exact code CI | GitHub Actions run 44754505687, commit cff67fb | Passed |
 | Phase L helper/CI verification | GitHub Actions run 44756776414, commit a599d2c; shell syntax, compile, JS, content lint, dependency audit, Chromium and pytest | Passed: 172 passed, 2 optional voice skips |
 | Target-laptop focused portability tests | python -m pytest -q tests/test_portability.py — 17 passed | Passed |
-| Target-laptop full test suite | python -m pytest -q — 172 passed, 0 failed | Passed |
+| Target-laptop full test suite (2026-11-20) | `bash scripts/prepped.sh verify` — content validation passed; 174 passed, 0 failed, 162.34s | Passed |
 | Target-laptop filesystem modes | data/ 0700; SQLite file 0600 (recorded in Phase K) | Passed |
+| Target-laptop helper health/readiness/voice check (2026-11-20) | `bash scripts/prepped.sh check`: health 200, ready 200, local Vosk STT and Piper TTS available; privacy and fallback status reported | Passed |
 | Fresh target-device installation | Not yet performed on a clean checkout | Open |
 | Full fresh-install restore drill | Automated coverage exists; manual disposable-data drill pending | Open |
 | Real process-kill/power-loss restore drill | Not performed | Open |
@@ -77,4 +78,4 @@
 
 ## Release decision
 
-Phase L engineering/documentation implementation is in progress. The source helper and its smoke tests pass in GitHub Actions run 44756776414 (172 passed, 2 optional voice skips); local target-laptop verification of the new helper is still required. Do not call this a release candidate yet. A release tag/archive is blocked until the project owner chooses a licence and the manual release gates are passed or explicitly deferred with an approved reason. The source-checkout workflow is the only supported packaging model. This document is an acceptance record, not a certification or promise of future hosting.
+Phase L engineering/documentation implementation is in progress. The source helper and its smoke tests pass in GitHub Actions [run 44756776414](https://github.com/Exploiter69/Prepped/actions/runs/44756776414) (172 passed, 2 optional voice skips). On 2026-11-20, the target laptop's `prepped.sh check` returned HTTP 200 for health, readiness and voice status, with local Vosk and Piper available; `prepped.sh verify` passed content validation and 174 tests in 162.34 seconds. This verifies endpoint readiness and installed engines, not actual microphone capture, speech recognition quality, or audible playback. Do not call this a release candidate yet. A release tag/archive is blocked until the project owner chooses a licence and the manual release gates are passed or explicitly deferred with an approved reason. The source-checkout workflow is the only supported packaging model. This document is an acceptance record, not a certification or promise of future hosting.
