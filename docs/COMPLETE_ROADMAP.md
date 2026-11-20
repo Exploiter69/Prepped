@@ -635,6 +635,8 @@ The sequence is deliberate. Better coaching should use stable voice/session beha
 
 ### Phase I — Voice Intelligence & Contextual Coaching
 
+**Status (2026-11-20):** Implementation has been added to the working branch. Exact-commit automated CI and manual target-device acceptance are pending. See [Phase I Acceptance](PHASE_I_ACCEPTANCE.md). Do not mark the phase fully accepted until those gates are recorded.
+
 **Purpose:** turn the current record/transcribe/playback and scenario flows into a dependable, context-aware, turn-based voice practice experience. The goal is not a general-purpose always-listening chatbot. It is to help a learner practise a defined communication task, understand a response, and make a useful next attempt.
 
 **I0. Baseline and interaction contract**
