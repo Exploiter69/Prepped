@@ -40,6 +40,9 @@ def test_export_and_restore_round_trip_all_local_user_tables(tmp_path: Path) -> 
             "kind": "choose_goal", "target_id": "goals", "title": "Choose a small practice goal",
             "reason": "A short, learner-chosen target makes the next action clear.",
         })
+        source.post("/api/intelligence/plan/generate", json={
+            "plan_date": "2026-11-20", "available_minutes": 30,
+        })
         exported = source.get("/api/data/export")
         assert exported.status_code == 200
         assert exported.headers["content-type"].startswith("application/json")
@@ -77,8 +80,8 @@ def test_export_and_restore_round_trip_all_local_user_tables(tmp_path: Path) -> 
         assert status["counts"]["career_turns"] == 1
         assert status["counts"]["learner_goals"] == 1
         assert status["counts"]["recommendation_dismissals"] == 1
-        assert status["counts"]["adaptive_plans"] == 0
-        assert status["counts"]["adaptive_plan_items"] == 0
+        assert status["counts"]["adaptive_plans"] == 1
+        assert status["counts"]["adaptive_plan_items"] >= 1
         assert status["database_schema_version"] == 4
     finally:
         source.__exit__(None, None, None)
