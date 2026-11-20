@@ -241,7 +241,7 @@ Deliver a coherent first track rather than a large empty catalogue.
 - [ ] Complete target-Omarchy fresh-install and manual end-to-end acceptance for progress, goals, backup/restore, keyboard/screen-reader use, contrast, and responsive layout.
 - [ ] Run the optional consent-based usability study only when participants are available; record method, sample size, failures, and limitations. No pilot results are claimed.
 
-**Known boundaries:** backups are unencrypted JSON and contain personal answers; the current 25 MiB / 200,000-record limits and backup format version 1 / database schema version 4 compatibility; version 3 backups migrate with empty adaptive-plan tables are deliberate. Restore replaces all current local data. Prepped remains a single-user loopback application, not a public or multi-user deployment.
+**Known boundaries:** backups are unencrypted JSON and contain personal answers. The current limits are 25 MiB / 200,000 records with backup format version 1 and database schema version 4. Version 3 backups remain restorable and migrate with empty adaptive-plan tables. Restore replaces all current local data. Prepped remains a single-user loopback application, not a public or multi-user deployment.
 
 **Exit gate:** feature implementation, automated suite and CI pass, core journeys are accepted manually, data backup/restore works, known limitations are documented, and no unsupported product claims remain. Manual target-device acceptance is not claimed until recorded.
 
