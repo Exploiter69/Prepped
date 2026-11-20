@@ -15,6 +15,7 @@ function setStatus(message, isError = false) {
 function showView(viewId) {
   if (viewId !== "practice-view") window.PreppedVoice?.stopAll();
   for (const id of views) $("#" + id).classList.toggle("hidden", id !== viewId);
+  window.dispatchEvent(new CustomEvent("prepped:viewchange", { detail: { view: viewId } }));
   $("#learning-toggle")?.setAttribute("aria-expanded", String(viewId === "learning-view"));
   $("#career-toggle")?.setAttribute("aria-expanded", String(viewId === "career-view"));
   $("#progress-toggle")?.setAttribute("aria-expanded", String(viewId === "progress-view"));
