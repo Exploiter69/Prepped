@@ -234,3 +234,37 @@ footer { border-top:1px solid var(--line); border-bottom:0; color:var(--muted); 
   .progress-row-actions { width:100%; }
   .progress-week { gap:.2rem; }
 }
+
+
+/* Phase H — adaptive evidence and learner-owned plans */
+.intelligence-section { margin-top: 2.5rem; }
+.intelligence-columns { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+.intelligence-skill-list { display: grid; gap: .8rem; }
+.intelligence-skill { border: 1px solid var(--line); border-radius: 12px; padding: 1rem; background: var(--panel); }
+.intelligence-skill h5 { margin: 0 0 .35rem; font-size: .98rem; }
+.intelligence-skill p { margin: .35rem 0; color: var(--muted); font-size: .88rem; }
+.intelligence-skill-meta { display: flex; flex-wrap: wrap; gap: .45rem; margin: .55rem 0; }
+.intelligence-skill-meta span { border: 1px solid var(--line); border-radius: 999px; padding: .2rem .55rem; color: var(--muted); font-size: .75rem; }
+.intelligence-evidence { border-top: 1px solid var(--line); margin-top: .65rem; padding-top: .6rem; }
+.intelligence-evidence summary { cursor: pointer; color: var(--accent); font-size: .82rem; }
+.intelligence-evidence li { margin: .45rem 0; color: var(--muted); font-size: .82rem; }
+.intelligence-plan { border-top: 1px solid var(--line); margin-top: 1.6rem; padding-top: 1.25rem; }
+.intelligence-plan-controls { display: flex; flex-wrap: wrap; align-items: end; gap: .8rem; margin: 1rem 0; }
+.intelligence-plan-controls > div { display: grid; gap: .35rem; min-width: 150px; }
+.intelligence-plan-controls label { color: var(--muted); font-size: .82rem; }
+.intelligence-plan-controls input { width: 100%; }
+.intelligence-plan-item { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; border: 1px solid var(--line); border-radius: 10px; padding: .85rem; margin: .55rem 0; }
+.intelligence-plan-item p { margin: .3rem 0; color: var(--muted); font-size: .84rem; }
+.intelligence-plan-item-actions { display: flex; flex-wrap: wrap; gap: .4rem; }
+.intelligence-plan-item-actions button { font-size: .78rem; }
+.intelligence-week { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: .5rem; }
+.intelligence-week-day { border: 1px solid var(--line); border-radius: 9px; padding: .6rem; min-width: 0; }
+.intelligence-week-day strong { display: block; font-size: .82rem; }
+.intelligence-week-day span { display: block; color: var(--muted); font-size: .75rem; margin-top: .35rem; }
+.intelligence-recommendation { border-bottom: 1px solid var(--line); padding: .75rem 0; }
+.intelligence-recommendation p { margin: .35rem 0; color: var(--muted); font-size: .84rem; }
+@media (max-width: 760px) {
+  .intelligence-columns { grid-template-columns: 1fr; }
+  .intelligence-week { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .intelligence-plan-item { flex-direction: column; }
+}
