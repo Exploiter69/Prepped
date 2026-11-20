@@ -6,7 +6,7 @@
 
 - The documented server command binds Uvicorn to `127.0.0.1`.
 - The application rejects Host headers other than loopback names and the in-process test host.
-- State-changing requests with an Origin header must be same-origin.
+- State-changing requests with an Origin header must match both the request scheme and authority; malformed authorities, ports, user-info, and non-origin path/query/fragment values are rejected.
 - No permissive CORS middleware is installed.
 - API responses use `Cache-Control: no-store`.
 - Security response headers include CSP, frame denial, MIME sniffing protection, a restrictive referrer policy, and a permissions policy that allows microphone use only from the app's own origin.
