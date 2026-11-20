@@ -822,3 +822,29 @@ def test_career_discards_late_microphone_permission_after_navigation(local_app_u
 
     assert page.evaluate("window.__createdRecorders") == 0
     assert page.locator("#learning-view").is_visible()
+
+
+def test_adaptive_learning_workspace_renders_evidence_and_daily_weekly_plans(
+    local_app_url: str, browser_page
+) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+    page.locator("#progress-toggle").click()
+    page.wait_for_function(
+        "() => document.querySelector('#intelligence-status').textContent.startsWith('Evidence updated')"
+    )
+    assert page.locator("#intelligence-skills .intelligence-skill").count() > 0
+    assert page.locator("#intelligence-recommendations").is_visible()
+
+    page.locator("#intelligence-generate-day").click()
+    page.wait_for_function(
+        "() => document.querySelector('#intelligence-plan-date-label').textContent.includes('planned min')"
+    )
+    assert page.locator("#intelligence-plan-items .intelligence-plan-item").count() > 0
+
+    page.locator("#intelligence-generate-week").click()
+    page.wait_for_function(
+        "() => document.querySelectorAll('#intelligence-week .intelligence-week-day').length === 7"
+    )
+    assert page.locator("#intelligence-week .intelligence-week-day").count() == 7
+    assert page.locator("#intelligence-activity .progress-day").count() == 30
