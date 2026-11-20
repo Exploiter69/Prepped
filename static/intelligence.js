@@ -46,6 +46,7 @@
       [summary.closed_exercise_responses, "Skill-linked closed responses"],
       [summary.review_needed_responses, "Responses marked for review"],
       [summary.due_memory_items, "Revision items due"],
+      [Object.entries(summary.revision_ratings || {}).map(([rating, count]) => rating + ": " + count).join(" · ") || "No ratings yet", "Learner-rated revision history"],
     ].forEach(([value, label]) => {
       const card = node("div", undefined, "progress-stat");
       card.append(node("strong", value), node("span", label));
