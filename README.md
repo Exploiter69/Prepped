@@ -16,6 +16,11 @@ This repository does **not** claim validated speech accuracy, placement improvem
 - [Phase H adaptive learning implementation and acceptance gates](docs/PHASE_H_ACCEPTANCE.md)
 - [Phase I voice intelligence implementation and acceptance gates](docs/PHASE_I_ACCEPTANCE.md)
 - [Voice setup, privacy, and troubleshooting](docs/VOICE.md)
+- [Phase J curriculum quality and learner-validation gates](docs/PHASE_J_ACCEPTANCE.md)
+- [Phase K security, privacy, and reliability acceptance](docs/PHASE_K_ACCEPTANCE.md)
+- [Phase L local release-candidate acceptance](docs/PHASE_L_ACCEPTANCE.md)
+- [Offline text-mode demonstration](docs/DEMO.md)
+- [Changelog](CHANGELOG.md)
 - [ADR-002: local voice slice](docs/ADR-002-LOCAL-VOICE-SLICE.md)
 - [ADR-003: optional Groq Whisper transcription](docs/ADR-003-GROQ-WHISPER-TRANSCRIPTION.md)
 - [Complete Product and System Blueprint](docs/PRODUCT_BLUEPRINT.md)
@@ -55,13 +60,13 @@ Learning API: GET /api/learning/catalog, GET /api/learning/recommendations, POST
 Requires Python 3.11 or newer. The voice slice also uses `ffmpeg` to decode browser recordings and a local speech model. Text mode works without either.
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install -e ".[dev,voice,voice-cloud]"
-python -m uvicorn prepped.main:app --host 127.0.0.1 --port 8000
+bash scripts/prepped.sh setup
+bash scripts/prepped.sh start
 ```
 
-Open `http://127.0.0.1:8000`. Keep the server bound to loopback; do not expose the prototype on a LAN or public network. Health/readiness endpoints are `/api/health` and `/api/ready`; voice provider availability is `/api/voice/status`. See [INSTALL.md](docs/INSTALL.md) for a clean install and recovery instructions.
+The helper installs the application plus local test/browser tooling, starts the server in the foreground on 127.0.0.1, and stops when you press Ctrl+C. For a minimal runtime-only install, create a virtual environment and run `python -m pip install -e .`; then start Uvicorn with the loopback command below. The supported install is a source checkout; wheel/binary packaging is not claimed.
+
+Open `http://127.0.0.1:8000`. Keep the server bound to loopback; do not expose the prototype on a LAN or public network. Health/readiness endpoints are `/api/health` and `/api/ready`; voice provider availability is `/api/voice/status`. See [INSTALL.md](docs/INSTALL.md) for clean install and recovery instructions, or run `bash scripts/prepped.sh check` while the app is running.
 
 ### Enable local voice
 
@@ -161,9 +166,7 @@ The text feedback system is frozen for this phase. Do not keep adding phrase heu
 
 ## Current status (2026-11-20)
 
-Phases A–F are implemented on `feature/learner-profile`. The latest full CI run is green: [112 passed, 2 skipped, 1 warning](https://github.com/Exploiter69/Prepped/actions/runs/44721637341), including dependency audit, Python compilation, all JavaScript syntax checks, API tests, and Chromium browser acceptance. The two skips require `espeak-ng`, which is not installed on the hosted runner.
-
-This is not yet a release and is not a claim of target-device acceptance. Phase G engineering hardening and Phase H adaptive learning implementation pass automated CI; manual Omarchy checks remain for learner journeys, microphone/STT/TTS behaviour, backup/recovery, keyboard/screen-reader, contrast, and responsive layout. See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md), [the A–F learner checklist](docs/ACCEPTANCE_CHECKLIST.md), and [the Phase G release record](docs/PHASE_G_ACCEPTANCE.md).
+Phases A–H are implemented; Phases I and J have implementation in place with target-device/human acceptance still open. Phase K engineering verification is complete: the target laptop passed 172 tests and exact-commit CI [44754505687](https://github.com/Exploiter69/Prepped/actions/runs/44754505687) succeeded. Phase L is building the local release-candidate workflow; it is not yet a release. Real microphone/STT/TTS, screen-reader/accessibility, restore interruption, clean-install and learner-validation checks remain open. See [Current State](docs/CURRENT_STATE.md), [Phase I](docs/PHASE_I_ACCEPTANCE.md), [Phase J](docs/PHASE_J_ACCEPTANCE.md), [Phase K](docs/PHASE_K_ACCEPTANCE.md), and [Phase L](docs/PHASE_L_ACCEPTANCE.md).
 
 
 ## Personal learning memory and revision (Phase D)
