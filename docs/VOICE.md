@@ -14,9 +14,10 @@
 - Clear errors and a text-only fallback.
 - No raw audio persistence by Prepped. Groq mode explicitly sends audio to Groq; Vosk mode stays local.
 - In-flight prompt synthesis and transcription browser requests are abortable when the prompt/workspace changes or the learner leaves; stale responses are ignored.
-- Career studios use authored contextual follow-ups selected by narrow, documented text cues, with a visible explanation when a cue selects the prompt.
+- Career studios use authored contextual follow-ups selected by narrow, documented text cues, with a visible explanation when a cue selects the prompt. Learners can reveal an authored hint or switch to simpler wording without losing the original prompt; the chosen variant is retained with the answer.
 - Career review provides one possible answer-specific next action, explicitly framed as heuristic formative guidance rather than correctness feedback.
 - Learners may explicitly save an answer or coaching action to existing Memory, or add a future studio practice to the existing daily plan.
+- A retry review can compare previous and current answers side by side. Differences are for learner reflection only, not an automated improvement measure.
 
 Voice remains push-to-talk and turn-based. There is no always-listening mode, streaming transcript, voice activity detection, full-duplex conversation, or model-generated coaching. Context selection and coaching are deterministic lexical heuristics; they can miss equivalent wording and can match weak answers. They do not assess technical correctness, proficiency, accent, pronunciation quality, emotion, personality, hiring suitability, or placement readiness.
 
