@@ -851,3 +851,35 @@ def test_adaptive_learning_workspace_renders_evidence_and_daily_weekly_plans(
     )
     assert page.locator("#intelligence-week .intelligence-week-day").count() == 7
     assert page.locator("#intelligence-activity .progress-day").count() == 30
+
+
+
+def test_career_prompt_audio_request_is_aborted_when_leaving_workspace(local_app_url: str, browser_page) -> None:
+    page = browser_page
+    page.add_init_script("""
+        (() => {
+          const originalFetch = window.fetch.bind(window);
+          window.fetch = (input, init = {}) => {
+            if (String(input).includes("/api/voice/tts")) {
+              window.__careerTtsSignal = init.signal;
+              return new Promise((resolve, reject) => {
+                init.signal?.addEventListener("abort", () => {
+                  reject(new DOMException("Aborted", "AbortError"));
+                }, { once: true });
+                window.__resolveCareerTts = () => resolve(new Response(new Blob(["wav"]), { status: 200 }));
+              });
+            }
+            return originalFetch(input, init);
+          };
+        })();
+    """)
+    page.goto(local_app_url)
+    page.locator("#career-toggle").click()
+    page.locator(".career-studio-card button").first.click()
+    page.locator("#career-start").click()
+    page.locator("#career-active").wait_for(state="visible")
+    page.locator("#career-speak").click()
+    page.wait_for_function("() => window.__careerTtsSignal !== undefined")
+    page.locator("#learning-toggle").click()
+    assert page.evaluate("window.__careerTtsSignal.aborted") is True
+    assert page.locator("#learning-view").is_visible()
