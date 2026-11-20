@@ -162,7 +162,7 @@ def test_contextual_followup_uses_authored_prompt_when_expected_cue_is_not_detec
         assert response.status_code == 200
         prompt = response.json()["current_prompt"]
         assert "specific user journey" in prompt["prompt"].lower()
-        assert "example cue was not detected" in prompt["context_note"].lower()
+        assert "simple text cue was not detected" in prompt["context_note"].lower()
 
         with_example = start(client, "project-explanation", "guided").json()
         response = client.post(
