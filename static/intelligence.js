@@ -381,7 +381,7 @@
 
   async function openPlanItem(item) {
     if (item.item_type === "memory_review") {
-      openLearning();
+      openLearning(true);
       return;
     }
     if (item.item_type === "project_practice") {
