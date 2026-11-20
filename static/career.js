@@ -286,12 +286,16 @@
       const options = {};
       if (MediaRecorder.isTypeSupported("audio/webm;codecs=opus")) options.mimeType = "audio/webm;codecs=opus";
       state.recorder = new MediaRecorder(stream, options);
+      const recorder = state.recorder;
       state.chunks = [];
-      state.recorder.ondataavailable = event => {
+      recorder.ondataavailable = event => {
         if (requestId === state.recordingRequestId && event.data.size) state.chunks.push(event.data);
       };
-      state.recorder.onstop = () => transcribeRecording(requestId);
-      state.recorder.start();
+      recorder.onstop = () => {
+        if (state.recorder === recorder) state.recorder = null;
+        void transcribeRecording(requestId);
+      };
+      recorder.start();
       $("#career-record").disabled = true;
       $("#career-stop-record").disabled = false;
       $("#career-voice-status").textContent = "Recording… up to 60 seconds. Stop when you are ready. Raw audio is not saved by Prepped.";
@@ -335,13 +339,14 @@
       return;
     }
     const recorder = state.recorder;
-    state.recorder = null;
     releaseStream();
     if (discard) {
+      state.recorder = null;
       state.chunks = [];
       recorder.onstop = null;
     }
     if (recorder.state !== "inactive") recorder.stop();
+    else state.recorder = null;
     $("#career-record").disabled = false;
     $("#career-stop-record").disabled = true;
   }
