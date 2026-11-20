@@ -1,6 +1,6 @@
 (() => {
   const $ = (selector, root = document) => root.querySelector(selector);
-  const state = { studios: [], selected: null, session: null, recorder: null, stream: null, chunks: [], timer: null, audioUrl: null, audio: null, stt: null, recordingRequestId: 0, recordingPending: false, transcriptionController: null, transcribing: false };
+  const state = { studios: [], selected: null, session: null, recorder: null, stream: null, chunks: [], timer: null, audioUrl: null, audio: null, ttsController: null, ttsRequestId: 0, stt: null, recordingRequestId: 0, recordingPending: false, transcriptionController: null, transcribing: false };
   const viewIds = ["home-view", "practice-view", "feedback-view", "history-view", "learning-view", "career-view", "progress-view"];
   async function api(url, options = {}) {
     const response = await fetch(url, { ...options, headers: { "Content-Type": "application/json", ...(options.headers || {}) } });
@@ -15,8 +15,8 @@
   }
   function showCareer() {
     stopRecording(true);
+    stopPrompt(false);
     window.dispatchEvent(new CustomEvent("prepped:viewchange", { detail: { view: "career-view" } }));
-    if (state.audio) state.audio.pause();
     window.PreppedVoice?.stopAll();
     for (const id of viewIds) $("#" + id)?.classList.toggle("hidden", id !== "career-view");
     $("#career-toggle")?.setAttribute("aria-expanded", "true");
@@ -27,8 +27,8 @@
   }
   function showHome() {
     stopRecording(true);
+    stopPrompt(false);
     window.dispatchEvent(new CustomEvent("prepped:viewchange", { detail: { view: "home-view" } }));
-    if (state.audio) state.audio.pause();
     for (const id of viewIds) $("#" + id)?.classList.toggle("hidden", id !== "home-view");
     $("#career-toggle")?.setAttribute("aria-expanded", "false");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -91,8 +91,10 @@
     const prompt = state.session?.current_prompt;
     if (!prompt) return;
     stopRecording(true);
-    if (state.audio) state.audio.pause();
+    stopPrompt(false);
     $("#career-prompt-title").textContent = prompt.prompt;
+    $("#career-followup-context").textContent = prompt.context_note || "";
+    $("#career-followup-context").classList.toggle("hidden", !prompt.context_note);
     const primary = prompt.turn_type === "primary";
     const current = state.session.answered_primary_count + (primary ? 1 : 0);
     $("#career-turn-label").textContent = primary ? "MAIN QUESTION " + current : "FOLLOW-UP · QUESTION " + state.session.answered_primary_count;
@@ -135,6 +137,14 @@
         item.append(make("p", check.guidance, "section-help"));
         card.append(item);
       }
+      if (note.coaching) {
+        const coaching = make("div", null, "notice career-coaching");
+        coaching.append(make("strong", "One possible next improvement"));
+        coaching.append(make("p", note.coaching.action, "section-help"));
+        coaching.append(make("p", note.coaching.basis, "section-help"));
+        if (note.coaching.evidence) coaching.append(make("p", "Relevant answer text: " + note.coaching.evidence, "career-evidence"));
+        card.append(coaching);
+      }
       const save = make("button", "Save answer to learning memory", "button button-quiet");
       save.type = "button";
       save.addEventListener("click", () => {
@@ -157,6 +167,47 @@
     for (const step of feedback.next_steps) list.append(make("li", step));
     steps.append(list);
   }
+  function localPlanDate() {
+    const now = new Date();
+    return [now.getFullYear(), String(now.getMonth() + 1).padStart(2, "0"), String(now.getDate()).padStart(2, "0")].join("-");
+  }
+
+  async function addNextPracticeToPlan() {
+    if (!state.session?.studio_id) return;
+    const button = $("#career-add-plan");
+    button.disabled = true;
+    const original = button.textContent;
+    button.textContent = "Adding to today's plan…";
+    try {
+      const planDate = localPlanDate();
+      let plan = (await api("/api/intelligence/plan?plan_date=" + encodeURIComponent(planDate))).plan;
+      if (!plan) {
+        plan = (await api("/api/intelligence/plan/generate", {
+          method: "POST",
+          body: JSON.stringify({ plan_date: planDate, available_minutes: 30 }),
+        })).plan;
+      }
+      const alreadyAdded = plan.items.some(item =>
+        item.item_type === "career_practice" && item.target_id === state.session.studio_id && !item.skipped
+      );
+      if (!alreadyAdded) {
+        await api("/api/intelligence/plan/items", {
+          method: "POST",
+          body: JSON.stringify({ plan_date: planDate, item_type: "career_practice", target_id: state.session.studio_id }),
+        });
+      }
+      status(alreadyAdded
+        ? "This studio is already in today's plan."
+        : "Added a new " + state.session.studio_title + " practice to today's plan. Complete a new session to finish it.");
+      button.textContent = alreadyAdded ? "Already in today's plan" : "Added to today's plan";
+    } catch (error) {
+      status(error.message + " You can add this studio from the Progress plan instead.", true);
+      button.textContent = original;
+    } finally {
+      button.disabled = false;
+    }
+  }
+
   async function loadHistory() {
     const result = await api("/api/career/sessions");
     renderHistory(result.sessions);
@@ -216,25 +267,63 @@
       await loadHistory();
     } catch (error) { status(error.message, true); }
   }
-  function stopPrompt() {
+  function stopPrompt(announce = true) {
+    state.ttsRequestId += 1;
+    state.ttsController?.abort();
+    state.ttsController = null;
     if (state.audio) {
       state.audio.pause();
       state.audio.currentTime = 0;
+      state.audio = null;
     }
-    $("#career-voice-status").textContent = "Prompt playback stopped.";
+    if (state.audioUrl) {
+      URL.revokeObjectURL(state.audioUrl);
+      state.audioUrl = null;
+    }
+    if (announce) $("#career-voice-status").textContent = "Prompt playback stopped.";
+  }
+  function careerTtsRequestIsCurrent(requestId) {
+    return requestId === state.ttsRequestId &&
+      !$("#career-view").classList.contains("hidden") &&
+      !$("#career-active").classList.contains("hidden");
   }
   async function playPrompt() {
     const text = $("#career-prompt-title").textContent;
+    stopPrompt(false);
+    const requestId = ++state.ttsRequestId;
+    const controller = new AbortController();
+    state.ttsController = controller;
+    $("#career-voice-status").textContent = "Preparing the local spoken prompt…";
     try {
-      const response = await fetch("/api/voice/tts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text }) });
-      if (!response.ok) { const body = await response.json().catch(() => ({})); throw new Error(body.detail || "Local speech playback is unavailable. Read the prompt instead."); }
+      const response = await fetch("/api/voice/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+        signal: controller.signal,
+      });
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        throw new Error(body.detail || "Local speech playback is unavailable. Read the prompt instead.");
+      }
       const blob = await response.blob();
-      if (state.audioUrl) URL.revokeObjectURL(state.audioUrl);
+      if (!careerTtsRequestIsCurrent(requestId) || controller.signal.aborted) return;
       state.audioUrl = URL.createObjectURL(blob);
       state.audio = new Audio(state.audioUrl);
-      state.audio.play().catch(() => { $("#career-voice-status").textContent = "Playback could not start. Read the prompt instead."; });
-      $("#career-voice-status").textContent = "Playing the prompt using the configured local voice engine.";
-    } catch (error) { $("#career-voice-status").textContent = error.message; }
+      state.audio.onended = () => {
+        if (careerTtsRequestIsCurrent(requestId)) $("#career-voice-status").textContent = "Prompt finished. Use Replay to hear it again.";
+      };
+      state.audio.onerror = () => {
+        if (careerTtsRequestIsCurrent(requestId)) $("#career-voice-status").textContent = "Prompt audio could not be played. Read the prompt instead.";
+      };
+      await state.audio.play();
+      if (careerTtsRequestIsCurrent(requestId)) $("#career-voice-status").textContent = "Playing the prompt using the configured local voice engine.";
+    } catch (error) {
+      if (error.name !== "AbortError" && careerTtsRequestIsCurrent(requestId)) {
+        $("#career-voice-status").textContent = error.message + " Read the prompt instead.";
+      }
+    } finally {
+      if (state.ttsController === controller) state.ttsController = null;
+    }
   }
   function careerRecordingRequestIsCurrent(requestId) {
     return requestId === state.recordingRequestId &&
@@ -397,9 +486,15 @@
   }
 
   window.addEventListener("prepped:viewchange", event => {
-    if (event.detail?.view !== "career-view") stopRecording(true);
+    if (event.detail?.view !== "career-view") {
+      stopRecording(true);
+      stopPrompt(false);
+    }
   });
-  window.addEventListener("pagehide", () => stopRecording(true));
+  window.addEventListener("pagehide", () => {
+    stopRecording(true);
+    stopPrompt(false);
+  });
 
   async function refreshVoiceStatus() {
     try {
@@ -416,7 +511,8 @@
     $("#career-submit").addEventListener("click", submitAnswer);
     $("#career-speak").addEventListener("click", playPrompt);
     $("#career-replay").addEventListener("click", playPrompt);
-    $("#career-stop-speak").addEventListener("click", stopPrompt);
+    $("#career-stop-speak").addEventListener("click", () => stopPrompt(true));
+    $("#career-add-plan").addEventListener("click", addNextPracticeToPlan);
     $("#career-record").addEventListener("click", startRecording);
     $("#career-stop-record").addEventListener("click", () => stopRecording(false));
     $("#career-exit").addEventListener("click", async () => {
