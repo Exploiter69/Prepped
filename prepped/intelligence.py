@@ -151,6 +151,8 @@ def _skill_evidence(conn: sqlite3.Connection, curriculum: dict[str, Any], now: d
         "SELECT id,lesson_id,status,lesson_json,responses_json,feedback_json,started_at,completed_at "
         "FROM learning_attempts ORDER BY COALESCE(completed_at,started_at) DESC"
     ).fetchall()
+    attempt_skills: dict[str, list[str]] = {}
+    lesson_skills: dict[str, list[str]] = {}
     for row in attempts:
         try:
             lesson = json.loads(row["lesson_json"] or "{}") or lessons.get(row["lesson_id"], {})
@@ -163,6 +165,8 @@ def _skill_evidence(conn: sqlite3.Connection, curriculum: dict[str, Any], now: d
         skill_ids = [sid for sid in lesson.get("skill_ids", []) if sid in skills]
         if not skill_ids:
             continue
+        attempt_skills[row["id"]] = skill_ids
+        lesson_skills[row["lesson_id"]] = skill_ids
         exercise_map = {item.get("id"): item for item in lesson.get("exercises", []) if isinstance(item, dict)}
         feedback_map = {item.get("exercise_id"): item for item in feedback if isinstance(item, dict)}
         timestamp = row["completed_at"] or row["started_at"]
@@ -203,6 +207,25 @@ def _skill_evidence(conn: sqlite3.Connection, curriculum: dict[str, Any], now: d
                     if outcome == "review":
                         exid = str(response.get("exercise_id") or "unknown")
                         mistakes[sid][exid] = mistakes[sid].get(exid, 0) + 1
+
+    # Learner-approved memory reviews contribute revision activity only when
+    # their stored source can be linked unambiguously to a lesson or attempt.
+    revision_rows = conn.execute(
+        """SELECT r.id,r.rating,r.reviewed_at,m.source_type,m.source_id,m.source_title
+           FROM learning_memory_reviews r JOIN learning_memory m ON m.id=r.item_id
+           ORDER BY r.reviewed_at DESC"""
+    ).fetchall()
+    for row in revision_rows:
+        linked = attempt_skills.get(row["source_id"] or "", []) or lesson_skills.get(row["source_id"] or "", [])
+        for sid in linked:
+            activity[sid] += 1
+            evidence[sid].append({
+                "source_type": "learner_memory_review", "source_id": row["id"],
+                "title": row["source_title"] or "Learner-saved revision",
+                "occurred_at": row["reviewed_at"], "kind": "revision_activity",
+                "outcome": row["rating"],
+                "note": "A learner-rated revision event; it is not an objective assessment of mastery.",
+            })
 
     project_rows = conn.execute(
         "SELECT id,status,created_at,completed_at FROM sessions ORDER BY COALESCE(completed_at,created_at) DESC"
@@ -436,17 +459,17 @@ def _generate_day(conn: sqlite3.Connection, curriculum: dict[str, Any], plan_dat
         "SELECT id,front FROM learning_memory WHERE status='active' AND dismissed_at IS NULL AND due_at<? ORDER BY due_at LIMIT 10",
         (day_end,),
     ).fetchall()
+    daily_reviews = 0
     for item in due_rows:
-        if item["id"] in used_memory or remaining < 5:
+        # Reserve enough time for a focused lesson instead of letting a large
+        # review backlog consume the entire daily plan.
+        if item["id"] in used_memory or remaining < 15 or daily_reviews >= 2:
             continue
         _add_plan_item(conn, plan_date, "memory_review", item["id"], "Review: " + item["front"],
                        "This learner-saved item is due on or before this day.", 5)
         used_memory.add(item["id"])
+        daily_reviews += 1
         remaining -= 5
-        if len(used_memory) >= 3 and used_lessons:
-            break
-        if remaining < 5:
-            break
     lesson = next((item for item in recommendations if item["kind"] == "lesson"
                    and item["target_id"] not in used_lessons), None)
     if lesson and remaining >= lesson["estimated_minutes"]:
