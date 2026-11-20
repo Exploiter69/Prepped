@@ -354,7 +354,7 @@ Learning and Career recording now invalidate pending microphone permission reque
 
 ## Phase H — Adaptive Learning Intelligence (implementation added; CI pending)
 
-- H1: derived skill evidence across active curriculum skills, lesson attempts, closed-exercise responses, open self-review, project/Career activity, and explicitly linked learner-approved memory reviews. Freshness and evidence coverage are visible; no mastery/proficiency score is assigned.
+- H1: derived skill evidence across active curriculum skills, lesson attempts, closed-exercise responses, open self-review, project/Career activity, and source-linked learner-approved lesson, project-practice, and Career memory reviews. HR/behavioural and technical Career skills with planned curriculum content are shown as practice-only evidence. Freshness and evidence coverage are visible; no mastery/proficiency score is assigned.
 - H2: deterministic, source-explained recommendations use repeated closed-exercise review needs, prerequisites, profile routes, due revisions, and active learner goals. Learners can dismiss/restore recommendations and override by choosing activities.
 - H3: persisted daily and seven-day plans combine due reviews, suitable lessons, and optional interview/project practice. Learners control time budget, additions, reordering, skipping, and regeneration. Completion is derived from linked saved activity.
 - H4: per-skill evidence timelines, 30-day activity history, revision ratings, repeated review signals, and source-linked analytics.
