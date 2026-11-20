@@ -14,12 +14,16 @@ python -m playwright install chromium
 python -m compileall -q prepped
 node --check static/app.js
 node --check static/voice.js
+node --check static/learning.js
+node --check static/memory.js
+node --check static/career.js
+node --check static/progress.js
 python -m pytest -q
 ```
 
 Expected:
 - Dependency installation completes without a paid service or API key.
-- Python compilation and both JavaScript syntax checks exit successfully.
+- Python compilation and all six browser JavaScript syntax checks exit successfully.
 - The complete test suite passes. The Playwright browser tests exercise profile open/save/edit/cancel/reload, the text-only practice journey, and the Phase B–F learner flows in Chromium. The profile unit tests also assert the served page's accessible toggle/form contract. CI installs the optional browser-test extra and Chromium; the application itself does not require Playwright. Record the exact pass/skip count and any warnings.
 - A skipped real-model integration test is recorded as skipped, not passed.
 
