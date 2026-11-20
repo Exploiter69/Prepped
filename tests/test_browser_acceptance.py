@@ -742,6 +742,9 @@ def test_mobile_layout_has_no_horizontal_page_overflow(local_app_url: str, brows
     page.wait_for_function(
         "() => document.querySelector('#progress-status').textContent.startsWith('Updated')"
     )
+    page.wait_for_function(
+        "() => document.querySelector('#intelligence-status').textContent.startsWith('Evidence updated')"
+    )
     assert_no_horizontal_overflow()
 
 
