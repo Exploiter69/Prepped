@@ -370,6 +370,8 @@ The following phases extend the active A–H build sequence. They are deliberate
 
 ### Phase I — Voice Intelligence & Contextual Coaching
 
+**Status:** Implementation added on the working branch; exact-commit CI and manual target-device acceptance pending. See [Phase I Acceptance](PHASE_I_ACCEPTANCE.md).
+
 **Outcome:** a reliable, accessible, turn-based voice practice loop with contextual follow-ups and coaching grounded in the learner's actual submitted response.
 
 - Audit and unify the voice interaction contract across Learning, Project Practice, and Career without a broad frontend rewrite.
