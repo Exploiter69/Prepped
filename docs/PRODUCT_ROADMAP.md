@@ -138,7 +138,7 @@ The learner profile remains a preference record, but its stated goal and focus a
 
 - [x] Confirm profile setup, edit, cancel, save, reload, and persistence in automated Chromium browser tests in CI; target-laptop manual spot check remains.
 - [x] Confirm the profile toggle opens/closes, updates `aria-expanded`, and persists edits in automated Chromium; target-laptop manual spot check remains.
-- [x] Run the complete pytest suite, Python compilation, and JavaScript syntax checks; the current full suite is [100 passed, 2 skipped, 1 warning](https://github.com/Exploiter69/Prepped/actions/runs/44653868798).
+- [x] Run the complete pytest suite, Python compilation, and JavaScript syntax checks; the current full suite is [100 passed, 2 skipped, 1 warning](https://github.com/Exploiter69/Prepped/actions/runs/44655380427).
 - [ ] Complete the outstanding voice browser acceptance checklist and document microphone, transcription, transcript correction, submission, TTS, and text fallback results.
 - [x] Verify CI and a clean-checkout install (GitHub Actions completed successfully on the feature branch; dependency install, compilation, JavaScript syntax, and pytest all passed).
 - [x] Keep the existing practice room and saved sessions intact; regression tests cover the text-only journey and additive profile migration.
@@ -199,7 +199,7 @@ Deliver a coherent first track rather than a large empty catalogue.
 - [x] Allow edit, dismiss/restore, delete, suspend/resume, and duplicate resolution.
 - [x] Build a transparent local interval scheduler, due queue, rating controls, and review history.
 - [x] Keep uncertain automated feedback as an editable suggestion; nothing is saved without learner action.
-- [x] Current full-suite GitHub Actions passes: [100 passed, 2 skipped, 1 warning](https://github.com/Exploiter69/Prepped/actions/runs/44653868798); both skips require `espeak-ng`.
+- [x] Current full-suite GitHub Actions passes: [100 passed, 2 skipped, 1 warning](https://github.com/Exploiter69/Prepped/actions/runs/44655380427); both skips require `espeak-ng`.
 - [ ] Complete target-laptop manual acceptance.
 
 **Exit gate:** learners can create/edit/dismiss/suspend/delete review items, complete due reviews, inspect history and scheduling behaviour; tests cover validation, duplicate handling, dates, retries, persistence, and legacy-data compatibility.
@@ -218,7 +218,7 @@ Deliver a coherent first track rather than a large empty catalogue.
 - [x] Provide transparent, evidence-linked reflection without technical correctness grading, overall interview score, recruiter rating, or placement prediction.
 - [x] Allow explicit handoff of an answer to the Phase D memory editor; the learner must review and submit before saving.
 - [x] Add additive `career_sessions` and `career_turns` tables; preserve existing practice, profile, learning, and memory data.
-- [x] Current full-suite GitHub Actions passes: [run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798) — 100 passed, 2 skipped, 1 warning; includes all Phase E tests.
+- [x] Current full-suite GitHub Actions passes: [run 44655380427](https://github.com/Exploiter69/Prepped/actions/runs/44655380427) — 100 passed, 2 skipped, 1 warning; includes all Phase E tests.
 
 - [ ] Complete target-laptop text, voice, persistence, accessibility, and responsive acceptance.
 
