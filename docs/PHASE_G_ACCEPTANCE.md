@@ -120,3 +120,8 @@ Phase G engineering may be called implementation-complete only when the final co
 The product may be called a locally accepted release candidate only after the target-laptop fresh install, learner journeys, backup/recovery, voice checks (where optional tools are installed), keyboard/screen-reader, contrast, responsive, and privacy checks have been performed and recorded.
 
 A student pilot is optional and separate. A public or multi-user release is out of scope.
+
+
+## Phase G.1 — microphone lifecycle regression evidence
+
+Learning and Career now invalidate pending getUserMedia requests on workspace changes and pagehide, stop tracks from late grants, and abort/ignore stale transcription after navigation. Deferred-permission browser regressions for both workspaces passed in CI run 44732997261. Manual microphone/device acceptance remains open.
