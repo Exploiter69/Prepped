@@ -561,3 +561,52 @@ def test_curriculum_rejects_objective_exercise_without_explanation(tmp_path: Pat
         assert "invalid options or answer" in str(exc)
     else:
         raise AssertionError("An objective answer key without an explanation was accepted")
+
+
+def test_exercises_declare_outcomes_effort_and_inherit_lesson_context(tmp_path: Path) -> None:
+    data = load_curriculum()
+    for lesson in data["lessons"]:
+        total = 0
+        for exercise in lesson["exercises"]:
+            assert exercise["learning_outcome"].strip()
+            assert 1 <= exercise["estimated_minutes"] <= 10
+            assert exercise["skill_ids"] == lesson["skill_ids"]
+            assert exercise["source_ids"] == lesson["source_ids"]
+            total += exercise["estimated_minutes"]
+        assert total <= lesson["estimated_minutes"]
+
+    lesson = data["lessons"][0]
+    lesson["exercises"][0]["skill_ids"] = ["unknown.skill"]
+    path = tmp_path / "invalid-exercise-context.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+    try:
+        load_curriculum(path)
+    except CurriculumValidationError as exc:
+        assert "inherit its lesson skill context" in str(exc)
+    else:
+        raise AssertionError("Exercise with mismatched inherited skill context was accepted")
+
+
+def test_curriculum_rejects_exercise_without_outcome_or_over_budget_effort(tmp_path: Path) -> None:
+    data = load_curriculum()
+    data["lessons"][0]["exercises"][0]["learning_outcome"] = ""
+    path = tmp_path / "missing-exercise-outcome.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+    try:
+        load_curriculum(path)
+    except CurriculumValidationError as exc:
+        assert "observable learning outcome" in str(exc)
+    else:
+        raise AssertionError("Exercise without a learning outcome was accepted")
+
+    data = load_curriculum()
+    lesson = data["lessons"][0]
+    lesson["exercises"][0]["estimated_minutes"] = lesson["estimated_minutes"]
+    path = tmp_path / "over-budget-exercise-effort.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+    try:
+        load_curriculum(path)
+    except CurriculumValidationError as exc:
+        assert "exceeds its lesson estimate" in str(exc)
+    else:
+        raise AssertionError("Exercise effort exceeding lesson estimate was accepted")
