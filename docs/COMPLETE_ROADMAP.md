@@ -1,6 +1,6 @@
 # Prepped — Complete Project Roadmap
 
-**Status:** Active roadmap. Phases A–F are implemented on `feature/learner-profile`; Phase G release hardening is in progress. Target-device acceptance remains a release sign-off gate. The text MVP is frozen except for material bugs.<br>
+**Status:** Phases A–F are implemented; Phase G engineering hardening is implemented and automated CI is green. Target-device acceptance remains open. Phase H is approved in principle as the next product phase, but has not started; microphone lifecycle hardening is a prerequisite. The text MVP is frozen except for material bugs.<br>
 **Updated:** 2026-11-20<br>
 **Planning basis:** B.Tech semester 3 now; TDP continues through the final year. Dates are decision gates, not promises.<br>
 **Companion documents:** [Product Blueprint](PRODUCT_BLUEPRINT.md) · [Current State](CURRENT_STATE.md) · [Voice Setup](VOICE.md) · [ADR-002](ADR-002-LOCAL-VOICE-SLICE.md)
@@ -340,14 +340,14 @@ Do not convert “the model ran” into “speech accuracy is good.” Do not co
 
 ## 18. Updated product completion plan (2026-11-19)
 
-This is the authoritative A–G execution sequence. Earlier sections are the original research/planning model and historical baseline; use this section plus CURRENT_STATE.md for present implementation truth. Phases A–F are implemented; Phase G engineering is in progress while target-device acceptance remains a final release gate.
+This is the authoritative execution sequence. Earlier sections are the original research/planning model and historical baseline; use this section plus CURRENT_STATE.md for present implementation truth. Phases A–F are implemented. Phase G engineering is implemented and automated CI is green; target-device acceptance remains a release gate. Phase H is proposed below and is deliberately not started until the recording lifecycle prerequisite is fixed.
 
 ### Current truth
 
 - The app has the original project-explanation practice scenario, a local session/history flow, formative feedback, a bounded voice record/stop slice, a learner profile, and a reusable Learning Engine.
 - The profile goal and focus areas select transparent starter routes through the versioned curriculum; they do not infer ability or adapt difficulty.
 - The branch now contains the initial English and communication curriculum, learner-controlled memory and spaced revision, three interview studios, and the Phase F progress/goals/backup/restore workspace. Target-device acceptance for Phases D–F remains outstanding.
-- Latest full CI is green: [run 44655380427](https://github.com/Exploiter69/Prepped/actions/runs/44655380427) — 100 passed, 2 skipped, 1 warning. Target-device acceptance for Phases A–F remains outstanding.
+- Latest full CI is green: [run 44721637341](https://github.com/Exploiter69/Prepped/actions/runs/44721637341) — 112 passed, 2 skipped, 1 warning. Target-device acceptance for Phases A–F remains outstanding.
 - Do not label this product market-ready or complete.
 
 ### Build sequence
@@ -360,7 +360,9 @@ This is the authoritative A–G execution sequence. Earlier sections are the ori
 | D | Personal learning memory | Learner-approved saved words, phrases, corrections and review cards | CRUD, source context, review queue and scheduler tests |
 | E | Career & interview studios | Project, HR/behavioural and technical scenarios with follow-ups | Multiple scenario families on shared infrastructure |
 | F | Progress & portability | Skill evidence, goals, recommendations, export/backup/restore | Reproducible data recovery and explainable progress |
-| G | Release hardening and acceptance (engineering in progress) | Security/data edge cases, automated regression, browser/accessibility checks, target-device verification | Phase G acceptance record, green final CI, recovery rehearsal, limitations and release checklist |
+| G | Release hardening (engineering implemented; device acceptance open) | Security/data edge cases, automated regression, browser/accessibility checks, target-device verification | Phase G acceptance record, green final CI, recovery rehearsal, limitations and release checklist |
+| G.1 | Recording lifecycle hardening (next prerequisite) | Cancel pending microphone permission, stop streams on every navigation path, abort stale transcription, and protect against late callbacks in Learning and Career | Deferred-permission browser regression tests and green CI |
+| H | Adaptive Learning Intelligence (approved direction; not started) | Evidence-based skill states, deterministic adaptation, daily learning plan, and explainable learner analytics | Detailed design, source-linked evidence model, API/UI integration, migrations only if needed, regression tests, and green CI |
 
 ### Relationship to the original Phase 0–8 planning model
 
@@ -537,3 +539,59 @@ Delivered: evidence-linked skill/activity progress; learner-owned goals; explain
 **Still open:** target-laptop acceptance for all A–F learner journeys, fresh-install/recovery rehearsal, voice hardware/provider checks, keyboard/screen-reader/contrast/responsive review, and any fixes arising from those checks. The two CI skips require `espeak-ng` and are not counted as passes. The student pilot remains optional future validation, not a prerequisite to engineering.
 
 **Phase G engineering is in progress.** Target-device acceptance is still required for release-candidate sign-off; it does not block code-level hardening and automated regression work.
+
+
+---
+
+## Phase G.1 — Recording lifecycle and privacy hardening (next prerequisite; not yet implemented)
+
+Before beginning adaptive learning work, close the microphone lifecycle gap across Learning and Career:
+
+- Invalidate a pending `getUserMedia()` request when the learner navigates away, exits a lesson/interview, changes the active workspace, or unloads the page.
+- If a permission request resolves after cancellation, immediately stop every returned media track and never construct/start a `MediaRecorder`.
+- Stop active recording and release tracks on every workspace transition, including direct Learning ↔ Career ↔ Progress navigation.
+- Abort an in-flight transcription request on cancellation/navigation; ignore late success/error/finally callbacks so they cannot overwrite another screen or insert a stale transcript.
+- Preserve intentional Stop behaviour: a learner-requested stop may finish transcription while remaining in the same active exercise/interview.
+- Add browser regressions using deferred microphone permission promises for both Learning and Career, plus stale-transcription cancellation where practical.
+
+**Exit gate:** automated browser tests prove that late permission grants do not start recording, all returned tracks are stopped, navigation cancels capture/transcription, and ordinary record/stop/transcript editing still works. This engineering prerequisite does not replace later manual device acceptance.
+
+## Phase H — Adaptive Learning Intelligence (planned; not started)
+
+**Purpose:** turn the existing profile, curriculum, lesson attempts, memory reviews, career sessions, and progress events into a coherent, explainable learning loop. Phase H must reuse the current FastAPI + SQLite modular monolith and existing evidence; it must not introduce a second learner-state system or opaque ability score.
+
+### H1. Evidence-backed learner skill profile
+
+- Define skill-state records from existing curriculum skill IDs and observable evidence already captured by lessons, exercises, project practice, Career sessions, and learner-approved memory reviews.
+- Separate evidence of activity from evidence of demonstrated performance. Do not treat lesson completion, one answer, self-reported confidence, or heuristic Career feedback as proof of mastery.
+- Track evidence source, timestamp/freshness, quantity, and confidence/coverage limitations; retain links to the underlying attempts and responses.
+- Explain why a skill is marked as practised, developing, needs review, or has insufficient evidence. Use conservative deterministic rules; do not claim certified proficiency.
+
+### H2. Deterministic adaptive learning engine
+
+- Recommend the next lesson or exercise using prerequisite relationships, recent evidence, repeated observable errors, learner goals, and due revision items.
+- Adapt practice sequence and challenge only where authored content supports it. Do not fabricate exercises or infer traits from voice, accent, emotion, or personality.
+- Explain every recommendation with its evidence and let learners dismiss or override it.
+- Keep the current profile-based route as a stable fallback when evidence is sparse or ambiguous.
+
+### H3. Daily and weekly learning plan
+
+- Combine due memory reviews, a focused weak/under-practised skill, the next suitable lesson, and optional interview practice into a realistic plan.
+- Respect learner-set goals and available time without requiring notifications, background workers, or external services.
+- Let learners complete, skip, reorder, and regenerate plan items; explain why each item appears.
+
+### H4. Learner analytics and history
+
+- Show skill-by-skill evidence timelines, practice consistency, revision retention signals, recurring corrections, and progress over time.
+- Distinguish completed activity, correct closed-exercise responses, open self-review responses, and heuristic feedback. Do not combine them into a misleading score.
+- Provide source links and time windows; state when there is too little evidence to draw a conclusion.
+
+### Phase H guardrails and exit gate
+
+- ₹0 mandatory cost; no required LLM/API, hosted database, queue, Redis, Celery, vector store, or new service.
+- Reuse current tables and APIs first; add only small, additive SQLite migrations when a persisted concept cannot be derived safely.
+- Deterministic and inspectable first; no opaque mastery score, CEFR certification, learning-gain claim, placement prediction, or automated confidence/personality inference.
+- Tests must cover sparse data, conflicting/stale evidence, repeated attempts, prerequisites, learner overrides, backup/restore compatibility, and legacy records.
+- Exit only when a learner can understand their evidence, receive a defensible next-step plan, override it, and see why the system changed its recommendation. Manual user validation remains separate from engineering completion.
+
+**Status:** approved direction only. Do not start Phase H implementation until Phase G.1 passes automated regression and CI.
