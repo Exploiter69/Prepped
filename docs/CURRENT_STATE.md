@@ -94,7 +94,7 @@ The old Piper repository is archived; current Piper development is at `OHF-Voice
 
 No model weights are committed. `models/` is ignored by Git. Model installation is explicit in `scripts/setup_voice.sh`; nothing is downloaded by application startup.
 
-## Automated verification of the uploaded snapshot
+## Historical verification of the uploaded snapshot (2026-11-04)
 
 Executed in an isolated Linux environment against the uploaded repository snapshot:
 
@@ -112,13 +112,12 @@ The single skipped test is `tests/test_voice_integration.py`: `espeak-ng` is not
 
 The earlier development notes recorded the following on the Intel i5-1235U / Omarchy laptop: Vosk model load about 0.8 s; a synthetic ~4 s espeak sample decoded and transcribed in about 2.5 s; Piper model load about 4.5 s; one short prompt synthesized in about 0.43 s; process peak RSS about 190 MB. These are historical observations from the previous development session, not reproduced by this snapshot audit and not formal benchmarks. The notes also recorded an imperfect synthetic Vosk transcript. None of these observations establishes accuracy on representative Indian English speech.
 
-## Not yet verified / outstanding
+## Voice-specific evidence and target-device checks still outstanding
 
 - A real browser microphone session using Groq on the target machine: permission prompt, record/stop, transcript insertion, editing, submission, TTS play/stop/replay, and restart persistence. The provider adapter is covered by mocked tests, not a live API call.
 - Speech-recognition accuracy or word-error rate on representative Indian English speech with either provider. No such result is claimed.
 - A repeatable latency/memory benchmark across repeated runs and devices.
-- GitHub Actions result for this change. The local suite passes; CI must run on the pushed commit before merge.
-- A fresh-checkout install/test/browser smoke test after this change.
+- A clean install and full manual recovery rehearsal on the target Omarchy laptop; the hosted CI clean-checkout run does not replace this device check.
 - Student usability or voice-specific user validation. No pilot has been run and no results are claimed.
 
 ## Product development vs. future user validation
@@ -296,7 +295,7 @@ New additive SQLite tables: `career_sessions` and `career_turns`. Existing pract
 
 ---
 
-## Phase F — Progress, portability, and release hardening (2026-11-19)
+## Phase F — Progress, portability, and hardening foundations (2026-11-19)
 
 **Implementation added on `feature/learner-profile`; [final automated CI is green (100 passed, 2 skipped)](https://github.com/Exploiter69/Prepped/actions/runs/44653868798). Target-laptop manual acceptance remains pending. Phase D and Phase E device checks remain separate open gates.
 
