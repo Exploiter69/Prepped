@@ -43,6 +43,8 @@ jobs:
           node --check static/progress.js
       - name: Install project and test dependencies
         run: python -m pip install -e ".[dev,browser-test]"
+      - name: Check dependency consistency
+        run: python -m pip check
       - name: Audit installed Python dependencies
         run: |
           python -m pip install --upgrade "setuptools>=84.1.0" pip-audit
