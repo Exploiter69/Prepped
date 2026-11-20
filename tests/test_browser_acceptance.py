@@ -935,6 +935,13 @@ def test_project_prompt_audio_request_is_aborted_when_leaving_practice(local_app
         (() => {
           const originalFetch = window.fetch.bind(window);
           window.fetch = (input, init = {}) => {
+            if (String(input).includes("/api/voice/status")) {
+              return Promise.resolve(new Response(JSON.stringify({
+                stt: { kind: "stt", engine: "fake", available: true, detail: "Fake STT ready." },
+                tts: { kind: "tts", engine: "fake", available: true, detail: "Fake TTS ready." },
+                limits: { max_recording_seconds: 60, max_audio_bytes: 12582912, max_tts_characters: 1200 }
+              }), { status: 200, headers: { "Content-Type": "application/json" } }));
+            }
             if (String(input).includes("/api/voice/tts")) {
               window.__practiceTtsSignal = init.signal;
               return new Promise((resolve, reject) => {
