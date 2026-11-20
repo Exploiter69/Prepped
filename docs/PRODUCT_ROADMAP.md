@@ -360,3 +360,83 @@ Automated browser tests now use deferred getUserMedia() promises to verify late 
 The working branch now includes the evidence-backed skill profile, deterministic recommendation engine, learner-controlled daily and weekly plans, source-linked analytics, the Progress workspace UI, additive schema-4 plan persistence, and backup compatibility for existing schema-3 exports. See [Phase H Acceptance](PHASE_H_ACCEPTANCE.md) for the API, evidence rules, tests, limitations, and remaining gates.
 
 The implementation intentionally adapts ordering and selection only. The curriculum has no authored difficulty metadata, so difficulty changes and generated exercises are not claimed. Automated CI for the Phase H/G.1 implementation is green: [run 44732997261](https://github.com/Exploiter69/Prepped/actions/runs/44732997261). Manual Omarchy acceptance remains later.
+
+
+---
+
+## Future delivery sequence — Phases I–L (planned, not implemented)
+
+The following phases extend the active A–H build sequence. They are deliberately detailed enough to guide implementation, but remain **planned** until their code, tests, documentation, and acceptance evidence exist. Use [the Complete Project Roadmap](COMPLETE_ROADMAP.md) for the full task breakdown, constraints, test matrix, and exit gates. Do not treat this section as a status report.
+
+### Phase I — Voice Intelligence & Contextual Coaching
+
+**Outcome:** a reliable, accessible, turn-based voice practice loop with contextual follow-ups and coaching grounded in the learner's actual submitted response.
+
+- Audit and unify the voice interaction contract across Learning, Project Practice, and Career without a broad frontend rewrite.
+- Make permission, recording, stopping, transcription, transcript-ready, failure, and cancellation states explicit and accessible.
+- Harden cancellation, timeout, navigation, late microphone grants, stale provider responses, duplicate actions, and stream cleanup.
+- Validate empty/silent/oversized/unsupported audio, decoder errors, missing models/binaries, provider timeouts, and malformed responses.
+- Keep transcripts editable, prompts replayable, text alternatives available, and text-only completion first-class.
+- Disclose optional remote transcription before capture; never silently route local failures to a remote provider; do not persist raw audio by default.
+- Add bounded scenario state and relevant authored follow-up selection for Project Explanation, HR/Behavioural, and Technical Interview studios.
+- Give response-specific formative coaching that quotes or points to submitted evidence, explains uncertainty, and offers one actionable improvement. Technical correctness requires reviewed answer keys; no unsupported score.
+- Let learners explicitly send selected corrections to Memory or add an accepted action to an existing adaptive plan. Preserve existing skill IDs and source links.
+- Consider an optional local model only after a separate licence, hardware, privacy, hallucination, maintenance, and deterministic-fallback decision. It must never be required.
+- **Exit:** complete text and voice journeys, editable transcript, relevant follow-up, evidence-grounded feedback, retry/resume, safe cancellation/navigation, green API/browser/adapter tests, and recorded target-device acceptance.
+
+### Phase J — Curriculum Quality, Content Expansion & Learning Validation
+
+**Outcome:** reviewed, accessible, coherent learning content and honest evidence about usability; learning outcomes are evaluated only with a suitable method.
+
+- Audit every curriculum skill, unit, lesson, prompt, exercise, answer key, example, and prerequisite for outcome alignment, accuracy, duplication, difficulty, and missing scaffolding.
+- Improve existing English, professional communication, project explanation, HR/behavioural, and technical fundamentals paths before expanding catalogue breadth.
+- Add worked examples, guided-to-independent practice, retrieval, spaced review, mixed practice, and transfer tasks where justified by the learning outcome.
+- Validate deterministic answer keys and acceptable variants; ambiguous open responses must remain self-review rather than receive false correctness feedback.
+- Add curriculum linting for IDs, references, prerequisites, outcomes, supported exercise types, answer-key quality, and text alternatives.
+- Review technical and language content against credible references or qualified human review; record reviewer/date/version and unresolved disagreements.
+- Review accessibility, inclusive language, keyboard/screen-reader behaviour, contrast, zoom, captions, pace controls, and responsive use.
+- Prepare a consent-based usability protocol covering tasks, participants, risks, minimum data, retention, withdrawal, and reporting. Run it only when participants are available.
+- If learning is evaluated, define a narrow skill-specific task and pre/post or delayed-recall method in advance. Report sample and limitations; do not infer placement outcomes or broad proficiency.
+- **Exit:** release-candidate content has explicit outcomes, valid references, reviewed deterministic keys, accessible alternatives, passing curriculum and browser tests, and a content review log. A pilot is either documented with honest limitations or clearly recorded as not run.
+
+### Phase K — Security, Privacy, Data Protection & Reliability
+
+**Outcome:** a defensible security and privacy baseline for a local, single-user release, with recovery and residual risks documented.
+
+- Write a threat model for loopback networking, browser origins, local filesystem, SQLite, imports, backups, optional remote STT, dependencies, secrets, and compromised local accounts.
+- Confirm the supported boundary remains local single-user. LAN/public exposure, tunnels, reverse proxies, and multi-user operation are out of scope without a separately approved architecture.
+- Review all API routes, validation, SQL, DOM rendering, file handling, request limits, Host/Origin policy, CORS, CSP, security headers, and error responses.
+- Fuzz or adversarially test backup/import validation, oversized/deep/malformed payloads, migrations, and restore rollback.
+- Inventory personal data and document purpose, location, retention, export, deletion, and external recipients.
+- Verify deletion cascades, file permissions, secret handling, log redaction, and no raw-audio persistence by default.
+- Decide whether backup encryption is practical without creating unrecoverable data; otherwise clearly label backups as sensitive and unencrypted.
+- Audit dependency vulnerabilities, maintenance and licences; document and review exceptions.
+- Test disk-full/permission failures, process interruption, DB integrity, schema migration, missing voice engines, provider timeouts, and recovery.
+- **Exit:** no knowingly unresolved critical/high-severity issue; remaining risks accepted and documented; data lifecycle, import/export, migration, and recovery tests pass; dependency/licence review is recorded. This is not a security certification.
+
+### Phase L — Release Candidate, Packaging, Documentation & Operations
+
+**Outcome:** a reproducible local release candidate that another person can install, operate, update, and recover using documented steps.
+
+- Define the supported platform/device matrix and clearly separate core offline/local features from optional voice engines and optional remote STT.
+- Freeze release scope; define versioning, changelog, migration compatibility, and release checklist.
+- Verify clean-checkout installation, virtual environment, dependency setup, curriculum validation, DB initialisation, readiness checks, start/stop, update, and uninstall behaviour.
+- Keep model downloads explicit and optional; no model weights downloaded at startup.
+- Add useful local diagnostics and privacy-safe logs; never log transcripts, answer bodies, raw audio, secrets, or sensitive profile data.
+- Document common failures and recovery, backup-before-update, restore semantics, supported backup versions, and data locations.
+- Run a full disposable-data recovery drill and verify upgrade compatibility.
+- Measure representative startup, memory, database, and voice resource use on the target device; publish conditions rather than unsupported benchmark claims.
+- Run exact-commit CI, browser acceptance, compilation, syntax checks, dependency audit, fresh install, keyboard/screen-reader/contrast/responsive checks, microphone/STT/TTS, and recovery acceptance on each claimed platform.
+- Prepare a deterministic offline text-mode demo, product guide, install guide, troubleshooting guide, privacy/data guide, architecture overview, known limitations, and release notes.
+- **Deployment boundary:** Phase L targets local loopback use. Public hosting or multi-user deployment requires a separate costed and approved design for authentication, isolation, hosted storage/backups, abuse controls, HTTPS, monitoring, incident response, and privacy/legal obligations. It is not implied by this phase.
+- **Exit:** clean environments can install and run the core product without paid services or external accounts; optional voice is explicit and recoverable; backup/restore and update drills pass; exact release commit passes automated and manual acceptance; risks and unsupported modes are documented. The result may be called a local release candidate, not a mature commercial or large-scale production service.
+
+### Shared rules for Phases I–L
+
+- Preserve FastAPI + SQLite + plain HTML/CSS/JavaScript, the modular monolith, versioned local JSON, additive migrations, and one data store.
+- Maintain ₹0 mandatory cost. No required paid APIs, hosted databases, subscriptions, paid hosting, Redis, Kafka, Celery, Kubernetes, microservices, vector databases, or second workflow systems.
+- Preserve text fallback, learner control, editable transcripts, source-linked evidence, and no raw audio persistence by default.
+- No unsupported proficiency, pronunciation, emotion/personality, hiring, placement, or learning-gain claims.
+- Complete one phase's implementation, regression tests, docs, and acceptance record before moving on. Fix urgent security/privacy defects immediately.
+- Keep every claim labelled as implemented, tested, manually accepted, observed, or proposed. A green CI run does not replace device or learner acceptance.
+
