@@ -28,7 +28,7 @@ This repository does **not** claim validated speech accuracy, placement improvem
 
 ## First scenario
 
-**Explain your project to a placement interviewer.** The learner answers five prompts about the problem, personal contribution, a design decision, evidence, and reflection. Answers can be typed or spoken. Spoken answers are transcribed into an editable text box (locally with Vosk, or remotely with Groq when explicitly configured), then submitted through the same session API as typed answers. The UI discloses which transcription mode is active before recording. After the final answer, Prepped shows question-by-question notes and a transparent checklist, then supports retry, attempt comparison, local history, and deletion.
+**Explain your project to a placement interviewer.** The learner answers five prompts about the problem, personal contribution, a design decision, evidence, and reflection. Answers can be typed or spoken. Spoken answers are transcribed into an editable text box (locally with Vosk, or remotely with Groq when explicitly configured), then submitted through the same session API as typed answers. The UI discloses which transcription mode is active before recording. After the final answer, Prepped shows question-by-question notes and a transparent checklist, then supports retry, attempt comparison, local history, and deletion. Career studios add authored contextual follow-ups, optional simpler prompt wording and hints, answer-specific formative coaching, and a previous/current answer comparison after retry. Learners can explicitly save an answer or coaching action to Memory or add a future studio practice to the daily plan. These cues are not an interview score or correctness assessment.
 
 
 
