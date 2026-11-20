@@ -1129,7 +1129,7 @@ def test_practice_room_redesign_has_accessible_progress_and_editable_draft(local
     assert page.locator("#response-draft-state").inner_text() == "Draft in progress · not saved"
     page.locator("#submit-button").click()
     page.wait_for_function("() => document.querySelector('#practice-progress-track').getAttribute('aria-valuenow') === '1'")
-    assert page.locator("#practice-progress-track").get_attribute("aria-valuetext") == "1 of 5 questions saved"
+    assert page.locator("#practice-progress-track").get_attribute("aria-valuetext") == "1 of 5 questions completed"
 
 
 def test_practice_visualizer_is_active_only_during_microphone_capture(local_app_url: str, browser_page) -> None:
