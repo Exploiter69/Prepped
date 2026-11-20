@@ -33,6 +33,8 @@ jobs:
           cache: pip
       - name: Check Python compilation
         run: python -m compileall -q prepped
+      - name: Check shell script syntax
+        run: bash -n scripts/prepped.sh scripts/setup_voice.sh
       - name: Check browser JavaScript syntax
         run: |
           node --check static/app.js
