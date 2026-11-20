@@ -3,7 +3,7 @@
 **Updated:** 2026-11-20<br>
 **Source of truth:** GitHub `feature/learner-profile` (working branch; `main` remains the last synced baseline)<br>
 **Product direction:** Voice-first, personalised practice and learning platform for Indian engineering students. The text practice loop is a reliable fallback and is frozen for feature development except material bugs.<br>
-**Engineering stage:** Phases A–F are implemented. Phase G engineering hardening is implemented and its full CI run is green: [44721637341](https://github.com/Exploiter69/Prepped/actions/runs/44721637341) — 112 passed, 2 skipped, 1 warning. Target-laptop acceptance remains open. The next engineering prerequisite is Phase G.1 recording lifecycle hardening; Phase H is planned but not started.
+**Engineering stage:** Phases A–F are implemented. Phase G engineering hardening is implemented and its full CI run is green: [44721637341](https://github.com/Exploiter69/Prepped/actions/runs/44721637341) — 112 passed, 2 skipped, 1 warning. Target-laptop acceptance remains open. Phase G.1 recording lifecycle fixes and deferred-permission browser tests are added; final CI verification is pending. Phase H implementation is also added, with its exact-commit CI verification pending and manual Omarchy acceptance deferred.
 
 ## Phase G — release hardening implemented; device acceptance open
 
@@ -20,7 +20,7 @@ The current working branch now includes:
 
 - GitHub Actions now runs on `feature/**`, including this working branch, and on pull requests targeting `main` or `feature/learner-profile`.
 - The workflow performs a clean checkout, installs `.[dev,browser-test]`, compiles Python modules, checks both browser JavaScript files, installs Chromium, and runs pytest including the Playwright browser journeys.
-- Latest complete run: [GitHub Actions run 44721637341](https://github.com/Exploiter69/Prepped/actions/runs/44721637341) — **112 passed, 2 skipped, 1 warning**. Python compilation, all six JavaScript syntax checks, dependency installation, `pip-audit`, Chromium setup, API tests, and browser acceptance all passed. The two skips require `espeak-ng`, unavailable on the hosted runner; the warning is Starlette's httpx-backed TestClient deprecation.
+- Latest recorded pre-Phase-H baseline: [GitHub Actions run 44721637341](https://github.com/Exploiter69/Prepped/actions/runs/44721637341) — **112 passed, 2 skipped, 1 warning**. This run predates the Phase G.1 and Phase H changes and is not evidence that the new tests pass. Python compilation, the six JavaScript syntax checks in that baseline run, dependency installation, `pip-audit`, Chromium setup, API tests, and browser acceptance all passed. The two skips require `espeak-ng`, unavailable on the hosted runner; the warning is Starlette's httpx-backed TestClient deprecation.
 - A repeatable [Foundation Acceptance Checklist](ACCEPTANCE_CHECKLIST.md) now covers profile setup/edit/cancel/save/reload, existing text practice, optional voice acceptance, and data preservation. Playwright/Chromium browser tests now exercise profile open, save, edit, cancel, reload and persistence, plus the complete text-only practice flow without a profile. These tests passed in CI. The target-laptop browser and voice/microphone checks remain separate manual acceptance.
 - Headless Chromium confirms the profile and text-practice interactions in CI. A manual spot check on the target Omarchy laptop and microphone/STT/TTS acceptance remain outstanding; CI does not establish hardware or device acceptance.
 
@@ -345,11 +345,24 @@ New additive SQLite tables: `career_sessions` and `career_turns`. Existing pract
 
 ### Scope and limitations
 
-Prepped remains a local single-user loopback application with no authentication or multi-user isolation. Do not expose it on a LAN, public internet, reverse proxy, or tunnel. Progress is saved-activity evidence, not proficiency or learning gain. Backups are not encrypted and currently support backup format version 1 with database schema version 3. See [INSTALL.md](INSTALL.md), [RELEASE_HARDENING.md](RELEASE_HARDENING.md), and [ACCEPTANCE_CHECKLIST.md](ACCEPTANCE_CHECKLIST.md).
+Prepped remains a local single-user loopback application with no authentication or multi-user isolation. Do not expose it on a LAN, public internet, reverse proxy, or tunnel. Progress is saved-activity evidence, not proficiency or learning gain. Backups are not encrypted and support backup format version 1 with database schema version 4. Schema-3 backups are migrated to schema 4 with empty adaptive-plan tables. See [INSTALL.md](INSTALL.md), [RELEASE_HARDENING.md](RELEASE_HARDENING.md), and [ACCEPTANCE_CHECKLIST.md](ACCEPTANCE_CHECKLIST.md).
 
 
-## Next engineering sequence — recording hardening, then Phase H
+## Phase G.1 — recording lifecycle hardening (implementation added; CI pending)
 
-**Phase G.1 is the immediate prerequisite. The browser lifecycle fix and deferred-permission regression tests have been added; final CI verification is pending.** Learning and Career recording must invalidate pending microphone permission requests on navigation/exit, stop tracks from late permission grants, stop active streams on all workspace transitions, and abort/ignore stale transcription work. Deferred-permission browser regressions must cover both workspaces. Ordinary Stop must continue to support transcription while the learner stays in the active exercise.
+Learning and Career recording now invalidate pending microphone permission requests when leaving the relevant workspace. Late permission grants are discarded with their tracks stopped; active streams are released on workspace changes; in-flight transcription is abortable and stale callbacks are ignored. Deferred-permission Playwright regressions cover both Learning and Career. The exact-commit CI result remains to be confirmed. Manual Omarchy microphone acceptance is still deferred.
 
-**Phase H — Adaptive Learning Intelligence is planned, not started.** Its scope is (1) an evidence-backed learner skill profile with source/freshness/quantity and explicit uncertainty; (2) deterministic, explainable adaptation using prerequisites, observed attempts, repeated errors, goals, and due reviews; (3) a learner-controlled daily/weekly plan; and (4) source-linked skill timelines and analytics. It must reuse the current FastAPI + SQLite + plain JavaScript modular monolith, keep ₹0 mandatory cost, avoid new infrastructure and opaque mastery scores, and remain honest about sparse evidence. Do not begin H until G.1 tests and CI pass.
+## Phase H — Adaptive Learning Intelligence (implementation added; CI pending)
+
+- H1: derived skill evidence across active curriculum skills, lesson attempts, closed-exercise responses, open self-review, project/Career activity, and explicitly linked learner-approved memory reviews. Freshness and evidence coverage are visible; no mastery/proficiency score is assigned.
+- H2: deterministic, source-explained recommendations use repeated closed-exercise review needs, prerequisites, profile routes, due revisions, and active learner goals. Learners can dismiss/restore recommendations and override by choosing activities.
+- H3: persisted daily and seven-day plans combine due reviews, suitable lessons, and optional interview/project practice. Learners control time budget, additions, reordering, skipping, and regeneration. Completion is derived from linked saved activity.
+- H4: per-skill evidence timelines, 30-day activity history, revision ratings, repeated review signals, and source-linked analytics.
+- Additive tables: adaptive_plans and adaptive_plan_items. SQLite schema version 4. Existing schema-3 backups remain restorable and initialise the new plan tables empty.
+- New APIs are under /api/intelligence; the learner-facing workspace is integrated into Progress. See [Phase H Acceptance](PHASE_H_ACCEPTANCE.md).
+
+**Verification:** API, browser, backup/restore, sparse/conflicting/stale evidence, prerequisite, repeated-error, active-goal, and plan controls tests have been added. The latest recorded green CI run predates these changes; do not mark Phase H accepted until the exact final commit passes CI. Target-device acceptance and learner validation remain separate later gates.
+
+## Remaining product acceptance
+
+Phase A–G manual target-laptop checks remain open, including microphone/STT/TTS, recovery rehearsal, keyboard/screen-reader review, contrast, and narrow-screen behaviour. Phase H needs its own manual review after CI. The student usability pilot has not been run; no learning-gain or placement-outcome claims are made.
