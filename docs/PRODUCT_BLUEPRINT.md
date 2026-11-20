@@ -1,7 +1,7 @@
 # Prepped — Complete Product and System Blueprint
 
 **Version:** 2.1 — voice-first direction<br>
-**Status:** Product destination and system constraints. Phases A–F are implemented on `feature/learner-profile`; current CI is green, while target-device acceptance remains open. Phase G release hardening has not started.<br>
+**Status:** Product destination and system constraints. Phases A–F are implemented; Phase G engineering hardening is implemented. Phase G.1 recording lifecycle fixes and Phase H adaptive learning implementation are added to `feature/learner-profile`; exact-commit CI verification and target-device acceptance remain open.<br>
 **Last updated:** 2026-11-20<br>
 **Repository:** Exploiter69/Prepped<br>
 **Companion documents:** [Current State](CURRENT_STATE.md) · [Complete Roadmap](COMPLETE_ROADMAP.md) · [Voice Setup](VOICE.md) · [ADR-002](ADR-002-LOCAL-VOICE-SLICE.md) · [Research Decision Matrix](RESEARCH_DECISION_MATRIX.md)
