@@ -335,9 +335,9 @@ The English starter path is expanded under Phase C. Advanced diagnostic interpre
 
 ---
 
-## Phase G.1 — Recording lifecycle hardening (next prerequisite)
+## Phase G.1 — Recording lifecycle hardening (implementation added; CI verification pending)
 
-Before Phase H, fix the browser recording lifecycle across Learning and Career. Navigation, lesson/interview exit, and page unload must invalidate pending microphone permission requests; late permission grants must stop their tracks without creating a recorder. Active streams must stop on every workspace transition. In-flight transcription must be abortable and stale responses must never update a hidden or different exercise. A normal learner-initiated Stop must still allow transcription to complete while the learner remains in that exercise.
+Before Phase H, verify the browser recording lifecycle hardening across Learning and Career. Navigation, lesson/interview exit, and page unload must invalidate pending microphone permission requests; late permission grants must stop their tracks without creating a recorder. Active streams must stop on every workspace transition. In-flight transcription must be abortable and stale responses must never update a hidden or different exercise. A normal learner-initiated Stop must still allow transcription to complete while the learner remains in that exercise.
 
 Automated browser tests must use deferred `getUserMedia()` promises to verify late permission grants are discarded in both workspaces, media tracks are stopped, and no recorder or transcription request starts after navigation. CI must pass before Phase H begins. Manual Omarchy microphone acceptance remains a separate later check.
 
