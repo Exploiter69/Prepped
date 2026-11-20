@@ -375,4 +375,4 @@ Use a disposable database. Automated Chromium coverage does not replace checking
 
 **Manual target-laptop evidence:** not yet recorded. Leave the relevant boxes unchecked until each check is actually performed on the target Omarchy laptop. Do not treat CI as microphone, audio-device, screen-reader, contrast, or responsive acceptance.
 
-**Phase G status:** not started. Begin only after the A–F manual acceptance record and clean-install/recovery rehearsal are complete.
+**Phase G status:** engineering in progress. Target-laptop A–F manual acceptance and clean-install/recovery rehearsal remain mandatory for release sign-off, but do not block code-level Phase G hardening. Track the final gate in [PHASE_G_ACCEPTANCE.md](PHASE_G_ACCEPTANCE.md).
