@@ -59,7 +59,7 @@ The first proof is this loop working locally with voice, not an avatar, dashboar
 
 ### Foundation acceptance update (2026-11-19)
 
-The feature branch now has GitHub Actions coverage for pushes to `feature/**`. The current full-suite result is [run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798) — 100 passed, 2 skipped (both require `espeak-ng`, unavailable on the hosted runner), with one Starlette/httpx TestClient deprecation warning. Playwright/Chromium browser tests passed for profile setup/edit/cancel/save/reload and the full text-only practice journey. The [Foundation Acceptance Checklist](ACCEPTANCE_CHECKLIST.md) records the remaining target-laptop and optional voice checks. Do not treat headless CI as microphone or device acceptance.
+The feature branch now has GitHub Actions coverage for pushes to `feature/**`. The current full-suite result is [run 44655380427](https://github.com/Exploiter69/Prepped/actions/runs/44655380427) — 100 passed, 2 skipped (both require `espeak-ng`, unavailable on the hosted runner), with one Starlette/httpx TestClient deprecation warning. Playwright/Chromium browser tests passed for profile setup/edit/cancel/save/reload and the full text-only practice journey. The [Foundation Acceptance Checklist](ACCEPTANCE_CHECKLIST.md) records the remaining target-laptop and optional voice checks. Do not treat headless CI as microphone or device acceptance.
 
 ### Product development and user validation are separate
 
@@ -327,7 +327,7 @@ Do not convert “the model ran” into “speech accuracy is good.” Do not co
 
 ## 17. Pre-Phase-G completion gates (updated 2026-11-20)
 
-1. **Automated verification is green:** [run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798) — 100 passed, 2 skipped, 1 warning; compilation, JavaScript syntax, dependency audit, API tests, and Chromium acceptance passed.
+1. **Automated verification is green:** [run 44655380427](https://github.com/Exploiter69/Prepped/actions/runs/44655380427) — 100 passed, 2 skipped, 1 warning; compilation, JavaScript syntax, dependency audit, API tests, and Chromium acceptance passed.
 2. **Complete manual target-laptop acceptance** for Phases A–F using [ACCEPTANCE_CHECKLIST.md](ACCEPTANCE_CHECKLIST.md), including browser, microphone/STT/TTS, keyboard, screen-reader, contrast, responsive, and data-recovery checks.
 3. **Complete a clean install and recovery rehearsal** on the target Omarchy laptop using [INSTALL.md](INSTALL.md), with backups tested only against disposable data.
 4. **Review limitations and evidence**; do not claim speech accuracy, proficiency, learning gains, placement outcomes, or security certification without validation.
@@ -347,7 +347,7 @@ This is the authoritative A–G execution sequence. Earlier sections are the ori
 - The app has the original project-explanation practice scenario, a local session/history flow, formative feedback, a bounded voice record/stop slice, a learner profile, and a reusable Learning Engine.
 - The profile goal and focus areas select transparent starter routes through the versioned curriculum; they do not infer ability or adapt difficulty.
 - The branch now contains the initial English and communication curriculum, learner-controlled memory and spaced revision, three interview studios, and the Phase F progress/goals/backup/restore workspace. Target-device acceptance for Phases D–F remains outstanding.
-- Latest full CI is green: [run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798) — 100 passed, 2 skipped, 1 warning. Target-device acceptance for Phases A–F remains outstanding.
+- Latest full CI is green: [run 44655380427](https://github.com/Exploiter69/Prepped/actions/runs/44655380427) — 100 passed, 2 skipped, 1 warning. Target-device acceptance for Phases A–F remains outstanding.
 - Do not label this product market-ready or complete.
 
 ### Build sequence
@@ -434,7 +434,7 @@ Every unit needs an outcome, authored examples, exercises, feedback, tests, and 
 - [x] Explainable recommendations from profile preferences, unfinished lessons/practice/interviews, due memory reviews, and active goals, with persistent dismiss/restore controls.
 - [x] Full local JSON export and staged, validated full-replacement restore for every learner-data table.
 - [x] Backup format/schema versioning, size/record limits, integrity and foreign-key validation, and failure-without-replacement tests.
-- [x] Final automated CI pass for the current implementation commit: [run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798) — 100 passed, 2 skipped, 1 warning.
+- [x] Final automated CI pass for the current implementation commit: [run 44655380427](https://github.com/Exploiter69/Prepped/actions/runs/44655380427) — 100 passed, 2 skipped, 1 warning.
 - [ ] Complete target-laptop progress and data-recovery acceptance.
 
 ### Milestone G — Release hardening and validation
@@ -471,7 +471,7 @@ The initial Phase C curriculum has been added to the existing `feature/learner-p
 - **Personalisation:** profile goals and focus areas now explain matching English lessons; no ability or proficiency is inferred.
 - **Compatibility:** existing project-communication tracks and the original practice room remain in place. No new database service, paid API requirement, or database migration was introduced.
 
-Automated API and Chromium coverage for curriculum inventory, profile focus routing, question/grammar/vocabulary handling, listening alternatives, and pronunciation self-review passes in [the current full-suite CI run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798). Target-laptop browser, audio, microphone/STT disclosure, transcript-editing, keyboard, and responsive acceptance remain manual gates.
+Automated API and Chromium coverage for curriculum inventory, profile focus routing, question/grammar/vocabulary handling, listening alternatives, and pronunciation self-review passes in [the current full-suite CI run 44655380427](https://github.com/Exploiter69/Prepped/actions/runs/44655380427). Target-laptop browser, audio, microphone/STT disclosure, transcript-editing, keyboard, and responsive acceptance remain manual gates.
 
 The Phase C implementation does not claim certified English proficiency, pronunciation accuracy, improved learning outcomes, or hiring/placement probability. Open speaking responses are retained as learner work and are not automatically graded.
 
@@ -485,7 +485,7 @@ The FastAPI learning router validates the manifest and provides catalogue, recom
 
 Profile goal/focus preferences select a transparent route with per-lesson reasons. The browser workspace supports skill and unit browsing, recommended lessons, all seven exercise formats, local TTS listening and pronunciation playback with text alternatives, optional STT responses, next-lesson navigation, response feedback, progress counts, and resuming unfinished lessons. Choice and ordering items have deterministic answer feedback; open responses are saved for self-review without automatic grading or proficiency claims.
 
-Automated API and Chromium tests have been added. This implementation is included in the green [full-suite CI run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798). Target-laptop browser acceptance remains a separate open gate. A low-stakes starting-point check is included. It records sentence, ordering, listening, and project-response tasks; attempts can be repeated and reviewed. It assigns no proficiency level or overall score. More advanced diagnostic interpretation remains future work. Dedicated HR, project, and technical interview studios are now implemented under Phase E. Learner-controlled revision is implemented under Phase D; its automated and target-laptop acceptance gates remain open.
+Automated API and Chromium tests have been added. This implementation is included in the green [full-suite CI run 44655380427](https://github.com/Exploiter69/Prepped/actions/runs/44655380427). Target-laptop browser acceptance remains a separate open gate. A low-stakes starting-point check is included. It records sentence, ordering, listening, and project-response tasks; attempts can be repeated and reviewed. It assigns no proficiency level or overall score. More advanced diagnostic interpretation remains future work. Dedicated HR, project, and technical interview studios are now implemented under Phase E. Learner-controlled revision is implemented under Phase D; its automated and target-laptop acceptance gates remain open.
 
 
 ---
@@ -512,7 +512,7 @@ Phase D has been implemented on `feature/learner-profile`. Automated CI passes; 
 
 ## Phase E — Career & Interview Studios implementation update (2026-11-19)
 
-The Career workspace is implemented on `feature/learner-profile`. The current full-suite GitHub Actions run [44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798) passes 100 tests with 2 optional `espeak-ng` skips and 1 warning. Target-laptop acceptance remains outstanding.
+The Career workspace is implemented on `feature/learner-profile`. The current full-suite GitHub Actions run [44655380427](https://github.com/Exploiter69/Prepped/actions/runs/44655380427) passes 100 tests with 2 optional `espeak-ng` skips and 1 warning. Target-laptop acceptance remains outstanding.
 
 - Three versioned studios: project explanation, HR/behavioural interviews, and technical fundamentals.
 - Four authored main questions per studio, each followed by an authored follow-up. Guided, standard, and challenging modes choose different follow-up wording.
@@ -523,14 +523,14 @@ The Career workspace is implemented on `feature/learner-profile`. The current fu
 - Question-by-question reflection uses transparent text signals and exact answer evidence. It does not claim technical correctness, expert recruiter evaluation, interview success, or placement probability.
 - Learners can explicitly send an answer into the Phase D memory editor with its question/session source context. The learner must review and submit the item; no automatic memory writes occur.
 
-The automated suite covers the API state machine, all studio content, difficulty-specific follow-ups, persistence, retry, deletion cascade, legacy practice preservation, browser completion/resume/review, and the memory handoff. The full current implementation suite passes in [CI run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798); target-laptop acceptance remains open before Phase E can be called fully accepted.
+The automated suite covers the API state machine, all studio content, difficulty-specific follow-ups, persistence, retry, deletion cascade, legacy practice preservation, browser completion/resume/review, and the memory handoff. The full current implementation suite passes in [CI run 44655380427](https://github.com/Exploiter69/Prepped/actions/runs/44655380427); target-laptop acceptance remains open before Phase E can be called fully accepted.
 
 
 ---
 
 ## Phase F — Progress, portability, and hardening foundations (2026-11-20)
 
-Phase F is implemented on `feature/learner-profile`. The complete current CI workflow passes on [run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798): 100 passed, 2 skipped, 1 warning. The workflow completed Python compilation, all six JavaScript syntax checks, dependency installation, `pip-audit`, Chromium installation, API tests, and browser acceptance.
+Phase F is implemented on `feature/learner-profile`. The complete current CI workflow passes on [run 44655380427](https://github.com/Exploiter69/Prepped/actions/runs/44655380427): 100 passed, 2 skipped, 1 warning. The workflow completed Python compilation, all six JavaScript syntax checks, dependency installation, `pip-audit`, Chromium installation, API tests, and browser acceptance.
 
 Delivered: evidence-linked skill/activity progress; learner-owned goals; explainable recommendations with persistent dismiss/restore; JSON export and staged full-replacement restore covering every learner-data table; schema/format version checks; local Host/Origin restrictions; security headers/CSP; readiness checks; and install/recovery/security documentation.
 
