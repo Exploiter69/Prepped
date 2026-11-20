@@ -387,7 +387,7 @@ def _recommendations(conn: sqlite3.Connection, curriculum: dict[str, Any], skill
         if goal["goal_type"] == "interviews_completed":
             key = "career_practice:" + default_studio
             if key not in seen:
-                candidates.append({"kind": "career_practice", "target_id": default_studio,
+                candidates.insert(0, {"kind": "career_practice", "target_id": default_studio,
                     "title": "Interview practice for: " + goal["title"],
                     "reason": f"This activity supports your active goal ({goal['current_count']} of {goal['target_count']} completed).",
                     "estimated_minutes": 15, "source": "active_learner_goal", "goal_id": goal["id"]})
@@ -395,7 +395,7 @@ def _recommendations(conn: sqlite3.Connection, curriculum: dict[str, Any], skill
         elif goal["goal_type"] == "practice_sessions":
             key = "project_practice:project-explanation"
             if key not in seen:
-                candidates.append({"kind": "project_practice", "target_id": "project-explanation",
+                candidates.insert(0, {"kind": "project_practice", "target_id": "project-explanation",
                     "title": "Project explanation practice for: " + goal["title"],
                     "reason": f"This activity supports your active goal ({goal['current_count']} of {goal['target_count']} completed).",
                     "estimated_minutes": 15, "source": "active_learner_goal", "goal_id": goal["id"]})
