@@ -145,7 +145,7 @@ def _skill_evidence(conn: sqlite3.Connection, curriculum: dict[str, Any], now: d
     evidence: dict[str, list[dict[str, Any]]] = {key: [] for key in skills}
     activity: dict[str, int] = {key: 0 for key in skills}
     objective: dict[str, list[dict[str, Any]]] = {key: [] for key in skills}
-    mistakes: dict[str, dict[str, int]] = {key: {} for key in skills}
+    mistakes: dict[str, dict[tuple[str, str], int]] = {key: {} for key in skills}
 
     attempts = conn.execute(
         "SELECT id,lesson_id,status,lesson_json,responses_json,feedback_json,started_at,completed_at "
@@ -206,7 +206,8 @@ def _skill_evidence(conn: sqlite3.Connection, curriculum: dict[str, Any], now: d
                     objective[sid].append(event)
                     if outcome == "review":
                         exid = str(response.get("exercise_id") or "unknown")
-                        mistakes[sid][exid] = mistakes[sid].get(exid, 0) + 1
+                        mistake_key = (row["lesson_id"], exid)
+                        mistakes[sid][mistake_key] = mistakes[sid].get(mistake_key, 0) + 1
 
     # Learner-approved memory reviews contribute revision activity only when
     # their stored source can be linked unambiguously to a lesson or attempt.
@@ -267,13 +268,13 @@ def _skill_evidence(conn: sqlite3.Connection, curriculum: dict[str, Any], now: d
         closed = objective[sid]
         correct = sum(item["outcome"] == "correct" for item in closed)
         review = sum(item["outcome"] == "review" for item in closed)
-        recent_misses: dict[str, int] = {}
+        recent_misses: dict[tuple[str, str], int] = {}
         for item in closed:
             stamp = _parse_stamp(item.get("occurred_at"))
             if item["outcome"] == "review" and stamp and 0 <= (now - stamp).days <= 30:
-                exid = str(item.get("exercise_id") or "unknown")
-                recent_misses[exid] = recent_misses.get(exid, 0) + 1
-        repeated = [{"exercise_id": key, "review_needed_responses": count}
+                mistake_key = (item.get("lesson_id") or "", str(item.get("exercise_id") or "unknown"))
+                recent_misses[mistake_key] = recent_misses.get(mistake_key, 0) + 1
+        repeated = [{"lesson_id": key[0], "exercise_id": key[1], "review_needed_responses": count}
                     for key, count in sorted(recent_misses.items(), key=lambda pair: (-pair[1], pair[0])) if count >= 2]
         latest = records[0]["occurred_at"] if records else None
         freshness, age_days = _freshness(latest, now)
@@ -349,7 +350,7 @@ def _recommendations(conn: sqlite3.Connection, curriculum: dict[str, Any], skill
 
     for skill in skills:
         for mistake in skill["repeated_mistakes"]:
-            lesson = next((item for item in curriculum["lessons"]
+            lesson = lessons.get(mistake["lesson_id"]) or next((item for item in curriculum["lessons"]
                            if skill["skill_id"] in item.get("skill_ids", [])), None)
             if lesson:
                 key = "lesson:" + lesson["id"]
