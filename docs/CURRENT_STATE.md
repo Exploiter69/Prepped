@@ -5,6 +5,17 @@
 **Product direction:** Voice-first, personalised practice and learning platform for Indian engineering students. The text practice loop is a reliable fallback and is frozen for feature development except material bugs.<br>
 **Engineering stage:** Phases A–F are implemented. Phase G engineering hardening is in progress on `feature/learner-profile`; the final Phase G CI run is pending. The last pre-Phase-G baseline run was [44655380427](https://github.com/Exploiter69/Prepped/actions/runs/44655380427) — 100 passed, 2 skipped, 1 warning. Target-laptop acceptance remains open. Track Phase G work and evidence in [PHASE_G_ACCEPTANCE.md](PHASE_G_ACCEPTANCE.md).
 
+## Phase G — release hardening in progress
+
+The current working branch now includes:
+- Strict Host authority parsing and same-origin scheme/authority validation, with controlled 400/403 responses for malformed values.
+- Backup restore validation for non-finite/out-of-range numbers, excessive JSON nesting, invalid Content-Length, and the 200,000-record cap; failed validation preserves the active database.
+- Readiness regression coverage for missing required tables.
+- Expanded security-header, no-store, and no-CORS checks.
+- Static checks against unsafe HTML string sinks, Git ignore coverage for private local data and exported backups, and contrast checks for core dark-theme text/status tokens.
+- Browser acceptance for keyboard-only focus/navigation, profile labels, and 375 px viewport overflow across the main workspaces.
+- A dedicated [Phase G acceptance record](PHASE_G_ACCEPTANCE.md). Final CI verification and all target-device checks remain pending.
+
 ## Foundation and A–F automated verification
 
 - GitHub Actions now runs on `feature/**`, including this working branch, and on pull requests targeting `main` or `feature/learner-profile`.
