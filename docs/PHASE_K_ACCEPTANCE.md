@@ -1,6 +1,6 @@
 # Phase K — Security, Privacy, Data Protection & Reliability
 
-**Status:** Phase K engineering controls are implemented. On commit ec623c4, the user's target laptop passed 170 tests with no warnings and confirmed data/ mode 0700 plus SQLite mode 0600. Exact-commit CI for the added restore-interruption and backup-confidentiality regressions is running on commit 1405129; update this record after it completes. The earlier full dependency audit found 0 known vulnerabilities across 73 resolved dependencies and reviewed 68 licence records. A real OS-level kill during restore has not been performed; the new regression injects a worker interruption after staging and verifies recovery. The project licence is undeclared, so redistribution remains blocked. This is not a security certification.
+**Status:** Phase K engineering controls and automated verification are complete on commit `cff67fb4cced6f9ac53d40e926bc441179f68b02`. The target laptop passed the latest full suite: 172 passed, 0 failed; the focused portability suite passed 17/17. Earlier target-laptop checks confirmed `data/` mode 0700 and the SQLite file mode 0600. Exact-commit GitHub Actions run [44754505687](https://github.com/Exploiter69/Prepped/actions/runs/44754505687) completed successfully, including compilation, JavaScript syntax, curriculum validation, dependency consistency, pip-audit, Chromium setup, tests, and audit-artifact publication. The audit scanned 73 resolved dependencies with 0 known vulnerabilities and inventoried 68 licence records. Remaining target-device checks are explicitly deferred: a real OS-level kill/power-loss during restore, optional Groq verification if configured, and voice/device accessibility acceptance. The worker-interruption regression is not a real power-loss drill. The project licence is undeclared, so redistribution remains blocked. This is not a security certification.
 
 **Scope:** local, single-user, loopback-only application. No LAN/public deployment, reverse proxy, tunnel, multi-user accounts, authentication, or hosted database is supported or authorised.
 
@@ -70,13 +70,13 @@ Application-level backup encryption is deferred. Adding encryption without a rel
 
 ## Automated acceptance matrix
 
-| Requirement | Automated coverage / implementation | Exact-commit CI status (f0d4dd1) |
+| Requirement | Automated coverage / implementation | Exact-commit CI status (`cff67fb`) |
 |---|---|---|
-| Loopback Host and actual peer | Host/Origin tests plus remote-peer spoof regression | Passed in CI; laptop run pending |
+| Loopback Host and actual peer | Host/Origin tests plus remote-peer spoof regression | Passed in exact-commit CI; latest full laptop suite passed (172/172) |
 | Request size bounds | 1 MiB JSON, 12 MiB voice, 25 MiB restore ASGI limits | Passed in CI; laptop run pending |
 | File permissions and symlink | POSIX 0700/0600 assertions, symlink/non-regular rejection | Passed in CI; laptop run pending |
 | SQL transaction rollback | Process-level exception rollback and subsequent integrity check | Passed in CI; laptop run pending |
-| Restore validation/rollback | Malformed, numeric, nested, size, row, FK, schema compatibility, injected worker interruption and trusted-backup recovery | Existing cases passed; new interruption test pending exact-commit CI |
+| Restore validation/rollback | Malformed, numeric, nested, size, row, FK, schema compatibility, injected worker interruption and trusted-backup recovery | All cases, including worker-interruption and trusted-backup recovery, passed in exact-commit CI and laptop suite |
 | Deletion cascades | Session answers, Career turns, Memory reviews | Passed in CI; laptop run pending |
 | Safe DOM sinks | Static test across all learner-facing JS modules | Passed in CI; laptop run pending |
 | Voice data disclosure | Existing adapter/status/error tests; raw audio remains in memory | Passed in CI; laptop run pending |
@@ -100,6 +100,6 @@ Automated failure simulations and regression tests are recorded in the exact CI 
 
 ## Exit decision
 
-Phase K engineering completion requires the latest exact-commit CI and local tests to pass, dependency and licence artifacts to be reviewed, and no knowingly unresolved critical/high-severity issue. The user's laptop permission modes are verified; permission-denied and disk-full simulations are automated. The restore-interruption regression exercises a worker failure after staging and then restores a trusted backup, but a real OS-level kill/power-loss rehearsal remains a target-device check and must be recorded as unavailable if not safely performed. Groq-specific checks are conditional on the optional provider being configured. The local release candidate is not accepted until remaining manual checks are passed or explicitly deferred with reason.
+**Engineering exit: complete.** The exact Phase K commit passed GitHub Actions and the user's latest local verification (17 focused portability tests and 172 full-suite tests). The audit artifact was reviewed: 0 known vulnerabilities across 73 resolved dependencies; 68 licence records were inventoried. No knowingly unresolved critical/high-severity issue is recorded in this review. This closes the Phase K engineering implementation gate and permits Phase L work to begin. It does **not** accept the local release candidate: the real OS-level restore interruption drill, conditional Groq checks, voice/device and accessibility checks remain target-device acceptance items and must be completed or explicitly deferred with reason. The project licence remains an owner decision and redistribution remains blocked.
 
 No third-party penetration test, legal review, secure-erasure guarantee, security certification, or public deployment approval is claimed.
