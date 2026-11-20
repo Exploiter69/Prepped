@@ -325,15 +325,15 @@ New additive SQLite tables: `career_sessions` and `career_turns`. Existing pract
 - It does not include source code, environment variables, API keys, or voice models.
 - Restore requires an explicit confirmation and replaces all current learner data; it is not a merge. Request size is capped at 25 MiB and records at 200,000.
 - Restore first rebuilds the data in a temporary database using the current additive schema, validates exact tables/columns and scalar fields, checks constraints, SQLite integrity, and foreign keys, then copies the validated database into place. Invalid backups leave the current database unchanged.
-- Backup format version and database schema version are explicit (format version 1, database schema version 3). Dismissed recommendation preferences are part of the backup. Incompatible versions fail closed.
+- Backup format version and database schema version are explicit (format version 1, database schema version 4). Dismissed recommendation preferences and adaptive plans are part of the backup; schema-3 backups are migrated with empty adaptive-plan tables. Incompatible versions fail closed.
 - Backups are unencrypted JSON and contain personal answers and notes; users must keep them private.
 
 ### Release hardening
 
 - The application accepts loopback Host names only and rejects cross-origin state-changing requests when an Origin header is present.
 - Added CSP, frame denial, MIME sniffing protection, restrictive referrer and permissions policies, same-origin resource/opener policies, and `Cache-Control: no-store` on API responses.
-- Added `/api/ready` to check SQLite quick integrity, required Phase A–F tables, and curriculum loading.
-- CI now checks `static/progress.js`, runs API and Chromium acceptance, and performs a Python dependency audit with `pip-audit`.
+- Added `/api/ready` to check SQLite quick integrity, required Phase A–H tables, and curriculum loading.
+- CI now checks `static/progress.js` and `static/intelligence.js`, runs API and Chromium acceptance, and performs a Python dependency audit with `pip-audit`.
 - Added [clean install, supported environment and recovery guide](INSTALL.md) and [release hardening/security record](RELEASE_HARDENING.md).
 
 ### Verification still required
