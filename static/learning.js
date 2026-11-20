@@ -603,9 +603,10 @@
     const requestId = ++state.recordingRequestId;
     state.recordingPending = true;
     const status = $("#learning-voice-status");
+    let stream = null;
     try {
       status.textContent = "Requesting microphone permission…";
-      const stream = await navigator.mediaDevices.getUserMedia({
+      stream = await navigator.mediaDevices.getUserMedia({
         audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
       });
       if (!learningRecordingRequestIsCurrent(requestId)) {
@@ -678,10 +679,8 @@
       if (stopButton) stopButton.disabled = false;
       state.recordTimer = window.setTimeout(() => stopLearningRecording(false), 60000);
     } catch (error) {
-      if (state.stream) {
-        state.stream.getTracks().forEach(track => track.stop());
-        state.stream = null;
-      }
+      stream?.getTracks().forEach(track => track.stop());
+      if (state.stream === stream) state.stream = null;
       if (requestId === state.recordingRequestId) {
         state.recordingPending = false;
         state.recorder = null;
