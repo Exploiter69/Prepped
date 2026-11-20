@@ -1148,3 +1148,37 @@ def test_practice_visualizer_is_active_only_during_microphone_capture(local_app_
     page.wait_for_function("() => window.__practiceVisualiserSignal !== undefined")
     assert "is-active" not in (page.locator("#recording-visualizer").get_attribute("class") or "")
     assert page.locator("#record-status").inner_text().startswith("Transcribing locally")
+
+
+def test_groq_audio_disclosure_is_visible_before_microphone_capture(local_app_url: str, browser_page) -> None:
+    page = browser_page
+    capture = {"calls": 0}
+    page.route(
+        "**/api/voice/status",
+        lambda route: route.fulfill(
+            status=200,
+            content_type="application/json",
+            body='{"stt":{"available":true,"engine":"groq-whisper","detail":"Groq ready."},"tts":{"available":false}}',
+        ),
+    )
+    page.add_init_script("""
+        (() => {
+          const media = navigator.mediaDevices;
+          if (!media?.getUserMedia) return;
+          const original = media.getUserMedia.bind(media);
+          window.__captureRequests = 0;
+          media.getUserMedia = (...args) => {
+            window.__captureRequests += 1;
+            return original(...args);
+          };
+        })();
+    """)
+    page.goto(local_app_url)
+    page.locator("#practice-toggle").click()
+    page.locator("#start-button").click()
+    page.locator("#practice-view").wait_for(state="visible")
+
+    disclosure = page.locator("#privacy-note")
+    assert disclosure.is_visible()
+    assert "microphone audio is sent to Groq" in disclosure.inner_text()
+    assert page.evaluate("window.__captureRequests") == 0
