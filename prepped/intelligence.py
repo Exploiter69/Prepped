@@ -359,7 +359,7 @@ def _recommendations(conn: sqlite3.Connection, curriculum: dict[str, Any], skill
     for skill in skills:
         for prerequisite in skill["prerequisites"]:
             prereq_state = by_skill.get(prerequisite)
-            if prereq_state and prereq_state["state"] == "insufficient_evidence":
+            if prereq_state and prereq_state["closed_response_count"] == 0:
                 lesson = next((item for item in curriculum["lessons"]
                                if prerequisite in item.get("skill_ids", [])), None)
                 if lesson:
@@ -649,6 +649,20 @@ def create_intelligence_router(db_path: Path, curriculum_path: Path = DEFAULT_CU
             days = []
             for offset in range(7):
                 target = payload.week_start + timedelta(days=offset)
+                plan = _ensure_plan(conn, target, payload.available_minutes_per_day)
+                conn.execute("UPDATE adaptive_plans SET available_minutes=? WHERE plan_date=?",
+                             (payload.available_minutes_per_day, target.isoformat()))
+                existing_items = conn.execute(
+                    "SELECT * FROM adaptive_plan_items WHERE plan_date=?", (target.isoformat(),)
+                ).fetchall()
+                for existing_item in existing_items:
+                    if _item_completed(conn, existing_item, plan["generated_at"]):
+                        if existing_item["item_type"] == "lesson":
+                            used_lessons.add(existing_item["target_id"])
+                        elif existing_item["item_type"] == "memory_review":
+                            used_memory.add(existing_item["target_id"])
+                    elif existing_item["skipped_at"] is None:
+                        conn.execute("DELETE FROM adaptive_plan_items WHERE id=?", (existing_item["id"],))
                 days.append(_generate_day(conn, data(), target, payload.available_minutes_per_day,
                                           used_memory, used_lessons, include_career=(offset == 4),
                                           include_project=(offset == 2)))
