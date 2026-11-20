@@ -64,6 +64,7 @@
       const meta = node("div", undefined, "intelligence-skill-meta");
       meta.append(
         node("span", skill.state_label),
+        ...(skill.curriculum_status === "planned" ? [node("span", "Career skill · curriculum content planned")] : []),
         node("span", skill.freshness === "unknown" ? "No dated evidence" :
           skill.freshness + (skill.evidence_age_days === null ? "" : " · " + skill.evidence_age_days + "d ago")),
         node("span", skill.activity_count + " activity records"),
