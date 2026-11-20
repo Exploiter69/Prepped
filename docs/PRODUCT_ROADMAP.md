@@ -188,7 +188,7 @@ Deliver a coherent first track rather than a large empty catalogue.
 - Profile focus areas for grammar, vocabulary, speaking fluency, pronunciation, confidence, and professional communication now explain which English lessons match. Existing project/interview paths and the original practice room remain available.
 - No new paid service, external runtime dependency, database service, or database migration is required for this curriculum expansion. Audio playback uses the configured local TTS service; typed responses remain usable if audio or microphone support is unavailable.
 
-**Remaining Phase C gates:** latest GitHub Actions run passes; review the new units in a real browser on the target laptop; verify replay, text alternatives, optional Groq disclosure, transcript editing, text-only fallback, keyboard navigation, and narrow-screen layout; review the lesson content for clarity and usefulness. The content is implemented, but it is not manually accepted until those checks are recorded.
+**Remaining Phase C gates:** review the new units in a real browser on the target laptop; verify replay, text alternatives, optional Groq disclosure, transcript editing, text-only fallback, keyboard navigation, and narrow-screen layout; review the lesson content for clarity and usefulness. The content is implemented, but it is not manually accepted until those checks are recorded.
 
 ### Phase D — Personal learning memory and revision
 
@@ -206,7 +206,7 @@ Deliver a coherent first track rather than a large empty catalogue.
 
 ### Phase E — Career and interview studios
 
-**Implementation added on `feature/learner-profile`; final CI and target-laptop acceptance are pending.**
+**Implementation added on `feature/learner-profile`; current full-suite CI is green, and target-laptop acceptance remains pending.**
 
 - [x] Project Explanation Studio: problem/user framing, personal contribution, technical decisions, tests/evidence, limitations, and reflection.
 - [x] HR & Behavioural Studio: introduction, teamwork, disagreement/priorities, setbacks, learning, motivation, and preparation.
@@ -218,15 +218,15 @@ Deliver a coherent first track rather than a large empty catalogue.
 - [x] Provide transparent, evidence-linked reflection without technical correctness grading, overall interview score, recruiter rating, or placement prediction.
 - [x] Allow explicit handoff of an answer to the Phase D memory editor; the learner must review and submit before saving.
 - [x] Add additive `career_sessions` and `career_turns` tables; preserve existing practice, profile, learning, and memory data.
-- [x] GitHub Actions passes on the Phase E implementation: [run 44568533503](https://github.com/Exploiter69/Prepped/actions/runs/44568533503) — 88 passed, 2 skipped (both require `espeak-ng`). The workflow-only concurrency update is separate; latest-commit CI is running.
+- [x] Current full-suite GitHub Actions passes: [run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798) — 100 passed, 2 skipped, 1 warning; includes all Phase E tests.
 
 - [ ] Complete target-laptop text, voice, persistence, accessibility, and responsive acceptance.
 
 **Exit gate:** all three studios complete through the same reusable state machine; follow-ups, review, retry, resume, delete, and memory handoff work; CI is green; target-device acceptance is recorded. The authored starter question bank is not an exhaustive interview curriculum or a validated hiring assessment.
 
-### Phase F — Progress, portability, and release hardening
+### Phase F — Progress, portability, and hardening foundations
 
-**Implementation added on `feature/learner-profile`; automated CI and target-laptop acceptance are verification gates.**
+**Implementation added on `feature/learner-profile`; the current full-suite CI run is green, and target-laptop acceptance remains open.**
 
 - [x] Skill-level progress derived from completed lesson events and linked curriculum skills; no single ability score.
 - [x] Local progress overview combines lesson evidence, project practice, interview completions, memory reviews, weekly activity, and recent activity.
@@ -243,7 +243,21 @@ Deliver a coherent first track rather than a large empty catalogue.
 
 **Known boundaries:** backups are unencrypted JSON and contain personal answers; the current 25 MiB / 200,000-record limits and backup format version 1 / database schema version 3 compatibility are deliberate. Restore replaces all current local data. Prepped remains a single-user loopback application, not a public or multi-user deployment.
 
-**Exit gate:** reproducible clean install, automated suite and CI pass, core journeys accepted manually, data backup/restore works, known limitations are documented, and no unsupported product claims remain. Manual target-device acceptance is not claimed until recorded.
+**Exit gate:** feature implementation, automated suite and CI pass, core journeys are accepted manually, data backup/restore works, known limitations are documented, and no unsupported product claims remain. Manual target-device acceptance is not claimed until recorded.
+
+### Phase G — Release hardening and acceptance (not started)
+
+Phase G begins only after the implemented A–F journeys have been manually accepted on the target Omarchy laptop and the clean-install/recovery checks are recorded. It is a release-readiness phase, not another feature-expansion phase.
+
+- [ ] Close all outstanding A–F checks in [ACCEPTANCE_CHECKLIST.md](ACCEPTANCE_CHECKLIST.md), recording environment, result, and any deviations.
+- [ ] Complete keyboard-only and screen-reader review, focus order/visibility, labels/status announcements, contrast, and narrow-screen checks across every workspace.
+- [ ] Complete fresh-install, upgrade/restart, readiness, backup, and restore rehearsal on the target machine using disposable test data.
+- [ ] Review the local-only network boundary, Host/Origin checks, CSP/security headers, dependency audit findings, secret handling, and unencrypted backup warning. This is not a third-party penetration test or a public-hosting approval.
+- [ ] Record voice observations (microphone permission, provider disclosure, transcript correction, TTS, failures, text fallback, and any latency/memory observations) without claiming accuracy benchmarks.
+- [ ] Fix only issues found by those checks; rerun the complete CI suite on the resulting commit.
+- [ ] Keep the student usability pilot optional and separate. If run, use consent, minimal anonymous notes, and report method/sample/limitations.
+
+**Exit gate:** all advertised local core flows are manually accepted; fresh install and recovery are repeatable; automated CI is green; accessibility, privacy, security boundaries, limitations, and evidence are documented. Prepped remains a single-user loopback application unless a separately reviewed architecture and threat model are approved.
 
 ### Definition of done for every feature
 
