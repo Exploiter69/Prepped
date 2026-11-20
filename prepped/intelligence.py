@@ -641,6 +641,14 @@ def create_intelligence_router(db_path: Path, curriculum_path: Path = DEFAULT_CU
             if item is None:
                 raise HTTPException(status_code=404, detail="Plan item not found.")
             if payload.skipped is not None:
+                if payload.skipped is False and item["skipped_at"] is not None:
+                    plan_budget = conn.execute("SELECT available_minutes FROM adaptive_plans WHERE plan_date=?", (item["plan_date"],)).fetchone()["available_minutes"]
+                    used = conn.execute(
+                        "SELECT COALESCE(SUM(estimated_minutes),0) AS n FROM adaptive_plan_items WHERE plan_date=? AND skipped_at IS NULL AND id<>?",
+                        (item["plan_date"], item_id),
+                    ).fetchone()["n"]
+                    if int(used) + int(item["estimated_minutes"]) > int(plan_budget):
+                        raise HTTPException(status_code=422, detail="Restoring this item would exceed the day's available time. Increase the time budget or skip another activity.")
                 conn.execute("UPDATE adaptive_plan_items SET skipped_at=? WHERE id=?",
                              (_stamp() if payload.skipped else None, item_id))
             if payload.position is not None:
