@@ -192,7 +192,7 @@ The learner profile stores preferences such as goal, study year, branch, confide
 3. Review the known single-user loopback, unencrypted-backup, optional-Groq, and voice-engine limitations; do not expose the app publicly.
 4. Run the optional consent-based student pilot only when participants are available. It is not an engineering blocker and has no results yet.
 
-The latest automated gate is green for the exact implementation commit. Phase G is the next, separate release-hardening/acceptance milestone; it has not started.
+Phase G engineering is in progress. The final automated gate and target-device release acceptance are tracked in [PHASE_G_ACCEPTANCE.md](PHASE_G_ACCEPTANCE.md).
 
 ### Profile toggle — automated browser acceptance passing
 
