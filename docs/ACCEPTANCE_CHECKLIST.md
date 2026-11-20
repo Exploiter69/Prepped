@@ -1,6 +1,6 @@
-# Prepped — Foundation Acceptance Checklist
+# Prepped — A–F and Pre-Release Acceptance Checklist
 
-**Purpose:** Record repeatable acceptance evidence for the learner profile, existing practice room, and record/stop voice slice before beginning the Learning Engine.
+**Purpose:** Record repeatable acceptance evidence for the implemented Phases A–F before beginning Phase G release hardening. This checklist includes the foundation, Learning Engine, English curriculum, memory, Career studios, Progress, portability, voice, privacy, and device acceptance.
 **Environment:** Local FastAPI app, SQLite database, current `feature/learner-profile` branch.
 **Rule:** Mark a check only after performing it. Automated tests do not replace browser acceptance.
 
@@ -20,7 +20,7 @@ python -m pytest -q
 Expected:
 - Dependency installation completes without a paid service or API key.
 - Python compilation and both JavaScript syntax checks exit successfully.
-- The complete test suite passes. The optional Playwright browser tests exercise profile open/save/edit/cancel/reload and the text-only practice journey in Chromium. The profile unit tests also assert the served page's accessible toggle/form contract. CI installs the optional browser-test extra and Chromium; the application itself does not require Playwright. Record the exact pass/skip count and any warnings.
+- The complete test suite passes. The Playwright browser tests exercise profile open/save/edit/cancel/reload, the text-only practice journey, and the Phase B–F learner flows in Chromium. The profile unit tests also assert the served page's accessible toggle/form contract. CI installs the optional browser-test extra and Chromium; the application itself does not require Playwright. Record the exact pass/skip count and any warnings.
 - A skipped real-model integration test is recorded as skipped, not passed.
 
 Latest recorded Chromium CI acceptance: [run 44534499386](https://github.com/Exploiter69/Prepped/actions/runs/44534499386) — 41 passed, 2 skipped, 1 warning. The skips require `espeak-ng`, unavailable on the hosted runner. CI runs on pushes to `feature/**` and pull requests targeting `feature/learner-profile` or `main`. A green CI run is evidence for the checked commit only.
@@ -329,7 +329,7 @@ Use a disposable database. Automated Chromium coverage does not replace checking
 ### Export, backup, restore, and recovery
 
 - [ ] Use **Download local backup** and confirm a JSON file downloads without uploading data to an external service.
-- [ ] Confirm the backup includes profile, sessions and answers, lesson attempts and events, memory items and review history, career sessions and turns, and learner goals.
+- [ ] Confirm the backup includes profile, sessions and answers, lesson attempts and events, memory items and review history, career sessions and turns, learner goals, and dismissed recommendation preferences.
 - [ ] Confirm the backup does not contain environment variables, API keys, voice model files, or source code.
 - [ ] Make a second disposable database and restore the backup there; confirm every table's record counts and representative records match.
 - [ ] Restore a valid backup over disposable data only after reading the full-replacement confirmation; confirm all previous target data is replaced, not merged.
@@ -359,7 +359,16 @@ Use a disposable database. Automated Chromium coverage does not replace checking
 
 ### Phase F automated evidence
 
-- [ ] GitHub Actions passes on the final Phase F commit, including pip-audit, Python compilation, all JavaScript syntax checks, API tests, and Chromium browser acceptance.
+- [x] GitHub Actions passes on current Phase A–F implementation commit: [run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798) — 100 passed, 2 skipped, 1 warning; pip-audit, Python compilation, all JavaScript syntax checks, API tests, and Chromium browser acceptance passed.
 - [ ] API tests cover all progress counters/goals, baseline exclusion, recommendation reasons, complete backup table coverage including dismissed recommendation preferences, round-trip restore, invalid backup rollback, size limits, readiness, Host/Origin checks, and security headers.
-- [ ] Browser tests cover Progress navigation, goal creation, backup download/restore, and cross-workspace navigation.
+- [x] Browser tests cover Progress navigation, immediate dismissed-suggestion expansion, goal create/edit/archive/restore, backup download/restore, and cross-workspace navigation (run 44653868798).
 - [ ] Complete the manual target-laptop checks above. CI does not prove fresh-install operation on the user's device, microphone permission, speech recognition quality, TTS output, screen-reader behaviour, or device-specific responsive layout.
+
+
+## Pre-Phase-G sign-off record
+
+**Automated evidence (2026-11-20):** [GitHub Actions run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798) — 100 passed, 2 skipped, 1 warning. The two skips require `espeak-ng`, unavailable on the hosted runner. Dependency audit, Python compilation, all JavaScript syntax checks, API tests, and Chromium browser acceptance passed.
+
+**Manual target-laptop evidence:** not yet recorded. Leave the relevant boxes unchecked until each check is actually performed on the target Omarchy laptop. Do not treat CI as microphone, audio-device, screen-reader, contrast, or responsive acceptance.
+
+**Phase G status:** not started. Begin only after the A–F manual acceptance record and clean-install/recovery rehearsal are complete.
