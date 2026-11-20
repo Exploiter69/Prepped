@@ -21,7 +21,7 @@ def test_content_bundle_has_complete_skill_and_studio_coverage() -> None:
         "exercises": 49,
         "studios": 3,
         "studio_questions": 12,
-        "sources": 9,
+        "sources": 11,
     }
 
 

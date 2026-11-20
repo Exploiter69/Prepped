@@ -41,6 +41,7 @@ No learner study has been run and no learning gain is claimed. The protocol in [
 
 - [ ] `python -m prepped.content_lint` passes on the exact commit.
 - [ ] Full pytest, Python compilation, JavaScript syntax checks, and GitHub Actions pass on the exact commit.
+- [ ] Exercise-level outcomes, inherited context/prerequisites, and effort estimates are checked as part of the lesson review record.
 - [ ] Human language/grammar review records reviewer, date, version, corrections, and unresolved disagreements.
 - [ ] Human CS review records reviewer, date, version, corrections, and unresolved disagreements.
 - [ ] Keyboard, screen-reader, contrast, zoom, captions/transcripts, and responsive review is recorded.

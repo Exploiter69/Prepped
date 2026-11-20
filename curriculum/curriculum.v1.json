@@ -558,7 +558,9 @@
       "source_ids": [
         "bc-present-simple",
         "bc-past-simple",
-        "bc-questions-negatives"
+        "bc-questions-negatives",
+        "bc-articles",
+        "bc-adjectives-prepositions"
       ],
       "completion_condition": "Submit each objective grammar item and the open correction/reflection prompts; open responses remain self-review.",
       "content_review": {
@@ -1867,6 +1869,22 @@
       "url": "https://dictionary.cambridge.org/dictionary/english/look-into",
       "checked_on": "2026-11-20",
       "supports": "Meaning and usage of look into."
+    },
+    {
+      "id": "bc-articles",
+      "title": "British Council LearnEnglish — Articles: a, an, the",
+      "publisher": "British Council",
+      "url": "https://learnenglish.britishcouncil.org/free-resources/grammar/a1-a2-grammar/articles-a-an-the",
+      "checked_on": "2026-11-20",
+      "supports": "Indefinite and definite articles with singular countable nouns and first/known references."
+    },
+    {
+      "id": "bc-adjectives-prepositions",
+      "title": "British Council LearnEnglish — Adjectives and prepositions",
+      "publisher": "British Council",
+      "url": "https://learnenglish.britishcouncil.org/free-resources/grammar/a1-a2/adjectives-prepositions",
+      "checked_on": "2026-11-20",
+      "supports": "Common adjective-preposition pairings, including responsible for."
     }
   ]
 }

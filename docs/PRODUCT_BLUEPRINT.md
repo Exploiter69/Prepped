@@ -429,7 +429,7 @@ Speech accuracy, latency, and learning outcomes are not validated. No LLM feedba
 
 The blueprint describes the destination, not the current feature set. The current application is a local practice foundation with one project-explanation scenario, a bounded voice record/stop slice, formative heuristic feedback, history, and a learner profile. It is not yet a complete or market-ready learning platform.
 
-The learner profile stores preferences and now selects transparent starter routes through the reusable Learning Engine and English curriculum. It does not infer ability or adapt lesson difficulty. Remaining future work includes learner-controlled revision memory, spaced repetition, HR and technical interview studios, richer evidence-based progress, data export/backup/restore, and full release hardening.
+The learner profile stores preferences and now selects transparent starter routes through the reusable Learning Engine and English curriculum. It does not infer ability or adapt lesson difficulty. At the time of this blueprint, remaining work included learner-controlled revision memory, spaced review, HR and technical interview studios, richer evidence-based progress, local export/restore, and release hardening. Those capabilities have since been implemented across Phases D–H; current remaining work is tracked in COMPLETE_ROADMAP.md, including curriculum quality, security/privacy, and release-candidate acceptance.
 
 Use [PRODUCT_ROADMAP.md](PRODUCT_ROADMAP.md) for the product-level phases, and [COMPLETE_ROADMAP.md](COMPLETE_ROADMAP.md) for milestone tasks, exit criteria, and release readiness. [CURRENT_STATE.md](CURRENT_STATE.md) records what is actually implemented and verified.
 

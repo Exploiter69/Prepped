@@ -28,8 +28,8 @@ This is not a claim of independent teacher, language-specialist, or CS-expert re
 |---|---|---|---|
 | sentence-building | Complete and focused sentences | Authored examples; no external factual claim | AI-assisted editorial review; human language review pending |
 | sentence-shaping | Add useful detail without changing facts | Authored examples | AI-assisted editorial review; human language review pending |
-| grammar-in-context | Tense, articles, prepositions in context | British Council present/past simple and questions references | AI-assisted source check; human language review pending |
-| question-formation | Present/past question forms and clarification | British Council grammar references | AI-assisted source check; human language review pending |
+| grammar-in-context | Tense, articles, prepositions in context | British Council present/past simple, questions, articles, and adjective-preposition references | AI-assisted source check; human language review pending |
+| question-formation | Present/past question forms and clarification | British Council grammar, articles, and adjective-preposition references | AI-assisted source check; human language review pending |
 | vocabulary-in-context | Precise words in a study/project context | Authored examples | AI-assisted editorial review; human language review pending |
 | phrases-for-study | Collocations and phrasal verbs | Cambridge Dictionary carry out / look into | AI-assisted source check; human language review pending |
 | listening-for-details | Distinguish completed, current, and planned actions | Authored audio/text pair | AI-assisted editorial review; learner comprehension not validated |
@@ -52,7 +52,7 @@ This is not a claim of independent teacher, language-specialist, or CS-expert re
 ## Source register
 
 ### Curriculum
-- British Council LearnEnglish — [Present simple](https://learnenglish.britishcouncil.org/free-resources/grammar/english-grammar-reference/present-simple), [Past simple](https://learnenglish.britishcouncil.org/free-resources/grammar/english-grammar-reference/past-simple), and [Questions and negatives](https://learnenglish.britishcouncil.org/free-resources/grammar/english-grammar-reference/questions-negatives).
+- British Council LearnEnglish — [Present simple](https://learnenglish.britishcouncil.org/free-resources/grammar/english-grammar-reference/present-simple), [Past simple](https://learnenglish.britishcouncil.org/free-resources/grammar/english-grammar-reference/past-simple), [Questions and negatives](https://learnenglish.britishcouncil.org/free-resources/grammar/english-grammar-reference/questions-negatives), [Articles](https://learnenglish.britishcouncil.org/free-resources/grammar/a1-a2-grammar/articles-a-an-the), and [Adjectives and prepositions](https://learnenglish.britishcouncil.org/free-resources/grammar/a1-a2/adjectives-prepositions).
 - Cambridge Dictionary — [carry out](https://dictionary.cambridge.org/dictionary/english/carry-out) and [look into](https://dictionary.cambridge.org/dictionary/english/look-into).
 
 ### Technical interview studio
