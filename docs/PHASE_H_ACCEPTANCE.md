@@ -9,7 +9,7 @@
 ### H1 — Evidence-backed learner skill profile
 
 - Skill records are derived from the existing versioned curriculum's active skill IDs; there is no duplicated persistent learner-skill table.
-- Lesson attempts, authored closed-exercise outcomes, open self-review responses, project-practice activity, Career studio activity, and explicitly learner-approved lesson-, project-practice-, and Career-session-linked memory reviews are represented as distinct evidence types. The two planned curriculum skills are included only as clearly labelled practice-evidence views for their already implemented Career studios; no missing lesson curriculum is implied.
+- Lesson attempts, authored closed-exercise outcomes, open self-review responses, project-practice activity, Career studio activity, and explicitly learner-approved lesson-, project-practice-, and Career-session-linked memory reviews are represented as distinct evidence types. The HR/behavioural and technical Career skills whose curriculum lessons are still marked planned appear only as clearly labelled practice-evidence views; no missing lesson curriculum is implied. The two planned curriculum skills are included only as clearly labelled practice-evidence views for their already implemented Career studios; no missing lesson curriculum is implied.
 - Closed-exercise correctness is included only for authored choice, vocabulary, listening, and ordering exercises where the existing lesson engine already has an answer key.
 - Reflection, short response, pronunciation self-review, project practice, Career sessions, and Career heuristic feedback are never treated as objectively graded performance.
 - Evidence shows source type/ID, activity title, timestamp, freshness, count/coverage, and explicit limitations. Evidence lists are bounded to recent source records.
@@ -67,7 +67,7 @@ Backup export includes both new tables. Restore accepts version 4 backups and mi
 - Daily plan completion requires the linked saved activity.
 - Due memory review appears in the plan and completes only after an actual review.
 - Weekly generation creates seven days without duplicate lesson assignments.
-- Learner add/skip/reorder and time-budget constraints are covered.
+- Learner add/skip/reorder and time-budget constraints are covered, including regeneration after a completed activity with a smaller time budget.
 - Active goals influence next steps and plans.
 - Adaptive dismiss/restore is covered.
 - Backup round-trip includes plans; version 3 backup restore compatibility is covered.
