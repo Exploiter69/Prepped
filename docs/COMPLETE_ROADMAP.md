@@ -333,7 +333,7 @@ Do not convert “the model ran” into “speech accuracy is good.” Do not co
 4. **Review limitations and evidence**; do not claim speech accuracy, proficiency, learning gains, placement outcomes, or security certification without validation.
 5. **Keep the optional student pilot separate** from engineering. Run it only with consent and available participants; no results are currently claimed.
 
-**Current gate:** Phases A–F implementation and baseline automated verification are complete on the working branch. Phase G engineering is now in progress; manual target-device acceptance remains open and is a release-candidate sign-off gate, not a prerequisite to begin engineering hardening. See [Phase G Acceptance](PHASE_G_ACCEPTANCE.md).
+**Current gate:** Phases A–F are implemented, and Phase G engineering hardening has passed its recorded CI run. Phase G.1 recording lifecycle changes and deferred-permission browser regressions are now added to the branch; CI verification for these new changes is pending. Manual target-device acceptance remains open and is a release-candidate sign-off gate. See [Phase G Acceptance](PHASE_G_ACCEPTANCE.md).
 
 
 ---
