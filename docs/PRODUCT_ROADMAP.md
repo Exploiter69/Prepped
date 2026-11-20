@@ -245,7 +245,7 @@ Deliver a coherent first track rather than a large empty catalogue.
 
 **Exit gate:** feature implementation, automated suite and CI pass, core journeys are accepted manually, data backup/restore works, known limitations are documented, and no unsupported product claims remain. Manual target-device acceptance is not claimed until recorded.
 
-### Phase G — Release hardening and acceptance (not started)
+### Phase G — Release hardening and acceptance (engineering implemented; target-device acceptance open)
 
 Phase G begins only after the implemented A–F journeys have been manually accepted on the target Omarchy laptop and the clean-install/recovery checks are recorded. It is a release-readiness phase, not another feature-expansion phase.
 
@@ -331,3 +331,25 @@ The English starter path is expanded under Phase C. Advanced diagnostic interpre
 - [ ] Review wording and scheduler behaviour are documented honestly; no FSRS or learning-gain claims.
 
 **Exit gate:** a learner can intentionally create or capture an item, edit it, resolve duplicates, suspend/resume/delete it, complete a due review, and inspect the next schedule; all data survives restart and tests protect existing Prepped data.
+
+
+---
+
+## Phase G.1 — Recording lifecycle hardening (next prerequisite)
+
+Before Phase H, fix the browser recording lifecycle across Learning and Career. Navigation, lesson/interview exit, and page unload must invalidate pending microphone permission requests; late permission grants must stop their tracks without creating a recorder. Active streams must stop on every workspace transition. In-flight transcription must be abortable and stale responses must never update a hidden or different exercise. A normal learner-initiated Stop must still allow transcription to complete while the learner remains in that exercise.
+
+Automated browser tests must use deferred `getUserMedia()` promises to verify late permission grants are discarded in both workspaces, media tracks are stopped, and no recorder or transcription request starts after navigation. CI must pass before Phase H begins. Manual Omarchy microphone acceptance remains a separate later check.
+
+## Phase H — Adaptive Learning Intelligence (planned; not started)
+
+**Purpose:** make the current Learning, Memory, Career, and Progress modules work as one explainable learning loop.
+
+1. **Evidence-backed skill profile:** derive cautious skill states from existing lesson attempts, closed-exercise responses, open self-review responses, project practice, Career sessions, and learner-approved memory reviews. Preserve source links, timestamps, freshness, evidence quantity, and limitations. Distinguish activity from demonstrated performance; sparse evidence must remain insufficient rather than becoming a mastery claim.
+2. **Deterministic adaptive engine:** choose next lessons and targeted practice from prerequisites, recent evidence, repeated observable errors, due revisions, and learner goals. Adapt sequence/challenge only where authored content supports it. Explain each recommendation and allow override/dismissal. Retain profile-based routing as fallback.
+3. **Daily/weekly plan:** combine due revision, one focused skill activity, a suitable lesson, and optional interview practice. Respect learner-set goals and time; support complete, skip, reorder, and regenerate without background workers or notifications.
+4. **Evidence-based analytics:** show per-skill timelines, consistency, revision signals, recurring corrections, and development over time. Keep activity, closed-answer correctness, open responses, and heuristic feedback separate; no composite ability score.
+
+**Guardrails:** zero mandatory cost; existing FastAPI + SQLite + plain JavaScript modular monolith; existing skill IDs and evidence first; additive migrations only when necessary; deterministic, inspectable logic; no required LLM, external API, Redis, queues, Celery, vector database, new service, proficiency certification, emotion/personality inference, learning-gain claim, or placement prediction.
+
+**Exit gate:** learners can inspect the evidence behind their skill states, understand and override next-step recommendations, use a realistic daily plan, and trace analytics to source activity. Tests cover sparse/conflicting/stale evidence, prerequisites, repeated attempts, overrides, backup/restore, and legacy data. Phase H starts only after Phase G.1 is implemented and CI is green.
