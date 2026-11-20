@@ -119,9 +119,15 @@ def test_studio_catalog_is_versioned_and_has_authored_difficulty_followups() -> 
             variants = question["followup"]["prompts"]
             assert set(variants) == {"guided", "standard", "challenging"}
             assert all(isinstance(value, str) and value.strip() for value in variants.values())
+            assert question["simpler_prompt"].strip()
+            assert question["clarification"].strip()
+            assert question["followup"]["simpler_prompt"].strip()
+            assert question["followup"]["clarification"].strip()
             contextual = question["contextual_followup"]
             assert contextual["trigger"]
             assert contextual["prompt"].strip()
+            assert contextual["simpler_prompt"].strip()
+            assert contextual["clarification"].strip()
 
 
 def test_career_schema_is_additive_and_preserves_existing_practice(tmp_path: Path) -> None:
