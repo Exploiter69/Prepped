@@ -106,7 +106,7 @@ def test_learning_path_summary_track_progress_and_guided_step_indicator(
 
     assert page.locator("#learning-summary-completed").text_content() == "0"
     assert page.locator("#learning-summary-skills").text_content().endswith("/ 14")
-    assert page.locator(".learning-track-progressbar[role='progressbar']").count() == 4
+    assert page.locator(".learning-track-progressbar[role='progressbar']").count() == 3
 
     page.locator('button[data-lesson-id="sentence-building"]').first.click()
     page.locator("#learning-runner").wait_for(state="visible")
