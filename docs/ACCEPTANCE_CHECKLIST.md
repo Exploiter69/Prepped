@@ -316,7 +316,7 @@ Use a disposable database. Automated Chromium coverage does not replace checking
 
 ---
 
-## Phase F — Progress, portability, and release hardening
+## Phase F — Progress, portability, and hardening foundations
 
 ### Progress evidence and learner goals
 
