@@ -335,13 +335,13 @@ The English starter path is expanded under Phase C. Advanced diagnostic interpre
 
 ---
 
-## Phase G.1 — Recording lifecycle hardening (implementation added; CI verification pending)
+## Phase G.1 — Recording lifecycle hardening (implementation and browser regressions added; CI verification pending)
 
 Before Phase H, verify the browser recording lifecycle hardening across Learning and Career. Navigation, lesson/interview exit, and page unload must invalidate pending microphone permission requests; late permission grants must stop their tracks without creating a recorder. Active streams must stop on every workspace transition. In-flight transcription must be abortable and stale responses must never update a hidden or different exercise. A normal learner-initiated Stop must still allow transcription to complete while the learner remains in that exercise.
 
 Automated browser tests must use deferred `getUserMedia()` promises to verify late permission grants are discarded in both workspaces, media tracks are stopped, and no recorder or transcription request starts after navigation. CI must pass before Phase H begins. Manual Omarchy microphone acceptance remains a separate later check.
 
-## Phase H — Adaptive Learning Intelligence (planned; not started)
+## Phase H — Adaptive Learning Intelligence (implementation added; automated verification pending)
 
 **Purpose:** make the current Learning, Memory, Career, and Progress modules work as one explainable learning loop.
 
@@ -353,3 +353,10 @@ Automated browser tests must use deferred `getUserMedia()` promises to verify la
 **Guardrails:** zero mandatory cost; existing FastAPI + SQLite + plain JavaScript modular monolith; existing skill IDs and evidence first; additive migrations only when necessary; deterministic, inspectable logic; no required LLM, external API, Redis, queues, Celery, vector database, new service, proficiency certification, emotion/personality inference, learning-gain claim, or placement prediction.
 
 **Exit gate:** learners can inspect the evidence behind their skill states, understand and override next-step recommendations, use a realistic daily plan, and trace analytics to source activity. Tests cover sparse/conflicting/stale evidence, prerequisites, repeated attempts, overrides, backup/restore, and legacy data. Phase H starts only after Phase G.1 is implemented and CI is green.
+
+
+### Phase H implementation record
+
+The working branch now includes the evidence-backed skill profile, deterministic recommendation engine, learner-controlled daily and weekly plans, source-linked analytics, the Progress workspace UI, additive schema-4 plan persistence, and backup compatibility for existing schema-3 exports. See [Phase H Acceptance](PHASE_H_ACCEPTANCE.md) for the API, evidence rules, tests, limitations, and remaining gates.
+
+The implementation intentionally adapts ordering and selection only. The curriculum has no authored difficulty metadata, so difficulty changes and generated exercises are not claimed. Automated CI for the exact final Phase H commit remains pending; manual Omarchy acceptance remains later.
