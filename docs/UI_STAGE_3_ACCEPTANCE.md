@@ -15,7 +15,7 @@
 - [x] Improve review screen hierarchy while retaining question notes, transparent checklist, attempt comparison, explicit memory handoff, retry, history and deletion.
 - [x] Respect narrow layouts, keyboard focus styles and reduced-motion preferences.
 - [x] Preserve microphone permission handling, late-grant cleanup, cancellation on navigation, abortable transcription/TTS, stream release, and raw-audio non-persistence.
-- [x] Add Chromium browser coverage for accessible progress, draft state, text fallback, and recording visualizer activation/cleanup.
+- [x] Add Chromium browser coverage for accessible progress, draft state, text fallback, visualizer activation/cleanup on navigation, and visible Groq disclosure before capture.
 
 ## Manual acceptance — target Omarchy laptop
 
