@@ -185,7 +185,7 @@ The learner profile stores preferences such as goal, study year, branch, confide
 - **E — Career studios:** project, HR/behavioural, and technical interview practice with follow-ups.
 - **F — Progress and portability:** activity evidence, goals, explainable recommendations, local backup/restore, and initial operational hardening controls.
 
-### Remaining before Phase G
+### Remaining before local release-candidate sign-off
 
 1. Complete the target-Omarchy manual acceptance in [ACCEPTANCE_CHECKLIST.md](ACCEPTANCE_CHECKLIST.md): Learning, memory/review, all Career studios, Progress/goals, backup/restore, voice permission/disclosure, keyboard/screen-reader, contrast, and responsive behaviour.
 2. Record fresh-install and recovery results on the target laptop. Keep the backup/restore test on disposable data.
