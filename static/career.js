@@ -1,6 +1,6 @@
 (() => {
   const $ = (selector, root = document) => root.querySelector(selector);
-  const state = { studios: [], selected: null, session: null, recorder: null, stream: null, chunks: [], timer: null, audioUrl: null, audio: null, stt: null };
+  const state = { studios: [], selected: null, session: null, recorder: null, stream: null, chunks: [], timer: null, audioUrl: null, audio: null, stt: null, recordingRequestId: 0, recordingPending: false, transcriptionController: null, transcribing: false };
   const viewIds = ["home-view", "practice-view", "feedback-view", "history-view", "learning-view", "career-view", "progress-view"];
   async function api(url, options = {}) {
     const response = await fetch(url, { ...options, headers: { "Content-Type": "application/json", ...(options.headers || {}) } });
@@ -15,6 +15,7 @@
   }
   function showCareer() {
     stopRecording(true);
+    window.dispatchEvent(new CustomEvent("prepped:viewchange", { detail: { view: "career-view" } }));
     if (state.audio) state.audio.pause();
     window.PreppedVoice?.stopAll();
     for (const id of viewIds) $("#" + id)?.classList.toggle("hidden", id !== "career-view");
@@ -26,6 +27,7 @@
   }
   function showHome() {
     stopRecording(true);
+    window.dispatchEvent(new CustomEvent("prepped:viewchange", { detail: { view: "home-view" } }));
     if (state.audio) state.audio.pause();
     for (const id of viewIds) $("#" + id)?.classList.toggle("hidden", id !== "home-view");
     $("#career-toggle")?.setAttribute("aria-expanded", "false");
@@ -234,12 +236,30 @@
       $("#career-voice-status").textContent = "Playing the prompt using the configured local voice engine.";
     } catch (error) { $("#career-voice-status").textContent = error.message; }
   }
+  function careerRecordingRequestIsCurrent(requestId) {
+    return requestId === state.recordingRequestId &&
+      !$("#career-view").classList.contains("hidden") &&
+      !$("#career-active").classList.contains("hidden");
+  }
+
   async function startRecording() {
+    if (state.recorder || state.recordingPending || state.transcribing) return;
+    const requestId = ++state.recordingRequestId;
+    state.recordingPending = true;
     if (!state.stt) {
-      try { state.stt = (await api("/api/voice/status")).stt || null; }
-      catch (error) { $("#career-voice-status").textContent = error.message + " Type your answer instead."; return; }
+      try {
+        state.stt = (await api("/api/voice/status")).stt || null;
+      } catch (error) {
+        if (careerRecordingRequestIsCurrent(requestId)) {
+          state.recordingPending = false;
+          $("#career-voice-status").textContent = error.message + " Type your answer instead.";
+        }
+        return;
+      }
     }
+    if (!careerRecordingRequestIsCurrent(requestId)) return;
     if (state.stt && !state.stt.available) {
+      state.recordingPending = false;
       $("#career-voice-status").textContent = (state.stt.detail || "Speech transcription is unavailable.") + " Type your answer instead.";
       return;
     }
@@ -249,55 +269,130 @@
       $("#career-voice-status").textContent = "Local speech transcription is selected. Prepped does not retain the raw recording. Text entry is available instead.";
     }
     if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
+      state.recordingPending = false;
       $("#career-voice-status").textContent = "Microphone recording is unavailable in this browser. Type your answer instead.";
       return;
     }
+    let stream = null;
     try {
-      state.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      $("#career-voice-status").textContent = "Requesting microphone permission…";
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      if (!careerRecordingRequestIsCurrent(requestId)) {
+        stream.getTracks().forEach(track => track.stop());
+        return;
+      }
+      state.recordingPending = false;
+      state.stream = stream;
       const options = {};
       if (MediaRecorder.isTypeSupported("audio/webm;codecs=opus")) options.mimeType = "audio/webm;codecs=opus";
-      state.recorder = new MediaRecorder(state.stream, options);
+      state.recorder = new MediaRecorder(stream, options);
       state.chunks = [];
-      state.recorder.ondataavailable = event => { if (event.data.size) state.chunks.push(event.data); };
-      state.recorder.onstop = transcribeRecording;
+      state.recorder.ondataavailable = event => {
+        if (requestId === state.recordingRequestId && event.data.size) state.chunks.push(event.data);
+      };
+      state.recorder.onstop = () => transcribeRecording(requestId);
       state.recorder.start();
       $("#career-record").disabled = true;
       $("#career-stop-record").disabled = false;
       $("#career-voice-status").textContent = "Recording… up to 60 seconds. Stop when you are ready. Raw audio is not saved by Prepped.";
       state.timer = window.setTimeout(() => stopRecording(false), 60000);
-    } catch (error) { releaseStream(); $("#career-voice-status").textContent = (error.message || "Microphone permission was not available.") + " You can type instead."; }
+    } catch (error) {
+      stream?.getTracks().forEach(track => track.stop());
+      if (state.stream === stream) state.stream = null;
+      if (requestId === state.recordingRequestId) {
+        state.recordingPending = false;
+        if (careerRecordingRequestIsCurrent(requestId)) {
+          $("#career-voice-status").textContent = (error.message || "Microphone permission was not available.") + " You can type instead.";
+        }
+      }
+    }
   }
+
   function releaseStream() {
     if (state.stream) state.stream.getTracks().forEach(track => track.stop());
     state.stream = null;
   }
+
   function stopRecording(discard = false) {
     if (state.timer) clearTimeout(state.timer);
     state.timer = null;
-    if (!state.recorder) { releaseStream(); return; }
+    if (state.recordingPending || discard) {
+      state.recordingRequestId += 1;
+      state.recordingPending = false;
+    }
+    if (discard) {
+      state.transcriptionController?.abort();
+      state.transcriptionController = null;
+      state.transcribing = false;
+      state.chunks = [];
+    }
+    if (!state.recorder) {
+      releaseStream();
+      if (discard) {
+        $("#career-record") && ($("#career-record").disabled = false);
+        $("#career-stop-record") && ($("#career-stop-record").disabled = true);
+      }
+      return;
+    }
     const recorder = state.recorder;
     state.recorder = null;
     releaseStream();
-    if (discard) { state.chunks = []; recorder.onstop = null; }
+    if (discard) {
+      state.chunks = [];
+      recorder.onstop = null;
+    }
     if (recorder.state !== "inactive") recorder.stop();
     $("#career-record").disabled = false;
     $("#career-stop-record").disabled = true;
   }
-  async function transcribeRecording() {
+
+  async function transcribeRecording(requestId) {
+    if (!careerRecordingRequestIsCurrent(requestId)) {
+      state.chunks = [];
+      return;
+    }
     const chunks = state.chunks;
     state.chunks = [];
     const blob = new Blob(chunks, { type: chunks[0]?.type || "audio/webm" });
-    if (!blob.size) { $("#career-voice-status").textContent = "No audio captured. Type your answer instead."; return; }
+    if (!blob.size) {
+      $("#career-voice-status").textContent = "No audio captured. Type your answer instead.";
+      $("#career-record").disabled = false;
+      return;
+    }
+    state.transcribing = true;
+    state.transcriptionController = new AbortController();
+    $("#career-record").disabled = true;
     $("#career-voice-status").textContent = "Transcribing… review and edit the text before submitting.";
     try {
-      const response = await fetch("/api/voice/transcribe", { method: "POST", headers: { "Content-Type": blob.type }, body: blob });
+      const response = await fetch("/api/voice/transcribe", {
+        method: "POST",
+        headers: { "Content-Type": blob.type },
+        body: blob,
+        signal: state.transcriptionController.signal,
+      });
       const body = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(body.detail || "Transcription failed.");
+      if (!careerRecordingRequestIsCurrent(requestId)) return;
       const field = $("#career-answer");
       field.value = (field.value.trim() ? field.value.trim() + "\n" : "") + String(body.text || "").trim();
       $("#career-voice-status").textContent = "Transcript added. Edit recognition errors before submitting.";
-    } catch (error) { $("#career-voice-status").textContent = error.message + " You can type your answer instead."; }
+    } catch (error) {
+      if (error.name !== "AbortError" && careerRecordingRequestIsCurrent(requestId)) {
+        $("#career-voice-status").textContent = error.message + " You can type your answer instead.";
+      }
+    } finally {
+      if (requestId === state.recordingRequestId) {
+        state.transcribing = false;
+        state.transcriptionController = null;
+        if (careerRecordingRequestIsCurrent(requestId)) $("#career-record").disabled = false;
+      }
+    }
   }
+
+  window.addEventListener("prepped:viewchange", event => {
+    if (event.detail?.view !== "career-view") stopRecording(true);
+  });
+
   async function refreshVoiceStatus() {
     try {
       const result = await api("/api/voice/status");
