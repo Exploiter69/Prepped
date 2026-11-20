@@ -216,7 +216,8 @@ def _skill_evidence(conn: sqlite3.Connection, curriculum: dict[str, Any], now: d
            ORDER BY r.reviewed_at DESC"""
     ).fetchall()
     for row in revision_rows:
-        linked = attempt_skills.get(row["source_id"] or "", []) or lesson_skills.get(row["source_id"] or "", [])
+        source_id = row["source_id"] or ""
+        linked = (attempt_skills.get(source_id, []) or lesson_skills.get(source_id, [])) if row["source_type"] in {"lesson", "lesson_attempt", "learning_attempt"} else []
         for sid in linked:
             activity[sid] += 1
             evidence[sid].append({
@@ -268,7 +269,7 @@ def _skill_evidence(conn: sqlite3.Connection, curriculum: dict[str, Any], now: d
         recent_misses: dict[str, int] = {}
         for item in closed:
             stamp = _parse_stamp(item.get("occurred_at"))
-            if item["outcome"] == "review" and stamp and (now - stamp).days <= 30:
+            if item["outcome"] == "review" and stamp and 0 <= (now - stamp).days <= 30:
                 exid = str(item.get("exercise_id") or "unknown")
                 recent_misses[exid] = recent_misses.get(exid, 0) + 1
         repeated = [{"exercise_id": key, "review_needed_responses": count}
