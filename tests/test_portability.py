@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sqlite3
 from pathlib import Path
 
@@ -218,7 +219,14 @@ def test_restore_rejects_non_finite_and_out_of_range_numbers_without_replacing_d
 
         non_finite = {**original, "confirm_replace": True}
         non_finite["tables"]["learner_profile"][0]["study_year"] = float("nan")
-        rejected_nan = client.post("/api/data/restore", json=non_finite)
+        # httpx's json= encoder rejects NaN before the request reaches the app.
+        # Send the deliberately non-standard JSON token raw so the API's parser
+        # and restore validation are exercised.
+        rejected_nan = client.post(
+            "/api/data/restore",
+            content=json.dumps(non_finite, allow_nan=True),
+            headers={"Content-Type": "application/json"},
+        )
         assert rejected_nan.status_code == 422
 
         out_of_range = {**original, "confirm_replace": True}
