@@ -168,7 +168,7 @@ def test_host_guard_rejects_malformed_authorities_without_server_error(tmp_path:
 def test_origin_guard_rejects_malformed_and_non_origin_values(tmp_path: Path) -> None:
     client = client_for(tmp_path / "malformed-origin.sqlite3")
     try:
-        for origin in ("http://[::1", "http://127.0.0.1:99999", "http://testserver/path", "http://user@testserver"):
+        for origin in ("http://[::1", "http://127.0.0.1:99999", "http://testserver/path", "http://user@testserver", "https://testserver"):
             response = client.put(
                 "/api/profile",
                 headers={"Origin": origin},
