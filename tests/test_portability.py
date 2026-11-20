@@ -153,3 +153,46 @@ def test_host_header_guard_rejects_non_local_hosts(tmp_path: Path) -> None:
     with client:
         response = client.get("/api/health")
         assert response.status_code == 400
+
+
+
+def test_host_guard_rejects_malformed_authorities_without_server_error(tmp_path: Path) -> None:
+    client = TestClient(create_app(db_path=tmp_path / "malformed-host.sqlite3"))
+    with client:
+        malformed_hosts = ("[::1", "127.0.0.1:99999", "user@localhost")
+        for host in malformed_hosts:
+            response = client.get("/api/health", headers={"Host": host})
+            assert response.status_code == 400, (host, response.status_code, response.text)
+
+
+def test_origin_guard_rejects_malformed_and_non_origin_values(tmp_path: Path) -> None:
+    client = client_for(tmp_path / "malformed-origin.sqlite3")
+    try:
+        for origin in ("http://[::1", "http://127.0.0.1:99999", "http://testserver/path", "http://user@testserver"):
+            response = client.put(
+                "/api/profile",
+                headers={"Origin": origin},
+                json={"primary_goal": "english_fluency"},
+            )
+            assert response.status_code == 403, (origin, response.status_code, response.text)
+        assert client.get("/api/profile").json()["configured"] is False
+    finally:
+        client.__exit__(None, None, None)
+
+
+def test_same_origin_state_change_and_no_origin_local_client_remain_supported(tmp_path: Path) -> None:
+    client = client_for(tmp_path / "valid-origin.sqlite3")
+    try:
+        same_origin = client.put(
+            "/api/profile",
+            headers={"Origin": "http://testserver"},
+            json={"primary_goal": "english_fluency"},
+        )
+        assert same_origin.status_code == 200, same_origin.text
+        no_origin = client.put(
+            "/api/profile",
+            json={"primary_goal": "placement_interviews"},
+        )
+        assert no_origin.status_code == 200, no_origin.text
+    finally:
+        client.__exit__(None, None, None)
