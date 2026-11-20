@@ -18,6 +18,8 @@
     startedAt: 0,
     audioUrl: null,
     generation: 0,
+    transcriptionController: null,
+    ttsController: null,
   };
 
   const ui = {};
@@ -164,6 +166,8 @@
   }
 
   function stopSpeech(updateStatus = false) {
+    state.ttsController?.abort();
+    state.ttsController = null;
     if (ui.audio) {
       ui.audio.pause();
       ui.audio.currentTime = 0;
@@ -186,12 +190,15 @@
     if (!state.questionText || state.busy || state.recording || state.transcribing) return;
     stopSpeech();
     const requestGeneration = state.generation;
+    const controller = new AbortController();
+    state.ttsController = controller;
     setTtsStatus("Preparing local question audio…");
     try {
       const response = await fetch("/api/voice/tts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: state.questionText }),
+        signal: controller.signal,
       });
       if (!response.ok) {
         const payload = await response.json().catch(() => ({}));
@@ -202,7 +209,7 @@
         );
       }
       const blob = await response.blob();
-      if (requestGeneration !== state.generation) return;
+      if (requestGeneration !== state.generation || controller.signal.aborted) return;
       state.audioUrl = URL.createObjectURL(blob);
       ui.audio.src = state.audioUrl;
       ui.audio.onended = () => {
@@ -215,7 +222,7 @@
       await ui.audio.play();
       setTtsStatus("Speaking the question locally. Use Stop to interrupt.");
     } catch (error) {
-      if (requestGeneration === state.generation) {
+      if (error.name !== "AbortError" && requestGeneration === state.generation) {
         setTtsStatus(
           (error.message || "Local spoken prompts are unavailable.") +
             " Read the question on screen.",
@@ -223,6 +230,7 @@
         );
       }
     } finally {
+      if (state.ttsController === controller) state.ttsController = null;
       updateControls();
     }
   }
@@ -376,7 +384,17 @@
 
     state.recording = true;
     state.startedAt = Date.now();
-    state.recorder.start();
+    try {
+      state.recorder.start();
+    } catch (error) {
+      state.recording = false;
+      state.recorder = null;
+      state.chunks = [];
+      releaseStream();
+      setRecordStatus("This browser could not begin recording. Try again or type your answer instead.", "error");
+      updateControls();
+      return;
+    }
     state.timerId = window.setInterval(updateRecordingTimer, 250);
     setRecordStatus(`Recording… 0s / ${recordingLimitSeconds()}s. Press Stop recording when finished.`, "recording");
     updateControls();
@@ -428,6 +446,8 @@
     }
 
     const generation = state.generation;
+    const controller = new AbortController();
+    state.transcriptionController = controller;
     state.transcribing = true;
     setRecordStatus(
       state.status?.stt?.engine === "groq-whisper"
@@ -440,6 +460,7 @@
         method: "POST",
         headers: { "Content-Type": blob.type || "application/octet-stream" },
         body: blob,
+        signal: controller.signal,
       });
       const payload = await response.json().catch(() => ({}));
       if (generation !== state.generation) return;
@@ -457,13 +478,14 @@
       }
       insertTranscript(text);
     } catch (error) {
-      if (generation === state.generation) {
+      if (error.name !== "AbortError" && generation === state.generation) {
         setRecordStatus(
           (error.message || "Speech-to-text failed.") + " You can type your answer instead.",
           "error"
         );
       }
     } finally {
+      if (state.transcriptionController === controller) state.transcriptionController = null;
       if (generation === state.generation) {
         state.transcribing = false;
         updateControls();
@@ -495,6 +517,8 @@
   function stopAll() {
     state.generation += 1;
     state.permissionPending = false;
+    state.transcriptionController?.abort();
+    state.transcriptionController = null;
     state.transcribing = false;
     stopSpeech();
     if (state.recording || state.recorder) {
@@ -531,10 +555,7 @@
     ui.ttsPlay.addEventListener("click", playQuestion);
     ui.ttsStop.addEventListener("click", stopQuestion);
     ui.ttsReplay.addEventListener("click", replayQuestion);
-    window.addEventListener("beforeunload", () => {
-      stopSpeech();
-      releaseStream();
-    });
+    window.addEventListener("beforeunload", () => stopAll());
 
     setRecordStatus("Checking microphone and speech provider…");
     setTtsStatus("Checking local speech…");
