@@ -1,5 +1,6 @@
 (() => {
   const $ = (selector, root = document) => root.querySelector(selector);
+  const MAX_ANSWER_CHARS = 6000;
   const state = { studios: [], selected: null, session: null, recorder: null, stream: null, chunks: [], timer: null, audioUrl: null, audio: null, ttsController: null, ttsRequestId: 0, stt: null, recordingRequestId: 0, recordingPending: false, transcriptionController: null, transcribing: false };
   const viewIds = ["home-view", "practice-view", "feedback-view", "history-view", "learning-view", "career-view", "progress-view"];
   async function api(url, options = {}) {
@@ -415,6 +416,13 @@
         if (state.recorder === recorder) state.recorder = null;
         void transcribeRecording(requestId);
       };
+      recorder.onerror = () => {
+        if (requestId !== state.recordingRequestId) return;
+        if (careerRecordingRequestIsCurrent(requestId)) {
+          $("#career-voice-status").textContent = "Recording failed. Try again or type your answer instead.";
+        }
+        stopRecording(true);
+      };
       recorder.start();
       $("#career-record").disabled = true;
       $("#career-stop-record").disabled = false;
@@ -500,9 +508,21 @@
       const body = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(body.detail || "Transcription failed.");
       if (!careerRecordingRequestIsCurrent(requestId)) return;
+      const transcript = String(body.text || "").trim();
+      if (!transcript) {
+        $("#career-voice-status").textContent = "No speech was recognised. Try again or type your answer instead.";
+        return;
+      }
       const field = $("#career-answer");
-      field.value = (field.value.trim() ? field.value.trim() + "\n" : "") + String(body.text || "").trim();
-      $("#career-voice-status").textContent = "Transcript added. Edit recognition errors before submitting.";
+      const combined = (field.value.trim() ? field.value.trim() + "\n" : "") + transcript;
+      const truncated = combined.length > MAX_ANSWER_CHARS;
+      field.value = combined.slice(0, MAX_ANSWER_CHARS);
+      field.dispatchEvent(new Event("input", { bubbles: true }));
+      field.focus();
+      field.setSelectionRange(field.value.length, field.value.length);
+      $("#career-voice-status").textContent = truncated
+        ? "Transcript added, but it was cut at the 6,000-character limit. Edit before submitting."
+        : "Transcript added. Edit recognition errors before submitting.";
     } catch (error) {
       if (error.name !== "AbortError" && careerRecordingRequestIsCurrent(requestId)) {
         $("#career-voice-status").textContent = error.message + " You can type your answer instead.";
