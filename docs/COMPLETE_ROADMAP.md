@@ -59,7 +59,7 @@ The first proof is this loop working locally with voice, not an avatar, dashboar
 
 ### Foundation acceptance update (2026-11-19)
 
-The feature branch now has GitHub Actions coverage for pushes to `feature/**`. The [latest clean-run result](https://github.com/Exploiter69/Prepped/actions/runs/44534499386) is 41 passed and 2 skipped (both require `espeak-ng`, unavailable on the hosted runner), with one Starlette/httpx TestClient deprecation warning. Playwright/Chromium browser tests passed for profile setup/edit/cancel/save/reload and the full text-only practice journey. The [Foundation Acceptance Checklist](ACCEPTANCE_CHECKLIST.md) records the remaining target-laptop and optional voice checks. Do not treat headless CI as microphone or device acceptance.
+The feature branch now has GitHub Actions coverage for pushes to `feature/**`. The current full-suite result is [run 44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798) — 100 passed, 2 skipped (both require `espeak-ng`, unavailable on the hosted runner), with one Starlette/httpx TestClient deprecation warning. Playwright/Chromium browser tests passed for profile setup/edit/cancel/save/reload and the full text-only practice journey. The [Foundation Acceptance Checklist](ACCEPTANCE_CHECKLIST.md) records the remaining target-laptop and optional voice checks. Do not treat headless CI as microphone or device acceptance.
 
 ### Product development and user validation are separate
 
@@ -362,6 +362,22 @@ This is the authoritative A–G execution sequence. Earlier sections are the ori
 | F | Progress & portability | Skill evidence, goals, recommendations, export/backup/restore | Reproducible data recovery and explainable progress |
 | G | Release hardening and acceptance (not started) | Target-device, accessibility, privacy/security, performance, fresh-install and release-candidate verification | Manual acceptance record, green CI, recovery rehearsal, limitations and release checklist |
 
+### Relationship to the original Phase 0–8 planning model
+
+The older Phase 0–8 sections preserve the research-era sequence; they are not a second active build order. Use A–G above for execution:
+
+| Original planning item | Current A–G relationship | Status |
+|---|---|---|
+| Phase 0–2: research, text loop, first voice slice | Foundation and voice work under A | Implemented baseline |
+| Phase 3: voice hardening | Pre-Phase-G target-device acceptance | Manual checks remain |
+| Phase 4: student validation | Optional pilot protocol | Not run; not an engineering blocker |
+| Phase 5: personalisation and learning loop | B/C learning routes, D memory, F progress/recommendations | Core implementation delivered; manual acceptance remains |
+| Phase 6: second scenario and fluency | C communication curriculum and E interview studios | Implemented starter scope; manual acceptance remains |
+| Phase 7: assessment and human calibration | Future conditional research | Deferred; no score is approved |
+| Phase 8: final-year options | Future options after evidence and stakeholder need | Deferred |
+
+This mapping removes the duplicate numbering: Phase G means release hardening and acceptance only, not the old Phase 7 or a new adaptive-learning feature.
+
 ### Milestone B — Learning Engine detailed tasks
 
 1. Define a stable skill taxonomy with skill IDs, learning outcomes, and prerequisites.
@@ -496,7 +512,7 @@ Phase D has been implemented on `feature/learner-profile`. Automated CI passes; 
 
 ## Phase E — Career & Interview Studios implementation update (2026-11-19)
 
-The Career workspace is implemented on `feature/learner-profile`. GitHub Actions passes on the implementation commit: [run 44568533503](https://github.com/Exploiter69/Prepped/actions/runs/44568533503) — 88 passed, 2 skipped (both require `espeak-ng`). Target-laptop acceptance remains outstanding.
+The Career workspace is implemented on `feature/learner-profile`. The current full-suite GitHub Actions run [44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798) passes 100 tests with 2 optional `espeak-ng` skips and 1 warning. Target-laptop acceptance remains outstanding.
 
 - Three versioned studios: project explanation, HR/behavioural interviews, and technical fundamentals.
 - Four authored main questions per studio, each followed by an authored follow-up. Guided, standard, and challenging modes choose different follow-up wording.
