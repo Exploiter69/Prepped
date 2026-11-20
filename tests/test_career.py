@@ -200,3 +200,45 @@ def test_career_feedback_has_one_evidence_grounded_coaching_action_per_turn(tmp_
         assert "not detected" in coaching["basis"].lower()
         assert "overall_score" not in feedback
         assert "rating" not in feedback
+
+
+def test_simpler_prompt_variant_is_saved_as_the_prompt_used_for_the_answer(tmp_path: Path) -> None:
+    with client_for(tmp_path) as client:
+        session = start(client, "project-explanation").json()
+        prompt = session["current_prompt"]
+        assert prompt["simpler_prompt"] != prompt["prompt"]
+        assert prompt["clarification"]
+        response = client.post(
+            f"/api/career/sessions/{session['id']}/answers",
+            json={"answer_text": "I built a campus project for students.", "prompt_variant": "simplified"},
+        )
+        assert response.status_code == 200
+        assert response.json()["turns"][0]["prompt"] == prompt["simpler_prompt"]
+
+
+def test_retry_feedback_compares_previous_answers_without_claiming_improvement(tmp_path: Path) -> None:
+    with client_for(tmp_path) as client:
+        first = start(client, "project-explanation").json()
+        session_id = first["id"]
+        for attempt_label in ("first", "second"):
+            for index in range(4):
+                primary = client.post(
+                    f"/api/career/sessions/{session_id}/answers",
+                    json={"answer_text": f"For example, I built the {attempt_label} feature {index} because it solved a user problem, and I tested it."},
+                )
+                assert primary.status_code == 200
+                followup = client.post(
+                    f"/api/career/sessions/{session_id}/answers",
+                    json={"answer_text": f"For example, I tested the {attempt_label} change because reliability mattered and recorded the result."},
+                )
+                assert followup.status_code == 200
+            if attempt_label == "first":
+                retry = client.post(f"/api/career/sessions/{session_id}/retry")
+                assert retry.status_code == 201
+                session_id = retry.json()["id"]
+
+        feedback = client.get(f"/api/career/sessions/{session_id}/feedback").json()
+        assert len(feedback["attempt_comparison"]) == 8
+        assert feedback["attempt_comparison"][0]["previous_answer"].startswith("For example, I built the first")
+        assert feedback["attempt_comparison"][0]["current_answer"].startswith("For example, I built the second")
+        assert "not a measured improvement" in feedback["comparison_note"].lower()
