@@ -68,6 +68,7 @@
           skill.freshness + (skill.evidence_age_days === null ? "" : " · " + skill.evidence_age_days + "d ago")),
         node("span", skill.activity_count + " activity records"),
         node("span", skill.closed_response_count + " closed responses"),
+        node("span", skill.evidence_coverage + " evidence coverage"),
       );
       card.append(meta);
       const counts = node("p", "Correct responses observed: " + skill.correct_response_count +
@@ -83,7 +84,8 @@
       for (const item of skill.evidence) {
         const dateLabel = item.occurred_at ? new Date(item.occurred_at).toLocaleString() : "Date unavailable";
         list.append(node("li", item.title + " · " + item.kind.replaceAll("_", " ") +
-          " · " + item.outcome + " · " + dateLabel + ". " + item.note));
+          " · " + item.outcome + " · " + dateLabel + " · Source: " + item.source_type +
+          " / " + item.source_id + ". " + item.note));
       }
       if (!skill.evidence.length) list.append(node("li", "No linked saved activity yet."));
       details.append(list);
