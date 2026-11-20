@@ -203,9 +203,10 @@
       card.append(node("strong", new Date(day.plan_date + "T12:00:00").toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })));
       card.append(node("span", day.items.length + " activities"));
       card.append(node("span", day.completed_count + " complete · " + day.estimated_minutes + " min"));
-      card.addEventListener("click", () => {
+      card.addEventListener("click", async () => {
         $("#intelligence-plan-date").value = day.plan_date;
-        loadPlan(day.plan_date);
+        try { await loadPlan(day.plan_date); }
+        catch (error) { setStatus(error.message, true); }
       });
       target.append(card);
     });
@@ -330,7 +331,8 @@
   async function addToPlan(itemType, targetId) {
     const planDate = $("#intelligence-plan-date").value || localDate();
     try {
-      if (!state.plan) {
+      const current = await request("/api/intelligence/plan?plan_date=" + encodeURIComponent(planDate));
+      if (!current.plan) {
         await request("/api/intelligence/plan/generate", {
           method: "POST", body: JSON.stringify({
             plan_date: planDate, available_minutes: Number($("#intelligence-plan-minutes").value), regenerate: false,
