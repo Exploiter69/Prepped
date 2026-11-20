@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 import sqlite3
+
+import pytest
 from datetime import date
 from pathlib import Path
 
@@ -340,5 +342,75 @@ def test_user_deletions_cascade_to_dependent_answers_turns_and_reviews(tmp_path:
             assert connection.execute("SELECT COUNT(*) FROM learning_memory_reviews").fetchone()[0] == 0
             assert connection.execute("SELECT COUNT(*) FROM learning_memory").fetchone()[0] == 0
             assert connection.execute("PRAGMA foreign_key_check").fetchall() == []
+    finally:
+        client.__exit__(None, None, None)
+
+
+
+def test_interrupted_restore_keeps_active_database_and_trusted_backup_restores(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import prepped.portability as portability
+
+    database = tmp_path / "interrupted-restore.sqlite3"
+    client = client_for(database)
+    try:
+        client.put("/api/profile", json={"display_name": "Trusted backup learner"})
+        trusted_backup = client.get("/api/data/export").json()
+        client.put("/api/profile", json={"display_name": "Newer active learner"})
+
+        def interrupt_before_commit(staged_path: Path, target_path: Path) -> None:
+            raise KeyboardInterrupt("simulated process interruption before restore commit")
+
+        monkeypatch.setattr(portability, "_commit_staged_restore", interrupt_before_commit)
+        with pytest.raises(KeyboardInterrupt, match="simulated process interruption"):
+            client.post("/api/data/restore", json={**trusted_backup, "confirm_replace": True})
+
+        # The staged temporary database is discarded and the active database
+        # remains readable and unchanged when execution stops before commit.
+        assert client.get("/api/ready").status_code == 200
+        assert client.get("/api/profile").json()["profile"]["display_name"] == "Newer active learner"
+        with sqlite3.connect(database) as connection:
+            assert connection.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
+            assert connection.execute("PRAGMA foreign_key_check").fetchall() == []
+
+        # A trusted backup can still be restored after the interrupted attempt.
+        monkeypatch.undo()
+        restored = client.post("/api/data/restore", json={**trusted_backup, "confirm_replace": True})
+        assert restored.status_code == 200, restored.text
+        assert client.get("/api/profile").json()["profile"]["display_name"] == "Trusted backup learner"
+        assert client.get("/api/ready").status_code == 200
+    finally:
+        client.__exit__(None, None, None)
+
+
+def test_backup_export_excludes_environment_secrets_and_uses_private_response_headers(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    secret = "phase-k-export-secret-canary"
+    monkeypatch.setenv("GROQ_API_KEY", secret)
+    client = client_for(tmp_path / "private-export.sqlite3")
+    try:
+        response = client.get("/api/data/export")
+        assert response.status_code == 200
+        assert response.headers["cache-control"] == "no-store"
+        assert response.headers["x-content-type-options"] == "nosniff"
+        assert secret.encode("utf-8") not in response.content
+        backup = response.json()
+        assert set(backup) == {
+            "format", "format_version", "database_schema_version",
+            "app_version", "exported_at", "tables",
+        }
+        assert set(backup["tables"]) == {
+            "learner_profile", "sessions", "answers", "learning_attempts", "learning_events",
+            "learning_memory", "learning_memory_reviews", "career_sessions", "career_turns",
+            "learner_goals", "recommendation_dismissals", "adaptive_plans", "adaptive_plan_items",
+        }
+        assert all(
+            "audio" not in column.lower() and "secret" not in column.lower()
+            for records in backup["tables"].values()
+            for record in records
+            for column in record
+        )
     finally:
         client.__exit__(None, None, None)

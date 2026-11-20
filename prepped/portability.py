@@ -57,6 +57,17 @@ INSERT_ORDER = (
 def _stamp() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
+def _commit_staged_restore(staged_path: Path, target_path: Path) -> None:
+    """Copy a fully validated staged database into the active SQLite database."""
+    source = sqlite3.connect(staged_path)
+    destination = sqlite3.connect(target_path)
+    try:
+        source.backup(destination)
+        destination.commit()
+    finally:
+        destination.close()
+        source.close()
+
 def _columns(conn: sqlite3.Connection, table: str) -> list[str]:
     return [row["name"] for row in conn.execute(f'PRAGMA table_info("{table}")')]
 
@@ -184,14 +195,7 @@ def create_portability_router(db_path: Path) -> APIRouter:
                     integrity = staged.execute("PRAGMA integrity_check").fetchone()[0]
                     if integrity != "ok":
                         raise ValueError("Restored database failed its SQLite integrity check.")
-                source = sqlite3.connect(staged_path)
-                destination = sqlite3.connect(target_path)
-                try:
-                    source.backup(destination)
-                    destination.commit()
-                finally:
-                    destination.close()
-                    source.close()
+                _commit_staged_restore(staged_path, target_path)
         except HTTPException:
             raise
         except (sqlite3.Error, ValueError, KeyError, TypeError, OverflowError) as exc:
