@@ -17,6 +17,7 @@
 
 - [x] Document clean source-checkout installation for Python 3.11+, local SQLite, browser, and optional voice prerequisites.
 - [x] Add a small source-checkout helper for setup, start, health/readiness checks, full verification, and explicit optional voice setup.
+- [x] Add shell syntax validation in CI and smoke tests for helper help/invalid-command behaviour.
 - [x] Keep the server bound to 127.0.0.1; start is foreground and Ctrl+C stops it.
 - [x] Keep local voice model downloads explicit and outside application startup.
 - [x] State the supported packaging boundary: source checkout is the supported install; wheel/binary packaging is not claimed because static assets and versioned content are repository-root resources and the project licence is unresolved.
