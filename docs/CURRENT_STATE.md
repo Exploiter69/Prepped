@@ -15,7 +15,7 @@ The current branch now includes the first complete Phase I implementation slice:
 - Career feedback now includes one response-specific next action per turn, grounded in the saved answer excerpt and explicit cue limitations. A retry review compares prior/current answer text side by side without claiming measured improvement. It remains formative reflection, not correctness grading or a score.
 - Learners can explicitly save a coaching action to existing Learning Memory or add the next studio practice to the existing daily adaptive plan. No new table or migration was added.
 - Text answers, editable transcripts, existing saved session snapshots, history, retries, deletion, existing Memory, and adaptive-plan semantics remain in place.
-- Automated tests were added for authored contextual prompt selection, feedback coaching, and Career/Project TTS cancellation on workspace navigation. Exact-commit CI has not yet been recorded.
+- Automated tests were added for authored contextual prompt selection, simpler wording/hints, retry comparisons, feedback coaching, adaptive-plan handoff, and Career/Project TTS and STT cancellation on workspace navigation. Exact-commit CI has not yet been recorded.
 - Manual target-laptop microphone, STT/TTS, privacy, accessibility, and end-to-end plan/Memory acceptance remain open.
 
 **Important limitations:** cue selection and coaching use transparent lexical heuristics and can miss equivalent wording or match weak answers. They do not verify technical correctness, assess proficiency, score pronunciation, infer emotion/personality, or predict hiring/placement. Voice remains push-to-talk and turn-based; no always-listening or realtime speech agent was added.
