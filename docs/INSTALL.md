@@ -145,3 +145,22 @@ To run the full local verification suite (compilation, JavaScript syntax, curric
     bash scripts/prepped.sh verify
 
 Before updating a checkout, export a backup from Progress and keep it outside the repository. Then update with git pull --ff-only, review the changelog, and check /api/ready. Do not delete the data/ directory during uninstall; it contains learner data. Removing the source checkout and its virtual environment does not itself remove backups downloaded elsewhere.
+
+
+## Safe update and uninstall
+
+Before updating, open Progress and download a local backup. Keep that JSON outside the repository. Check that the checkout has no uncommitted work, then fast-forward only:
+
+    git status --short
+    git pull --ff-only origin feature/learner-profile
+    bash scripts/prepped.sh start
+
+In another terminal, confirm health/readiness:
+
+    bash scripts/prepped.sh check
+
+If git status is not clean, stop and preserve/resolve the local changes before pulling. Do not use reset, clean, force-pull, or a destructive migration command. The app applies additive database migrations at startup; keep a trusted backup before updates. If readiness fails, stop and preserve the database rather than deleting it.
+
+To remove only the development environment while keeping the source checkout and learner database, stop the server and remove .venv. The data/ directory is separate from the virtual environment and must be retained. To remove the entire checkout while keeping learner data, first export a backup in Progress and copy the downloaded file to a private location outside the checkout; then remove the source directory. On a fresh checkout, start the app and use Progress → Choose backup to restore. Restore replaces current learner data, so read the confirmation and keep the original backup file.
+
+The server's Uvicorn output is written to the foreground terminal. Prepped does not create a persistent application log file. Do not redirect logs into a shared/public location; learner answers, transcripts, recordings and API keys must not be placed in logs.
