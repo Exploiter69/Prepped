@@ -1,7 +1,7 @@
 # Prepped — Local Voice Setup, Privacy, and Troubleshooting
 
-**Updated:** 2026-11-04<br>
-**Scope:** First record/stop voice slice for the project-interview scenario.<br>
+**Updated:** 2026-11-20<br>
+**Scope:** Push-to-talk recording, editable transcription, prompt playback, and cancellation across Project Practice, Learning, and Career studios.<br>
 **Architecture decisions:** [ADR-002](ADR-002-LOCAL-VOICE-SLICE.md) · [ADR-003](ADR-003-GROQ-WHISPER-TRANSCRIPTION.md)
 
 ## What is implemented
@@ -13,8 +13,12 @@
 - **Play question aloud**, **Stop**, and **Replay** controls.
 - Clear errors and a text-only fallback.
 - No raw audio persistence by Prepped. Groq mode explicitly sends audio to Groq; Vosk mode stays local.
+- In-flight prompt synthesis and transcription browser requests are abortable when the prompt/workspace changes or the learner leaves; stale responses are ignored.
+- Career studios use authored contextual follow-ups selected by narrow, documented text cues, with a visible explanation when a cue selects the prompt.
+- Career review provides one possible answer-specific next action, explicitly framed as heuristic formative guidance rather than correctness feedback.
+- Learners may explicitly save an answer or coaching action to existing Memory, or add a future studio practice to the existing daily plan.
 
-This is not a realtime agent. There is no always-listening mode, streaming transcript, voice activity detection, interruption handling, or LLM feedback.
+Voice remains push-to-talk and turn-based. There is no always-listening mode, streaming transcript, voice activity detection, full-duplex conversation, or model-generated coaching. Context selection and coaching are deterministic lexical heuristics; they can miss equivalent wording and can match weak answers. They do not assess technical correctness, proficiency, accent, pronunciation quality, emotion, personality, hiring suitability, or placement readiness.
 
 ## One-time installation
 
