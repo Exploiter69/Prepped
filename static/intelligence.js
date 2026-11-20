@@ -114,7 +114,7 @@
       } else if (item.kind === "review_memory") {
         const open = node("button", "Open revision queue", "button button-secondary");
         open.type = "button";
-        open.addEventListener("click", openLearning);
+        open.addEventListener("click", () => openLearning(true));
         actions.append(open);
       }
       const dismiss = node("button", "Dismiss", "button button-quiet");
@@ -401,16 +401,16 @@
       card?.querySelector("button")?.click();
       return;
     }
-    openLearning();
+    openLearning(false);
     const found = await waitFor(() => [...document.querySelectorAll("[data-lesson-id]")].find(
       element => element.dataset.lessonId === item.target_id
     ));
     found?.click();
   }
 
-  function openLearning() {
+  function openLearning(scrollMemory = false) {
     $("#learning-toggle")?.click();
-    window.setTimeout(() => $("#memory-view")?.scrollIntoView({ behavior: "smooth", block: "start" }), 250);
+    if (scrollMemory) window.setTimeout(() => $("#memory-view")?.scrollIntoView({ behavior: "smooth", block: "start" }), 250);
   }
 
   async function waitFor(callback) {
