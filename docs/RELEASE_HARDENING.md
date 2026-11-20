@@ -71,3 +71,8 @@ These are implementation changes, not a completed security audit or target-devic
 ## Claims and non-goals
 
 Prepped does not provide a validated language assessment, pronunciation/accent score, emotion/personality inference, technical correctness grading, recruiter rating, placement probability, or measured learning gains. Progress is based on saved activity and linked lesson evidence only. The student usability pilot has not been run; no results or participant sample are claimed.
+
+
+## Final automated verification
+
+Phase G.1 microphone lifecycle regressions and Phase H integration passed in [GitHub Actions run 44732997261](https://github.com/Exploiter69/Prepped/actions/runs/44732997261): 134 passed, 2 optional espeak-ng skips, 1 Starlette TestClient deprecation warning. Manual Omarchy/device and learner acceptance remain open.
