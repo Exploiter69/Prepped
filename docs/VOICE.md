@@ -21,6 +21,24 @@
 
 Voice remains push-to-talk and turn-based. There is no always-listening mode, streaming transcript, voice activity detection, full-duplex conversation, or model-generated coaching. Context selection and coaching are deterministic lexical heuristics; they can miss equivalent wording and can match weak answers. They do not assess technical correctness, proficiency, accent, pronunciation quality, emotion, personality, hiring suitability, or placement readiness.
 
+## Shared voice interaction contract
+
+The Learning/Project Practice and Career workspaces keep their existing controllers, but follow the same user-visible lifecycle:
+
+| Stage | Behaviour | Cancellation/recovery |
+|---|---|---|
+| Idle | Text input is ready; recording and prompt playback require a learner action | No microphone is active |
+| Requesting permission | The browser asks for microphone access only after the learner presses Record | Leaving the workspace invalidates the request; a late stream is stopped immediately |
+| Recording | A visible status is shown and the capture duration is bounded | Stop finishes the recording; Cancel/navigation discards it and releases tracks |
+| Transcribing | The selected STT adapter processes the in-memory recording | Cancel/navigation aborts the browser request; stale results cannot update another prompt |
+| Transcript ready | Recognised text is inserted into an editable answer field | The learner edits the text before submitting; the field remains bounded to 6,000 characters |
+| Failed / no speech | A specific recovery message is shown | Retry recording or continue with text; no automatic remote-provider fallback |
+| Preparing / playing prompt | The visible prompt remains readable while local TTS is requested or played | Stop, prompt change, navigation, and page unload abort pending synthesis, stop playback, and release the object URL |
+
+A normal learner-initiated Stop is not a cancellation: it allows transcription to finish while the same prompt remains active. A navigation or Cancel action is a cancellation: it aborts the request, invalidates its generation, stops media tracks, and ignores any late callback. A failed voice path never blocks the text path.
+
+Career prompts additionally expose authored simpler wording and a prompt hint. The selected wording is stored with the submitted answer. Retry comparisons show the prior and current text but do not calculate or claim improvement.
+
 ## One-time installation
 
 Nothing in this section runs automatically when the app starts.
