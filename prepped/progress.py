@@ -15,7 +15,7 @@ from prepped.database import connect_database
 from prepped.learning import build_recommendations, load_curriculum
 
 GoalType = Literal["lessons_completed", "practice_sessions", "interviews_completed", "memory_reviews"]
-RecommendationKind = Literal["resume_lesson", "resume_practice", "resume_interview", "review_memory", "lesson", "goal", "choose_goal"]
+RecommendationKind = Literal["resume_lesson", "resume_practice", "resume_interview", "review_memory", "lesson", "goal", "choose_goal", "career_practice", "project_practice"]
 GOAL_TABLE = """
 CREATE TABLE IF NOT EXISTS learner_goals (
     id TEXT PRIMARY KEY,
