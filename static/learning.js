@@ -1,7 +1,7 @@
 (() => {
   const $ = (selector, root = document) => root.querySelector(selector);
   const state = { catalog: null, progress: null, diagnostic: null, attempt: null, busy: false, voiceStatus: null,
-    recorder: null, stream: null, chunks: [], recordTimer: null, discardRecording: false, transcribing: false, listeningAudio: null, audioUrl: null };
+    recorder: null, stream: null, chunks: [], recordTimer: null, discardRecording: false, transcribing: false, listeningAudio: null, audioUrl: null, recordingRequestId: 0, recordingPending: false, transcriptionController: null };
   const viewIds = ["home-view", "practice-view", "feedback-view", "history-view", "learning-view", "career-view", "progress-view"];
 
   async function request(url, options = {}) {
@@ -15,6 +15,7 @@
   }
 
   function showLearning() {
+    window.dispatchEvent(new CustomEvent("prepped:viewchange", { detail: { view: "learning-view" } }));
     window.PreppedVoice?.stopAll();
     stopLearningRecording(true);
     stopListeningAudio();
@@ -30,6 +31,7 @@
 
   function showHome() {
     stopLearningRecording(true);
+    window.dispatchEvent(new CustomEvent("prepped:viewchange", { detail: { view: "home-view" } }));
     stopListeningAudio();
     $("#learning-view").classList.add("hidden");
     $("#learning-toggle")?.setAttribute("aria-expanded", "false");
@@ -590,92 +592,139 @@
     }
   }
 
+  function learningRecordingRequestIsCurrent(requestId) {
+    return requestId === state.recordingRequestId &&
+      !$("#learning-view").classList.contains("hidden") &&
+      !$("#learning-runner").classList.contains("hidden");
+  }
+
   async function startLearningRecording() {
-    if (state.recorder || state.transcribing || !state.voiceStatus?.stt?.available) return;
+    if (state.recorder || state.recordingPending || state.transcribing || !state.voiceStatus?.stt?.available) return;
+    const requestId = ++state.recordingRequestId;
+    state.recordingPending = true;
     const status = $("#learning-voice-status");
-    const record = $("#learning-exercise button");
     try {
       status.textContent = "Requesting microphone permission…";
-      state.stream = await navigator.mediaDevices.getUserMedia({
+      const stream = await navigator.mediaDevices.getUserMedia({
         audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
       });
-      state.recorder = new MediaRecorder(state.stream);
+      if (!learningRecordingRequestIsCurrent(requestId)) {
+        stream.getTracks().forEach(track => track.stop());
+        return;
+      }
+      state.recordingPending = false;
+      state.stream = stream;
+      const recorder = new MediaRecorder(stream);
+      state.recorder = recorder;
       state.chunks = [];
       state.discardRecording = false;
-      state.recorder.addEventListener("dataavailable", (event) => {
-        if (event.data?.size) state.chunks.push(event.data);
+      recorder.addEventListener("dataavailable", event => {
+        if (requestId === state.recordingRequestId && event.data?.size) state.chunks.push(event.data);
       });
-      state.recorder.addEventListener("stop", async () => {
-        const recorder = state.recorder;
-        state.recorder = null;
-        for (const track of state.stream?.getTracks() || []) track.stop();
-        state.stream = null;
+      recorder.addEventListener("stop", async () => {
+        if (state.recorder === recorder) state.recorder = null;
+        for (const track of stream.getTracks()) track.stop();
+        if (state.stream === stream) state.stream = null;
         if (state.recordTimer) window.clearTimeout(state.recordTimer);
         state.recordTimer = null;
-        const blob = new Blob(state.chunks, { type: recorder?.mimeType || "audio/webm" });
+        const blob = new Blob(state.chunks, { type: recorder.mimeType || "audio/webm" });
         state.chunks = [];
-        if (state.discardRecording) {
+        if (requestId !== state.recordingRequestId || state.discardRecording) {
           state.discardRecording = false;
           return;
         }
+        if (!learningRecordingRequestIsCurrent(requestId)) return;
         if (!blob.size) {
           status.textContent = "No audio was captured. Type your response instead.";
           return;
         }
         state.transcribing = true;
+        state.transcriptionController = new AbortController();
         $("#learning-submit").disabled = true;
         status.textContent = state.voiceStatus?.stt?.engine === "groq-whisper"
           ? "Sending recording to Groq for transcription…"
           : "Transcribing locally…";
         try {
           const response = await fetch("/api/voice/transcribe", {
-            method: "POST", headers: { "Content-Type": blob.type || "application/octet-stream" }, body: blob,
+            method: "POST",
+            headers: { "Content-Type": blob.type || "application/octet-stream" },
+            body: blob,
+            signal: state.transcriptionController.signal,
           });
           const payload = await response.json().catch(() => ({}));
           if (!response.ok) throw new Error(payload.detail || "Speech transcription failed.");
+          if (!learningRecordingRequestIsCurrent(requestId)) return;
           const textarea = $("#learning-reflection");
           if (textarea) textarea.value = String(payload.text || "");
           status.textContent = textarea?.value
             ? "Transcript added. Edit recognition errors before submitting."
             : "No speech was recognised. Type your response instead.";
         } catch (error) {
-          status.textContent = error.message + " You can type your response instead.";
+          if (error.name !== "AbortError" && learningRecordingRequestIsCurrent(requestId)) {
+            status.textContent = error.message + " You can type your response instead.";
+          }
         } finally {
-          state.transcribing = false;
-          if (state.attempt?.status === "in_progress") $("#learning-submit").disabled = false;
+          if (requestId === state.recordingRequestId) {
+            state.transcribing = false;
+            state.transcriptionController = null;
+            if (state.attempt?.status === "in_progress" && learningRecordingRequestIsCurrent(requestId)) {
+              $("#learning-submit").disabled = false;
+            }
+          }
+          const stopButton = $("#learning-exercise button:nth-of-type(2)");
+          if (stopButton && learningRecordingRequestIsCurrent(requestId)) stopButton.disabled = true;
         }
-        const stopButton = $("#learning-exercise button:nth-of-type(2)");
-        if (stopButton) stopButton.disabled = true;
       });
-      state.recorder.start();
+      recorder.start();
       status.textContent = "Recording… press Stop recording when finished (60-second limit).";
       const stopButton = $("#learning-exercise button:nth-of-type(2)");
       if (stopButton) stopButton.disabled = false;
       state.recordTimer = window.setTimeout(() => stopLearningRecording(false), 60000);
     } catch (error) {
-      for (const track of state.stream?.getTracks() || []) track.stop();
-      state.stream = null;
-      state.recorder = null;
-      status.textContent = "Microphone unavailable: " + error.message + ". Type your response instead.";
+      if (state.stream) {
+        state.stream.getTracks().forEach(track => track.stop());
+        state.stream = null;
+      }
+      if (requestId === state.recordingRequestId) {
+        state.recordingPending = false;
+        state.recorder = null;
+        if (learningRecordingRequestIsCurrent(requestId)) {
+          status.textContent = "Microphone unavailable: " + error.message + ". Type your response instead.";
+        }
+      }
     }
   }
 
   function stopLearningRecording(discard = false) {
+    if (state.recordingPending || discard) {
+      state.recordingRequestId += 1;
+      state.recordingPending = false;
+    }
     state.discardRecording = discard;
     if (state.recordTimer) window.clearTimeout(state.recordTimer);
     state.recordTimer = null;
+    if (discard) {
+      state.transcriptionController?.abort();
+      state.transcriptionController = null;
+      state.transcribing = false;
+      state.chunks = [];
+    }
     for (const track of state.stream?.getTracks() || []) track.stop();
     if (state.recorder && state.recorder.state !== "inactive") {
       state.recorder.stop();
     } else {
       state.recorder = null;
       state.stream = null;
-      state.chunks = [];
-      state.discardRecording = false;
+      if (!state.transcribing) state.chunks = [];
+      if (!state.recordingPending) state.discardRecording = false;
     }
     const stopButton = $("#learning-exercise button:nth-of-type(2)");
     if (stopButton) stopButton.disabled = true;
   }
+
+  window.addEventListener("prepped:viewchange", event => {
+    if (event.detail?.view !== "learning-view") stopLearningRecording(true);
+  });
 
   async function startLesson(lessonId) {
     if (state.busy) return;
