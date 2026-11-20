@@ -388,7 +388,7 @@ The following phases extend the active A–H build sequence. Phase I implementat
 
 ### Phase J — Curriculum Quality, Content Expansion & Learning Validation
 
-**Status:** Implementation started; source/review metadata and curriculum linting are being added. Human subject-matter review and learner validation remain pending. See [Phase J Acceptance](PHASE_J_ACCEPTANCE.md).
+**Status:** Initial source/review metadata, cross-file skill mapping, and curriculum linting are implemented; automated verification is in progress. Human subject-matter review and learner validation remain pending. See [Phase J Acceptance](PHASE_J_ACCEPTANCE.md).
 
 **Outcome:** reviewed, accessible, coherent learning content and honest evidence about usability; learning outcomes are evaluated only with a suitable method.
 

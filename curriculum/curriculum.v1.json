@@ -49,7 +49,10 @@
         "Identify who the work is for"
       ],
       "category": "communication",
-      "status": "active"
+      "status": "active",
+      "studio_ids": [
+        "project-explanation"
+      ]
     },
     {
       "id": "communication.clarity",
@@ -64,6 +67,10 @@
       "status": "active",
       "prerequisites": [
         "communication.project-summary"
+      ],
+      "studio_ids": [
+        "project-explanation",
+        "technical-fundamentals"
       ]
     },
     {
@@ -126,7 +133,10 @@
         "Choose one aspect to practise again without receiving a confidence score"
       ],
       "category": "communication",
-      "status": "active"
+      "status": "active",
+      "studio_ids": [
+        "hr-behavioural"
+      ]
     },
     {
       "id": "communication.professional",
@@ -138,7 +148,10 @@
         "Use clear, appropriate wording in a team context"
       ],
       "category": "communication",
-      "status": "active"
+      "status": "active",
+      "studio_ids": [
+        "hr-behavioural"
+      ]
     },
     {
       "id": "interview.readiness",
