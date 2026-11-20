@@ -18,6 +18,67 @@ ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_STUDIOS_PATH = ROOT / "content" / "career-studios.v1.json"
 STUDIO_IDS = {"project-explanation", "hr-behavioural", "technical-fundamentals"}
 MAX_QUESTIONS = 8
+CONTEXTUAL_TRIGGERS = {
+    "no_example_marker": (
+        re.compile(r"\b(for example|for instance|such as|e\.g\.|when I|when we|in my project)\b", re.I),
+        "a concrete example",
+    ),
+    "no_first_person_action": (
+        re.compile(r"\b(I built|I designed|I implemented|I tested|I led|I coordinated|my role|I was responsible)\b", re.I),
+        "your personal action",
+    ),
+    "no_reasoning_marker": (
+        re.compile(r"\b(because|so that|therefore|as a result|which meant|the reason|trade[- ]off)\b", re.I),
+        "your reasoning or trade-off",
+    ),
+    "no_evidence_marker": (
+        re.compile(r"\b(tested|test|measured|measurement|observed|evidence|result|output|logs|feedback|verified)\b", re.I),
+        "a test, observation, or result",
+    ),
+    "no_sequence_marker": (
+        re.compile(r"\b(first|next|then|after|finally|request|response|route|handler)\b", re.I),
+        "the sequence of steps",
+    ),
+    "no_reflection_marker": (
+        re.compile(r"\b(learned|learnt|next time|in future|improve|change|would do differently)\b", re.I),
+        "a lesson or reflection",
+    ),
+    "no_preparation_marker": (
+        re.compile(r"\b(researched|read about|practised|practiced|built|explored|studied|learned|learnt)\b", re.I),
+        "a preparation step",
+    ),
+    "no_tradeoff_marker": (
+        re.compile(r"\b(trade[- ]off|downside|drawback|cost|whereas|however|limitation)\b", re.I),
+        "a trade-off or limitation",
+    ),
+}
+
+
+def _contextual_followup(question: dict[str, Any], answer: str, difficulty: str) -> dict[str, Any]:
+    """Select an authored follow-up from a narrow, explainable text cue."""
+    contextual = question.get("contextual_followup")
+    if isinstance(contextual, dict):
+        trigger = contextual.get("trigger")
+        rule = CONTEXTUAL_TRIGGERS.get(trigger)
+        prompt = contextual.get("prompt")
+        if rule and isinstance(prompt, str) and prompt.strip() and not rule[0].search(answer):
+            return {
+                "question_id": question["id"],
+                "turn_type": "followup",
+                "prompt": prompt,
+                "context_note": (
+                    f"This follow-up invites {rule[1]}. A simple text cue was not detected; "
+                    "the heuristic may miss equivalent wording. It is not an assessment of your answer."
+                ),
+            }
+    authored = question["followup"]
+    variants = authored.get("prompts", {})
+    return {
+        "question_id": question["id"],
+        "turn_type": "followup",
+        "prompt": variants.get(difficulty, authored["prompt"]),
+        "context_note": "This follow-up follows your selected practice level; it is not a judgement of correctness.",
+    }
 
 
 def _now() -> str:
@@ -51,6 +112,15 @@ def load_studios(path: Path = DEFAULT_STUDIOS_PATH) -> dict[str, Any]:
             followup = question.get("followup")
             if not isinstance(followup, dict) or not isinstance(followup.get("prompt"), str):
                 raise ValueError("Every primary question needs one authored follow-up.")
+            contextual = question.get("contextual_followup")
+            if contextual is not None:
+                if (
+                    not isinstance(contextual, dict)
+                    or contextual.get("trigger") not in CONTEXTUAL_TRIGGERS
+                    or not isinstance(contextual.get("prompt"), str)
+                    or not contextual["prompt"].strip()
+                ):
+                    raise ValueError("A contextual follow-up needs a supported trigger and non-empty authored prompt.")
     if seen != STUDIO_IDS:
         raise ValueError("The career catalog must include all three studios.")
     return data
@@ -173,16 +243,47 @@ def _feedback(studio: dict[str, Any], turns: list[dict[str, Any]]) -> dict[str, 
             "evidence": answer[max(0, example.start()-45):min(len(answer), example.end()+100)] if example else None,
             "guidance": "Consider adding a specific example, action, or situation." if not example else "A concrete example marker appears; check that the example is accurate and relevant.",
         })
-        reason = re.search(r"\b(because|so that|therefore|as a result|which meant|the reason)\b", answer, re.I)
+        reason = re.search(r"\b(because|so that|therefore|as a result|which meant|the reason|trade[- ]off)\b", answer, re.I)
         checks.append({
             "criterion": "Reasoning or outcome",
             "observed": bool(reason),
             "evidence": answer[max(0, reason.start()-45):min(len(answer), reason.end()+100)] if reason else None,
             "guidance": "Explain why you made the choice or what happened as a result." if not reason else "A reasoning or outcome phrase appears; make sure it connects to the question.",
         })
+        evidence = re.search(r"\b(tested|test|measured|measurement|observed|evidence|result|output|logs|feedback|verified)\b", answer, re.I)
+        checks.append({
+            "criterion": "Evidence or outcome",
+            "observed": bool(evidence),
+            "evidence": answer[max(0, evidence.start()-45):min(len(answer), evidence.end()+100)] if evidence else None,
+            "guidance": "Name a test, observation, or result and explain what it does and does not show." if not evidence else "An evidence-related cue appears; make its connection to the claim explicit.",
+        })
+        if not example:
+            coaching = {
+                "action": "Add one specific example: describe the situation, what you did, and what happened.",
+                "basis": "A common example cue was not detected in this answer. Equivalent wording may have been missed.",
+                "evidence": None,
+            }
+        elif not reason:
+            coaching = {
+                "action": "Connect your action to a reason or outcome: explain why you chose it or what changed.",
+                "basis": "A common reasoning cue was not detected in this answer. This does not mean the reasoning is absent.",
+                "evidence": answer[max(0, example.start()-45):min(len(answer), example.end()+100)],
+            }
+        elif not evidence:
+            coaching = {
+                "action": "Make one claim easier to verify by naming a test, observation, or concrete result.",
+                "basis": "A common evidence cue was not detected in this answer. The heuristic may miss equivalent wording.",
+                "evidence": answer[max(0, reason.start()-45):min(len(answer), reason.end()+100)],
+            }
+        else:
+            coaching = {
+                "action": "State what your evidence supports and one limitation it does not resolve.",
+                "basis": "Example, reasoning, and evidence-related text cues were detected; their accuracy and relevance still need human judgement.",
+                "evidence": answer[max(0, evidence.start()-45):min(len(answer), evidence.end()+100)],
+            }
         notes.append({
             "question_id": turn["question_id"], "turn_type": turn["turn_type"],
-            "prompt": turn["prompt"], "answer": answer, "checks": checks,
+            "prompt": turn["prompt"], "answer": answer, "checks": checks, "coaching": coaching,
         })
     return {
         "title": "Interview review",
@@ -279,10 +380,8 @@ def create_career_router(db_path: Path, studios_path: Path = DEFAULT_STUDIOS_PAT
             pending = None
             question_index = row["current_question_index"]
             if current["turn_type"] == "primary":
-                authored = studio["questions"][question_index]["followup"]
-                variants = authored.get("prompts", {})
-                followup_prompt = variants.get(row["difficulty"], authored["prompt"])
-                pending = {"question_id": current["question_id"], "turn_type": "followup", "prompt": followup_prompt}
+                authored_question = studio["questions"][question_index]
+                pending = _contextual_followup(authored_question, payload.answer_text, row["difficulty"])
             else:
                 question_index += 1
             completed_at = None
