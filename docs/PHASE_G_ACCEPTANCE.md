@@ -16,7 +16,7 @@ Phase G engineering can proceed while target-laptop A–F acceptance is pending.
 - [x] Local-only Host validation rejects non-loopback authorities.
 - [x] Host parsing rejects malformed authorities and invalid ports with HTTP 400 rather than an unhandled parsing error.
 - [x] State-changing requests reject cross-origin, malformed, non-origin, user-info, and invalid-port Origin values with HTTP 403.
-- [x] Valid same-origin browser requests and local command-line requests without an Origin header remain supported.
+- [x] Valid same-origin requests (scheme and authority must match) and local command-line requests without an Origin header remain supported.
 - [x] Backup restore rejects non-finite floats and integers outside SQLite's signed 64-bit range before touching the active database.
 - [x] Deeply nested JSON restore input is converted to a controlled HTTP 400 response.
 - [x] Readiness reports HTTP 503 when a required table is missing.
