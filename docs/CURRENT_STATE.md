@@ -348,9 +348,9 @@ New additive SQLite tables: `career_sessions` and `career_turns`. Existing pract
 Prepped remains a local single-user loopback application with no authentication or multi-user isolation. Do not expose it on a LAN, public internet, reverse proxy, or tunnel. Progress is saved-activity evidence, not proficiency or learning gain. Backups are not encrypted and support backup format version 1 with database schema version 4. Schema-3 backups are migrated to schema 4 with empty adaptive-plan tables. See [INSTALL.md](INSTALL.md), [RELEASE_HARDENING.md](RELEASE_HARDENING.md), and [ACCEPTANCE_CHECKLIST.md](ACCEPTANCE_CHECKLIST.md).
 
 
-## Phase G.1 — recording lifecycle hardening (implementation added; CI pending)
+## Phase G.1 — recording lifecycle hardening (implementation and CI green)
 
-Learning and Career recording now invalidate pending microphone permission requests when leaving the relevant workspace. Late permission grants are discarded with their tracks stopped; active streams are released on workspace changes; in-flight transcription is abortable and stale callbacks are ignored. Deferred-permission Playwright regressions cover both Learning and Career. The exact-commit CI result remains to be confirmed. Manual Omarchy microphone acceptance is still deferred.
+Learning and Career recording now invalidate pending microphone permission requests when leaving the relevant workspace. Late permission grants are discarded with their tracks stopped; active streams are released on workspace changes; in-flight transcription is abortable and stale callbacks are ignored. Deferred-permission Playwright regressions for both Learning and Career passed in [CI run 44732997261](https://github.com/Exploiter69/Prepped/actions/runs/44732997261). Manual Omarchy microphone acceptance is still deferred.
 
 ## Phase H — Adaptive Learning Intelligence (implementation and CI green; manual acceptance pending)
 
