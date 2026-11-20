@@ -13,6 +13,7 @@ This repository does **not** claim validated speech accuracy, placement improvem
 - [Security boundaries and release hardening](docs/RELEASE_HARDENING.md)
 - [A–F learner acceptance checklist](docs/ACCEPTANCE_CHECKLIST.md)
 - [Phase G release hardening and acceptance record](docs/PHASE_G_ACCEPTANCE.md)
+- [Phase H adaptive learning implementation and acceptance gates](docs/PHASE_H_ACCEPTANCE.md)
 - [Voice setup, privacy, and troubleshooting](docs/VOICE.md)
 - [ADR-002: local voice slice](docs/ADR-002-LOCAL-VOICE-SLICE.md)
 - [ADR-003: optional Groq Whisper transcription](docs/ADR-003-GROQ-WHISPER-TRANSCRIPTION.md)
@@ -181,7 +182,7 @@ Answers can be typed or recorded and transcribed through the existing optional v
 
 Completed interviews show question-by-question formative reflection with the original answer and transparent text signals. This is not a technical correctness grader, recruiter evaluation, or placement predictor. Sessions are stored locally, can be resumed/retried/deleted, and a learner can explicitly send an answer to the Phase D memory editor for review before saving.
 
-The studio content is versioned in `content/career-studios.v1.json`. API routes are under `/api/career`. No paid service, account, remote LLM interviewer, or additional infrastructure is required. Current full-suite CI covers the studios: [100 passed, 2 skipped](https://github.com/Exploiter69/Prepped/actions/runs/44721637341); the two skips require `espeak-ng`. Target-device microphone/TTS and responsive acceptance remain manual checks; see [the acceptance checklist](docs/ACCEPTANCE_CHECKLIST.md).
+The studio content is versioned in `content/career-studios.v1.json`. API routes are under `/api/career`. No paid service, account, remote LLM interviewer, or additional infrastructure is required. The recorded pre-Phase-H full-suite CI baseline: [112 passed, 2 skipped, 1 warning](https://github.com/Exploiter69/Prepped/actions/runs/44721637341); the two skips require `espeak-ng`. Target-device microphone/TTS and responsive acceptance remain manual checks; see [the acceptance checklist](docs/ACCEPTANCE_CHECKLIST.md).
 
 
 ## Progress, goals, and portability (Phase F)
@@ -190,8 +191,17 @@ The Progress workspace combines saved lesson completions and linked skill eviden
 
 Learners can create, edit, archive, restore, and delete goals for completed lessons, project-practice sessions, interviews, and memory reviews. Goal counts begin when the goal is created. Recommendations explain whether they are based on a saved profile route, an unfinished lesson, due memory notes, or an active goal. You can dismiss a suggestion and restore it later; that choice is saved locally and included in backups.
 
-The same workspace can export a local JSON backup and restore it after explicit confirmation. It includes the learner profile, practice answers, lesson attempts/events, memory notes/reviews, interview sessions/turns, goals, and dismissed recommendation preferences. Restore is a full replacement, not a merge; the app validates the backup in a temporary database before replacing current data. Backups are unencrypted and contain personal content; keep them private. Current limit: 25 MiB / 200,000 records, backup format version 1 and database schema version 3.
+The same workspace can export a local JSON backup and restore it after explicit confirmation. It includes the learner profile, practice answers, lesson attempts/events, memory notes/reviews, interview sessions/turns, goals, and dismissed recommendation preferences, plus adaptive daily plans and plan items. Restore is a full replacement, not a merge; the app validates the backup in a temporary database before replacing current data. Schema-3 backups remain restorable and are migrated with empty adaptive-plan tables. Backups are unencrypted and contain personal content; keep them private. Current limit: 25 MiB / 200,000 records, backup format version 1 and database schema version 4.
 
 The app is designed for single-user loopback use. Run it on 127.0.0.1 only; it has no authentication or multi-user isolation and must not be exposed to a LAN or public internet. See [the release hardening record](docs/RELEASE_HARDENING.md) and [the clean install/recovery guide](docs/INSTALL.md).
+
+## Adaptive learning intelligence (Phase H)
+
+The Progress workspace now includes an evidence-backed learner skill profile, explainable deterministic next steps, daily and weekly learning plans, and source-linked activity analytics. It derives skill states from existing curriculum and saved records rather than maintaining a duplicate skill database. Authored closed-exercise outcomes are separated from open self-review, project practice, Career activity, and learner-rated memory revision.
+
+Learners can generate a daily plan or seven-day plan, set a time budget, add lessons/interview/project practice, reorder or skip suggestions, and see completion only when the linked source activity is saved. Recommendations use repeated closed-exercise review needs, prerequisites, profile routes, due revisions, and active goals. The implementation adapts sequence and selection only; the curriculum has no difficulty metadata, so no difficulty scoring or generated exercises are claimed.
+
+This is deterministic local adaptation, not an AI tutor, proficiency assessment, or validated learning model. See [Phase H implementation and acceptance gates](docs/PHASE_H_ACCEPTANCE.md). Final CI for the exact Phase H commit and manual Omarchy acceptance remain outstanding.
+
 
 Progress is evidence of saved activity, not proficiency, learning gains, confidence measurement, hiring likelihood, or placement prediction. The optional student usability pilot has not been run; no results are claimed.
