@@ -1,6 +1,6 @@
 # Phase H — Adaptive Learning Intelligence
 
-**Status:** Implementation added to feature/learner-profile; automated verification of the final Phase H commit is pending. Target-laptop and learner validation are deliberately deferred.  
+**Status:** Phase H implementation and automated CI are green on commit ba5d4091c3679afe6b261852ca87f2940ba40877. Target-laptop and learner validation are deliberately deferred.  
 **Architecture:** Existing FastAPI + SQLite + plain HTML/CSS/JavaScript modular monolith. No required external service or AI API.  
 **Database:** Additive schema version 4. Existing version 3 backups remain restorable.
 
@@ -76,8 +76,8 @@ Backup export includes both new tables. Restore accepts version 4 backups and mi
 
 ## Remaining gates
 
-- [ ] Final GitHub Actions run passes for the exact Phase H commit (Python compilation, all JS syntax checks, dependency audit, API tests, and Chromium browser acceptance).
-- [ ] Recording lifecycle hardening (Phase G.1) passes its deferred-permission browser regressions and final CI on the exact commit.
+- [x] Final GitHub Actions run passes: [run 44732997261](https://github.com/Exploiter69/Prepped/actions/runs/44732997261) — 134 passed, 2 optional espeak-ng skips, 1 Starlette deprecation warning. Python compilation, seven JS syntax checks, dependency consistency, pip-audit, API tests, and Chromium browser acceptance passed.
+- [x] Recording lifecycle hardening (Phase G.1) passes its deferred-permission browser regressions in the same green CI run.
 - [ ] Manual Omarchy acceptance: progress evidence, recommendation dismissal/restore, daily and weekly plan generation, add/skip/reorder/regenerate, plan completion from saved activity, and backup/restore with plans.
 - [ ] Manual accessibility and responsive review across Progress/Adaptive Learning.
 - [ ] Learner wording and usefulness review; no pilot results or learning outcomes are claimed.
@@ -93,3 +93,6 @@ Backup export includes both new tables. Restore accepts version 4 backups and mi
 - Existing application limitations remain: single-user loopback only, no authentication/multi-user isolation, unencrypted backups, and no public deployment support.
 
 Do not mark Phase H fully accepted until the automated gates and later manual acceptance are recorded separately.
+
+
+**Final automated evidence:** [GitHub Actions run 44732997261](https://github.com/Exploiter69/Prepped/actions/runs/44732997261), commit ba5d4091c3679afe6b261852ca87f2940ba40877. The two skips are optional espeak-ng tests because espeak-ng is not installed on the hosted runner. The single pytest warning is Starlette's httpx-backed TestClient deprecation. Manual device and learner acceptance remain unchecked by design.
