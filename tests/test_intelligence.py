@@ -214,6 +214,26 @@ def test_regeneration_preserves_completed_and_skipped_items_and_moves_forward(tm
         client.__exit__(None, None, None)
 
 
+def test_long_memory_front_is_safe_in_adaptive_recommendation_dismissal(tmp_path: Path) -> None:
+    db_path = tmp_path / "intelligence-long-memory.sqlite3"
+    client = client_for(db_path)
+    try:
+        memory = client.post("/api/memory/items", json={
+            "item_type": "concept", "front": "A" * 240, "back": "A short explanation.",
+        }).json()["item"]
+        with sqlite3.connect(db_path) as conn:
+            conn.execute("UPDATE learning_memory SET due_at='2000-01-01T00:00:00+00:00' WHERE id=?", (memory["id"],))
+        recommendation = next(item for item in client.get("/api/intelligence/overview").json()["recommendations"]
+                              if item["kind"] == "review_memory")
+        assert len(recommendation["title"]) <= 160
+        dismissed = client.post("/api/intelligence/recommendations/dismiss", json={
+            key: recommendation[key] for key in ("kind", "target_id", "title", "reason")
+        })
+        assert dismissed.status_code == 200
+    finally:
+        client.__exit__(None, None, None)
+
+
 def test_due_memory_review_is_included_and_only_real_review_completes_it(tmp_path: Path) -> None:
     db_path = tmp_path / "intelligence-memory-plan.sqlite3"
     client = client_for(db_path)
