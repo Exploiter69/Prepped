@@ -42,7 +42,7 @@ def test_learner_content_is_not_written_through_html_string_sinks() -> None:
 
 def test_local_secrets_databases_backups_and_models_are_git_ignored() -> None:
     ignored = set((ROOT / ".gitignore").read_text(encoding="utf-8").splitlines())
-    required = {".env", ".env.*", "data/", "*.sqlite", "*.sqlite3", "*.db", "models/", "*.onnx"}
+    required = {".env", ".env.*", "data/", "prepped-backup-*.json", "*.sqlite", "*.sqlite3", "*.db", "models/", "*.onnx"}
     assert required <= ignored
 
 
