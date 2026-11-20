@@ -193,7 +193,7 @@ function renderQuestion(session) {
   progress.setAttribute("aria-valuemin", "0");
   progress.setAttribute("aria-valuemax", String(total));
   progress.setAttribute("aria-valuenow", String(answered));
-  progress.setAttribute("aria-valuetext", answered + " of " + total + " questions saved");
+  progress.setAttribute("aria-valuetext", answered + " of " + total + " questions completed");
   if (!current) {
     $("#practice-title").textContent = "All questions complete";
     $("#question-prompt").textContent = "Preparing your review…";
