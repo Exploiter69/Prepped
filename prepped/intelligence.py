@@ -442,7 +442,7 @@ def _plan_view(conn: sqlite3.Connection, plan: sqlite3.Row) -> dict[str, Any]:
     ).fetchall()
     items = []
     for row in rows:
-        completed = _item_completed(conn, row, plan["generated_at"])
+        completed = _item_completed(conn, row, row["created_at"])
         status = "completed" if completed else ("skipped" if row["skipped_at"] else "planned")
         items.append({**dict(row), "status": status, "self_reported": False,
                       "action_note": "Completion is reflected only after the linked lesson, review, or practice session is saved."})
@@ -621,7 +621,7 @@ def create_intelligence_router(db_path: Path, curriculum_path: Path = DEFAULT_CU
                 plan = conn.execute("SELECT * FROM adaptive_plans WHERE plan_date=?", (payload.plan_date.isoformat(),)).fetchone()
                 rows = conn.execute("SELECT * FROM adaptive_plan_items WHERE plan_date=?", (payload.plan_date.isoformat(),)).fetchall()
                 for item in rows:
-                    if item["skipped_at"] is None and not _item_completed(conn, item, plan["generated_at"]):
+                    if item["skipped_at"] is None and not _item_completed(conn, item, item["created_at"]):
                         conn.execute("DELETE FROM adaptive_plan_items WHERE id=?", (item["id"],))
             result = _generate_day(conn, data(), payload.plan_date, payload.available_minutes)
             return {"plan": result}
@@ -656,7 +656,7 @@ def create_intelligence_router(db_path: Path, curriculum_path: Path = DEFAULT_CU
                     "SELECT * FROM adaptive_plan_items WHERE plan_date=?", (target.isoformat(),)
                 ).fetchall()
                 for existing_item in existing_items:
-                    if _item_completed(conn, existing_item, plan["generated_at"]):
+                    if _item_completed(conn, existing_item, existing_item["created_at"]):
                         if existing_item["item_type"] == "lesson":
                             used_lessons.add(existing_item["target_id"])
                         elif existing_item["item_type"] == "memory_review":
