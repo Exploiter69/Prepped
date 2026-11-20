@@ -23,7 +23,7 @@ The `feature/learner-profile` branch now contains:
 - Profile setup/edit UI with optional name, study year, branch, target role, primary goal, confidence, and improvement areas. Profile setup can be skipped; the existing practice flow is not gated.
 - `tests/test_profile.py` covering initial state, save/read, updates, restart persistence, invalid input, and legacy session/answer preservation.
 
-**Validation status:** The latest GitHub Actions run completed successfully: 41 passed, 2 skipped, 1 warning. The two skips require `espeak-ng`, unavailable on the hosted runner. Playwright/Chromium exercised profile setup, open/close, save, edit, cancel, reload/persistence, and the full text-only practice flow without a profile. The profile milestone has automated browser acceptance; a target-laptop manual spot check is still outstanding.
+**Validation status:** The current full-suite GitHub Actions run [44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798) passes 100 tests with 2 optional `espeak-ng` skips and 1 warning. This includes the profile journeys; target-laptop manual acceptance remains outstanding.
 
 ## What this milestone is
 
@@ -291,7 +291,7 @@ Review is formative and transparent: it displays each original answer, simple re
 
 New additive SQLite tables: `career_sessions` and `career_turns`. Existing practice sessions, answers, learner profile, learning attempts/events, and memory tables are preserved. No paid service, new infrastructure, mandatory model, or remote LLM feedback was added.
 
-**CI evidence:** [run 44568533503](https://github.com/Exploiter69/Prepped/actions/runs/44568533503) — 88 passed, 2 skipped (both require `espeak-ng`), including API and Chromium coverage. **Manual verification still required:** target-laptop text-mode completion across all studios; microphone permission and local/Groq disclosure paths; TTS playback where available; session resume/retry/delete; memory handoff; keyboard and narrow-screen acceptance. Do not mark Phase E fully accepted until device checks are recorded.
+**CI evidence:** the current full-suite run [44653868798](https://github.com/Exploiter69/Prepped/actions/runs/44653868798) passes 100 tests with 2 optional `espeak-ng` skips and 1 warning, including Career API and Chromium coverage. **Manual verification still required:** target-laptop text-mode completion across all studios; microphone permission and local/Groq disclosure paths; TTS playback where available; session resume/retry/delete; memory handoff; keyboard and narrow-screen acceptance. Do not mark Phase E fully accepted until device checks are recorded.
 
 
 ---
