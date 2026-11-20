@@ -161,7 +161,7 @@ The text feedback system is frozen for this phase. Do not keep adding phrase heu
 
 Phases A–F are implemented on `feature/learner-profile`. The latest full CI run is green: [100 passed, 2 skipped, 1 warning](https://github.com/Exploiter69/Prepped/actions/runs/44655380427), including dependency audit, Python compilation, all JavaScript syntax checks, API tests, and Chromium browser acceptance. The two skips require `espeak-ng`, which is not installed on the hosted runner.
 
-This is not yet a release and is not a claim of target-device acceptance. Manual Omarchy checks remain for all learner journeys, microphone/STT/TTS behaviour, backup/recovery, keyboard/screen-reader, contrast, and responsive layout. Phase G release hardening has not started. See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md) and [the acceptance checklist](docs/ACCEPTANCE_CHECKLIST.md).
+This is not yet a release and is not a claim of target-device acceptance. Phase G engineering hardening is in progress; manual Omarchy checks remain for all learner journeys, microphone/STT/TTS behaviour, backup/recovery, keyboard/screen-reader, contrast, and responsive layout. See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md), [the A–F learner checklist](docs/ACCEPTANCE_CHECKLIST.md), and [the Phase G release record](docs/PHASE_G_ACCEPTANCE.md).
 
 
 ## Personal learning memory and revision (Phase D)
