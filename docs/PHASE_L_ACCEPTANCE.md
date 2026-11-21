@@ -45,6 +45,8 @@
 
 ## L4 — Release quality and demonstration
 
+- [ ] Complete [UI Stage 9 final acceptance](UI_STAGE_9_ACCEPTANCE.md): exact-commit CI, target-laptop verification, shared-shell accessibility, responsive/zoom/reduced-motion checks, and integrated learner journeys. Record unavailable checks as explicit deferrals; do not convert implementation commits into release sign-off.
+
 - [x] Keep clean-checkout CI for compilation, JavaScript syntax, content lint, dependency consistency, vulnerability audit, Chromium installation, pytest, and browser acceptance.
 - [x] Add a deterministic offline text-mode demo guide.
 - [x] Add an Unreleased changelog and record exact verification evidence.
