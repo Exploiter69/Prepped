@@ -583,3 +583,35 @@ textarea,.learning-exercise textarea,.learning-order-list select { background:#F
  .career-review-actions button { flex:1 1 100%; }
 }
 @media (prefers-reduced-motion:reduce) { .career-studio-card,.career-progress-track span { transition:none; } }
+
+
+/* UI Stage 5 — calm, evidence-led Progress & Learning Insights */
+.progress-stage5-intro { display:grid; grid-template-columns:minmax(0,1fr) 150px; align-items:center; gap:1.5rem; padding:1.1rem 0 .5rem; }
+.progress-stage5-copy { min-width:0; }
+.progress-stage5-kicker { display:block; color:#6f956f; font-size:.68rem; font-weight:750; letter-spacing:.14em; margin-bottom:.6rem; }
+.progress-stage5-copy h2 { margin:.1rem 0 .65rem; font-size:clamp(2rem,5vw,3.45rem); line-height:1.02; letter-spacing:-.055em; max-width:14ch; }
+.progress-stage5-mark { position:relative; min-height:128px; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; padding:1.1rem; border:1px solid #dce5d9; border-radius:18px; background:linear-gradient(145deg,#f2f7e9,#e5efe2); color:#355b42; overflow:hidden; }
+.progress-stage5-mark::after { content:""; position:absolute; width:110px; height:110px; border:1px solid rgba(53,91,66,.18); border-radius:50%; right:-38px; bottom:-45px; box-shadow:0 0 0 14px rgba(53,91,66,.04),0 0 0 30px rgba(53,91,66,.035); }
+.progress-stage5-mark span { font-size:.62rem; letter-spacing:.16em; font-weight:750; }
+.progress-stage5-mark strong { font-size:1.55rem; letter-spacing:-.06em; }
+.progress-stage5-mark i { position:absolute; right:1rem; top:1rem; font-style:normal; font-size:1.25rem; }
+.progress-insight-note { border-left:3px solid #9bbd75; padding:.65rem .9rem; margin:.8rem 0 0; color:#49634c; background:#f4f7ed; border-radius:0 8px 8px 0; font-size:.88rem; line-height:1.55; }
+.progress-summary-stage5 { grid-template-columns:repeat(3,minmax(0,1fr)); margin:.9rem 0 1.4rem; }
+.progress-summary-stage5 .progress-stat { background:#fffefa; border-color:#e0e6dd; padding:1.05rem; box-shadow:0 2px 8px rgba(45,69,47,.025); }
+.progress-summary-stage5 .progress-stat strong { color:#355b42; font-size:clamp(1.55rem,3vw,2rem); letter-spacing:-.04em; }
+.progress-summary-stage5 .progress-stat span { color:#6d7f6e; font-size:.76rem; }
+.progress-week-summary { color:var(--muted); font-size:.82rem; margin:.35rem 0 .65rem; }
+.progress-skill { background:#fffefa; border-color:#e0e6dd; }
+.progress-skill h4 { color:#355b42; }
+.progress-skill .progress-skill-evidence { padding-top:.55rem; border-top:1px solid #e8ece5; line-height:1.55; }
+.progress-skill .progress-skill-state { display:inline-flex; align-items:center; gap:.35rem; color:#66815f; font-size:.7rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
+.progress-track-small { background:#e2e8df; }
+.progress-track-small span { background:#6c9d73; }
+.progress-section { scroll-margin-top:1.5rem; }
+.progress-panel > .progress-section { padding-top:1.5rem; }
+.progress-panel .intelligence-section { padding:1.25rem; border:1px solid #dfe7dc; border-radius:16px; background:#f8faf4; }
+.progress-panel .intelligence-section > .section-help { max-width:78ch; }
+.progress-panel .intelligence-plan { background:#fffefa; border-color:#e0e6dd; border-radius:12px; }
+.progress-panel .intelligence-section h3,.progress-panel .progress-section h3 { letter-spacing:-.025em; }
+@media (max-width:680px) { .progress-stage5-intro { grid-template-columns:minmax(0,1fr) 82px; gap:.75rem; } .progress-stage5-mark { min-height:90px; padding:.65rem; border-radius:12px; } .progress-stage5-mark strong { font-size:1.05rem; } .progress-stage5-mark span { font-size:.52rem; } .progress-stage5-mark i { right:.55rem; top:.5rem; font-size:.9rem; } .progress-summary-stage5 { grid-template-columns:repeat(2,minmax(0,1fr)); } .progress-insight-note { font-size:.82rem; } }
+@media (prefers-reduced-motion:reduce) { .progress-track-small span { transition:none; } }
