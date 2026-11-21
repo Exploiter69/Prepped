@@ -615,3 +615,20 @@ textarea,.learning-exercise textarea,.learning-order-list select { background:#F
 .progress-panel .intelligence-section h3,.progress-panel .progress-section h3 { letter-spacing:-.025em; }
 @media (max-width:680px) { .progress-stage5-intro { grid-template-columns:minmax(0,1fr) 82px; gap:.75rem; } .progress-stage5-mark { min-height:90px; padding:.65rem; border-radius:12px; } .progress-stage5-mark strong { font-size:1.05rem; } .progress-stage5-mark span { font-size:.52rem; } .progress-stage5-mark i { right:.55rem; top:.5rem; font-size:.9rem; } .progress-summary-stage5 { grid-template-columns:repeat(2,minmax(0,1fr)); } .progress-insight-note { font-size:.82rem; } }
 @media (prefers-reduced-motion:reduce) { .progress-track-small span { transition:none; } }
+
+
+/* UI Stage 6 — searchable, revisitable local learning history */
+.history-timeline { margin:1.6rem 0 2rem; padding:clamp(1rem,3vw,1.5rem); border:1px solid var(--line); border-radius:18px; background:var(--raised); }
+.history-timeline-heading { display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; }
+.history-timeline-heading h3 { margin:.35rem 0; color:var(--brand-forest); }
+.history-timeline-controls { display:grid; grid-template-columns:minmax(0,1fr) minmax(150px,.5fr); gap:.4rem .8rem; align-items:center; margin:1rem 0; }
+.history-timeline-controls label { font-size:.78rem; font-weight:700; color:var(--muted); }
+.history-timeline-controls input,.history-timeline-controls select { grid-row:2; min-width:0; width:100%; }
+.history-timeline-list { display:grid; gap:.65rem; }
+.history-timeline-entry { display:grid; grid-template-columns:42px minmax(0,1fr) auto; align-items:center; gap:.75rem; padding:.85rem; border:1px solid var(--line); border-radius:12px; background:var(--panel); }
+.history-timeline-symbol { display:grid; place-items:center; width:38px; height:38px; border-radius:11px; background:var(--brand-mint); color:var(--brand-forest); font-weight:800; }
+.history-timeline-entry h4 { margin:0 0 .25rem; font-size:.95rem; color:var(--brand-forest); }
+.history-timeline-entry p { margin:0; color:var(--muted); font-size:.75rem; }
+.history-timeline-entry .button { white-space:nowrap; }
+.history-practice-archive { margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--line); }
+@media(max-width:620px) { .history-timeline-heading { flex-direction:column; } .history-timeline-heading button { width:100%; } .history-timeline-controls { grid-template-columns:1fr; } .history-timeline-controls input,.history-timeline-controls select { grid-row:auto; } .history-timeline-entry { grid-template-columns:34px minmax(0,1fr); gap:.6rem; } .history-timeline-symbol { width:32px; height:32px; } .history-timeline-entry .button { grid-column:2; justify-self:start; } }
