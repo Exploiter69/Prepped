@@ -2,8 +2,8 @@
 # Explicit, one-time local voice setup. Nothing here runs at application start.
 #
 # Usage:
-#   ./scripts/setup_voice.sh            # Vosk STT + optional Piper TTS + Piper voice
-#   ./scripts/setup_voice.sh --stt-only # Vosk STT only; espeak-ng is the TTS fallback
+#   ./scripts/setup_voice.sh            # Vosk STT + optional Piper TTS + Groq voice HTTP adapter + Piper voice
+#   ./scripts/setup_voice.sh --stt-only # Vosk STT + Groq HTTP adapter; espeak-ng is the TTS fallback
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -46,10 +46,10 @@ fi
 
 if [ "$INSTALL_PIPER" -eq 1 ]; then
   echo "Installing Python voice extras (Vosk and optional Piper)..."
-  "$PYTHON" -m pip install -e "$ROOT[voice,voice-piper]"
+  "$PYTHON" -m pip install -e "$ROOT[voice,voice-piper,voice-cloud]"
 else
   echo "Installing Python speech-to-text extra (Vosk)..."
-  "$PYTHON" -m pip install -e "$ROOT[voice]"
+  "$PYTHON" -m pip install -e "$ROOT[voice,voice-cloud]"
 fi
 
 mkdir -p "$MODELS_DIR"
