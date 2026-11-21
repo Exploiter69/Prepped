@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 from prepped.main import create_app
 from prepped.voice.base import EngineStatus
 from prepped.voice.errors import InvalidAudio, TextToSpeechError
-from prepped.voice.service import VoiceService, VoiceSettings
+from prepped.voice.service import VoiceService, VoiceSettings, build_voice_service
 from prepped.voice.stt import VoskSTT
 from prepped.voice.tts import EspeakTTS, PiperTTS
 
@@ -284,6 +284,8 @@ def test_frontend_serves_voice_controls_and_script(tmp_path: Path) -> None:
         assert "state.transcriptionController?.abort()" in script.text
         assert "state.ttsController?.abort()" in script.text
         assert "signal: controller.signal" in script.text
+        assert "promptAudioCache" in script.text
+        assert "groq-orpheus" in script.text
     finally:
         client.__exit__(None, None, None)
 
@@ -537,3 +539,21 @@ def test_remote_tts_failure_falls_back_to_local_and_caches(tmp_path: Path) -> No
         assert local.calls == ["Use local fallback"]
     finally:
         client.__exit__(None, None, None)
+
+
+def test_build_voice_service_selects_groq_for_both_when_configured(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    monkeypatch.setenv("GROQ_API_KEY", "test-server-key")
+    service = build_voice_service(tmp_path)
+    status = service.status()
+    assert status["stt"]["engine"] == "groq-whisper"
+    assert status["tts"]["engine"] == "groq-orpheus"
+    assert "microphone recordings are sent" in status["privacy"].lower()
+    assert "prompt text is sent" in status["privacy"].lower()
+    assert service.local_tts_fallback is not None
+
+
+def test_build_voice_service_uses_local_without_groq_key(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    monkeypatch.delenv("GROQ_API_KEY", raising=False)
+    service = build_voice_service(tmp_path)
+    assert service.status()["stt"]["engine"] == "vosk"
+    assert service.status()["tts"]["engine"] in {"piper", "espeak-ng"}
