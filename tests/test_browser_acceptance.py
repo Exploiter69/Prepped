@@ -736,6 +736,13 @@ def test_progress_navigation_and_security_headers_are_accessible(local_app_url: 
 def test_keyboard_navigation_exposes_focus_and_profile_labels(local_app_url: str, browser_page) -> None:
     page = browser_page
     page.goto(local_app_url)
+    # Start from a known document focus; Chromium may otherwise retain its
+    # initial page focus state, making the first Tab nondeterministic.
+    page.evaluate("""() => {
+      document.activeElement.blur?.();
+      document.body.setAttribute("tabindex", "-1");
+      document.body.focus();
+    }""")
 
     # The Stage 8 skip link is the first keyboard stop and sends focus to main.
     page.keyboard.press("Tab")
