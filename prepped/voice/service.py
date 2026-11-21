@@ -1,7 +1,10 @@
 """Application-level voice service combining local STT, TTS, and audio rules."""
 from __future__ import annotations
 
+import hashlib
 import os
+import threading
+from collections import OrderedDict
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -16,7 +19,7 @@ from prepped.voice.errors import (
     VoiceUnavailable,
 )
 from prepped.voice.stt import GroqWhisperSTT, VoskSTT
-from prepped.voice.tts import EspeakTTS, PiperTTS
+from prepped.voice.tts import EspeakTTS, GroqOrpheusTTS, PiperTTS
 
 
 ROOT = Path(__file__).resolve().parent.parent.parent
@@ -49,6 +52,12 @@ class VoiceService:
         self.tts = tts
         self.decoder = decoder
         self.settings = settings or VoiceSettings()
+        self.local_tts_fallback: TextToSpeechEngine | None = None
+        self._tts_cache: OrderedDict[str, bytes] = OrderedDict()
+        self._tts_cache_bytes = 0
+        self._tts_cache_lock = threading.Lock()
+        self._tts_cache_max_entries = 6
+        self._tts_cache_max_bytes = 8 * 1024 * 1024
 
     def status(self) -> dict[str, Any]:
         stt_status = self.stt.status()
@@ -62,11 +71,11 @@ class VoiceService:
                 "max_tts_characters": self.settings.max_tts_characters,
             },
             "privacy": (
-                "Recorded audio is sent to Groq for transcription; Prepped does not save raw audio locally. "
-                "Use only practice recordings you are comfortable sending to the provider."
-                if getattr(self.stt, "remote", False)
-                else "Recordings are decoded and transcribed in memory on this computer. "
-                "Prepped does not save raw audio or send it to a remote provider."
+                ("Microphone recordings are sent to Groq for transcription; " if getattr(self.stt, "remote", False) else "")
+                + ("Prompt text is sent to Groq for TTS. " if getattr(self.tts, "remote", False) else "")
+                + "Prepped does not save raw audio. Use only recordings and prompt text you are comfortable sending."
+                if getattr(self.stt, "remote", False) or getattr(self.tts, "remote", False)
+                else "Recordings are decoded and transcribed in memory on this computer. Prepped does not save raw audio or send voice content to a remote provider."
             ),
             "fallback": "Text input remains available if recording or transcription fails.",
         }
@@ -107,10 +116,39 @@ class VoiceService:
             raise InvalidSpeechText("No question text was provided to speak.")
         if len(clean) > self.settings.max_tts_characters:
             raise InvalidSpeechText("The question is too long to speak locally.")
+        cache_key = hashlib.sha256(clean.encode("utf-8")).hexdigest()
+        with self._tts_cache_lock:
+            cached = self._tts_cache.get(cache_key)
+            if cached is not None:
+                self._tts_cache.move_to_end(cache_key)
+                return cached
+
         tts_status = self.tts.status()
         if not tts_status.available:
             raise VoiceUnavailable(tts_status.detail)
-        return self.tts.synthesize(clean)
+        try:
+            audio = self.tts.synthesize(clean)
+        except Exception:
+            # Keep the no-cost local path when Groq is throttled, unavailable,
+            # or its short-input limit is exceeded.
+            if not getattr(self.tts, "remote", False):
+                raise
+            fallback = self.local_tts_fallback
+            if fallback is None or not fallback.status().available:
+                raise
+            audio = fallback.synthesize(clean)
+        if audio and len(audio) <= self._tts_cache_max_bytes:
+            with self._tts_cache_lock:
+                prior = self._tts_cache.pop(cache_key, None)
+                if prior:
+                    self._tts_cache_bytes -= len(prior)
+                self._tts_cache[cache_key] = audio
+                self._tts_cache_bytes += len(audio)
+                while (len(self._tts_cache) > self._tts_cache_max_entries
+                       or self._tts_cache_bytes > self._tts_cache_max_bytes):
+                    _, evicted = self._tts_cache.popitem(last=False)
+                    self._tts_cache_bytes -= len(evicted)
+        return audio
 
 
 def build_voice_service(root: Path = ROOT) -> VoiceService:
@@ -138,8 +176,16 @@ def build_voice_service(root: Path = ROOT) -> VoiceService:
     # spoken prompts working on a machine without the optional Piper model.
     tts: TextToSpeechEngine = piper if piper.status().available else espeak
     groq_api_key = os.environ.get("GROQ_API_KEY", "").strip()
+    local_tts: TextToSpeechEngine = piper if piper.status().available else espeak
+    remote_tts = GroqOrpheusTTS(groq_api_key)
+    if groq_api_key and remote_tts.status().available:
+        tts: TextToSpeechEngine = remote_tts
+    else:
+        tts = local_tts
     if groq_api_key:
         stt: SpeechToTextEngine = GroqWhisperSTT(groq_api_key)
     else:
         stt = VoskSTT(stt_model)
-    return VoiceService(stt, tts)
+    service = VoiceService(stt, tts)
+    service.local_tts_fallback = local_tts
+    return service
