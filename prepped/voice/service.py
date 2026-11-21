@@ -182,8 +182,9 @@ def build_voice_service(root: Path = ROOT) -> VoiceService:
         tts: TextToSpeechEngine = remote_tts
     else:
         tts = local_tts
-    if groq_api_key:
-        stt: SpeechToTextEngine = GroqWhisperSTT(groq_api_key)
+    remote_stt = GroqWhisperSTT(groq_api_key)
+    if groq_api_key and remote_stt.status().available:
+        stt: SpeechToTextEngine = remote_stt
     else:
         stt = VoskSTT(stt_model)
     service = VoiceService(stt, tts)
