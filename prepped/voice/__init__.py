@@ -6,7 +6,7 @@ substituted without changing the session or feedback code.
 """
 from prepped.voice.service import VoiceService, build_voice_service
 from prepped.voice.stt import GroqWhisperSTT, SpeechToTextEngine, VoskSTT
-from prepped.voice.tts import EspeakTTS, PiperTTS, TextToSpeechEngine
+from prepped.voice.tts import EspeakTTS, GroqOrpheusTTS, PiperTTS, TextToSpeechEngine
 
 __all__ = [
     "VoiceService",
@@ -16,5 +16,6 @@ __all__ = [
     "GroqWhisperSTT",
     "TextToSpeechEngine",
     "EspeakTTS",
+    "GroqOrpheusTTS",
     "PiperTTS",
 ]
