@@ -113,7 +113,7 @@ class VoskSTT(SpeechToTextEngine):
 
 
 class GroqWhisperSTT(SpeechToTextEngine):
-    """Groq-hosted Whisper transcription adapter (opt-in via GROQ_API_KEY).
+    """Groq-hosted fast Whisper transcription adapter (opt-in via GROQ_API_KEY).
 
     PCM is wrapped as an in-memory WAV and sent directly to Groq. No audio
     file is written to disk. The API key is read only by the server process.
@@ -122,7 +122,7 @@ class GroqWhisperSTT(SpeechToTextEngine):
     name = "groq-whisper"
     remote = True
     endpoint = "https://api.groq.com/openai/v1/audio/transcriptions"
-    model_name = "whisper-large-v3"
+    model_name = "whisper-large-v3-turbo"
 
     def __init__(self, api_key: str, *, timeout_seconds: float = 45.0) -> None:
         self.api_key = api_key.strip()
@@ -178,7 +178,7 @@ class GroqWhisperSTT(SpeechToTextEngine):
                 response = client.post(
                     self.endpoint,
                     headers={"Authorization": f"Bearer {self.api_key}"},
-                    data={"model": self.model_name, "response_format": "json", "prompt": prompt},
+                    data={"model": self.model_name, "response_format": "json", "language": "en", "prompt": prompt},
                     files={"file": ("answer.wav", wav_bytes, "audio/wav")},
                 )
                 response.raise_for_status()
