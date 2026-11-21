@@ -1,6 +1,6 @@
-# ADR-003: Optional Groq Whisper transcription
+# ADR-003: Optional Groq Whisper Turbo transcription
 
-**Status:** Implemented as an opt-in adapter; real account/device acceptance pending
+**Status:** Implemented; real account/device acceptance pending
 **Date:** 2026-11-19
 **Supersedes:** The no-remote-STT restriction in ADR-002 only when the user explicitly configures `GROQ_API_KEY`.
 
@@ -29,8 +29,8 @@ Groq states that inference inputs/outputs are not retained by default, but may b
 ## Consequences
 
 - Better transcription quality is expected from a multilingual Whisper Large model, but it is not yet measured on this project's target speakers.
-- The application now has an optional network dependency for transcription; local Vosk remains available without credentials or internet.
-- The app's privacy statement is selected dynamically based on the active STT engine.
+- The application has optional remote STT and TTS when configured; local Vosk and Piper/espeak remain available without credentials or internet.
+- The app's privacy statement reflects both active STT and TTS providers. Prompt synthesis is cached to reduce repeat latency and metered calls.
 - Provider outage, network failure, invalid key, or free-tier exhaustion must not prevent typed practice.
 
 ## Acceptance gates
@@ -49,3 +49,12 @@ Groq states that inference inputs/outputs are not retained by default, but may b
 - [Groq rate limits](https://console.groq.com/docs/rate-limits)
 - [Groq data handling](https://console.groq.com/docs/your-data)
 - [ADR-002: local record/stop voice slice](ADR-002-LOCAL-VOICE-SLICE.md)
+
+
+## TTS extension (2026-11-21)
+
+- Groq Orpheus English uses `canopylabs/orpheus-v1-english` via `POST /audio/speech`, voice `troy`, WAV response. The documented input limit is 200 characters; longer prompts use local TTS.
+- Groq is selected for both STT and TTS only when the server environment contains `GROQ_API_KEY` and the HTTP dependency is available. The key is never sent to the browser.
+- Remote TTS failure/quota/short-input constraints fall back to installed local Piper or espeak-ng. Generated WAVs are cached in a bounded process-memory LRU and up to four small prompt blobs in the browser.
+- TTS is metered by provider; users should check current pricing/limits and avoid enabling it for data they do not wish to send.
+- References: [Groq TTS](https://console.groq.com/docs/text-to-speech/) · [Orpheus](https://console.groq.com/docs/text-to-speech/orpheus)
