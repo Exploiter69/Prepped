@@ -298,7 +298,7 @@
       }
       blob = await response.blob();
       if (requestGeneration !== state.generation || controller.signal.aborted) return;
-      state.promptAudioCache.set(cacheKey, blob);
+      if (blob.size <= 2 * 1024 * 1024) state.promptAudioCache.set(cacheKey, blob);
       while (state.promptAudioCache.size > 4) {
         state.promptAudioCache.delete(state.promptAudioCache.keys().next().value);
       }
