@@ -27,31 +27,19 @@
   });
 
   function showLearning() {
-    window.dispatchEvent(new CustomEvent("prepped:viewchange", { detail: { view: "learning-view" } }));
     window.PreppedVoice?.stopAll();
     stopLearningRecording(true);
     stopListeningAudio();
-    for (const id of viewIds) $("#" + id)?.classList.toggle("hidden", id !== "learning-view");
-    $("#learning-toggle")?.setAttribute("aria-expanded", "true");
-    $("#career-toggle")?.setAttribute("aria-expanded", "false");
-    $("#progress-toggle")?.setAttribute("aria-expanded", "false");
     $("#global-status")?.classList.add("hidden");
-    $("#learning-view").classList.remove("hidden");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.PreppedApp?.showView("learning-view");
     loadWorkspace();
   }
 
   function showHome() {
     stopLearningRecording(true);
-    window.dispatchEvent(new CustomEvent("prepped:viewchange", { detail: { view: "home-view" } }));
     stopListeningAudio();
-    $("#learning-view").classList.add("hidden");
-    $("#learning-toggle")?.setAttribute("aria-expanded", "false");
-    $("#career-toggle")?.setAttribute("aria-expanded", "false");
-    $("#progress-toggle")?.setAttribute("aria-expanded", "false");
     $("#global-status")?.classList.remove("hidden");
-    for (const id of viewIds) $("#" + id)?.classList.toggle("hidden", id !== "home-view");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.PreppedApp?.showView("home-view");
   }
 
   function makeButton(label, lessonId, className = "button button-secondary", disabled = false) {
