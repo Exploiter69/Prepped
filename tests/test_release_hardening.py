@@ -126,3 +126,17 @@ def test_chunked_api_body_limit_is_enforced_without_content_length() -> None:
     }
     asyncio.run(middleware(scope, receive, send))
     assert sent[0]["status"] == 413
+
+def test_checkout_html_and_static_assets_revalidate_after_local_updates(tmp_path: Path) -> None:
+    from fastapi.testclient import TestClient
+    from prepped.main import create_app
+
+    with TestClient(create_app(db_path=tmp_path / "cache-headers.sqlite3")) as client:
+        html = client.get("/")
+        script = client.get("/static/app.js")
+        api = client.get("/api/health")
+
+    assert html.headers.get("cache-control") == "no-cache"
+    assert script.headers.get("cache-control") == "no-cache"
+    assert api.headers.get("cache-control") == "no-store"
+
