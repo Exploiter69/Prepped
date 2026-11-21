@@ -45,4 +45,4 @@ def test_existing_progress_actions_and_plan_workflows_are_preserved() -> None:
         assert f'id="{element_id}"' in HTML
     for endpoint in ("/api/progress/overview", "/api/goals", "/api/data/export", "/api/data/restore"):
         assert endpoint in PROGRESS_JS
-    assert "/api/adaptive/" in INTELLIGENCE_JS or "/api/learning/plans" in INTELLIGENCE_JS
+    assert "/api/intelligence/plan" in INTELLIGENCE_JS
