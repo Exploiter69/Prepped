@@ -1,6 +1,6 @@
 # Prepped — Current State
 
-**Updated:** 2026-11-20<br>
+**Updated:** 2026-11-21<br>
 **Source of truth:** GitHub `feature/learner-profile` (working branch; `main` remains the last synced baseline)<br>
 **Product direction:** Voice-first, personalised practice and learning platform for Indian engineering students. The text practice loop is a reliable fallback and is frozen for feature development except material bugs.<br>
 **Engineering stage:** Phases A–H implementation is present. Phase I implementation is present; manual target-device voice acceptance remains open. Phase J implementation is present; human content/accessibility review and learner validation remain open. Phase K engineering verification is complete on cff67fb: target laptop 172 passed, exact-commit GitHub Actions [run 44754505687](https://github.com/Exploiter69/Prepped/actions/runs/44754505687) succeeded. Phase L local release-candidate workflow and documentation are in progress; no release is claimed.
@@ -20,6 +20,12 @@ Stage 2 is implemented on `feature/learner-profile` after the dashboard foundati
 No API, database schema, curriculum content, provider, or runtime dependency was added. Progress indicators report recorded activity only; there are no points, streaks, proficiency scores, or inferred mastery claims. Browser regression coverage checks the live summary, three learner-facing curriculum paths, and exercise-step progress. Exact-commit CI and target-laptop visual/responsive acceptance are pending; Stage 2 should not be called accepted until those checks pass.
 
 Stage 1 dashboard visual acceptance also remains pending. Continue the gradual screen-by-screen sequence with Practice, Career, Memory, Progress, and responsive/accessibility polish only after the relevant preceding stage is reviewed.
+
+## UI redesign — Stage 5: Progress & Learning Insights (implementation committed; manual acceptance pending)
+
+The Progress workspace now presents saved activity as a learner-facing story: a responsive introduction, a live overview grounded in completion records, a seven-day activity summary, and clearer skill cards that label their source as completed lesson evidence. The existing Phase H adaptive-learning area remains integrated, including explainable next steps, learner-controlled daily/weekly plans, goals, recent activity, dismissal/restore, and local backup/restore.
+
+No API, database, curriculum, provider, or dependency was added. Activity totals are not proficiency, streak, confidence, learning-gain, or placement measures. Skill progress remains linked lesson coverage, not a skill rating. Automated regression is in `tests/test_ui_stage5.py`; manual visual, keyboard/screen-reader, plan/goal, and backup acceptance is tracked in [UI Stage 5 Acceptance](UI_STAGE_5_ACCEPTANCE.md).
 
 ## Phase L — Release Candidate, Packaging, Documentation & Operations (implementation in progress)
 
