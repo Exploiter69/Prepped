@@ -452,3 +452,8 @@ The following phases extend the active A–H build sequence. Phase I implementat
 ## UI redesign — Stage 5: Progress & Learning Insights
 
 **Implementation:** committed on `feature/learner-profile`; manual acceptance remains open. The existing Progress module is now presented as an evidence-led learning story with responsive activity cards, a seven-day saved-activity summary, and explicit lesson-evidence labels. Adaptive plans, goals, recommendations, history, and backup/restore retain their existing contracts. This is a presentation-only stage: no API/schema/provider/dependency changes and no proficiency or learning-gain claims. See [Stage 5 acceptance](UI_STAGE_5_ACCEPTANCE.md).
+
+
+## UI redesign — Stage 6: History & Learning Memory
+
+**Implementation:** committed on `feature/learner-profile`. History now provides a unified local activity timeline for lesson completions, project practice, Career Studios, and learner-memory reviews, with search, type filters, refresh, and links back to existing review/resume destinations. The original project-session archive and deletion workflow remain. This stage uses existing saved activity and APIs; no schema, provider, curriculum, dependency, or data-retention change. Activity remains a record—not a score, proficiency estimate, streak, or learning-gain claim. Automated checks are in `tests/test_ui_stage6.py`; target-device visual, keyboard/screen-reader, navigation, empty-state, and delete-refresh acceptance remains open in [Stage 6 acceptance](UI_STAGE_6_ACCEPTANCE.md).
