@@ -12,13 +12,8 @@
   }
 
   function showProgress() {
-    for (const id of viewIds) $("#" + id)?.classList.toggle("hidden", id !== "progress-view");
-    window.dispatchEvent(new CustomEvent("prepped:viewchange", { detail: { view: "progress-view" } }));
-    $("#progress-toggle")?.setAttribute("aria-expanded", "true");
-    $("#learning-toggle")?.setAttribute("aria-expanded", "false");
-    $("#career-toggle")?.setAttribute("aria-expanded", "false");
     window.PreppedVoice?.stopAll();
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.PreppedApp?.showView("progress-view");
     load();
   }
 
@@ -408,7 +403,7 @@
     toggle.textContent = (state.dismissedVisible ? "Hide dismissed suggestions (" : "Show dismissed suggestions (") + state.dismissedCount + ")";
     if (state.overview) load();
   });
-  $("#progress-home")?.addEventListener("click", () => { for (const id of viewIds) $("#" + id)?.classList.toggle("hidden", id !== "home-view"); $("#progress-toggle")?.setAttribute("aria-expanded", "false"); });
+  $("#progress-home")?.addEventListener("click", () => window.PreppedApp?.showView("home-view"));
   $("#goal-form")?.addEventListener("submit", createGoal);
   $("#goal-cancel-edit")?.addEventListener("click", () => {
     state.editingGoalId = null;
