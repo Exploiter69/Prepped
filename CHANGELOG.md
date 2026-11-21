@@ -5,6 +5,7 @@ All notable project changes are recorded here. This file tracks the source-check
 ## [0.3.0] — Unreleased development snapshot
 
 ### Added
+- Optional Groq voice path: faster Whisper Large v3 Turbo STT and Orpheus English TTS, server-side credentials, local voice fallback, and bounded prompt-audio caching.
 - Stage 9 final UI integration checks across all six primary workspaces, responsive widths, navigation semantics, focus, reduced motion, and release acceptance documentation.
 - Local learner profile, versioned English curriculum, Project Practice and Career interview studios.
 - Learner-controlled Memory and revision, evidence-backed progress, goals, recommendations, and adaptive daily/weekly plans.
