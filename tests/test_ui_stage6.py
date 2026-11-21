@@ -25,7 +25,7 @@ def test_stage6_timeline_uses_saved_activity_and_keeps_records_honest() -> None:
 def test_stage6_history_can_open_existing_learning_destinations() -> None:
     for kind in ("practice", "interview", "review", "lesson"):
         assert f'{kind}:' in JS
-    assert 'data-session-id = session.id' in APP
+    assert 'open.dataset.sessionId = session.id' in APP
     assert 'Open Memory' in JS and 'Open Career' in JS
 
 
