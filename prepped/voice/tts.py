@@ -95,6 +95,67 @@ class PiperTTS(TextToSpeechEngine):
         return audio
 
 
+class GroqOrpheusTTS(TextToSpeechEngine):
+    """Remote low-latency English TTS via Groq Orpheus; key remains server-side."""
+
+    name = "groq-orpheus"
+    remote = True
+    endpoint = "https://api.groq.com/openai/v1/audio/speech"
+    model_name = "canopylabs/orpheus-v1-english"
+    voice_name = "troy"
+    max_characters = 200  # Orpheus model input limit documented by Groq.
+
+    def __init__(self, api_key: str, *, timeout_seconds: float = 35.0) -> None:
+        self.api_key = api_key.strip()
+        self.timeout_seconds = timeout_seconds
+
+    def status(self) -> EngineStatus:
+        if not self.api_key:
+            return EngineStatus(kind="tts", engine=self.name, available=False, model=self.model_name,
+                               detail="Groq API key is not configured.")
+        if importlib.util.find_spec("httpx") is None:
+            return EngineStatus(kind="tts", engine=self.name, available=False, model=self.model_name,
+                               detail='Groq TTS dependency missing. Install with: python -m pip install -e ".[voice-cloud]".')
+        return EngineStatus(kind="tts", engine=self.name, available=True, model=self.model_name,
+                           detail="Groq Orpheus English TTS is ready. Prompt text is sent to Groq for audio generation.")
+
+    def synthesize(self, text: str) -> bytes:
+        import httpx
+        if not self.api_key:
+            raise VoiceUnavailable("Groq API key is not configured. Local speech remains available.")
+        if len(text) > self.max_characters:
+            raise TextToSpeechError(
+                "This prompt exceeds Groq Orpheus's 200-character input limit. Use the local voice or read it on screen."
+            )
+        try:
+            with httpx.Client(timeout=self.timeout_seconds) as client:
+                response = client.post(
+                    self.endpoint,
+                    headers={"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"},
+                    json={"model": self.model_name, "input": text, "voice": self.voice_name, "response_format": "wav"},
+                )
+                response.raise_for_status()
+                audio = response.content
+        except httpx.TimeoutException as exc:
+            raise TextToSpeechError("Groq speech generation timed out. Read the question or try again.") from exc
+        except httpx.HTTPStatusError as exc:
+            code = exc.response.status_code
+            if code == 401:
+                message = "Groq rejected the API key. Check GROQ_API_KEY and restart Prepped."
+            elif code == 429:
+                message = "Groq's voice quota or rate limit was reached. Local voice fallback will be used."
+            elif code in (400, 413):
+                message = "Groq could not generate audio for this prompt. Read it on screen or use local voice."
+            else:
+                message = f"Groq speech service returned HTTP {code}. Local voice fallback will be used."
+            raise TextToSpeechError(message) from exc
+        except httpx.HTTPError as exc:
+            raise TextToSpeechError("Could not reach Groq speech service. Local voice fallback will be used.") from exc
+        if not audio.startswith(b"RIFF") or b"WAVE" not in audio[:16]:
+            raise TextToSpeechError("Groq returned an unsupported audio response. Local voice fallback will be used.")
+        return audio
+
+
 class EspeakTTS(TextToSpeechEngine):
     """Small formant-synthesis fallback using an installed espeak-ng binary."""
 
