@@ -87,15 +87,15 @@ The `feature/learner-profile` branch now contains:
 
 ## What this milestone is
 
-The voice milestone is a **record/stop** flow inside the existing project-interview scenario, not a realtime always-listening agent. STT can use optional Groq Whisper or local Vosk:
+The voice milestone is a **record/stop** flow inside the existing project-interview scenario, not a realtime always-listening agent. STT uses Groq Whisper Turbo when configured or local Vosk; prompt TTS uses Groq Orpheus or local Piper/espeak-ng:
 
 1. The existing text scenario remains available.
 2. The learner presses **Start recording**, speaks, and presses **Stop recording**.
 3. The browser sends the recording to the local FastAPI app.
-4. `ffmpeg` decodes it in memory. Groq Whisper transcribes it when `GROQ_API_KEY` is configured; otherwise local Vosk is used.
+4. `ffmpeg` decodes it in memory. Groq Whisper Turbo transcribes when configured; otherwise local Vosk is used.
 5. The transcript is placed in the existing editable answer box.
 6. The learner corrects recognition errors and saves through the **existing** answer endpoint.
-7. Interviewer prompts can be spoken with local TTS, with **Play**, **Stop**, and **Replay** controls.
+7. Interviewer prompts use Groq Orpheus when configured, otherwise local Piper/espeak-ng, with **Play**, **Stop**, and **Replay** controls. Prompt WAVs are cached in bounded memory.
 8. Microphone/model/TTS failures keep text mode usable.
 
 ## Implemented
@@ -109,14 +109,14 @@ The voice milestone is a **record/stop** flow inside the existing project-interv
 - Deterministic feedback with evidence excerpts, prompt-specific next actions, explicit uncertainty, and no overall score.
 - Retry with scenario/rubric snapshot, attempt grouping/comparison data, local history, and session deletion.
 - Regression tests for core flow, feedback grounding/limitations, empty answers, cancellation, boundaries, retry, history, and deletion.
-- No mandatory AI account, paid API, hosted database, or raw audio capture. Groq transcription is optional and only active when the developer configures a server-side key.
+- No mandatory AI account, paid API, hosted database, or raw audio capture. Groq STT/TTS are optional and only active with a server-side key; TTS is metered.
 
 ### Voice slice (new)
 
 - `prepped/voice/` package with replaceable STT/TTS interfaces:
   - `SpeechToTextEngine` / `TextToSpeechEngine` protocols.
-  - `VoskSTT` local speech-to-text adapter and opt-in `GroqWhisperSTT` cloud adapter (`whisper-large-v3`).
-  - `PiperTTS` local neural text-to-speech adapter.
+  - `VoskSTT` local speech-to-text adapter and `GroqWhisperSTT` cloud adapter (`whisper-large-v3-turbo`).
+  - `GroqOrpheusTTS` cloud adapter (`canopylabs/orpheus-v1-english`), plus `PiperTTS` local neural fallback.
   - `EspeakTTS` local fallback adapter.
   - `VoiceService` for limits, availability, privacy text, and engine coordination.
   - In-memory `ffmpeg` decoding to mono 16 kHz PCM; no temporary raw-audio files.
@@ -125,11 +125,11 @@ The voice milestone is a **record/stop** flow inside the existing project-interv
 - API endpoints:
   - `GET /api/voice/status` — engine availability, model names, limits, privacy/fallback text.
   - `POST /api/voice/transcribe` — raw audio body in, transcript JSON out, `stored_audio: false`.
-  - `POST /api/voice/tts` — question text in, local WAV out with `Cache-Control: no-store`.
+  - `POST /api/voice/tts` — question text in, Groq or local WAV out with `Cache-Control: no-store`; bounded process and browser caches reduce repeat generation.
 - Browser UI:
   - Microphone permission and **Start recording** / **Stop recording**, with provider-specific disclosure before capture.
   - 60-second recording cap and visible timer.
-  - Transcription from the configured provider is inserted into the existing answer textarea for editing; Vosk runs locally, while Groq sends recordings to its service.
+  - Transcription from the configured provider is inserted into the existing answer textarea for editing; Vosk runs locally; Groq sends recordings for STT and prompt text for TTS.
   - **Play question aloud**, **Stop**, and **Replay** controls.
   - Clear errors for denied/unavailable microphone, missing model, undecodable audio, and TTS failure.
   - Text mode remains visible and usable throughout.
