@@ -62,3 +62,11 @@ def test_extract_model_archive_enforces_expanded_size_limit(tmp_path: Path, monk
 
     with pytest.raises(ValueError, match="size limit"):
         extract_model_archive(archive_path, tmp_path / "models")
+
+
+def test_voice_setup_calls_the_validated_extractor() -> None:
+    root = Path(__file__).resolve().parents[1]
+    setup_script = (root / "scripts" / "setup_voice.sh").read_text(encoding="utf-8")
+
+    assert "-m prepped.voice.model_archive" in setup_script
+    assert "zf.extractall" not in setup_script
