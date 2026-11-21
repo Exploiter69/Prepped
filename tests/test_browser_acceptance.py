@@ -1224,3 +1224,42 @@ def test_career_workspace_cards_and_accessible_question_progress(local_app_url: 
     assert page.locator("#career-draft-status").inner_text() == "Nothing saved for this question yet"
     page.locator("#career-answer").fill("An editable first draft")
     assert page.locator("#career-draft-status").inner_text() == "Draft in progress · not saved"
+
+
+
+def test_stage8_skip_link_and_primary_navigation_are_accessible(
+    local_app_url: str, browser_page
+) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+    page.locator("#dashboard-view").wait_for(state="visible")
+
+    skip = page.locator(".skip-link")
+    skip.focus()
+    assert skip.is_visible()
+    skip.press("Enter")
+    assert page.locator("#main-content").evaluate(
+        "(element) => document.activeElement === element"
+    )
+
+    destinations = [
+        ("home-toggle", "dashboard-view"),
+        ("learning-toggle", "learning-view"),
+        ("practice-toggle", "home-view"),
+        ("career-toggle", "career-view"),
+        ("progress-toggle", "progress-view"),
+        ("history-toggle", "history-view"),
+    ]
+    for button_id, view_id in destinations:
+        button = page.locator(f"#{button_id}")
+        button.click()
+        page.locator(f"#{view_id}").wait_for(state="visible")
+        assert button.get_attribute("aria-current") == "page"
+        assert button.evaluate(
+            "(element) => document.activeElement === element"
+        ) is False  # focus moves to the newly opened workspace
+        assert page.locator(f"#{view_id}").evaluate(
+            "(element) => document.activeElement === element"
+        )
+        assert page.locator(".nav-button[aria-current='page']").count() == 1
+        assert page.locator(".nav-button[aria-expanded]").count() == 0
