@@ -447,3 +447,8 @@ The following phases extend the active A–H build sequence. Phase I implementat
 - Complete one phase's implementation, regression tests, docs, and acceptance record before moving on. Fix urgent security/privacy defects immediately.
 - Keep every claim labelled as implemented, tested, manually accepted, observed, or proposed. A green CI run does not replace device or learner acceptance.
 
+
+
+## UI redesign — Stage 5: Progress & Learning Insights
+
+**Implementation:** committed on `feature/learner-profile`; manual acceptance remains open. The existing Progress module is now presented as an evidence-led learning story with responsive activity cards, a seven-day saved-activity summary, and explicit lesson-evidence labels. Adaptive plans, goals, recommendations, history, and backup/restore retain their existing contracts. This is a presentation-only stage: no API/schema/provider/dependency changes and no proficiency or learning-gain claims. See [Stage 5 acceptance](UI_STAGE_5_ACCEPTANCE.md).
