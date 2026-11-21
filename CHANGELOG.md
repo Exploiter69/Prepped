@@ -5,6 +5,7 @@ All notable project changes are recorded here. This file tracks the source-check
 ## [0.3.0] — Unreleased development snapshot
 
 ### Added
+- Stage 9 final UI integration checks across all six primary workspaces, responsive widths, navigation semantics, focus, reduced motion, and release acceptance documentation.
 - Local learner profile, versioned English curriculum, Project Practice and Career interview studios.
 - Learner-controlled Memory and revision, evidence-backed progress, goals, recommendations, and adaptive daily/weekly plans.
 - Turn-based voice capture with editable transcripts, local Vosk STT, optional explicitly disclosed Groq STT, and local Piper/espeak-ng TTS.
@@ -17,6 +18,7 @@ All notable project changes are recorded here. This file tracks the source-check
 - Backups remain sensitive, unencrypted JSON. The project licence is not declared; redistribution is not authorised.
 
 ### Verification and limitations
+- Stage 8 keyboard acceptance and full local verification passed on commit 55b9e11: 199 passed. Stage 9 exact-commit CI and target-device manual acceptance are tracked separately; no release is claimed.
 - Latest recorded target-laptop full suite: 172 passed, 0 failed (2026-11-20).
 - Exact code commit cff67fb passed GitHub Actions run 44754505687.
 - Real-device microphone/STT/TTS, screen-reader/accessibility, restore power-loss, and learner-validation checks remain open.
