@@ -17,22 +17,14 @@
   function showCareer() {
     stopRecording(true);
     stopPrompt(false);
-    window.dispatchEvent(new CustomEvent("prepped:viewchange", { detail: { view: "career-view" } }));
     window.PreppedVoice?.stopAll();
-    for (const id of viewIds) $("#" + id)?.classList.toggle("hidden", id !== "career-view");
-    $("#career-toggle")?.setAttribute("aria-expanded", "true");
-    $("#learning-toggle")?.setAttribute("aria-expanded", "false");
-    $("#progress-toggle")?.setAttribute("aria-expanded", "false");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.PreppedApp?.showView("career-view");
     loadWorkspace();
   }
   function showHome() {
     stopRecording(true);
     stopPrompt(false);
-    window.dispatchEvent(new CustomEvent("prepped:viewchange", { detail: { view: "home-view" } }));
-    for (const id of viewIds) $("#" + id)?.classList.toggle("hidden", id !== "home-view");
-    $("#career-toggle")?.setAttribute("aria-expanded", "false");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.PreppedApp?.showView("home-view");
   }
   function make(tag, text, className) {
     const element = document.createElement(tag);
