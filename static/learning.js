@@ -783,7 +783,7 @@
     }
   }
 
-  async function resumeAttempt(attemptId) {
+  window.addEventListener("prepped:start-lesson",event=>{\n    const lessonId=event.detail?.lessonId;\n    if(typeof lessonId!=="string"||!lessonId)return;\n    showLearning();\n    void startLesson(lessonId);\n  });\n\n  async function resumeAttempt(attemptId) {
     try {
       const attempt = await request("/api/learning/attempts/" + encodeURIComponent(attemptId));
       renderAttempt(attempt);
