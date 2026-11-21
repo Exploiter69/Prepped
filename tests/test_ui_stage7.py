@@ -9,7 +9,9 @@ CSS = (ROOT / "static" / "style.css").read_text(encoding="utf-8")
 
 def test_stage7_dashboard_has_live_refresh_and_status_feedback() -> None:
     assert 'id="dashboard-refresh"' in HTML
-    assert 'id="dashboard-load-status" role="status" aria-live="polite"' in HTML
+    status_element = HTML.split('id="dashboard-load-status"', 1)[1].split(">", 1)[0]
+    assert 'role="status"' in status_element
+    assert 'aria-live="polite"' in status_element
     assert 'addEventListener("click",loadDashboard)' in JS
     assert "Some dashboard details could not be refreshed" in JS
 
