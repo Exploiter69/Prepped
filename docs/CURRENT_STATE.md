@@ -418,3 +418,8 @@ The Project Explanation Practice Room now has a focused voice-and-text practice 
 No API, database schema, curriculum, voice provider, or runtime dependency changed. Existing microphone permission, stale-request cancellation, STT abort, raw-audio non-persistence, Groq disclosure, and text fallback behaviour are retained.
 
 Automated browser coverage was added for progress semantics, editable draft state, text-first completion, visualizer activation/cleanup on navigation, and visible Groq disclosure before capture. Exact-commit CI and target-laptop visual/accessibility acceptance must be recorded before this stage is considered accepted. See [UI_STAGE_3_ACCEPTANCE.md](UI_STAGE_3_ACCEPTANCE.md).
+
+
+## UI Stage 4 — Career Studios workspace
+
+The Career Studios view has been redesigned on `feature/learner-profile`: purpose-led workspace header, three distinct studio cards, guided setup, interviewer/response layout, accessible main-question progress that holds during follow-ups, editable-draft status, revised review and history hierarchy, and responsive warm-theme styling. Existing career APIs, session/feedback logic, memory and plan handoffs, retry/resume/delete, and optional voice behavior remain the integration contract. Browser regression coverage and [Stage 4 acceptance checklist](UI_STAGE_4_ACCEPTANCE.md) were added. **Implementation is present; local automated verification and visual/device acceptance are pending.**
