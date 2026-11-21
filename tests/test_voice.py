@@ -342,7 +342,8 @@ def test_groq_adapter_wraps_pcm_as_wav_and_returns_transcript(monkeypatch: pytes
     assert transcript == "I built a placement preparation application."
     assert captured["url"] == GroqWhisperSTT.endpoint
     assert captured["headers"] == {"Authorization": "Bearer test-key"}
-    assert captured["data"]["model"] == "whisper-large-v3"  # type: ignore[index]
+    assert captured["data"]["model"] == "whisper-large-v3-turbo"  # type: ignore[index]
+    assert captured["data"]["language"] == "en"  # type: ignore[index]
     upload = captured["files"]["file"]  # type: ignore[index]
     assert upload[0] == "answer.wav"
     assert upload[2] == "audio/wav"
@@ -465,3 +466,74 @@ def test_unexpected_voice_failures_do_not_log_private_exception_text(tmp_path: P
         assert "RuntimeError" in caplog.text
     finally:
         tts_client.__exit__(None, None, None)
+
+
+def test_voice_service_caches_identical_tts_and_returns_copy(tmp_path: Path) -> None:
+    tts = FakeTTS()
+    client, service = make_client(tmp_path, tts=tts)
+    try:
+        first = client.post("/api/voice/tts", json={"text": "Cached prompt"})
+        second = client.post("/api/voice/tts", json={"text": "  Cached   prompt "})
+        assert first.status_code == second.status_code == 200
+        assert first.content == second.content
+        assert tts.calls == ["Cached prompt"]
+        assert len(service._tts_cache) == 1
+    finally:
+        client.__exit__(None, None, None)
+
+
+def test_groq_orpheus_tts_uses_documented_endpoint_and_wav(monkeypatch: pytest.MonkeyPatch) -> None:
+    import httpx
+    from prepped.voice.tts import GroqOrpheusTTS
+
+    captured: dict[str, object] = {}
+    wav = b"RIFF" + b"\x00" * 4 + b"WAVEfmt " + b"audio"
+    class FakeResponse:
+        status_code = 200
+        content = wav
+        def raise_for_status(self) -> None: pass
+    class FakeClient:
+        def __init__(self, **kwargs: object) -> None: captured["timeout"] = kwargs["timeout"]
+        def __enter__(self): return self
+        def __exit__(self, *args: object): pass
+        def post(self, url: str, **kwargs: object):
+            captured["url"] = url
+            captured.update(kwargs)
+            return FakeResponse()
+    monkeypatch.setattr(httpx, "Client", FakeClient)
+    audio = GroqOrpheusTTS("server-secret").synthesize("Say hello.")
+    assert audio == wav
+    assert captured["url"] == GroqOrpheusTTS.endpoint
+    assert captured["headers"]["Authorization"] == "Bearer server-secret"  # type: ignore[index]
+    payload = captured["json"]
+    assert payload["model"] == "canopylabs/orpheus-v1-english"  # type: ignore[index]
+    assert payload["voice"] == "troy"  # type: ignore[index]
+    assert payload["response_format"] == "wav"  # type: ignore[index]
+
+
+def test_groq_orpheus_rejects_over_model_limit_without_network(monkeypatch: pytest.MonkeyPatch) -> None:
+    from prepped.voice.errors import TextToSpeechError
+    from prepped.voice.tts import GroqOrpheusTTS
+    with pytest.raises(TextToSpeechError, match="200-character"):
+        GroqOrpheusTTS("test-key").synthesize("x" * 201)
+
+
+def test_remote_tts_failure_falls_back_to_local_and_caches(tmp_path: Path) -> None:
+    class RemoteFailingTTS(FakeTTS):
+        name = "groq-orpheus"
+        remote = True
+        def synthesize(self, text: str) -> bytes:
+            self.calls.append(text)
+            raise TextToSpeechError("Groq temporarily unavailable.")
+    remote = RemoteFailingTTS()
+    local = FakeTTS()
+    client, service = make_client(tmp_path, tts=remote)
+    service.local_tts_fallback = local
+    try:
+        first = client.post("/api/voice/tts", json={"text": "Use local fallback"})
+        second = client.post("/api/voice/tts", json={"text": "Use local fallback"})
+        assert first.status_code == second.status_code == 200
+        assert remote.calls == ["Use local fallback"]
+        assert local.calls == ["Use local fallback"]
+    finally:
+        client.__exit__(None, None, None)
