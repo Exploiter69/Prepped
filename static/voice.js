@@ -17,6 +17,7 @@
     timerId: null,
     startedAt: 0,
     audioUrl: null,
+    promptAudioCache: new Map(),
     generation: 0,
     transcriptionController: null,
     ttsController: null,
@@ -194,7 +195,7 @@
     if (!state.questionText) {
       setTtsStatus("");
     } else if (state.status.tts?.available) {
-      setTtsStatus("Press Play question aloud to hear this prompt locally.");
+      setTtsStatus("Press Play question aloud to hear this prompt.");
     } else {
       setTtsStatus(
         state.status.tts?.detail ||
@@ -229,9 +230,11 @@
   }
 
   function refreshPrivacyCopy() {
-    const remote = state.status?.stt?.engine === "groq-whisper";
+    const remoteStt = state.status?.stt?.engine === "groq-whisper";
+    const remoteTts = state.status?.tts?.engine === "groq-orpheus";
+    const remote = remoteStt || remoteTts;
     const localText = "Answers are saved in the local SQLite database. Raw microphone audio is processed for transcription and is not stored by Prepped.";
-    const remoteText = "Answers are saved in the local SQLite database. When Groq Whisper is active, microphone audio is sent to Groq for transcription; Prepped does not store the raw audio. Use only recordings you are comfortable sending to the provider.";
+    const remoteText = "Answers are saved in the local SQLite database. Groq Whisper sends microphone audio for transcription" + (remoteTts ? " and Groq Orpheus sends prompt text for speech generation" : "") + "; Prepped does not store raw audio. Use only content you are comfortable sending to the provider.";
     const unavailableText = "Answers are saved locally. Speech-provider details could not be loaded; check voice status before recording. Prepped does not store raw audio.";
     const detail = state.status ? (remote ? remoteText : localText) : unavailableText;
     if (ui.privacyNote) ui.privacyNote.textContent = detail;
@@ -239,8 +242,8 @@
       ui.privacySummary.textContent = !state.status
         ? "Answers stay in the local app. Speech-provider details are unavailable until status can be checked."
         : remote
-          ? "Answers stay in the local app; Groq transcription sends microphone audio to Groq. Prepped does not store raw audio."
-          : "Answers stay in the local app. Vosk transcription and spoken prompts run locally; Prepped does not store raw audio.";
+          ? "Answers stay in the local app. " + (remoteStt ? "Groq receives microphone audio for STT. " : "") + (remoteTts ? "Groq receives prompt text for TTS. " : "") + "Prepped does not store raw audio."
+          : "Answers stay in the local app. Vosk and local spoken prompts run locally; Prepped does not store raw audio.";
     }
   }
 
@@ -273,8 +276,12 @@
     const requestGeneration = state.generation;
     const controller = new AbortController();
     state.ttsController = controller;
-    setTtsStatus("Preparing local question audio…");
+    const cacheKey = state.questionText;
+    const cachedBlob = state.promptAudioCache.get(cacheKey);
+    setTtsStatus(cachedBlob ? "Loading saved question audio…" : "Preparing question audio…");
     try {
+      let blob = cachedBlob;
+      if (!blob) {
       const response = await fetch("/api/voice/tts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -289,7 +296,13 @@
             : "Local spoken prompts are unavailable."
         );
       }
-      const blob = await response.blob();
+      blob = await response.blob();
+      if (requestGeneration !== state.generation || controller.signal.aborted) return;
+      state.promptAudioCache.set(cacheKey, blob);
+      while (state.promptAudioCache.size > 4) {
+        state.promptAudioCache.delete(state.promptAudioCache.keys().next().value);
+      }
+      }
       if (requestGeneration !== state.generation || controller.signal.aborted) return;
       state.audioUrl = URL.createObjectURL(blob);
       ui.audio.src = state.audioUrl;
@@ -302,7 +315,7 @@
       };
       await ui.audio.play();
       if (requestGeneration !== state.generation || controller.signal.aborted) return;
-      setTtsStatus("Speaking the question locally. Use Stop to interrupt.");
+      setTtsStatus("Playing question audio. Use Stop to interrupt.");
     } catch (error) {
       if (error.name !== "AbortError" && requestGeneration === state.generation) {
         setTtsStatus(
@@ -326,7 +339,7 @@
         audio.currentTime = 0;
         await audio.play();
         if (generation === state.generation && audio === ui.audio && audio.src) {
-          setTtsStatus("Replaying the question locally. Use Stop to interrupt.");
+          setTtsStatus("Replaying question audio. Use Stop to interrupt.");
         }
       } catch (error) {
         if (generation === state.generation) {
@@ -654,7 +667,7 @@
     window.addEventListener("beforeunload", () => stopAll());
 
     setRecordStatus("Checking microphone and speech provider…");
-    setTtsStatus("Checking local speech…");
+    setTtsStatus("Checking speech providers…");
     updateControls();
     refreshStatus();
   }
