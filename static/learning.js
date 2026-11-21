@@ -513,8 +513,12 @@
       save.addEventListener("click", () => {
         const openResponse = ["reflection", "short_response", "pronunciation"].includes(item.type);
         const back = openResponse
-          ? [item.guidance, item.example_to_compare ? "Example to compare: " + item.example_to_compare : ""].filter(Boolean).join("\n\n")
-          : ["Suggested answer: " + (item.correct_answer || (item.suggested_order || []).join(" → ")), item.explanation].filter(Boolean).join("\n\n");
+          ? [item.guidance, item.example_to_compare ? "Example to compare: " + item.example_to_compare : ""].filter(Boolean).join("
+
+")
+          : ["Suggested answer: " + (item.correct_answer || (item.suggested_order || []).join(" → ")), item.explanation].filter(Boolean).join("
+
+");
         document.dispatchEvent(new CustomEvent("prepped:memory-save", { detail: {
           item_type: openResponse ? "example" : "correction",
           front: (openResponse ? (item.original_response || item.prompt) : item.prompt).slice(0, 240),
@@ -783,7 +787,14 @@
     }
   }
 
-  window.addEventListener("prepped:start-lesson",event=>{\n    const lessonId=event.detail?.lessonId;\n    if(typeof lessonId!=="string"||!lessonId)return;\n    showLearning();\n    void startLesson(lessonId);\n  });\n\n  async function resumeAttempt(attemptId) {
+  window.addEventListener("prepped:start-lesson",event=>{
+    const lessonId=event.detail?.lessonId;
+    if(typeof lessonId!=="string"||!lessonId)return;
+    showLearning();
+    void startLesson(lessonId);
+  });
+
+  async function resumeAttempt(attemptId) {
     try {
       const attempt = await request("/api/learning/attempts/" + encodeURIComponent(attemptId));
       renderAttempt(attempt);
