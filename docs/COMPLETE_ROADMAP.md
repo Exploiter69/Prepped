@@ -41,7 +41,7 @@ The first proof is this loop working locally with voice, not an avatar, dashboar
   - Optional Groq Whisper (`whisper-large-v3`) or local Vosk speech-to-text.
   - Editable transcript inserted into the existing answer box.
   - Submission through the existing answer endpoint.
-  - Local Piper TTS with `espeak-ng` fallback.
+  - Optional Groq Orpheus English TTS with local Piper/espeak-ng fallback.
   - Play/stop/replay controls.
   - Clear microphone/model/TTS errors and text fallback.
   - No raw audio persistence by Prepped; Groq mode sends audio to the provider only when explicitly configured.
@@ -78,7 +78,7 @@ The text feedback system is a heuristic baseline, not the product's future. **Do
 
 - No mandatory paid APIs, subscriptions, hosted databases, paid hosting, or pay-per-use services.
 - The core demo must work locally without an external model account.
-- No remote voice processing unless the developer explicitly configures a provider key; the UI/status endpoint discloses remote transcription.
+- No remote voice processing unless the developer explicitly configures a provider key; the UI/status endpoint discloses remote STT and TTS. Groq TTS is metered.
 - No raw audio persistence by Prepped; the optional remote provider receives the recording only when explicitly configured.
 - GitHub is the source of truth.
 - Keep one application and one simple data store until evidence proves a need for more.
@@ -95,7 +95,7 @@ The text feedback system is a heuristic baseline, not the product's future. **Do
 | Workstream | Purpose | Status | Expands only when |
 |---|---|---|---|
 | Product and scenario design | Define the learner task, prompts, and success conditions | Active | User validation identifies a concrete need |
-| Voice interaction | Record/stop, optional Groq STT or local Vosk, editable transcript, local TTS | Active | Browser/provider acceptance and usability are understood |
+| Voice interaction | Record/stop, Groq Turbo STT + Orpheus TTS when configured, local Vosk/Piper fallback, editable transcript and bounded audio cache | Active | Browser/provider acceptance and usability are understood |
 | Core application | Keep the local session/answer flow reliable | Maintained | A material bug or new scenario requires change |
 | Feedback and evaluation | Keep the transparent text baseline stable | Frozen except bugs | A separately designed, evidence-led feedback change is approved |
 | Privacy and safety | Minimise data, avoid raw audio, provide deletion | Active | Public/multi-user use requires review |
@@ -140,7 +140,7 @@ Delivered:
 
 - Record/stop microphone capture.
 - Local Vosk STT fallback; explicit one-time model installation.
-- Optional Groq Whisper (`whisper-large-v3`) STT when a server-side `GROQ_API_KEY` is configured.
+- Optional Groq Whisper Large v3 Turbo STT when a server-side `GROQ_API_KEY` is configured.
 - In-memory `ffmpeg` decoding; no raw audio persistence.
 - Editable transcript before submission through the existing backend.
 - Local Piper TTS with `espeak-ng` fallback.
