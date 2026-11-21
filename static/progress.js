@@ -39,6 +39,9 @@
   }
 
   function renderSummary(summary) {
+    const total = ["lessons_completed", "practice_sessions_completed", "interviews_completed", "memory_reviews_completed"].reduce((sum, key) => sum + Math.max(0, Number(summary[key]) || 0), 0);
+    const note = $("#progress-insight-note");
+    if (note) note.textContent = total === 0 ? "Your starting point is simple: complete one small activity and it will appear here. Nothing is scored or ranked." : "You have saved " + total + " completed learning and practice activities across this workspace. These records show what you did—not how capable you are.";
     const target = $("#progress-summary");
     target.replaceChildren();
     const stats = [
@@ -62,6 +65,7 @@
     for (const skill of skills) {
       const card = node("article", "progress-skill");
       const title = node("h4", "", skill.title);
+      const stateLabel = node("span", "progress-skill-state", skill.completed_lessons > 0 ? "Lesson evidence recorded" : "Evidence not yet recorded");
       const description = node("p", "", skill.description);
       const count = node("p", "", skill.completed_lessons + " of " + skill.available_lessons + " linked lessons completed");
       const track = node("div", "progress-track-small");
@@ -73,15 +77,18 @@
       const fill = node("span");
       fill.style.width = skill.completion_percent + "%";
       track.append(fill);
-      const evidence = node("p", "", skill.evidence.length
-        ? "Evidence: " + skill.evidence.map(item => item.title).join(", ")
-        : "No completed lesson evidence yet.");
-      card.append(title, description, count, track, evidence);
+      const evidence = node("p", "progress-skill-evidence", skill.evidence.length
+        ? "Completed lesson evidence: " + skill.evidence.map(item => item.title).join(", ")
+        : "No completed lesson evidence yet. Try a linked lesson to begin a record.");
+      card.append(stateLabel, title, description, count, track, evidence);
       target.append(card);
     }
   }
 
   function renderWeek(days) {
+    const weekTotal = days.reduce((sum, item) => sum + Math.max(0, Number(item.count) || 0), 0);
+    const weekSummary = $("#progress-week-summary");
+    if (weekSummary) weekSummary.textContent = weekTotal === 0 ? "No completed activities are recorded in this seven-day window yet. Your earlier work remains in history." : weekTotal + " completed " + (weekTotal === 1 ? "activity" : "activities") + " recorded in the last seven days. This is activity, not a streak or learning-gain measure.";
     const target = $("#progress-week");
     target.replaceChildren();
     const max = Math.max(1, ...days.map(item => item.count));
