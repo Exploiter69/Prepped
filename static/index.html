@@ -6,13 +6,13 @@
     <meta name="theme-color" content="#F6F2E8">
     <meta name="description" content="Private, local-first practice for placement conversations.">
     <title>Prepped — Practice with purpose</title>
-    <link rel="stylesheet" href="/static/style.css?v=ui-stage-4-1">
+    <link rel="stylesheet" href="/static/style.css?v=ui-stage-5-1">
     <script src="/static/voice.js?v=ui-stage-3-1" defer></script>
     <script src="/static/app.js?v=ui-stage-3-1" defer></script>
     <script src="/static/learning.js?v=ui-stage-2-1" defer></script>
     <script src="/static/memory.js?v=phase-d-2" defer></script>
     <script src="/static/career.js?v=ui-stage-4-1" defer></script>
-    <script src="/static/progress.js?v=phase-h-1" defer></script>
+    <script src="/static/progress.js?v=ui-stage-5-1" defer></script>
     <script src="/static/intelligence.js?v=phase-h-3" defer></script>
     <script src="/static/dashboard.js?v=ui-foundation-1" defer></script>
   </head>
@@ -236,10 +236,10 @@
         <div class="form-actions"><button id="career-home" class="button button-quiet" type="button">Back to practice room</button></div>
       </section>
       <section id="progress-view" class="scenario-panel progress-panel hidden" aria-labelledby="progress-title">
-        <div class="panel-topline"><span class="eyebrow">YOUR PRACTICE / PHASE F</span><span id="progress-status" class="status" role="status" aria-live="polite">Loading your activity…</span></div>
-        <h2 id="progress-title">See the work you have put in.</h2>
-        <p class="scenario-description">A record of completed practice, lessons, interviews and reviews. These counts show activity, not proficiency, confidence, learning gains or placement readiness.</p>
-        <div id="progress-summary" class="progress-summary" aria-live="polite"></div>
+        <div class="panel-topline"><span class="eyebrow">YOUR LEARNING STORY / STAGE 5</span><span id="progress-status" class="status" role="status" aria-live="polite">Loading your activity…</span></div>
+        <div class="progress-stage5-intro"><div class="progress-stage5-copy"><span class="progress-stage5-kicker">A RECORD OF YOUR PRACTICE</span><h2 id="progress-title">Small steps add up.</h2><p class="scenario-description">See what you have practised, what has evidence behind it, and where you can go next. This is a record of activity—not a rating of your ability.</p></div><div class="progress-stage5-mark" aria-hidden="true"><span>YOUR</span><strong>PATH</strong><i>↗</i></div></div>
+        <p id="progress-insight-note" class="progress-insight-note" role="status" aria-live="polite">Your saved activity will shape this overview.</p>
+        <div id="progress-summary" class="progress-summary progress-summary-stage5" aria-live="polite"></div>
         <section class="progress-section intelligence-section" aria-labelledby="intelligence-title">
           <div class="learning-section-heading"><div><span class="meta-label">PHASE H · ADAPTIVE LEARNING</span><h3 id="intelligence-title">Understand your practice and choose what comes next.</h3></div><span id="intelligence-status" class="status" role="status" aria-live="polite">Loading evidence…</span></div>
           <p class="section-help">This view connects saved practice to curriculum skills. It separates authored closed-exercise responses from open self-review and practice activity. It does not estimate mastery, fluency, confidence, or placement readiness.</p>
@@ -298,7 +298,7 @@
         </section>
         <section class="progress-section" aria-labelledby="progress-activity-title">
           <div class="learning-section-heading"><h3 id="progress-activity-title">Recent activity</h3><button id="progress-refresh" class="button button-quiet" type="button">Refresh</button></div>
-          <div id="progress-week" class="progress-week"></div>
+          <p id="progress-week-summary" class="progress-week-summary">Your last seven days of saved activity.</p><div id="progress-week" class="progress-week"></div>
           <div id="progress-activity" class="progress-list"></div>
         </section>
         <section class="progress-section" aria-labelledby="progress-data-title">
