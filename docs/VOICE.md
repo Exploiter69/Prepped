@@ -7,12 +7,12 @@
 ## What is implemented
 
 - Browser microphone recording with **Start recording** and **Stop recording**.
-- Local speech-to-text with Vosk, or optional Groq Whisper transcription when `GROQ_API_KEY` is configured.
+- Groq Whisper Large v3 Turbo speech-to-text when `GROQ_API_KEY` is configured; Vosk remains the offline fallback.
 - Editable transcript before submission through the existing answer endpoint.
-- Local spoken interviewer prompts with Piper, falling back to `espeak-ng`.
+- Groq Orpheus English TTS when `GROQ_API_KEY` is configured; Piper and `espeak-ng` remain local fallbacks.
 - **Play question aloud**, **Stop**, and **Replay** controls.
 - Clear errors and a text-only fallback.
-- No raw audio persistence by Prepped. Groq mode explicitly sends audio to Groq; Vosk mode stays local.
+- No raw audio persistence by Prepped. Groq STT sends microphone audio and Groq TTS sends prompt text; local Vosk/Piper/espeak mode stays on-device.
 - In-flight prompt synthesis and transcription browser requests are abortable when the prompt/workspace changes or the learner leaves; stale responses are ignored.
 - Career studios use authored contextual follow-ups selected by narrow, documented text cues, with a visible explanation when a cue selects the prompt. Learners can reveal an authored hint or switch to simpler wording without losing the original prompt; the chosen variant is retained with the answer.
 - Career review provides one possible answer-specific next action, explicitly framed as heuristic formative guidance rather than correctness feedback.
@@ -65,7 +65,7 @@ The script uses `.venv/bin/python` when that virtual environment exists, so it a
 
 This explicitly:
 
-1. Installs the `voice` and `voice-piper` Python extras.
+1. Installs the `voice`, `voice-piper`, and `voice-cloud` Python extras (the HTTP client is free/open source; Groq usage itself may be metered).
 2. Downloads the Vosk small English model (about 40 MB compressed, 68 MB on disk) into `models/vosk-model-small-en-us-0.15/`.
 3. Downloads the Piper `en_US-lessac-medium` voice (about 61 MB) into `models/piper/`.
 
@@ -98,18 +98,18 @@ Models are ignored by Git and must not be committed.
 
 | Role | Default | Fallback | License | Approximate local size |
 |---|---|---|---|---|
-| STT | Vosk 0.3.45 + `vosk-model-small-en-us-0.15` | None; text mode remains | Apache 2.0 | 40 MB download / 68 MB disk |
-| TTS | Piper 1.8.0 + `en_US-lessac-medium` | `espeak-ng` | Piper: GPL-3.0-or-later; espeak-ng: GPL-3.0 | 34 MB package + 61 MB voice; espeak-ng tiny |
+| STT | Groq `whisper-large-v3-turbo` when configured | Local Vosk small English model | Groq API terms / Vosk Apache 2.0 | Remote; local Vosk ~40 MB download / 68 MB disk |
+| TTS | Groq `canopylabs/orpheus-v1-english` when configured (200-character request cap) | Piper 1.8.0 + `en_US-lessac-medium`, then `espeak-ng` | Groq API terms / Piper GPL-3.0-or-later / espeak-ng GPL-3.0 | Remote; Piper ~61 MB voice |
 | Decode | `ffmpeg` | None; text mode remains | Build-dependent (LGPL/GPL) | System package |
 
-Vosk remains the offline fallback: it runs on CPU and needs no cloud account, but the small English model is not reliable enough for every Indian English accent. For the demo, an optional Groq Whisper adapter is available. It uses `whisper-large-v3` through Groq's OpenAI-compatible transcription endpoint. It is selected only when `GROQ_API_KEY` is set; otherwise Vosk remains selected.
+Groq is the preferred cloud path when `GROQ_API_KEY` is configured: STT uses `whisper-large-v3-turbo` (fast multilingual transcription), and TTS uses Orpheus English. Without the key or HTTP dependency, Prepped selects local Vosk and Piper/espeak-ng. Groq Orpheus currently documents a 200-character input cap; longer prompts fall back to local TTS.
 
-Why Piper first for TTS: it produces more natural speech than `espeak-ng`, runs locally on CPU, and worked on the target machine. `espeak-ng` keeps prompts working when Piper or its model is absent.
+Why local fallback remains: network, quota, or remote model errors must not block the practice flow. Groq prompt audio is cached in a bounded in-memory server cache and a small browser Blob cache; repeated Play/Replay does not repeatedly incur generation.
 
 ### Environment overrides
 
 ```bash
-export GROQ_API_KEY="your-groq-api-key"  # optional; selects Groq Whisper
+export GROQ_API_KEY="your-groq-api-key"  # optional; selects Groq Whisper Turbo STT + Orpheus TTS
 export PREPPED_STT_MODEL_DIR=/path/to/vosk-model
 export PREPPED_PIPER_MODEL=/path/to/voice.onnx
 export PREPPED_ESPEAK_BIN=/path/to/espeak-ng
@@ -129,7 +129,7 @@ POST /api/voice/transcribe
 ffmpeg: stdin → mono 16 kHz PCM → stdout
         │  (no temporary audio file)
         ▼
-Groq Whisper (if configured) or Vosk offline recogniser
+Groq Whisper Turbo (if configured) or Vosk offline recogniser
         │
         ▼
 JSON transcript  →  editable answer textarea
@@ -144,8 +144,8 @@ TTS flows in the opposite direction: the browser sends only the question text to
 
 - **No raw audio persistence by default.** The recording is read from the request body, decoded in memory, and discarded after transcription.
 - No audio is written to SQLite. Only the learner's corrected answer text is saved by the existing session store.
-- Vosk mode sends no voice content to a remote provider. Groq mode sends the recording to Groq for transcription; the API key remains server-side.
-- Groq says inference inputs/outputs are not retained by default, but may be temporarily logged for reliability or abuse investigations for up to 30 days. Global Zero Data Retention can be enabled in Groq Data Controls. Review current provider terms and settings before using real personal recordings.
+- Vosk mode sends no voice content to a remote provider. When configured, Groq receives microphone audio for STT and prompt text for TTS; the API key remains server-side and is never returned to browser code.
+- Review Groq's current data controls and retention terms before use; remote audio and prompt text leave the device., but may be temporarily logged for reliability or abuse investigations for up to 30 days. Global Zero Data Retention can be enabled in Groq Data Controls. Review current provider terms and settings before using real personal recordings.
 - No model training on learner data.
 - Model files are local and ignored by Git.
 - Do not record other people or confidential interview content into the prototype.
