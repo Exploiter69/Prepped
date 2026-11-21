@@ -16,7 +16,6 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "httpx>=0.27,<1.0",
-  "httpx2>=2.0.0,<3.0",
   "pytest>=9.0.3,<10.0",
 ]
 # Local speech-to-text. The model is downloaded explicitly, never at startup.
