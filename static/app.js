@@ -12,16 +12,34 @@ function setStatus(message, isError = false) {
   element.classList.toggle("error", isError);
 }
 
+const navigationViews = {
+  "home-toggle": "dashboard-view",
+  "learning-toggle": "learning-view",
+  "practice-toggle": "home-view",
+  "career-toggle": "career-view",
+  "progress-toggle": "progress-view",
+  "history-toggle": "history-view",
+};
+
 function showView(viewId) {
+  if (!views.includes(viewId)) return;
   if (viewId !== "practice-view") window.PreppedVoice?.stopAll();
   for (const id of views) $("#" + id).classList.toggle("hidden", id !== viewId);
+
+  for (const [buttonId, targetView] of Object.entries(navigationViews)) {
+    const button = $("#" + buttonId);
+    const current = targetView === viewId;
+    button.classList.toggle("is-active", current);
+    if (current) button.setAttribute("aria-current", "page");
+    else button.removeAttribute("aria-current");
+  }
+
   window.dispatchEvent(new CustomEvent("prepped:viewchange", { detail: { view: viewId } }));
-  $("#learning-toggle")?.setAttribute("aria-expanded", String(viewId === "learning-view"));
-  $("#career-toggle")?.setAttribute("aria-expanded", String(viewId === "career-view"));
-  $("#progress-toggle")?.setAttribute("aria-expanded", String(viewId === "progress-view"));
   window.dispatchEvent(new CustomEvent("prepped:navigation", { detail: { view: viewId } }));
   setStatus("");
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+  $("#" + viewId).focus({ preventScroll: true });
 }
 
 window.addEventListener("prepped:open-practice", () => showView("home-view"));
