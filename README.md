@@ -2,9 +2,9 @@
 
 **Prepped is a local-first, voice-enabled practice environment for Indian engineering students working on placement preparation, professional communication, English fluency, and technical interview practice.**
 
-The product direction is **voice-first and personalised over time**. The existing text practice loop remains the reliable fallback. Voice supports record/stop capture, an editable transcript, and spoken interviewer prompts. Speech recognition can run locally with Vosk or, when explicitly configured, through Groq Whisper for stronger multilingual transcription.
+The product direction is **voice-first and personalised over time**. The existing text practice loop remains the reliable fallback. Voice supports record/stop capture, an editable transcript, and spoken interviewer prompts. Speech recognition uses Groq Whisper Large v3 Turbo and spoken prompts use Groq Orpheus English when `GROQ_API_KEY` is configured; local Vosk, Piper, and espeak-ng remain fallbacks.
 
-This repository does **not** claim validated speech accuracy, placement improvement, or an AI interviewer. No paid service is required. Optional Groq transcription sends recordings to Groq; without a Groq key, the app uses local Vosk.
+This repository does **not** claim validated speech accuracy, placement improvement, or an AI interviewer. No paid service is required, but Groq TTS is metered and cloud use is optional. Groq STT sends microphone recordings and Groq TTS sends prompt text; without a key, voice runs locally.
 
 ## Start here
 
@@ -34,7 +34,7 @@ This repository does **not** claim validated speech accuracy, placement improvem
 
 ## First scenario
 
-**Explain your project to a placement interviewer.** The learner answers five prompts about the problem, personal contribution, a design decision, evidence, and reflection. Answers can be typed or spoken. Spoken answers are transcribed into an editable text box (locally with Vosk, or remotely with Groq when explicitly configured), then submitted through the same session API as typed answers. The UI discloses which transcription mode is active before recording. After the final answer, Prepped shows question-by-question notes and a transparent checklist, then supports retry, attempt comparison, local history, and deletion. Career studios add authored contextual follow-ups, optional simpler prompt wording and hints, answer-specific formative coaching, and a previous/current answer comparison after retry. Learners can explicitly save an answer or coaching action to Memory or add a future studio practice to the daily plan. These cues are not an interview score or correctness assessment.
+**Explain your project to a placement interviewer.** The learner answers five prompts about the problem, personal contribution, a design decision, evidence, and reflection. Answers can be typed or spoken. Spoken answers are transcribed into an editable text box (Groq Whisper Turbo when configured, otherwise local Vosk), then submitted through the same session API as typed answers. Prompt playback uses Groq Orpheus when configured, otherwise local Piper/espeak-ng. Repeated prompts use bounded audio caching. The UI discloses which transcription mode is active before recording. After the final answer, Prepped shows question-by-question notes and a transparent checklist, then supports retry, attempt comparison, local history, and deletion. Career studios add authored contextual follow-ups, optional simpler prompt wording and hints, answer-specific formative coaching, and a previous/current answer comparison after retry. Learners can explicitly save an answer or coaching action to Memory or add a future studio practice to the daily plan. These cues are not an interview score or correctness assessment.
 
 
 
@@ -74,7 +74,7 @@ Open `http://127.0.0.1:8000`. Keep the server bound to loopback; do not expose t
 Models are **not downloaded at application startup**. Install them explicitly once:
 
 ```bash
-# Vosk STT + optional Piper TTS + Piper voice (~160 MB of downloads)
+# Local Vosk + Piper fallback models; Groq cloud adapters require a server-side key
 ./scripts/setup_voice.sh
 
 # Or speech-to-text only; espeak-ng is used for prompts if installed
@@ -89,7 +89,7 @@ sudo pacman -S ffmpeg espeak-ng
 
 See [docs/VOICE.md](docs/VOICE.md) for model paths, environment overrides, licensing, privacy, and troubleshooting.
 
-### Optional higher-accuracy transcription (Groq)
+### Optional fast cloud voice (Groq STT + TTS)
 
 Create a free Groq API key, then set it only in the server environment:
 
@@ -98,7 +98,7 @@ export GROQ_API_KEY="your-key"
 python -m uvicorn prepped.main:app --reload
 ```
 
-Install the optional HTTP client with `python -m pip install -e ".[voice-cloud]"`. When the key is present, Prepped uses `whisper-large-v3`; without it, Prepped uses local Vosk. The key is never sent to the browser. Groq mode sends the recording to Groq, so use practice audio only and review the provider's data controls. Do not enable a paid plan for this demo.
+Run `./scripts/setup_voice.sh` to install the `voice-cloud` HTTP dependency. With the key, Prepped selects `whisper-large-v3-turbo` STT and `canopylabs/orpheus-v1-english` TTS. Orpheus has a documented 200-character request cap; longer prompts or remote failures use local TTS. The key stays server-side. Groq receives microphone audio for STT and prompt text for TTS; review current quota, pricing, and data controls before use.
 
 Run tests:
 
@@ -114,13 +114,13 @@ The real Vosk integration test is skipped on a clean checkout unless the model h
 - Requests microphone access only when the learner presses **Start recording**.
 - Records a bounded turn with **Start recording** / **Stop recording**; no always-listening agent.
 - Sends the browser recording to the local FastAPI app and decodes it in memory with `ffmpeg`.
-- Uses Groq Whisper (`whisper-large-v3`) when `GROQ_API_KEY` is configured; otherwise uses local Vosk.
+- Uses Groq Whisper Turbo STT and Orpheus English TTS when `GROQ_API_KEY` is configured; otherwise uses local Vosk and Piper/espeak-ng.
 - Inserts the transcript into the existing answer box so the learner can correct recognition errors before saving.
 - Submits the corrected text through the existing `POST /api/sessions/{id}/answers` endpoint.
-- Synthesises interviewer prompts with local Piper TTS when available, falling back to local `espeak-ng`.
+- Synthesises prompts with Groq Orpheus when configured, falling back to local Piper and `espeak-ng`.
 - Provides **Play question aloud**, **Stop**, and **Replay** controls.
 - Shows clear microphone/model/TTS errors and keeps text mode usable when voice fails.
-- Does not save raw audio locally. With Groq configured, the audio is sent to Groq for transcription; without it, transcription stays local.
+- Does not save raw audio locally. With Groq configured, microphone audio is sent for transcription and prompt text for TTS; without it, voice processing stays local.
 
 ## What the text loop does
 
