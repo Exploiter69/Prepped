@@ -12,7 +12,8 @@ function renderPath(catalog,progress){
  $("#dashboard-track-description").textContent=track.title+" · "+(track.description||recommendation.track_description||"A path built around your learning goals.");
  const completed=new Set(progress.completed_lesson_ids||[]),lessons=track.lessons||[],next=lessons.filter(item=>!completed.has(item.id)).slice(0,3),visible=next.length?next:lessons.slice(0,3);
  visible.forEach((lesson,index)=>{const done=completed.has(lesson.id),row=node("article","dashboard-lesson"+(done?" is-complete":"")),marker=node("span","dashboard-lesson-marker",done?"✓":String(index+1)),copy=node("div");marker.setAttribute("aria-hidden","true");copy.append(node("h3","",lesson.title),node("p","",lesson.summary||"A short guided practice session."));row.append(marker,copy,node("span","dashboard-lesson-status",done?"COMPLETED":(lesson.estimated_minutes||8)+" MIN"));if(index===0&&!done){const action=node("button","button button-secondary dashboard-lesson-action","Start lesson");action.type="button";action.setAttribute("aria-label","Start lesson: "+lesson.title);action.addEventListener("click",()=>window.dispatchEvent(new CustomEvent("prepped:start-lesson",{detail:{lessonId:lesson.id}})));row.append(action);}target.append(row);});
- if(!visible.length)target.append(node("p","dashboard-muted","No lessons are available in this path yet."));\n if(!next.length&&lessons.length)target.append(node("p","dashboard-complete-note","You have completed the lessons currently listed in this path. You can revisit them in Learn."));
+ if(!visible.length)target.append(node("p","dashboard-muted","No lessons are available in this path yet."));
+ if(!next.length&&lessons.length)target.append(node("p","dashboard-complete-note","You have completed the lessons currently listed in this path. You can revisit them in Learn."));
 }
 function renderPlan(result){
  const target=$("#dashboard-plan-preview");target.replaceChildren();const items=result.plan?.items||[];
@@ -35,7 +36,8 @@ async function loadDashboard(){
 function openView(view){window.PreppedApp?.showView(view);}
 $("#home-toggle")?.addEventListener("click",()=>openView("dashboard-view"));
 $("#practice-toggle")?.addEventListener("click",()=>openView("home-view"));
-$("#dashboard-learn-button")?.addEventListener("click",()=>$("#learning-toggle")?.click());\n$("#dashboard-refresh")?.addEventListener("click",loadDashboard);
+$("#dashboard-learn-button")?.addEventListener("click",()=>$("#learning-toggle")?.click());
+$("#dashboard-refresh")?.addEventListener("click",loadDashboard);
 $("#dashboard-path-link")?.addEventListener("click",()=>$("#learning-toggle")?.click());
 $("#dashboard-practice-button")?.addEventListener("click",()=>openView("home-view"));
 $("#dashboard-progress-link")?.addEventListener("click",()=>$("#progress-toggle")?.click());
