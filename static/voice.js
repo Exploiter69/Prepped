@@ -234,7 +234,7 @@
     const remoteTts = state.status?.tts?.engine === "groq-orpheus";
     const remote = remoteStt || remoteTts;
     const localText = "Answers are saved in the local SQLite database. Raw microphone audio is processed for transcription and is not stored by Prepped.";
-    const remoteText = "Answers are saved in the local SQLite database. " + (remoteStt ? "Groq Whisper sends microphone audio for transcription. " : "") + (remoteTts ? "Groq Orpheus sends prompt text for speech generation. " : "") + "Prepped does not store raw audio. Use only content you are comfortable sending to the provider.";
+    const remoteText = "Answers are saved in the local SQLite database. " + (remoteStt ? "Your microphone audio is sent to Groq Whisper for transcription. " : "") + (remoteTts ? "Groq Orpheus sends prompt text for speech generation. " : "") + "Prepped does not store raw audio. Use only content you are comfortable sending to the provider.";
     const unavailableText = "Answers are saved locally. Speech-provider details could not be loaded; check voice status before recording. Prepped does not store raw audio.";
     const detail = state.status ? (remote ? remoteText : localText) : unavailableText;
     if (ui.privacyNote) ui.privacyNote.textContent = detail;
@@ -242,7 +242,7 @@
       ui.privacySummary.textContent = !state.status
         ? "Answers stay in the local app. Speech-provider details are unavailable until status can be checked."
         : remote
-          ? "Answers stay in the local app. " + (remoteStt ? "Groq receives microphone audio for STT. " : "") + (remoteTts ? "Groq receives prompt text for TTS. " : "") + "Prepped does not store raw audio."
+          ? "Answers stay in the local app. " + (remoteStt ? "Your microphone audio is sent to Groq Whisper for STT. " : "") + (remoteTts ? "Groq receives prompt text for TTS. " : "") + "Prepped does not store raw audio."
           : "Answers stay in the local app. Vosk and local spoken prompts run locally; Prepped does not store raw audio.";
     }
   }
