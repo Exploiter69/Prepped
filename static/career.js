@@ -53,16 +53,24 @@
     const list = $("#career-studio-list");
     list.replaceChildren();
     for (const studio of state.studios) {
+      const category = String(studio.category || "career").toLowerCase();
       const card = make("article", null, "career-studio-card");
-      card.append(make("span", studio.category.toUpperCase(), "meta-label"));
+      card.dataset.studioCategory = category.replace(/[^a-z0-9_-]/g, "-");
+      const icon = make("span", category.includes("technical") ? "⌘" : category.includes("hr") || category.includes("behaviour") ? "✦" : "↗", "career-studio-icon");
+      icon.setAttribute("aria-hidden", "true");
+      card.append(icon);
+      card.append(make("span", studio.category.toUpperCase().replace(/[_-]+/g, " "), "career-studio-category"));
       card.append(make("h3", studio.title));
       card.append(make("p", studio.description, "section-help"));
-      const meta = make("p", studio.estimated_minutes + " min · " + studio.question_count + " main questions", "career-studio-meta");
+      const meta = make("p", null, "career-studio-meta");
+      meta.append(make("span", studio.estimated_minutes + " min"));
+      meta.append(make("span", "·"));
+      meta.append(make("span", studio.question_count + " main questions + follow-ups"));
       card.append(meta);
-      const skills = make("p", studio.skills.join(" · "), "career-studio-skills");
-      card.append(skills);
+      card.append(make("p", studio.skills.join(" · "), "career-studio-skills"));
       const button = make("button", "Choose studio →", "button button-secondary");
       button.type = "button";
+      button.setAttribute("aria-label", "Choose " + studio.title);
       button.addEventListener("click", () => selectStudio(studio));
       card.append(button);
       list.append(card);
@@ -110,7 +118,17 @@
     const primary = prompt.turn_type === "primary";
     const current = state.session.answered_primary_count + (primary ? 1 : 0);
     $("#career-turn-label").textContent = primary ? "MAIN QUESTION " + current : "FOLLOW-UP · QUESTION " + state.session.answered_primary_count;
-    $("#career-progress").textContent = "Main question " + Math.min(current, state.session.primary_question_count) + " of " + state.session.primary_question_count;
+    const total = Math.max(1, Number(state.session.primary_question_count) || 1);
+    const answered = Math.min(Number(state.session.answered_primary_count) || 0, total);
+    const percent = Math.round(answered / total * 100);
+    const followup = !primary;
+    const progressText = "Main question " + Math.min(current, total) + " of " + total + (followup ? " · follow-up" : "");
+    $("#career-progress").textContent = progressText;
+    $("#career-progress-track").setAttribute("aria-valuemax", String(total));
+    $("#career-progress-track").setAttribute("aria-valuenow", String(answered));
+    $("#career-progress-track").setAttribute("aria-valuetext", progressText + (followup ? "; main question progress held while you explore the follow-up" : ""));
+    $("#career-progress-fill").style.width = percent + "%";
+    $("#career-draft-status").textContent = "Nothing saved for this question yet";
     $("#career-answer").value = "";
     $("#career-answer-error").textContent = "";
     $("#career-voice-status").textContent = "Speak or type. Review and edit any transcript before submitting.";
@@ -615,6 +633,11 @@
     $("#career-home").addEventListener("click", showHome);
     $("#career-start").addEventListener("click", startInterview);
     $("#career-submit").addEventListener("click", submitAnswer);
+    $("#career-answer").addEventListener("input", () => {
+      $("#career-draft-status").textContent = $("#career-answer").value.trim()
+        ? "Draft in progress · not saved"
+        : "Nothing saved for this question yet";
+    });
     $("#career-speak").addEventListener("click", playPrompt);
     $("#career-simpler-prompt").addEventListener("click", toggleSimplerPrompt);
     $("#career-clarify-prompt").addEventListener("click", togglePromptClarification);
