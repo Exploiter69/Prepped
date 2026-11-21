@@ -447,6 +447,7 @@ async function loadHistory() {
         open.type = "button";
         open.className = "button button-secondary";
         open.textContent = "Review";
+        open.dataset.sessionId = session.id;
         open.addEventListener("click", () => showFeedback(session.id));
         actions.append(open);
       } else if (session.status === "in_progress") {
