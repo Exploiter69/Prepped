@@ -6,9 +6,9 @@
     <meta name="theme-color" content="#F6F2E8">
     <meta name="description" content="Private, local-first practice for placement conversations.">
     <title>Prepped — Practice with purpose</title>
-    <link rel="stylesheet" href="/static/style.css?v=ui-stage-5-1">
+    <link rel="stylesheet" href="/static/style.css?v=ui-stage-8-1">
     <script src="/static/voice.js?v=ui-stage-3-1" defer></script>
-    <script src="/static/app.js?v=ui-stage-3-1" defer></script>
+    <script src="/static/app.js?v=ui-stage-8-1" defer></script>
     <script src="/static/learning.js?v=ui-stage-2-1" defer></script>
     <script src="/static/memory.js?v=phase-d-2" defer></script>
     <script src="/static/career.js?v=ui-stage-4-1" defer></script>
@@ -18,21 +18,22 @@
     <script src="/static/dashboard.js?v=ui-foundation-1" defer></script>
   </head>
   <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <header class="site-header" aria-label="Main navigation">
       <a class="wordmark" href="/" aria-label="Prepped home">prepped<span>.</span></a>
       <p class="sidebar-caption">YOUR LEARNING SPACE</p>
       <nav class="header-actions" aria-label="Primary">
         <button id="home-toggle" class="nav-button is-active" type="button" aria-controls="dashboard-view" aria-current="page"><span aria-hidden="true">⌂</span><span>Home</span></button>
-        <button id="learning-toggle" class="nav-button" type="button" aria-controls="learning-view" aria-expanded="false"><span aria-hidden="true">◎</span><span>Learn</span></button>
+        <button id="learning-toggle" class="nav-button" type="button" aria-controls="learning-view"><span aria-hidden="true">◎</span><span>Learn</span></button>
         <button id="practice-toggle" class="nav-button" type="button" aria-controls="home-view"><span aria-hidden="true">◉</span><span>Practice</span></button>
-        <button id="career-toggle" class="nav-button" type="button" aria-controls="career-view" aria-expanded="false"><span aria-hidden="true">◇</span><span>Career</span></button>
-        <button id="progress-toggle" class="nav-button" type="button" aria-controls="progress-view" aria-expanded="false"><span aria-hidden="true">▥</span><span>Progress</span></button>
-        <button id="history-toggle" class="nav-button" type="button"><span aria-hidden="true">↺</span><span>History</span></button>
+        <button id="career-toggle" class="nav-button" type="button" aria-controls="career-view"><span aria-hidden="true">◇</span><span>Career</span></button>
+        <button id="progress-toggle" class="nav-button" type="button" aria-controls="progress-view"><span aria-hidden="true">▥</span><span>Progress</span></button>
+        <button id="history-toggle" class="nav-button" type="button" aria-controls="history-view"><span aria-hidden="true">↺</span><span>History</span></button>
       </nav>
       <div class="sidebar-footer"><span class="sidebar-local-dot"></span><span>Private · stored locally</span></div>
     </header>
-    <main class="app-main">
-      <section id="dashboard-view" class="dashboard-view" aria-labelledby="page-title">
+    <main id="main-content" class="app-main" tabindex="-1">
+      <section id="dashboard-view" class="dashboard-view" aria-labelledby="page-title" tabindex="-1">
       <section class="intro" aria-labelledby="page-title">
         <p class="eyebrow">PRACTICE ROOM / 001</p>
         <p id="dashboard-greeting" class="eyebrow">YOUR NEXT SMALL STEP</p>
@@ -97,7 +98,7 @@
         </aside>
       </div>
       </section>
-      <section id="learning-view" class="scenario-panel learning-panel hidden" aria-labelledby="learning-title">
+      <section id="learning-view" class="scenario-panel learning-panel hidden" aria-labelledby="learning-title" tabindex="-1">
         <div class="panel-topline"><span class="eyebrow">LEARNING ENGINE / PHASE B</span><span id="learning-status" class="status">Loading curriculum…</span></div>
         <div class="learning-welcome">
           <div class="learning-welcome-copy">
@@ -194,7 +195,7 @@
         </section>
         <div class="form-actions"><button id="learning-home" class="button button-quiet" type="button">Back to practice room</button></div>
       </section>
-      <section id="career-view" class="career-panel hidden" aria-labelledby="career-title">
+      <section id="career-view" class="career-panel hidden" aria-labelledby="career-title" tabindex="-1">
         <div class="career-heading">
           <div><span class="eyebrow">CAREER STUDIO · YOUR PRACTICE SPACE</span><h2 id="career-title">Build your answer. Handle the follow-up.</h2>
             <p class="scenario-description">Practise explaining your work and navigating real interview conversations—one prompt at a time. Voice is optional; text always works.</p></div>
@@ -236,7 +237,7 @@
         <section class="career-history" aria-labelledby="career-history-title"><div class="career-history-heading"><div><span class="meta-label">YOUR CONTINUITY</span><h3 id="career-history-title">Recent practice</h3><p class="section-help">Resume a saved conversation, revisit feedback, or remove an interview from this device.</p></div><button id="career-refresh" class="button button-quiet" type="button">Refresh</button></div><div id="career-history-list" class="career-history-list"></div></section>
         <div class="form-actions"><button id="career-home" class="button button-quiet" type="button">Back to practice room</button></div>
       </section>
-      <section id="progress-view" class="scenario-panel progress-panel hidden" aria-labelledby="progress-title">
+      <section id="progress-view" class="scenario-panel progress-panel hidden" aria-labelledby="progress-title" tabindex="-1">
         <div class="panel-topline"><span class="eyebrow">YOUR LEARNING STORY / STAGE 5</span><span id="progress-status" class="status" role="status" aria-live="polite">Loading your activity…</span></div>
         <div class="progress-stage5-intro"><div class="progress-stage5-copy"><span class="progress-stage5-kicker">A RECORD OF YOUR PRACTICE</span><h2 id="progress-title">Small steps add up.</h2><p class="scenario-description">See what you have practised, what has evidence behind it, and where you can go next. This is a record of activity—not a rating of your ability.</p></div><div class="progress-stage5-mark" aria-hidden="true"><span>YOUR</span><strong>PATH</strong><i>↗</i></div></div>
         <p id="progress-insight-note" class="progress-insight-note" role="status" aria-live="polite">Your saved activity will shape this overview.</p>
@@ -312,7 +313,7 @@
         <div class="form-actions"><button id="progress-home" class="button button-quiet" type="button">Back to practice room</button></div>
       </section>
       <p id="global-status" class="global-status" role="status" aria-live="polite">Checking local app…</p>
-      <section id="home-view" class="scenario-panel" aria-labelledby="scenario-title">
+      <section id="home-view" class="scenario-panel" aria-labelledby="scenario-title" tabindex="-1">
         <div class="panel-topline"><span class="eyebrow">FIRST SCENARIO</span><span class="status" id="system-status">Loading scenario…</span></div>
         <h2 id="scenario-title">Explain your project to a placement interviewer</h2>
         <p id="scenario-description" class="scenario-description">Loading the versioned scenario definition…</p>
@@ -322,7 +323,7 @@
         <div class="notice"><strong>Honest by design.</strong><span>Feedback uses a transparent text checklist. Speech recognition is an editable first draft and its accuracy has not been validated. This is not an assessment, placement predictor, or measure of speaking ability.</span></div>
         <div class="primary-action"><button id="start-button" class="button button-primary" type="button" disabled>Start practice <span aria-hidden="true">→</span></button><span class="action-note">Your answers stay in this local app.</span></div>
       </section>
-      <section id="practice-view" class="practice-room scenario-panel hidden" aria-labelledby="practice-title">
+      <section id="practice-view" class="practice-room scenario-panel hidden" aria-labelledby="practice-title" tabindex="-1">
         <div class="practice-room-topline">
           <div><span class="eyebrow">PRACTICE STUDIO / PROJECT EXPLANATION</span><span class="practice-session-label"><span aria-hidden="true"></span> PRIVATE LOCAL SESSION</span></div>
           <span id="practice-progress" class="status">Question 1 of 5</span>
@@ -360,7 +361,7 @@
           <div class="practice-submit-row"><button id="cancel-button" class="button button-quiet" type="button">End session</button><div class="action-group"><button id="skip-button" class="button button-secondary" type="button">Skip question</button><button id="submit-button" class="button button-primary" type="submit">Save answer <span aria-hidden="true">→</span></button></div></div>
         </form>
       </section>
-      <section id="feedback-view" class="practice-review scenario-panel hidden" aria-labelledby="feedback-title">
+      <section id="feedback-view" class="practice-review scenario-panel hidden" aria-labelledby="feedback-title" tabindex="-1">
         <div class="panel-topline"><span class="eyebrow">PRACTICE STUDIO / YOUR REVIEW</span><span id="attempt-label" class="status"></span></div>
         <div class="practice-review-heading"><span class="practice-review-mark" aria-hidden="true">✦</span><div><h2 id="feedback-title">A moment to reflect.</h2><p id="feedback-summary" class="scenario-description"></p></div></div>
         <div id="feedback-limitations" class="notice"></div><div class="divider"></div>
@@ -369,7 +370,7 @@
         <section id="comparison-section" class="comparison-section hidden" aria-labelledby="comparison-title"><div class="divider"></div><h3 id="comparison-title">Attempt comparison</h3><p id="comparison-note" class="section-help"></p><div id="comparison-content"></div></section>
         <div class="form-actions review-actions"><button id="back-home-button" class="button button-quiet" type="button">Back to scenario</button><div class="action-group"><button id="delete-session-button" class="button button-secondary" type="button">Delete this session</button><button id="retry-button" class="button button-primary" type="button">Try again <span aria-hidden="true">→</span></button></div></div>
       </section>
-      <section id="history-view" class="scenario-panel hidden" aria-labelledby="history-title">
+      <section id="history-view" class="scenario-panel hidden" aria-labelledby="history-title" tabindex="-1">
         <div class="panel-topline"><span class="eyebrow">LOCAL ONLY</span><span class="status">Saved on this device</span></div><h2 id="history-title">Practice history</h2>
         <p class="scenario-description">Your local learning timeline brings lessons, practice sessions, career conversations, and saved-memory reviews together. Use search and filters to find something to revisit.</p>
         <section class="history-timeline" aria-labelledby="history-timeline-title">
