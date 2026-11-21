@@ -13,6 +13,7 @@ All notable project changes are recorded here. This file tracks the source-check
 - A source-checkout workflow helper for setup, start, health/readiness checks, verification, and optional voice setup.
 
 ### Security and privacy
+- Removed an unused `httpx2` development dependency; test and optional Groq HTTP code use the maintained `httpx` package.
 - Loopback-only network boundary, bounded API/voice/restore request bodies, restrictive local SQLite permissions, and staged backup restore.
 - No raw audio persistence, no telemetry, no automatic cloud sync, and no required paid service.
 - Backups remain sensitive, unencrypted JSON. The project licence is not declared; redistribution is not authorised.
