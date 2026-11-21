@@ -6,12 +6,12 @@
     <meta name="theme-color" content="#F6F2E8">
     <meta name="description" content="Private, local-first practice for placement conversations.">
     <title>Prepped — Practice with purpose</title>
-    <link rel="stylesheet" href="/static/style.css?v=ui-stage-3-1">
+    <link rel="stylesheet" href="/static/style.css?v=ui-stage-4-1">
     <script src="/static/voice.js?v=ui-stage-3-1" defer></script>
     <script src="/static/app.js?v=ui-stage-3-1" defer></script>
     <script src="/static/learning.js?v=ui-stage-2-1" defer></script>
     <script src="/static/memory.js?v=phase-d-2" defer></script>
-    <script src="/static/career.js?v=phase-i-1" defer></script>
+    <script src="/static/career.js?v=ui-stage-4-1" defer></script>
     <script src="/static/progress.js?v=phase-h-1" defer></script>
     <script src="/static/intelligence.js?v=phase-h-3" defer></script>
     <script src="/static/dashboard.js?v=ui-foundation-1" defer></script>
@@ -193,48 +193,45 @@
         </section>
         <div class="form-actions"><button id="learning-home" class="button button-quiet" type="button">Back to practice room</button></div>
       </section>
-      <section id="career-view" class="scenario-panel career-panel hidden" aria-labelledby="career-title">
-        <div class="panel-topline"><span class="eyebrow">CAREER STUDIO / PHASE E</span><span id="career-status" class="status" role="status" aria-live="polite">Loading studios…</span></div>
-        <h2 id="career-title">Practise the conversation, not just the answer.</h2>
-        <p class="scenario-description">Choose a studio, answer by voice or text, and work through an authored follow-up after every main question. Your interview history stays in this local database.</p>
-        <div id="career-studio-list" class="career-studio-list"></div>
+      <section id="career-view" class="career-panel hidden" aria-labelledby="career-title">
+        <div class="career-heading">
+          <div><span class="eyebrow">CAREER STUDIO · YOUR PRACTICE SPACE</span><h2 id="career-title">Build your answer. Handle the follow-up.</h2>
+            <p class="scenario-description">Practise explaining your work and navigating real interview conversations—one prompt at a time. Voice is optional; text always works.</p></div>
+          <img src="/static/assets/prepped-owl-thinking.svg" alt="" width="92" height="92" loading="lazy">
+        </div>
+        <div class="career-local-note"><span class="career-local-mark" aria-hidden="true">●</span><span>Private local practice</span><span class="career-local-divider" aria-hidden="true">·</span><span>Authored prompts</span><span class="career-local-divider" aria-hidden="true">·</span><span>No interview score</span></div>
+        <div class="career-studio-section">
+          <div class="career-section-heading"><div><span class="meta-label">CHOOSE YOUR FOCUS</span><h3>Three ways to practise</h3><p class="section-help">Pick the conversation you want to feel more prepared for.</p></div><span class="career-section-number">01 / 03</span></div>
+          <div id="career-studio-list" class="career-studio-list" aria-label="Available career practice studios"></div>
+        </div>
         <section id="career-setup" class="career-setup hidden" aria-label="Interview setup">
-          <div class="career-setup-row"><div><span class="meta-label">SELECTED STUDIO</span><h3 id="career-selected-title"></h3><p id="career-selected-description" class="section-help"></p></div>
-          <div><label for="career-difficulty">Practice style</label><select id="career-difficulty"><option value="guided">Guided · take your time</option><option value="standard" selected>Standard · realistic pace</option><option value="challenging">Challenging · stretch yourself</option></select></div></div>
-          <button id="career-start" class="button button-primary" type="button">Start interview →</button>
+          <div class="career-setup-heading"><span class="meta-label">MAKE THIS SESSION YOURS</span><h3 id="career-selected-title"></h3><p id="career-selected-description" class="section-help"></p></div>
+          <div class="career-setup-row"><div><label for="career-difficulty">Practice style</label><select id="career-difficulty"><option value="guided">Guided · take your time</option><option value="standard" selected>Standard · realistic pace</option><option value="challenging">Challenging · stretch yourself</option></select></div><p class="career-setup-tip"><strong>Small reminder</strong><br>You can pause, use a hint, or type. This is practice—not a test.</p></div>
+          <button id="career-start" class="button button-primary" type="button">Begin practice <span aria-hidden="true">→</span></button>
         </section>
         <section id="career-active" class="career-active hidden" aria-labelledby="career-prompt-title">
-          <div class="panel-topline"><span id="career-turn-label" class="eyebrow">QUESTION 1</span><span id="career-progress" class="status"></span></div>
-          <h3 id="career-prompt-title" class="career-prompt"></h3>
-          <p id="career-followup-context" class="section-help hidden" role="status" aria-live="polite"></p>
-          <div class="form-actions career-prompt-help-actions">
-            <button id="career-simpler-prompt" class="button button-quiet hidden" type="button" aria-pressed="false">Show simpler wording</button>
-            <button id="career-clarify-prompt" class="button button-quiet hidden" type="button" aria-expanded="false" aria-controls="career-prompt-help">Show prompt hint</button>
+          <div class="career-session-top"><div><span id="career-turn-label" class="eyebrow">MAIN QUESTION 1</span><span id="career-progress" class="career-progress-copy"></span></div><span class="career-session-chip">YOUR TURN</span></div>
+          <div id="career-progress-track" class="career-progress-track" role="progressbar" aria-label="Main questions completed" aria-valuemin="0" aria-valuemax="1" aria-valuenow="0" aria-valuetext="Getting started"><span id="career-progress-fill"></span></div>
+          <div class="career-prompt-card"><span class="meta-label">THE INTERVIEWER ASKS</span><h3 id="career-prompt-title" class="career-prompt"></h3>
+            <p id="career-followup-context" class="career-followup-context section-help hidden" role="status" aria-live="polite"></p>
+            <div class="form-actions career-prompt-help-actions"><button id="career-simpler-prompt" class="button button-quiet hidden" type="button" aria-pressed="false">Show simpler wording</button><button id="career-clarify-prompt" class="button button-quiet hidden" type="button" aria-expanded="false" aria-controls="career-prompt-help">Show prompt hint</button></div>
+            <p id="career-prompt-help" class="career-prompt-hint section-help hidden" role="status" aria-live="polite"></p>
           </div>
-          <p id="career-prompt-help" class="section-help hidden" role="status" aria-live="polite"></p>
-          <div class="voice-actions career-voice-actions">
-            <button id="career-speak" class="button button-secondary" type="button">Play question aloud</button>
-            <button id="career-replay" class="button button-quiet" type="button">Replay</button>
-            <button id="career-stop-speak" class="button button-quiet" type="button">Stop playback</button>
-            <button id="career-record" class="button button-secondary" type="button">Record answer</button>
-            <button id="career-stop-record" class="button button-quiet" type="button" disabled>Stop recording</button>
+          <div class="career-response-card"><div class="career-response-heading"><div><span class="meta-label">YOUR RESPONSE</span><h4>Say it your way</h4><p class="section-help">Speak naturally or type. Review and edit a transcript before submitting.</p></div><span class="career-answer-badge">VOICE + TEXT</span></div>
+            <div class="voice-actions career-voice-actions"><button id="career-speak" class="button button-secondary" type="button">Play question aloud</button><button id="career-replay" class="button button-quiet" type="button">Replay</button><button id="career-stop-speak" class="button button-quiet" type="button">Stop playback</button><button id="career-record" class="button button-secondary" type="button">Record answer</button><button id="career-stop-record" class="button button-quiet" type="button" disabled>Stop recording</button></div>
+            <audio id="career-audio" class="hidden" controls></audio><p id="career-voice-status" class="voice-status" role="status" aria-live="polite">Text answers are always available.</p>
+            <label for="career-answer">Your answer</label><textarea id="career-answer" rows="6" maxlength="6000" placeholder="Start with the main point. Add an example, decision, or result…"></textarea><div class="career-draft-footer"><span id="career-draft-status">Draft in progress · not saved</span><span>Up to 6,000 characters</span></div>
+            <p id="career-answer-error" class="inline-error" role="alert"></p>
+            <div class="form-actions career-answer-actions"><button id="career-exit" class="button button-quiet" type="button">Leave and resume later</button><button id="career-submit" class="button button-primary" type="button">Submit answer <span aria-hidden="true">→</span></button></div>
           </div>
-          <audio id="career-audio" class="hidden" controls></audio>
-          <p id="career-voice-status" class="voice-status" role="status" aria-live="polite">Text answers are always available.</p>
-          <label for="career-answer">Your answer</label>
-          <textarea id="career-answer" rows="6" maxlength="6000" placeholder="Answer in your own words. You can edit a transcript before submitting."></textarea>
-          <p id="career-answer-error" class="inline-error" role="alert"></p>
-          <div class="form-actions"><button id="career-exit" class="button button-quiet" type="button">Leave interview</button><button id="career-submit" class="button button-primary" type="button">Submit answer →</button></div>
         </section>
         <section id="career-review" class="career-review hidden" aria-labelledby="career-review-title">
-          <div class="divider"></div><span class="eyebrow">SESSION COMPLETE</span><h3 id="career-review-title">Review your interview</h3>
-          <p id="career-review-disclaimer" class="section-help"></p>
-          <div id="career-attempt-comparison" class="career-attempt-comparison hidden"></div>
-          <div id="career-review-notes" class="career-review-notes"></div>
+          <div class="career-review-intro"><span class="eyebrow">PRACTICE COMPLETE</span><h3 id="career-review-title">Pause. Reflect. Choose a next step.</h3><p id="career-review-disclaimer" class="section-help"></p></div>
+          <div id="career-attempt-comparison" class="career-attempt-comparison hidden"></div><div id="career-review-notes" class="career-review-notes"></div>
           <div id="career-next-steps" class="notice"></div>
-          <div class="form-actions"><button id="career-add-plan" class="button button-secondary" type="button">Add next practice to today's plan</button><button id="career-back" class="button button-quiet" type="button">Back to studios</button><button id="career-retry" class="button button-primary" type="button">Try this studio again →</button></div>
+          <div class="career-review-actions"><button id="career-add-plan" class="button button-secondary" type="button">Add next practice to today's plan</button><button id="career-back" class="button button-quiet" type="button">Back to studios</button><button id="career-retry" class="button button-primary" type="button">Practise this studio again <span aria-hidden="true">→</span></button></div>
         </section>
-        <section class="career-history" aria-labelledby="career-history-title"><div class="divider"></div><div class="learning-section-heading"><h3 id="career-history-title">Recent interview practice</h3><button id="career-refresh" class="button button-quiet" type="button">Refresh</button></div><div id="career-history-list" class="career-history-list"></div></section>
+        <section class="career-history" aria-labelledby="career-history-title"><div class="career-history-heading"><div><span class="meta-label">YOUR CONTINUITY</span><h3 id="career-history-title">Recent practice</h3><p class="section-help">Resume a saved conversation, revisit feedback, or remove an interview from this device.</p></div><button id="career-refresh" class="button button-quiet" type="button">Refresh</button></div><div id="career-history-list" class="career-history-list"></div></section>
         <div class="form-actions"><button id="career-home" class="button button-quiet" type="button">Back to practice room</button></div>
       </section>
       <section id="progress-view" class="scenario-panel progress-panel hidden" aria-labelledby="progress-title">
