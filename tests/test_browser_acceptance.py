@@ -723,10 +723,12 @@ def test_progress_navigation_and_security_headers_are_accessible(local_app_url: 
     toggle = page.locator("#progress-toggle")
     assert toggle.get_attribute("aria-controls") == "progress-view"
     toggle.click()
-    assert toggle.get_attribute("aria-expanded") == "true"
+    assert toggle.get_attribute("aria-current") == "page"
     assert page.locator("#progress-view").is_visible()
+    assert page.locator(".nav-button[aria-current='page']").count() == 1
     page.locator("#learning-toggle").click()
-    assert toggle.get_attribute("aria-expanded") == "false"
+    assert toggle.get_attribute("aria-current") is None
+    assert page.locator("#learning-toggle").get_attribute("aria-current") == "page"
     assert page.locator("#learning-view").is_visible()
 
 
@@ -735,12 +737,23 @@ def test_keyboard_navigation_exposes_focus_and_profile_labels(local_app_url: str
     page = browser_page
     page.goto(local_app_url)
 
-    # The complete header-to-profile path is reachable without a pointer.
+    # The Stage 8 skip link is the first keyboard stop and sends focus to main.
+    page.keyboard.press("Tab")
+    assert page.locator(".skip-link").evaluate(
+        "(element) => document.activeElement === element"
+    )
+    assert page.evaluate("getComputedStyle(document.activeElement).outlineStyle") == "solid"
+    page.keyboard.press("Enter")
+    assert page.locator("#main-content").evaluate(
+        "(element) => document.activeElement === element"
+    )
+
+    # Continue from the main landmark; the wordmark and nav remain keyboard reachable.
     page.keyboard.press("Tab")
     assert page.evaluate("document.activeElement.classList.contains('wordmark')")
     assert page.evaluate("getComputedStyle(document.activeElement).outlineStyle") == "solid"
 
-    # After focusing the wordmark, six Tab presses reach the sixth destination (History).
+    # After focusing the wordmark, six Tab presses reach History.
     for _ in range(6):
         page.keyboard.press("Tab")
     assert page.locator("#history-toggle").evaluate(
