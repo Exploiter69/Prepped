@@ -41,6 +41,7 @@ def test_stage9_release_verification_remains_local_and_loopback_only() -> None:
     assert 'verify)' in HELPER
     assert '"$PYTHON" -m pytest -q' in HELPER
     assert '--host 127.0.0.1' in HELPER
-    assert "data/" in HELPER
+    assert 'ROOT="$(cd -- "$(dirname -- "$0")/.." && pwd)"' in HELPER
+    assert "never resets learner data" in HELPER
     assert "reset" in HELPER.lower()
     assert "voice-setup)" in HELPER
