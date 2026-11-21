@@ -429,3 +429,8 @@ Automated browser coverage was added for progress semantics, editable draft stat
 ## UI Stage 4 — Career Studios workspace
 
 The Career Studios view has been redesigned on `feature/learner-profile`: purpose-led workspace header, three distinct studio cards, guided setup, interviewer/response layout, accessible main-question progress that holds during follow-ups, editable-draft status, revised review and history hierarchy, and responsive warm-theme styling. Existing career APIs, session/feedback logic, memory and plan handoffs, retry/resume/delete, and optional voice behavior remain the integration contract. Browser regression coverage and [Stage 4 acceptance checklist](UI_STAGE_4_ACCEPTANCE.md) were added. **Implementation is present; local automated verification and visual/device acceptance are pending.**
+
+
+## UI redesign — Stage 6: History & Learning Memory
+
+**Implementation:** committed on `feature/learner-profile`. History now provides a unified local activity timeline for lesson completions, project practice, Career Studios, and learner-memory reviews, with search, type filters, refresh, and links back to existing review/resume destinations. The original project-session archive and deletion workflow remain. This stage uses existing saved activity and APIs; no schema, provider, curriculum, dependency, or data-retention change. Activity remains a record—not a score, proficiency estimate, streak, or learning-gain claim. Automated checks are in `tests/test_ui_stage6.py`; target-device visual, keyboard/screen-reader, navigation, empty-state, and delete-refresh acceptance remains open in [Stage 6 acceptance](UI_STAGE_6_ACCEPTANCE.md).
