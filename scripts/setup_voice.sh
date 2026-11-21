@@ -62,17 +62,7 @@ else
   trap 'rm -rf "$tmp_dir"' EXIT
   curl -fL --retry 3 -o "$tmp_dir/model.zip" \
     "https://alphacephei.com/vosk/models/$VOSK_MODEL.zip"
-  "$PYTHON" - "$tmp_dir/model.zip" "$MODELS_DIR" <<'PY'
-import sys
-import zipfile
-from pathlib import Path
-
-archive = Path(sys.argv[1])
-destination = Path(sys.argv[2])
-with zipfile.ZipFile(archive) as zf:
-    zf.extractall(destination)
-print(f"Extracted Vosk model into {destination}")
-PY
+  PYTHONPATH="$ROOT${PYTHONPATH:+:$PYTHONPATH}" "$PYTHON" -m prepped.voice.model_archive "$tmp_dir/model.zip" "$MODELS_DIR"
   rm -rf "$tmp_dir"
   trap - EXIT
 fi
