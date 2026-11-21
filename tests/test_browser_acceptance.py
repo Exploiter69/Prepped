@@ -1290,3 +1290,41 @@ def test_stage8_skip_link_and_primary_navigation_are_accessible(
         )
         assert page.locator(".nav-button[aria-current='page']").count() == 1
         assert page.locator(".nav-button[aria-expanded]").count() == 0
+
+
+def test_stage9_release_smoke_all_workspaces_at_supported_widths(
+    local_app_url: str, browser_page
+) -> None:
+    page = browser_page
+    runtime_errors: list[str] = []
+    page.on("pageerror", lambda error: runtime_errors.append(str(error)))
+    page.emulate_media(reduced_motion="reduce")
+    page.goto(local_app_url)
+    page.locator("#dashboard-view").wait_for(state="visible")
+
+    destinations = [
+        ("home-toggle", "dashboard-view"),
+        ("learning-toggle", "learning-view"),
+        ("practice-toggle", "home-view"),
+        ("career-toggle", "career-view"),
+        ("progress-toggle", "progress-view"),
+        ("history-toggle", "history-view"),
+    ]
+    for width in (1280, 768, 390):
+        page.set_viewport_size({"width": width, "height": 900})
+        for button_id, view_id in destinations:
+            page.locator(f"#{button_id}").click()
+            page.locator(f"#{view_id}").wait_for(state="visible")
+            assert page.locator(f"#{view_id}").evaluate(
+                "(element) => document.activeElement === element"
+            )
+            assert page.locator(f"#{button_id}").get_attribute("aria-current") == "page"
+            assert page.locator(".nav-button[aria-current='page']").count() == 1
+        dimensions = page.evaluate(
+            "() => ({viewport: innerWidth, document: document.documentElement.scrollWidth})"
+        )
+        assert dimensions["document"] <= dimensions["viewport"], (
+            f"horizontal overflow at {width}px: {dimensions}"
+        )
+
+    assert not runtime_errors, f"uncaught browser errors: {runtime_errors}"
