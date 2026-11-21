@@ -26,8 +26,8 @@ def extract_model_archive(archive_path: Path, destination: Path) -> None:
             relative = PurePosixPath(name)
             if (
                 not name
-                or "\\x00" in name
-                or "\\\\" in name
+                or "\\" in name
+                or "\\" in name
                 or relative.is_absolute()
                 or any(part in {"", ".", ".."} for part in relative.parts)
                 or (relative.parts and ":" in relative.parts[0])
