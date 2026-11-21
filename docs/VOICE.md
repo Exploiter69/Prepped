@@ -80,7 +80,7 @@ Then spoken prompts use `espeak-ng` if installed.
 ### Manual alternative
 
 ```bash
-python -m pip install -e ".[voice,voice-piper]"
+python -m pip install -e ".[voice,voice-piper,voice-cloud]"
 
 # Vosk small English model
 curl -fL -o /tmp/vosk-model.zip \
@@ -138,7 +138,7 @@ JSON transcript  →  editable answer textarea
 Existing POST /api/sessions/{id}/answers
 ```
 
-TTS flows in the opposite direction: the browser sends only the question text to `POST /api/voice/tts`; the local engine returns a WAV. The audio element supports stop/replay.
+TTS flows in the opposite direction: the browser sends only question text to `POST /api/voice/tts`; Groq Orpheus or the selected local engine returns a WAV. The audio element supports stop/replay.
 
 ## Privacy rules
 
@@ -204,7 +204,7 @@ Allow microphone access for `http://127.0.0.1:8000` in the browser site settings
 ### No speech detected or the transcript is wrong
 
 - Record closer to the microphone, reduce background noise, and speak a little longer.
-- Local Vosk can misrecognise words, especially names, technical terms, and Indian English accents. Configure Groq Whisper for the demo if you have a free-tier key.
+- Local Vosk can misrecognise words, especially names, technical terms, and Indian English accents. Configure Groq STT/TTS for the demo if your account has quota; check current pricing and limits because remote TTS is metered.
 - Edit the transcript before saving. Accuracy has **not** been validated.
 - Try a different local model directory with `PREPPED_STT_MODEL_DIR` if you have one installed.
 
