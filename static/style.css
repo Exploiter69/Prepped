@@ -633,3 +633,31 @@ textarea,.learning-exercise textarea,.learning-order-list select { background:#F
 .history-practice-archive { margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--line); }
 @media(max-width:620px) { .history-timeline-heading { flex-direction:column; } .history-timeline-heading button { width:100%; } .history-timeline-controls { grid-template-columns:1fr; } .history-timeline-controls input,.history-timeline-controls select { grid-row:auto; } .history-timeline-entry { grid-template-columns:34px minmax(0,1fr); gap:.6rem; } .history-timeline-symbol { width:32px; height:32px; } .history-timeline-entry .button { grid-column:2; justify-self:start; } }
 \n/* UI Stage 7 — dashboard next-step and refresh feedback */\n.dashboard-lesson-action { grid-column:2 / 4; justify-self:start; min-height:40px; }\n.dashboard-load-status { margin:.7rem 0 .2rem; color:var(--muted); font-size:.78rem; }\n.dashboard-refresh { margin-top:.35rem; min-height:40px; }\n.dashboard-complete-note { padding:.75rem 1rem; border-radius:10px; background:var(--raised); color:var(--muted); font-size:.85rem; }\n@media(max-width:620px) { .dashboard-lesson-action { grid-column:2; width:100%; justify-self:stretch; } .dashboard-refresh { width:100%; } }\n@media(prefers-reduced-motion:reduce) { .dashboard-mascot { animation:none; } }\n
+
+/* UI Stage 8 — shared navigation and accessibility refinements */
+.skip-link {
+  position: fixed;
+  z-index: 100;
+  top: .75rem;
+  left: .75rem;
+  transform: translateY(calc(-100% - 1rem));
+  padding: .8rem 1rem;
+  border: 2px solid #B8E4C9;
+  border-radius: 10px;
+  background: #173D32;
+  color: #FFFDF6;
+  font-weight: 750;
+  text-decoration: none;
+  box-shadow: 0 4px 18px rgba(0,0,0,.2);
+}
+.skip-link:focus-visible { transform: translateY(0); outline: 3px solid #6AAB85; outline-offset: 3px; }
+button:not(.nav-button) { min-height: 44px; }
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select { min-height: 44px; }
+.text-link { min-height: 44px; }
+.nav-button[aria-current="page"] { font-weight: 800; }
+:where(button, input, select, textarea, a) { scroll-margin-block: 1rem; }
+#main-content:focus, [id$="-view"]:focus { outline: none; }
+@media(max-width:700px) {
+  .skip-link { top: .5rem; left: .5rem; }
+  .app-main { scroll-padding-bottom: 7rem; }
+}
