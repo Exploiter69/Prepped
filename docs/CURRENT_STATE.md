@@ -431,9 +431,13 @@ Automated browser coverage was added for progress semantics, editable draft stat
 The Career Studios view has been redesigned on `feature/learner-profile`: purpose-led workspace header, three distinct studio cards, guided setup, interviewer/response layout, accessible main-question progress that holds during follow-ups, editable-draft status, revised review and history hierarchy, and responsive warm-theme styling. Existing career APIs, session/feedback logic, memory and plan handoffs, retry/resume/delete, and optional voice behavior remain the integration contract. Browser regression coverage and [Stage 4 acceptance checklist](UI_STAGE_4_ACCEPTANCE.md) were added. **Implementation is present; local automated verification and visual/device acceptance are pending.**
 
 
-## UI redesign — Stage 8: Whole-app consistency & accessibility (implementation committed; automated verification pending)
+## UI redesign — Stage 8: Whole-app consistency & accessibility (automated verification passed; manual acceptance open)
 
-Stage 8 implementation is on `feature/learner-profile`: keyboard skip navigation, consistent current-page navigation state across all six primary destinations, focus transfer to each workspace, reduced-motion-aware navigation, and normalized touch targets. Static regressions and a Chromium navigation/skip-link journey were added. No API, data, curriculum, provider, dependency, or learner workflow changes. Exact-commit CI and target-laptop manual acceptance are pending; see [Stage 8 Acceptance](UI_STAGE_8_ACCEPTANCE.md).
+Stage 8 implementation is on `feature/learner-profile`: keyboard skip navigation, consistent current-page navigation state across all six primary destinations, focus transfer to each workspace, reduced-motion-aware navigation, and normalized touch targets. On commit `55b9e11`, the target laptop passed the focused keyboard acceptance test and full verification (199 passed, content validation passed, no broken requirements). Manual screen-reader, zoom, reduced-motion, and full target-device acceptance remain open; see [Stage 8 Acceptance](UI_STAGE_8_ACCEPTANCE.md).
+
+## UI redesign — Stage 9: Final UI Acceptance & Release Integration (implementation committed; final acceptance pending)
+
+Stage 9 adds cross-workspace responsive smoke coverage for Home, Learn, Practice, Career, Progress, and History at desktop/tablet/narrow widths, with active navigation, focus, reduced-motion, overflow, and uncaught browser-error assertions. Static tests connect the six destinations to the release documentation and local verification workflow. The stage adds no API, schema, curriculum, provider, dependency, or learner-data changes. Automated verification and exact-commit CI must be recorded after the Stage 9 commits; target-laptop manual journeys/accessibility and Phase L release gates remain pending. See [Stage 9 Acceptance](UI_STAGE_9_ACCEPTANCE.md).
 
 ## UI redesign — Stage 6: History & Learning Memory
 
