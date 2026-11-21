@@ -19,6 +19,7 @@ This repository does **not** claim validated speech accuracy, placement improvem
 - [Phase J curriculum quality and learner-validation gates](docs/PHASE_J_ACCEPTANCE.md)
 - [Phase K security, privacy, and reliability acceptance](docs/PHASE_K_ACCEPTANCE.md)
 - [Phase L local release-candidate acceptance](docs/PHASE_L_ACCEPTANCE.md)
+- [UI Stage 9 final UI acceptance and release integration](docs/UI_STAGE_9_ACCEPTANCE.md)
 - [Offline text-mode demonstration](docs/DEMO.md)
 - [Changelog](CHANGELOG.md)
 - [ADR-002: local voice slice](docs/ADR-002-LOCAL-VOICE-SLICE.md)
