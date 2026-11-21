@@ -755,8 +755,15 @@ def test_keyboard_navigation_exposes_focus_and_profile_labels(local_app_url: str
         "(element) => document.activeElement === element"
     )
 
-    # Continue from the main landmark; the wordmark and nav remain keyboard reachable.
-    page.keyboard.press("Tab")
+    # Restart document-order traversal to verify header navigation separately.
+    # Tab from the focused main landmark proceeds into main content, not backward
+    # to the header; the wordmark follows the skip link in document order.
+    page.evaluate("""() => {
+      document.activeElement.blur?.();
+      document.body.focus();
+    }""")
+    page.keyboard.press("Tab")  # skip link
+    page.keyboard.press("Tab")  # wordmark
     assert page.evaluate("document.activeElement.classList.contains('wordmark')")
     assert page.evaluate("getComputedStyle(document.activeElement).outlineStyle") == "solid"
 
