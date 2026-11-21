@@ -21,7 +21,7 @@ const navigationViews = {
   "history-toggle": "history-view",
 };
 
-function showView(viewId) {
+function showView(viewId, { focus = true } = {}) {
   if (!views.includes(viewId)) return;
   if (viewId !== "practice-view") window.PreppedVoice?.stopAll();
   for (const id of views) $("#" + id).classList.toggle("hidden", id !== viewId);
@@ -39,7 +39,7 @@ function showView(viewId) {
   setStatus("");
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
-  $("#" + viewId).focus({ preventScroll: true });
+  if (focus) $("#" + viewId).focus({ preventScroll: true });
 }
 
 window.addEventListener("prepped:open-practice", () => showView("home-view"));
