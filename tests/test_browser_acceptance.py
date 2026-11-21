@@ -1201,3 +1201,26 @@ def test_practice_navigation_stops_live_visualizer_and_discards_capture(local_ap
     assert page.locator("#career-view").is_visible()
     assert "is-active" not in (page.locator("#recording-visualizer").get_attribute("class") or "")
     assert page.evaluate("window.__practiceNavigationSttSignal === undefined")
+
+
+
+def test_career_workspace_cards_and_accessible_question_progress(local_app_url: str, browser_page) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+    page.locator("#career-toggle").click()
+    page.locator("#career-view").wait_for(state="visible")
+    cards = page.locator(".career-studio-card")
+    assert cards.count() == 3
+    assert page.locator("#career-studio-list").get_by_role("button", name="Choose Project Explanation Studio").count() == 1
+    assert "Private local practice" in page.locator(".career-local-note").inner_text()
+
+    page.locator(".career-studio-card").filter(has_text="Project Explanation Studio").get_by_role("button").click()
+    page.locator("#career-start").click()
+    page.locator("#career-active").wait_for(state="visible")
+    progress = page.locator("#career-progress-track")
+    assert progress.get_attribute("role") == "progressbar"
+    assert int(progress.get_attribute("aria-valuemax")) > 0
+    assert progress.get_attribute("aria-valuenow") == "0"
+    assert page.locator("#career-draft-status").inner_text() == "Nothing saved for this question yet"
+    page.locator("#career-answer").fill("An editable first draft")
+    assert page.locator("#career-draft-status").inner_text() == "Draft in progress · not saved"
