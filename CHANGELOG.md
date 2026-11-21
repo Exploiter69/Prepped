@@ -14,6 +14,7 @@ All notable project changes are recorded here. This file tracks the source-check
 
 ### Security and privacy
 - Removed an unused `httpx2` development dependency; test and optional Groq HTTP code use the maintained `httpx` package.
+- Voice-model ZIP setup validates member paths and file types and caps expanded size before extracting downloaded content.
 - Loopback-only network boundary, bounded API/voice/restore request bodies, restrictive local SQLite permissions, and staged backup restore.
 - No raw audio persistence, no telemetry, no automatic cloud sync, and no required paid service.
 - Backups remain sensitive, unencrypted JSON. The project licence is not declared; redistribution is not authorised.
