@@ -186,6 +186,10 @@ def create_app(
         response.headers.setdefault("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'")
         if request.url.path.startswith("/api/"):
             response.headers["Cache-Control"] = "no-store"
+        elif request.url.path == "/" or request.url.path.startswith("/static/"):
+            # Revalidate checkout-served HTML/assets so browser caches cannot
+            # pin an old JS/CSS file after a local git pull.
+            response.headers["Cache-Control"] = "no-cache"
         return response
 
     application.add_middleware(RequestSizeLimitMiddleware)
