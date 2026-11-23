@@ -779,10 +779,11 @@ def test_keyboard_navigation_exposes_focus_and_profile_labels(local_app_url: str
         "(element) => document.activeElement === element"
     )
     page.keyboard.press("Tab")
-    assert page.locator("#profile-edit-toggle").evaluate(
+    assert page.locator("#profile-nav-toggle").evaluate(
         "(element) => document.activeElement === element"
     )
     page.keyboard.press("Enter")
+    assert page.locator("#dashboard-view").is_visible()
     assert page.locator("#profile-form").is_visible()
     assert page.locator("#profile-edit-toggle").get_attribute("aria-expanded") == "true"
     assert page.locator("#profile-name").evaluate(
