@@ -497,6 +497,12 @@ async function loadHistory() {
   }
 }
 
+$("#profile-nav-toggle").addEventListener("click", () => {
+  showView("dashboard-view");
+  setProfileFormOpen(true);
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  $("#profile-panel").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+});
 $("#profile-edit-toggle").addEventListener("click", () => {
   setProfileFormOpen($("#profile-form").classList.contains("hidden"));
 });
