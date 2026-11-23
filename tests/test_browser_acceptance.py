@@ -767,10 +767,15 @@ def test_keyboard_navigation_exposes_focus_and_profile_labels(local_app_url: str
     assert page.evaluate("document.activeElement.classList.contains('wordmark')")
     assert page.evaluate("getComputedStyle(document.activeElement).outlineStyle") == "solid"
 
-    # After focusing the wordmark, six Tab presses reach History.
-    for _ in range(6):
+    # Reference order: Today, Practice, Learn, Career, Memory, Progress.
+    # After focusing the wordmark, five Tab presses reach Memory.
+    for _ in range(5):
         page.keyboard.press("Tab")
     assert page.locator("#history-toggle").evaluate(
+        "(element) => document.activeElement === element"
+    )
+    page.keyboard.press("Tab")
+    assert page.locator("#progress-toggle").evaluate(
         "(element) => document.activeElement === element"
     )
     page.keyboard.press("Tab")
@@ -1274,11 +1279,11 @@ def test_stage8_skip_link_and_primary_navigation_are_accessible(
 
     destinations = [
         ("home-toggle", "dashboard-view"),
-        ("learning-toggle", "learning-view"),
         ("practice-toggle", "home-view"),
+        ("learning-toggle", "learning-view"),
         ("career-toggle", "career-view"),
-        ("progress-toggle", "progress-view"),
         ("history-toggle", "history-view"),
+        ("progress-toggle", "progress-view"),
     ]
     for button_id, view_id in destinations:
         button = page.locator(f"#{button_id}")
