@@ -14,11 +14,11 @@ function setStatus(message, isError = false) {
 
 const navigationViews = {
   "home-toggle": "dashboard-view",
-  "learning-toggle": "learning-view",
   "practice-toggle": "home-view",
+  "learning-toggle": "learning-view",
   "career-toggle": "career-view",
-  "progress-toggle": "progress-view",
   "history-toggle": "history-view",
+  "progress-toggle": "progress-view",
 };
 
 function showView(viewId, { focus = true } = {}) {
