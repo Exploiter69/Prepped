@@ -918,3 +918,150 @@ textarea { min-height: 160px; }
     margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
   }
 }
+
+
+/* Final design pass: keep the editorial reference fluid across the full app shell.
+   The main content width must account for the fixed navigation rail (not add it
+   on top of a viewport-width main), which prevents the 1280px desktop overflow. */
+@media (min-width: 1081px) {
+  .app-main {
+    width: min(1320px, calc(100vw - 232px));
+    margin-left: max(232px, calc(232px + (100vw - 232px - 1320px) / 2));
+    margin-right: 0;
+  }
+}
+@media (min-width: 721px) and (max-width: 1080px) {
+  .app-main {
+    width: calc(100vw - 78px);
+    margin-left: 78px;
+    margin-right: 0;
+  }
+}
+@media (max-width: 720px) {
+  .app-main {
+    width: 100%;
+    margin: 0;
+  }
+}
+.app-main,
+.app-main > section,
+.app-main section,
+.app-main article,
+.app-main aside,
+.app-main form,
+.app-main fieldset {
+  min-width: 0;
+}
+.app-main img,
+.app-main video,
+.app-main svg,
+.app-main canvas {
+  max-width: 100%;
+}
+.app-main :where(input,select,textarea,button) {
+  max-width: 100%;
+}
+.app-main :where(p,li,h1,h2,h3,h4,label,small,strong,span) {
+  overflow-wrap: anywhere;
+}
+.app-main .dashboard-hero,
+.app-main .practice-question-card,
+.app-main .career-prompt-card {
+  isolation: isolate;
+}
+.app-main .dashboard-hero > *,
+.app-main .dashboard-columns > *,
+.app-main .learning-welcome > *,
+.app-main .career-heading > * {
+  min-width: 0;
+}
+.app-main .dashboard-card-heading,
+.app-main .learning-section-heading,
+.app-main .career-section-heading {
+  flex-wrap: wrap;
+}
+.app-main .dashboard-path-preview,
+.app-main .dashboard-plan-preview,
+.app-main .learning-card-list,
+.app-main .learning-track-list,
+.app-main .learning-skill-list,
+.app-main .memory-item-list,
+.app-main .career-studio-list,
+.app-main .progress-skills {
+  min-width: 0;
+}
+.app-main .learning-card,
+.app-main .learning-track,
+.app-main .learning-skill,
+.app-main .memory-item,
+.app-main .career-studio-card,
+.app-main .progress-card {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 900px) {
+  .app-main .dashboard-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .app-main .dashboard-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .app-main .career-studio-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .app-main .dashboard-stats,
+  .app-main .career-studio-list,
+  .app-main .learning-card-list,
+  .app-main .learning-skill-list,
+  .app-main .memory-item-list,
+  .app-main .progress-skills {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .app-main .dashboard-stat {
+    min-width: 0;
+  }
+  .app-main .scenario-panel,
+  .app-main .dashboard-card,
+  .app-main .career-setup,
+  .app-main .career-active,
+  .app-main .career-response-card {
+    padding: 18px;
+  }
+  .app-main .practice-question-card,
+  .app-main .career-prompt-card {
+    padding: 22px 18px;
+  }
+  .app-main .learning-progress {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .app-main .progress-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .app-main .career-heading {
+    gap: 12px;
+  }
+}
+@media (max-width: 380px) {
+  .site-header {
+    gap: 6px;
+    padding-inline: 8px;
+  }
+  .wordmark {
+    gap: 5px;
+    padding-right: 2px;
+  }
+  .header-actions {
+    min-width: 0;
+  }
+  .nav-button {
+    padding-inline: 7px;
+  }
+  .app-main .learning-progress,
+  .app-main .progress-summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .app-main .scenario-meta {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
