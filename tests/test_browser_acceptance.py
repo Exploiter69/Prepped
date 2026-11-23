@@ -1314,9 +1314,10 @@ def test_stage9_release_smoke_all_workspaces_at_supported_widths(
 
     destinations = [
         ("home-toggle", "dashboard-view"),
-        ("learning-toggle", "learning-view"),
         ("practice-toggle", "home-view"),
+        ("learning-toggle", "learning-view"),
         ("career-toggle", "career-view"),
+        ("memory-toggle", "learning-view"),
         ("progress-toggle", "progress-view"),
         ("history-toggle", "history-view"),
     ]
@@ -1328,6 +1329,10 @@ def test_stage9_release_smoke_all_workspaces_at_supported_widths(
             assert page.locator(f"#{view_id}").evaluate(
                 "(element) => document.activeElement === element"
             )
+            if button_id == "memory-toggle":
+                assert "memory-focus" in (page.locator("#learning-view").get_attribute("class") or "")
+                assert page.locator("#memory-view").is_visible()
+                assert not page.locator(".learning-welcome").is_visible()
             assert page.locator(f"#{button_id}").get_attribute("aria-current") == "page"
             assert page.locator(".nav-button[aria-current='page']").count() == 1
         dimensions = page.evaluate(
