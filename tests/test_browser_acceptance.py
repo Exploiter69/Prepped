@@ -771,7 +771,7 @@ def test_keyboard_navigation_exposes_focus_and_profile_labels(local_app_url: str
     # After focusing the wordmark, five Tab presses reach Memory.
     for _ in range(5):
         page.keyboard.press("Tab")
-    assert page.locator("#history-toggle").evaluate(
+    assert page.locator("#memory-toggle").evaluate(
         "(element) => document.activeElement === element"
     )
     page.keyboard.press("Tab")
