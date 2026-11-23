@@ -1065,3 +1065,22 @@ textarea { min-height: 160px; }
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+
+/* Match the reference's information hierarchy: greeting, next action, progress,
+   supporting plan, and profile editing after the primary dashboard content. */
+.dashboard-view {
+  display: flex;
+  flex-direction: column;
+}
+.dashboard-view > .intro { order: 0; }
+.dashboard-view > .dashboard-hero { order: 1; }
+.dashboard-view > .dashboard-stats { order: 2; }
+.dashboard-view > .dashboard-columns { order: 3; }
+.dashboard-view > #profile-panel { order: 4; }
+.dashboard-view > #profile-panel .profile-form {
+  border-top-color: var(--line);
+}
+.dashboard-view > #profile-panel .profile-areas {
+  border-color: var(--line);
+}
