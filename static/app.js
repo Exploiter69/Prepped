@@ -532,7 +532,7 @@ $("#memory-toggle").addEventListener("click", () => {
   $("#learning-toggle").removeAttribute("aria-current");
   $("#memory-toggle").classList.add("is-active");
   $("#memory-toggle").setAttribute("aria-current", "page");
-  $("#learning-view").focus({ preventScroll: true });
+  $("#memory-view").focus({ preventScroll: true });
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   $("#memory-view").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
 });
