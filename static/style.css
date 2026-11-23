@@ -1084,3 +1084,82 @@ textarea { min-height: 160px; }
 .dashboard-view > #profile-panel .profile-areas {
   border-color: var(--line);
 }
+
+
+/* Dedicated Memory workspace: keep the existing local revision engine, but let
+   the reference navigation open it as a calm, focused screen. */
+#learning-view.memory-focus > :not(#memory-view) {
+  display: none !important;
+}
+#learning-view.memory-focus > #memory-view {
+  display: block !important;
+  margin: 0;
+  padding: 0;
+}
+#learning-view.memory-focus #memory-view > .divider {
+  display: none;
+}
+#learning-view.memory-focus #memory-view > .learning-section-heading:first-of-type {
+  align-items: flex-end;
+  padding: 4px 0 22px;
+}
+#learning-view.memory-focus #memory-title {
+  font: 500 clamp(2.2rem, 5vw, 3.2rem)/1.1 Georgia, "Times New Roman", serif;
+  letter-spacing: -.045em;
+  color: var(--text);
+}
+#learning-view.memory-focus .memory-review-section {
+  margin: 0 0 22px;
+  padding: clamp(20px, 3vw, 32px);
+  background: #EAF3EF;
+  border-color: #D3E6DE;
+  border-radius: 22px;
+}
+#learning-view.memory-focus .memory-review-card {
+  max-width: 720px;
+  margin: 18px auto 24px;
+  padding: clamp(28px, 5vw, 48px) 28px;
+  text-align: center;
+  border-radius: 22px !important;
+  background: #FFFCF7 !important;
+  box-shadow: 0 10px 0 -3px #E5DCC9, 0 20px 0 -6px #D9CFBC;
+}
+#learning-view.memory-focus .memory-review-card h3 {
+  margin: 20px 0 26px;
+  font: 500 clamp(1.8rem, 4vw, 2.65rem)/1.25 Georgia, "Times New Roman", serif;
+  overflow-wrap: anywhere;
+}
+#learning-view.memory-focus .memory-review-answer {
+  margin: 0 auto 20px;
+  max-width: 560px;
+  padding: 16px 20px;
+  border-left: 0;
+  border-radius: 12px;
+  background: #F0E9DC;
+  color: var(--text);
+  text-align: left;
+}
+#learning-view.memory-focus .memory-ratings {
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+}
+#learning-view.memory-focus .memory-ratings .button {
+  min-width: 105px;
+  border: 0;
+  border-radius: 12px;
+}
+#learning-view.memory-focus .memory-ratings .button:nth-child(1) { background: #FBDCD3; color: #743B30; }
+#learning-view.memory-focus .memory-ratings .button:nth-child(2) { background: #FCE6B4; color: #6E4300; }
+#learning-view.memory-focus .memory-ratings .button:nth-child(3) { background: #DCEFEA; color: #0B4B47; }
+#learning-view.memory-focus .memory-ratings .button:nth-child(4) { background: #D5EEDC; color: #17502A; }
+#learning-view.memory-focus .memory-editor {
+  background: #FFFCF7;
+  border-color: var(--line);
+  border-radius: 18px;
+}
+@media (max-width: 600px) {
+  #learning-view.memory-focus .memory-review-section { padding: 16px; }
+  #learning-view.memory-focus .memory-review-card { padding: 28px 18px; }
+  #learning-view.memory-focus .memory-ratings .button { flex: 1 1 calc(50% - 8px); }
+}
