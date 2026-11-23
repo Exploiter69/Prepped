@@ -15,8 +15,9 @@ def test_stage9_primary_workspaces_are_integrated_and_named() -> None:
         "practice-toggle": ("home-view", "Practice"),
         "learning-toggle": ("learning-view", "Learn"),
         "career-toggle": ("career-view", "Career"),
-        "history-toggle": ("history-view", "Memory"),
+        "memory-toggle": ("learning-view", "Memory"),
         "progress-toggle": ("progress-view", "Progress"),
+        "history-toggle": ("history-view", "History"),
     }
     nav = HTML.split('<nav class="header-actions"', 1)[1].split("</nav>", 1)[0]
     assert nav.count('aria-current="page"') == 1
