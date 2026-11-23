@@ -1236,6 +1236,9 @@ def test_career_workspace_cards_and_accessible_question_progress(local_app_url: 
     page.goto(local_app_url)
     page.locator("#career-toggle").click()
     page.locator("#career-view").wait_for(state="visible")
+    # Career catalog hydration is async; wait for the completed render rather than
+    # asserting against the intentional empty/loading state immediately.
+    page.wait_for_function("() => document.querySelectorAll('.career-studio-card').length === 3")
     cards = page.locator(".career-studio-card")
     assert cards.count() == 3
     assert page.locator("#career-studio-list").get_by_role("button", name="Choose Project Explanation Studio").count() == 1
