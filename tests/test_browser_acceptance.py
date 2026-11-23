@@ -1295,9 +1295,14 @@ def test_stage8_skip_link_and_primary_navigation_are_accessible(
         assert button.evaluate(
             "(element) => document.activeElement === element"
         ) is False  # focus moves to the newly opened workspace
-        assert page.locator(f"#{view_id}").evaluate(
-            "(element) => document.activeElement === element"
-        )
+        if button_id == "memory-toggle":
+            assert page.locator("#memory-view").evaluate(
+                "(element) => document.activeElement === element"
+            )
+        else:
+            assert page.locator(f"#{view_id}").evaluate(
+                "(element) => document.activeElement === element"
+            )
         assert page.locator(".nav-button[aria-current='page']").count() == 1
         assert page.locator(".nav-button[aria-expanded]").count() == 0
 
