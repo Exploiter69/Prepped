@@ -1283,8 +1283,9 @@ def test_stage8_skip_link_and_primary_navigation_are_accessible(
         ("practice-toggle", "home-view"),
         ("learning-toggle", "learning-view"),
         ("career-toggle", "career-view"),
-        ("history-toggle", "history-view"),
+        ("memory-toggle", "learning-view"),
         ("progress-toggle", "progress-view"),
+        ("history-toggle", "history-view"),
     ]
     for button_id, view_id in destinations:
         button = page.locator(f"#{button_id}")
