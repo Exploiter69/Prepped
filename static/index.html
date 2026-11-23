@@ -8,7 +8,7 @@
     <title>Prepped — Practice with purpose</title>
     <link rel="stylesheet" href="/static/style.css?v=ui-design-reference-1">
     <script src="/static/voice.js?v=ui-stage-3-1" defer></script>
-    <script src="/static/app.js?v=ui-stage-8-3" defer></script>
+    <script src="/static/app.js?v=ui-stage-8-4" defer></script>
     <script src="/static/learning.js?v=ui-stage-2-1" defer></script>
     <script src="/static/memory.js?v=phase-d-2" defer></script>
     <script src="/static/career.js?v=ui-stage-4-1" defer></script>
@@ -27,9 +27,10 @@
         <button id="practice-toggle" class="nav-button" type="button" aria-controls="home-view"><span aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3m-4 0h8"/></svg></span><span>Practice</span></button>
         <button id="learning-toggle" class="nav-button" type="button" aria-controls="learning-view"><span aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5c3-1 6-1 8 1 2-2 5-2 8-1v14c-3-1-6-1-8 1-2-2-5-2-8-1z"/><path d="M12 6.5v14"/></svg></span><span>Learn</span></button>
         <button id="career-toggle" class="nav-button" type="button" aria-controls="career-view"><span aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V4h8v3M3 12h18m-11 0v2h4v-2"/></svg></span><span>Career</span></button>
-        <button id="history-toggle" class="nav-button" type="button" aria-controls="history-view"><span aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5h13a3 3 0 0 1 3 3V20H7a3 3 0 0 1-3-3z"/><path d="M4 6.5V4h13v2.5M8 10h8m-8 4h6"/></svg></span><span>Memory</span></button>
+        <button id="memory-toggle" class="nav-button" type="button" aria-controls="memory-view"><span aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5c3-1 6-1 8 1 2-2 5-2 8-1v14c-3-1-6-1-8 1-2-2-5-2-8-1z"/><path d="M12 6v14"/></svg></span><span>Memory</span></button>
         <button id="progress-toggle" class="nav-button" type="button" aria-controls="progress-view"><span aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20V4m0 16h18M7 16v-5m5 5V7m5 9v-8"/></svg></span><span>Progress</span></button>
         <button id="profile-nav-toggle" class="nav-button" type="button" aria-controls="profile-panel"><span aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/></svg></span><span>Profile</span></button>
+        <button id="history-toggle" class="nav-button" type="button" aria-controls="history-view"><span aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5h13a3 3 0 0 1 3 3V20H7a3 3 0 0 1-3-3z"/><path d="M4 6.5V4h13v2.5M8 10h8m-8 4h6"/></svg></span><span>History</span></button>
       </nav>
       <div class="sidebar-footer"><span class="sidebar-local-dot"></span><span>Private · stored locally</span></div>
     </header>
@@ -126,7 +127,7 @@
           <button id="learning-diagnostic-start" class="button button-secondary" type="button">Start starting-point check →</button>
           <div id="learning-diagnostic-history" class="learning-diagnostic-history"></div>
         </section>
-        <section id="memory-view" class="learning-memory" aria-labelledby="memory-title">
+        <section id="memory-view" class="learning-memory" aria-labelledby="memory-title" tabindex="-1">
           <div class="divider"></div>
           <div class="learning-section-heading">
             <div><span class="meta-label">PHASE D · YOUR PERSONAL LEARNING MEMORY</span><h3 id="memory-title">Remember what matters.</h3></div>
@@ -372,8 +373,8 @@
         <div class="form-actions review-actions"><button id="back-home-button" class="button button-quiet" type="button">Back to scenario</button><div class="action-group"><button id="delete-session-button" class="button button-secondary" type="button">Delete this session</button><button id="retry-button" class="button button-primary" type="button">Try again <span aria-hidden="true">→</span></button></div></div>
       </section>
       <section id="history-view" class="scenario-panel hidden" aria-labelledby="history-title" tabindex="-1">
-        <div class="panel-topline"><span class="eyebrow">LOCAL ONLY</span><span class="status">Saved on this device</span></div><h2 id="history-title">Memory</h2>
-        <p class="scenario-description">Your learning memory keeps lessons, practice sessions, career conversations, and saved-memory reviews together. Search or filter your timeline whenever you want to revisit a useful moment.</p>
+        <div class="panel-topline"><span class="eyebrow">LOCAL ONLY</span><span class="status">Saved on this device</span></div><h2 id="history-title">Practice history</h2>
+        <p class="scenario-description">Your local learning timeline brings lessons, practice sessions, career conversations, and saved-memory reviews together. Use search and filters to find something to revisit.</p>
         <section class="history-timeline" aria-labelledby="history-timeline-title">
           <div class="history-timeline-heading"><div><span class="meta-label">YOUR LEARNING MEMORY</span><h3 id="history-timeline-title">Everything you have done</h3><p id="history-timeline-note" class="section-help" role="status" aria-live="polite">Loading your saved activity…</p></div><button id="history-timeline-refresh" class="button button-quiet" type="button">Refresh timeline</button></div>
           <div class="history-timeline-controls"><label for="history-search">Search your history</label><input id="history-search" type="search" placeholder="Search lessons, practice, or reviews" autocomplete="off"><label for="history-filter">Show</label><select id="history-filter"><option value="all">Everything</option><option value="lesson">Lessons</option><option value="practice">Project practice</option><option value="interview">Career studios</option><option value="review">Memory reviews</option></select></div>
