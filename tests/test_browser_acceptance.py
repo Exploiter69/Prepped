@@ -1326,10 +1326,14 @@ def test_stage9_release_smoke_all_workspaces_at_supported_widths(
         for button_id, view_id in destinations:
             page.locator(f"#{button_id}").click()
             page.locator(f"#{view_id}").wait_for(state="visible")
-            assert page.locator(f"#{view_id}").evaluate(
-                "(element) => document.activeElement === element"
-            )
+            else:
+                assert page.locator(f"#{view_id}").evaluate(
+                    "(element) => document.activeElement === element"
+                )
             if button_id == "memory-toggle":
+                assert page.locator("#memory-view").evaluate(
+                    "(element) => document.activeElement === element"
+                )
                 assert "memory-focus" in (page.locator("#learning-view").get_attribute("class") or "")
                 assert page.locator("#memory-view").is_visible()
                 assert not page.locator(".learning-welcome").is_visible()
