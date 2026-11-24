@@ -25,7 +25,6 @@ def test_reference_theme_and_persistent_navigation_are_local_first() -> None:
 
 
 def test_today_reference_hierarchy_keeps_the_primary_action_first() -> None:
-    today = HTML.split('<section id="dashboard-view"', 1)[1].split("</section>", 1)[0]
     assert 'id="dashboard-hero-title"' in HTML
     assert 'id="dashboard-path-preview"' in HTML
     assert 'id="dashboard-plan-preview"' in HTML
@@ -36,7 +35,6 @@ def test_today_reference_hierarchy_keeps_the_primary_action_first() -> None:
 
 
 def test_rehearsal_reference_preserves_voice_and_editable_text_fallback() -> None:
-    practice = HTML.split('<section id="practice-view"', 1)[1].split("</section>", 1)[0]
     for control in ("id=\"practice-progress-track\"", "id=\"tts-play-button\"",
                     "id=\"record-button\"", "id=\"stop-recording-button\"",
                     "id=\"answer-input\""):
