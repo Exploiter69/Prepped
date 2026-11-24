@@ -7,6 +7,7 @@ on:
       - "step-4/**"
       - "step-5/**"
       - "feature/**"
+      - "ui/**"
       - "feature/learner-profile"
   pull_request:
     branches:
