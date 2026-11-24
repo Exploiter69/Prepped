@@ -767,17 +767,23 @@ def test_keyboard_navigation_exposes_focus_and_profile_labels(local_app_url: str
     assert page.evaluate("document.activeElement.classList.contains('wordmark')")
     assert page.evaluate("getComputedStyle(document.activeElement).outlineStyle") == "solid"
 
-    # After focusing the wordmark, six Tab presses reach History.
-    for _ in range(6):
+    # Reference order: Today, Practice, Learn, Career, Memory, Progress.
+    # After focusing the wordmark, five Tab presses reach Memory.
+    for _ in range(5):
         page.keyboard.press("Tab")
-    assert page.locator("#history-toggle").evaluate(
+    assert page.locator("#memory-toggle").evaluate(
         "(element) => document.activeElement === element"
     )
     page.keyboard.press("Tab")
-    assert page.locator("#profile-edit-toggle").evaluate(
+    assert page.locator("#progress-toggle").evaluate(
+        "(element) => document.activeElement === element"
+    )
+    page.keyboard.press("Tab")
+    assert page.locator("#profile-nav-toggle").evaluate(
         "(element) => document.activeElement === element"
     )
     page.keyboard.press("Enter")
+    assert page.locator("#dashboard-view").is_visible()
     assert page.locator("#profile-form").is_visible()
     assert page.locator("#profile-edit-toggle").get_attribute("aria-expanded") == "true"
     assert page.locator("#profile-name").evaluate(
@@ -1236,6 +1242,9 @@ def test_career_workspace_cards_and_accessible_question_progress(local_app_url: 
     page.goto(local_app_url)
     page.locator("#career-toggle").click()
     page.locator("#career-view").wait_for(state="visible")
+    # Career catalog hydration is async; wait for the completed render rather than
+    # asserting against the intentional empty/loading state immediately.
+    page.wait_for_function("() => document.querySelectorAll('.career-studio-card').length === 3")
     cards = page.locator(".career-studio-card")
     assert cards.count() == 3
     assert page.locator("#career-studio-list").get_by_role("button", name="Choose Project Explanation Studio").count() == 1
@@ -1271,9 +1280,10 @@ def test_stage8_skip_link_and_primary_navigation_are_accessible(
 
     destinations = [
         ("home-toggle", "dashboard-view"),
-        ("learning-toggle", "learning-view"),
         ("practice-toggle", "home-view"),
+        ("learning-toggle", "learning-view"),
         ("career-toggle", "career-view"),
+        ("memory-toggle", "learning-view"),
         ("progress-toggle", "progress-view"),
         ("history-toggle", "history-view"),
     ]
@@ -1285,9 +1295,14 @@ def test_stage8_skip_link_and_primary_navigation_are_accessible(
         assert button.evaluate(
             "(element) => document.activeElement === element"
         ) is False  # focus moves to the newly opened workspace
-        assert page.locator(f"#{view_id}").evaluate(
-            "(element) => document.activeElement === element"
-        )
+        if button_id == "memory-toggle":
+            assert page.locator("#memory-view").evaluate(
+                "(element) => document.activeElement === element"
+            )
+        else:
+            assert page.locator(f"#{view_id}").evaluate(
+                "(element) => document.activeElement === element"
+            )
         assert page.locator(".nav-button[aria-current='page']").count() == 1
         assert page.locator(".nav-button[aria-expanded]").count() == 0
 
@@ -1304,9 +1319,10 @@ def test_stage9_release_smoke_all_workspaces_at_supported_widths(
 
     destinations = [
         ("home-toggle", "dashboard-view"),
-        ("learning-toggle", "learning-view"),
         ("practice-toggle", "home-view"),
+        ("learning-toggle", "learning-view"),
         ("career-toggle", "career-view"),
+        ("memory-toggle", "learning-view"),
         ("progress-toggle", "progress-view"),
         ("history-toggle", "history-view"),
     ]
@@ -1315,9 +1331,17 @@ def test_stage9_release_smoke_all_workspaces_at_supported_widths(
         for button_id, view_id in destinations:
             page.locator(f"#{button_id}").click()
             page.locator(f"#{view_id}").wait_for(state="visible")
-            assert page.locator(f"#{view_id}").evaluate(
-                "(element) => document.activeElement === element"
-            )
+            if button_id == "memory-toggle":
+                assert page.locator("#memory-view").evaluate(
+                    "(element) => document.activeElement === element"
+                )
+                assert "memory-focus" in (page.locator("#learning-view").get_attribute("class") or "")
+                assert page.locator("#memory-view").is_visible()
+                assert not page.locator(".learning-welcome").is_visible()
+            else:
+                assert page.locator(f"#{view_id}").evaluate(
+                    "(element) => document.activeElement === element"
+                )
             assert page.locator(f"#{button_id}").get_attribute("aria-current") == "page"
             assert page.locator(".nav-button[aria-current='page']").count() == 1
         dimensions = page.evaluate(

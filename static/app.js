@@ -14,15 +14,19 @@ function setStatus(message, isError = false) {
 
 const navigationViews = {
   "home-toggle": "dashboard-view",
-  "learning-toggle": "learning-view",
   "practice-toggle": "home-view",
+  "learning-toggle": "learning-view",
   "career-toggle": "career-view",
-  "progress-toggle": "progress-view",
   "history-toggle": "history-view",
+  "progress-toggle": "progress-view",
 };
 
 function showView(viewId, { focus = true } = {}) {
   if (!views.includes(viewId)) return;
+  $("#learning-view").classList.remove("memory-focus");
+  const memoryNav = $("#memory-toggle");
+  memoryNav.classList.remove("is-active");
+  memoryNav.removeAttribute("aria-current");
   if (viewId !== "practice-view") window.PreppedVoice?.stopAll();
   for (const id of views) $("#" + id).classList.toggle("hidden", id !== viewId);
 
@@ -497,6 +501,12 @@ async function loadHistory() {
   }
 }
 
+$("#profile-nav-toggle").addEventListener("click", () => {
+  showView("dashboard-view");
+  setProfileFormOpen(true);
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  $("#profile-panel").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+});
 $("#profile-edit-toggle").addEventListener("click", () => {
   setProfileFormOpen($("#profile-form").classList.contains("hidden"));
 });
@@ -515,6 +525,17 @@ $("#cancel-button").addEventListener("click", cancelPractice);
 $("#retry-button").addEventListener("click", retryPractice);
 $("#delete-session-button").addEventListener("click", () => { if (activeSession) deleteSession(activeSession.id); });
 $("#back-home-button").addEventListener("click", () => { activeSession = null; showView("home-view"); });
+$("#memory-toggle").addEventListener("click", () => {
+  showView("learning-view");
+  $("#learning-view").classList.add("memory-focus");
+  $("#learning-toggle").classList.remove("is-active");
+  $("#learning-toggle").removeAttribute("aria-current");
+  $("#memory-toggle").classList.add("is-active");
+  $("#memory-toggle").setAttribute("aria-current", "page");
+  $("#memory-view").focus({ preventScroll: true });
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  $("#memory-view").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+});
 $("#history-toggle").addEventListener("click", async () => { await loadHistory(); showView("history-view"); });
 $("#history-home-button").addEventListener("click", () => showView("home-view"));
 $("#answer-input").addEventListener("input", () => {

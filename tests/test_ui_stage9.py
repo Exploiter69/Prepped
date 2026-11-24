@@ -11,15 +11,19 @@ HELPER = (ROOT / "scripts" / "prepped.sh").read_text(encoding="utf-8")
 
 def test_stage9_primary_workspaces_are_integrated_and_named() -> None:
     destinations = {
-        "home-toggle": ("dashboard-view", "Home"),
-        "learning-toggle": ("learning-view", "Learn"),
+        "home-toggle": ("dashboard-view", "Today"),
         "practice-toggle": ("home-view", "Practice"),
+        "learning-toggle": ("learning-view", "Learn"),
         "career-toggle": ("career-view", "Career"),
+        "memory-toggle": ("learning-view", "Memory"),
         "progress-toggle": ("progress-view", "Progress"),
         "history-toggle": ("history-view", "History"),
     }
     nav = HTML.split('<nav class="header-actions"', 1)[1].split("</nav>", 1)[0]
     assert nav.count('aria-current="page"') == 1
+    assert 'id="profile-nav-toggle"' in nav
+    assert 'aria-controls="profile-panel"' in nav
+    assert ">Profile</span>" in nav
     for control, (view, label) in destinations.items():
         assert f'id="{control}"' in nav
         assert f'aria-controls="{view}"' in nav
