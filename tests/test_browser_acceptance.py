@@ -1603,3 +1603,85 @@ def test_today_start_button_nowrap_and_learn_caps_recommendations(
     page.wait_for_function("() => document.querySelector('#learning-status').textContent.includes('skills')")
     # Recommended section shows at most 2 cards by default to keep Learn compact.
     assert page.locator("#learning-recommendations .learning-card").count() <= 2
+
+
+def test_motion_system_assets_tabs_and_reduced_motion_safety(
+    local_app_url: str, browser_page
+) -> None:
+    page = browser_page
+    runtime_errors: list[str] = []
+    page.on("pageerror", lambda error: runtime_errors.append(str(error)))
+    page.goto(local_app_url)
+    page.locator("#dashboard-view").wait_for(state="visible")
+
+    # Living inline SVG owl hydrates cleanly and sound toggle starts OFF.
+    assert page.locator(".living-owl").is_visible()
+    sound_btn = page.locator("#sound-toggle-btn")
+    assert sound_btn.get_attribute("aria-pressed") == "false"
+    sound_btn.click()
+    assert sound_btn.get_attribute("aria-pressed") == "true"
+    sound_btn.click()
+    assert sound_btn.get_attribute("aria-pressed") == "false"
+
+    # FLIP sliding thumb initializes on Progress segmented tabs and tracks active tab.
+    page.locator("#progress-toggle").click()
+    page.locator("#progress-view").wait_for(state="visible")
+    page.wait_for_function("() => document.querySelector('#progress-tabs .seg-thumb') !== null")
+    before_x = page.evaluate("() => document.querySelector('#progress-tabs .seg-thumb').style.transform")
+    page.locator('#progress-tabs button[data-progress-tab="plan"]').click()
+    page.wait_for_function(
+        "(prev) => document.querySelector('#progress-tabs .seg-thumb').style.transform !== prev",
+        arg=before_x,
+    )
+
+    # Reduced motion keeps all workspaces overflow-free with zero JS errors.
+    page.emulate_media(reduced_motion="reduce")
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.locator("#home-toggle").click()
+    dims = page.evaluate("() => ({w: innerWidth, s: document.documentElement.scrollWidth})")
+    assert dims["s"] <= dims["w"], dims
+    assert not runtime_errors, runtime_errors
+
+
+def test_packs_abcd_preferences_shortcuts_heatmap_and_career_studio_in_browser(
+    local_app_url: str, browser_page
+) -> None:
+    page = browser_page
+    runtime_errors: list[str] = []
+    page.on("pageerror", lambda error: runtime_errors.append(str(error)))
+    page.goto(local_app_url)
+    page.locator("#dashboard-view").wait_for(state="visible")
+
+    page.keyboard.press("?")
+    page.locator("#shortcuts-modal").wait_for(state="visible")
+    page.keyboard.press("Escape")
+    assert page.locator("#shortcuts-modal").is_hidden()
+
+    page.locator("#profile-nav-toggle").click()
+    page.locator("#profile-view").wait_for(state="visible")
+    page.locator("#pref-theme").select_option("dark")
+    page.locator("#pref-text-size").select_option("large")
+    page.locator("#preferences-save-btn").click()
+    page.wait_for_function("() => document.documentElement.dataset.theme === 'dark'")
+    assert page.evaluate("() => document.documentElement.dataset.textSize") == "large"
+
+    page.locator("#progress-toggle").click()
+    page.locator("#progress-view").wait_for(state="visible")
+    page.wait_for_function("() => document.querySelectorAll('#progress-heatmap .heatmap-cell').length === 84")
+    assert page.locator("#progress-heatmap .heatmap-cell").count() == 84
+
+    page.locator("#career-toggle").click()
+    page.locator('#career-stage-tabs button[data-career-nav="projects"]').click()
+    page.locator("#career-projects-stage").wait_for(state="visible")
+    page.locator("#proj-title").fill("Local Study Companion")
+    page.locator("#proj-problem").fill("Students needed offline interview rehearsal.")
+    page.locator("#proj-save-btn").click()
+    page.wait_for_function("() => document.querySelector('#project-studio-list').textContent.includes('Local Study Companion')")
+
+    page.locator('#career-stage-tabs button[data-career-nav="warmup"]').click()
+    page.locator("#mock-active-panel").wait_for(state="visible")
+    page.locator("#mock-answer-input").fill("I am a computer science student and I built a FastAPI tool with automated tests.")
+    page.locator("#mock-finish-early-btn").click()
+    page.locator("#mock-debrief-panel").wait_for(state="visible")
+    assert "does not score ability" in page.locator("#mock-debrief-disclaimer").inner_text()
+    assert not runtime_errors, runtime_errors

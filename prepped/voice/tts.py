@@ -78,13 +78,25 @@ class PiperTTS(TextToSpeechEngine):
                     ) from exc
             return self._voice
 
-    def synthesize(self, text: str) -> bytes:
+    def synthesize(self, text: str, *, speed: float = 1.0) -> bytes:
         voice = self._load_voice()
+        clamped = max(0.7, min(1.5, float(speed or 1.0)))
+        length_scale = round(1.0 / clamped, 3)
         buffer = io.BytesIO()
         try:
             with self._synth_lock:
                 with wave.open(buffer, "wb") as wav_file:
-                    voice.synthesize_wav(text, wav_file)
+                    if abs(clamped - 1.0) > 0.01:
+                        try:
+                            from piper.config import SynthesisConfig  # type: ignore
+                            voice.synthesize_wav(text, wav_file, syn_config=SynthesisConfig(length_scale=length_scale))
+                        except (ImportError, TypeError):
+                            try:
+                                voice.synthesize_wav(text, wav_file, length_scale=length_scale)
+                            except TypeError:
+                                voice.synthesize_wav(text, wav_file)
+                    else:
+                        voice.synthesize_wav(text, wav_file)
         except Exception as exc:
             raise TextToSpeechError(
                 "Local spoken prompts failed. Read the question on screen instead."
@@ -183,14 +195,16 @@ class EspeakTTS(TextToSpeechEngine):
             detail="Local espeak-ng text-to-speech is available.",
         )
 
-    def synthesize(self, text: str) -> bytes:
+    def synthesize(self, text: str, *, speed: float = 1.0) -> bytes:
         if not self.binary:
             raise VoiceUnavailable(
                 "No local text-to-speech engine is installed. Read the question on screen."
             )
+        clamped = max(0.7, min(1.5, float(speed or 1.0)))
+        wpm_arg = str(max(100, min(240, round(150 * clamped))))
         try:
             result = subprocess.run(
-                [self.binary, "-v", "en-us", "-s", "150", "-p", "45", "--stdout"],
+                [self.binary, "-v", "en-us", "-s", wpm_arg, "-p", "45", "--stdout"],
                 input=text.encode("utf-8"),
                 capture_output=True,
                 timeout=20,

@@ -45,7 +45,7 @@ function showView(viewId, { focus = true } = {}) {
 }
 
 window.addEventListener("prepped:open-practice", () => showView("home-view"));
-window.PreppedApp = { showView };
+window.PreppedApp = { showView, getActiveFeedback: () => activeFeedback, getActiveSession: () => activeSession };
 
 async function api(url, options = {}) {
   const response = await fetch(url, {
@@ -247,9 +247,16 @@ async function submitCurrentAnswer(answerText) {
   buttonBusy(true);
   $("#answer-error").textContent = "";
   try {
+    const voiceMetrics = window.PreppedVoice?.consumeLastMetrics?.() || {};
     const session = await api("/api/sessions/" + encodeURIComponent(activeSession.id) + "/answers", {
       method: "POST",
-      body: JSON.stringify({ question_id: activeSession.current_question.id, answer_text: answerText }),
+      body: JSON.stringify({
+        question_id: activeSession.current_question.id,
+        answer_text: answerText,
+        speaking_duration_seconds: voiceMetrics.speaking_duration_seconds ?? null,
+        pause_count: voiceMetrics.pause_count ?? null,
+        silence_seconds: voiceMetrics.silence_seconds ?? null,
+      }),
     });
     renderQuestion(session);
     if (session.status === "completed") await showFeedback(session.id);
@@ -309,6 +316,76 @@ function makeFeedbackCard(title, status, message, evidence, nextAction, meta = "
   return card;
 }
 
+function buildHighlightedTranscript(text, analytics) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "transcript-evidence-box";
+  const legend = document.createElement("div");
+  legend.className = "transcript-legend";
+  for (const [cls, label] of [
+    ["hl-filler", "Filler"],
+    ["hl-repeated", "Repeated"],
+    ["hl-grammar_hint", "Possible phrasing review"],
+    ["hl-vocabulary", "Specific term"],
+  ]) {
+    const tag = document.createElement("span");
+    tag.className = "hl-span " + cls;
+    tag.textContent = label;
+    legend.append(tag);
+  }
+  wrapper.append(legend);
+
+  const para = document.createElement("p");
+  para.className = "transcript-evidence-text";
+  const highlights = (analytics?.highlights || []).slice().sort((a, b) => a.start - b.start);
+  let cursor = 0;
+  for (const h of highlights) {
+    if (h.start < cursor || h.end <= h.start || h.end > text.length) continue;
+    if (h.start > cursor) para.append(document.createTextNode(text.slice(cursor, h.start)));
+    const mark = document.createElement("mark");
+    mark.className = "hl-span hl-" + h.category;
+    mark.title = h.what + " " + h.practice;
+    mark.textContent = text.slice(h.start, h.end);
+    para.append(mark);
+    cursor = h.end;
+  }
+  if (cursor < text.length) para.append(document.createTextNode(text.slice(cursor)));
+  wrapper.append(para);
+
+  const metaBits = [
+    analytics.word_count + " words",
+    analytics.duration_seconds ? analytics.duration_seconds + "s · " + analytics.wpm + " WPM (" + analytics.pace_label + ")" : "Typed response",
+    analytics.readability_observation,
+  ];
+  const metaLine = document.createElement("p");
+  metaLine.className = "section-help";
+  metaLine.textContent = metaBits.join(" · ");
+  wrapper.append(metaLine);
+
+  const obs = (analytics.highlights || []).filter((h) => h.category !== "vocabulary").slice(0, 4);
+  if (obs.length) {
+    const ul = document.createElement("ul");
+    ul.className = "analytics-observation-list";
+    for (const h of obs) {
+      const li = document.createElement("li");
+      li.className = "analytics-observation-item";
+      const badge = document.createElement("span");
+      badge.className = h.certainty === "confirmed_transcript_evidence" ? "chip t" : "chip a";
+      badge.textContent = h.certainty === "confirmed_transcript_evidence" ? "Transcript evidence" : "Worth reviewing";
+      const strong = document.createElement("strong");
+      strong.textContent = " " + h.what;
+      const why = document.createElement("small");
+      why.textContent = "Why it matters: " + h.why;
+      const next = document.createElement("small");
+      next.textContent = "What to practise next: " + h.practice;
+      li.append(badge, strong, why, next);
+      ul.append(li);
+    }
+    wrapper.append(ul);
+  }
+  return wrapper;
+}
+window.PreppedRenderTranscriptEvidence = buildHighlightedTranscript;
+
 function renderFeedback(feedback) {
   activeFeedback = feedback;
   $("#attempt-label").textContent = "Attempt " + feedback.attempt_number;
@@ -326,14 +403,47 @@ function renderFeedback(feedback) {
   }
   limitations.append(list);
 
+  const deliveryTarget = $("#feedback-delivery-metrics");
+  if (deliveryTarget) {
+    deliveryTarget.replaceChildren();
+    const d = feedback.delivery_summary || {};
+    const cards = [
+      [d.total_words ?? feedback.total_words ?? 0, "Total words"],
+      [d.total_duration_seconds != null ? d.total_duration_seconds + "s" : "Typed", "Speaking duration"],
+      [d.average_wpm != null ? d.average_wpm + " WPM" : "—", d.pace_label || "Pace"],
+      [d.total_fillers ?? 0, "Detected fillers"],
+      [d.total_repeated ?? 0, "Repeated words"],
+      [d.total_pauses != null ? String(d.total_pauses) : "—", d.total_silence_seconds != null ? d.total_silence_seconds + "s quiet pauses" : "Voice pauses"],
+    ];
+    for (const [val, label] of cards) {
+      const box = document.createElement("div");
+      box.className = "delivery-metric-card";
+      const strong = document.createElement("strong");
+      strong.textContent = String(val);
+      const span = document.createElement("span");
+      span.textContent = label;
+      box.append(strong, span);
+      deliveryTarget.append(box);
+    }
+    const audioNote = $("#feedback-audio-retention-note");
+    if (audioNote && d.audio_note) audioNote.textContent = d.audio_note;
+  }
+
+  const aiOut = $("#feedback-ai-output");
+  if (aiOut) { aiOut.textContent = ""; aiOut.classList.add("hidden"); }
+
   const questionTarget = $("#question-feedback");
   questionTarget.replaceChildren();
   for (const item of feedback.question_feedback) {
-    const sourceResponse = activeSession?.answers?.find((answer) => answer.question_id === item.question_id)?.answer_text || "";
-    questionTarget.append(makeFeedbackCard(
+    const sourceResponse = item.answer_text || activeSession?.answers?.find((answer) => answer.question_id === item.question_id)?.answer_text || "";
+    const card = makeFeedbackCard(
       item.prompt, item.status, item.message, item.evidence, item.next_action,
       item.word_count + " words", sourceResponse
-    ));
+    );
+    if (sourceResponse && item.speaking_analytics) {
+      card.append(buildHighlightedTranscript(sourceResponse, item.speaking_analytics));
+    }
+    questionTarget.append(card);
   }
   const rubricTarget = $("#rubric-feedback");
   rubricTarget.replaceChildren();
@@ -379,7 +489,55 @@ async function renderComparison(feedback) {
     tbody.append(tr);
   }
   table.append(thead, tbody);
-  $("#comparison-content").replaceChildren(table);
+  const compWrap = document.createElement("div");
+  try {
+    const compData = await api("/api/sessions/" + encodeURIComponent(feedback.session_id) + "/comparison");
+    const cmp = compData?.comparison;
+    if (cmp?.metrics) {
+      const m = cmp.metrics;
+      const mGrid = document.createElement("div");
+      mGrid.className = "comparison-metrics-grid";
+      const fmtDelta = (d, unit = "") => d == null ? "—" : (d > 0 ? "+" + d : String(d)) + unit;
+      for (const [val, lbl] of [
+        [m.previous_words + " → " + m.current_words, "Words (" + fmtDelta(m.word_delta) + ")"],
+        [m.current_wpm != null ? (m.previous_wpm ?? "—") + " → " + m.current_wpm : "Typed", "Pace WPM (" + fmtDelta(m.wpm_delta) + ")"],
+        [m.previous_fillers + " → " + m.current_fillers, "Fillers (" + fmtDelta(m.filler_delta) + ")"],
+        [m.previous_long_sentences + " → " + m.current_long_sentences, "Long sentences"],
+      ]) {
+        const box = document.createElement("div");
+        box.className = "delivery-metric-card";
+        const s = document.createElement("strong"); s.textContent = val;
+        const sp = document.createElement("span"); sp.textContent = lbl;
+        box.append(s, sp);
+        mGrid.append(box);
+      }
+      compWrap.append(mGrid);
+      if ((cmp.improvements?.length || 0) + (cmp.recurring_difficulties?.length || 0) > 0) {
+        const notes = document.createElement("div");
+        notes.className = "comparison-notes-grid";
+        const impBox = document.createElement("div");
+        impBox.className = "debrief-card";
+        const impTitle = document.createElement("strong"); impTitle.textContent = "Improvements observed"; impBox.append(impTitle);
+        const impUl = document.createElement("ul");
+        (cmp.improvements.length ? cmp.improvements : ["Keep repeating this prompt to build steadier evidence."]).forEach((t) => {
+          const li = document.createElement("li"); li.textContent = t; impUl.append(li);
+        });
+        impBox.append(impUl);
+        const recBox = document.createElement("div");
+        recBox.className = "debrief-card";
+        const recTitle = document.createElement("strong"); recTitle.textContent = "Still worth practising"; recBox.append(recTitle);
+        const recUl = document.createElement("ul");
+        (cmp.recurring_difficulties.length ? cmp.recurring_difficulties : ["No recurring checklist gaps flagged."]).forEach((t) => {
+          const li = document.createElement("li"); li.textContent = t; recUl.append(li);
+        });
+        recBox.append(recUl);
+        notes.append(impBox, recBox);
+        compWrap.append(notes);
+      }
+    }
+  } catch (_) {}
+  compWrap.append(table);
+  $("#comparison-content").replaceChildren(compWrap);
 }
 
 async function showFeedback(sessionId) {

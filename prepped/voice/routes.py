@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 class SpeechRequest(BaseModel):
     text: str = Field(min_length=1, max_length=1_200)
+    speed: float = Field(default=1.0, ge=0.7, le=1.5)
 
 
 def create_voice_router(service: VoiceService) -> APIRouter:
@@ -74,7 +75,7 @@ def create_voice_router(service: VoiceService) -> APIRouter:
     @router.post("/tts")
     def speak_question(payload: SpeechRequest) -> Response:
         try:
-            audio = service.synthesize(payload.text)
+            audio = service.synthesize(payload.text, speed=payload.speed)
         except VoiceError as exc:
             raise HTTPException(status_code=exc.status_code, detail=exc.public_message) from exc
         except Exception as exc:

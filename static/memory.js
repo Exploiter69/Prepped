@@ -1,7 +1,44 @@
 (() => {
   "use strict";
   const $ = (selector) => document.querySelector(selector);
-  const state = { items: [], queue: [], editingId: null, revealed: false };
+  const state = { items: [], queue: [], editingId: null, revealed: false, audio: null, audioUrl: null };
+
+  async function speakMemoryText(text, triggerButton) {
+    const clean = String(text || "").trim();
+    if (!clean) return;
+    if (state.audio) { state.audio.pause(); state.audio = null; }
+    if (state.audioUrl) { URL.revokeObjectURL(state.audioUrl); state.audioUrl = null; }
+    const origLabel = triggerButton ? triggerButton.textContent : "";
+    if (triggerButton) { triggerButton.disabled = true; triggerButton.textContent = "Loading audio…"; }
+    try {
+      const speed = Number(window.PreppedPrefs?.ttsSpeed || 1.0);
+      const res = await fetch("/api/voice/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: clean.slice(0, 1000), speed }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(typeof body.detail === "string" ? body.detail : "Spoken audio is unavailable right now.");
+      }
+      const blob = await res.blob();
+      state.audioUrl = URL.createObjectURL(blob);
+      const audio = new Audio(state.audioUrl);
+      state.audio = audio;
+      audio.onended = () => {
+        if (triggerButton) { triggerButton.disabled = false; triggerButton.textContent = origLabel; }
+      };
+      audio.onerror = () => {
+        setStatus("Audio playback could not start. You can continue reviewing by reading.", true);
+        if (triggerButton) { triggerButton.disabled = false; triggerButton.textContent = origLabel; }
+      };
+      await audio.play();
+      if (triggerButton) { triggerButton.disabled = false; triggerButton.textContent = origLabel; }
+    } catch (error) {
+      setStatus(error.message || "Audio is unavailable. Review remains fully usable by reading.", true);
+      if (triggerButton) { triggerButton.disabled = false; triggerButton.textContent = origLabel; }
+    }
+  }
   const typeLabels = { word: "Word", phrase: "Phrase", correction: "Correction", concept: "Concept", example: "Example" };
 
   async function request(url, options = {}) {
@@ -115,6 +152,10 @@
           : "Reviews paused until resumed";
       card.append(node("p", due, "section-help"));
       const actions = node("div", undefined, "memory-actions");
+      const listen = node("button", "Listen", "button button-quiet");
+      listen.type = "button";
+      listen.addEventListener("click", () => speakMemoryText(item.front + ". " + item.back, listen));
+      actions.append(listen);
       const edit = node("button", "Edit", "button button-quiet");
       edit.type = "button";
       edit.addEventListener("click", () => editItem(item));
@@ -215,6 +256,10 @@
     const card = node("article", undefined, "memory-review-card");
     card.append(node("span", "CARD 1 OF " + state.queue.length, "meta-label"));
     card.append(node("h3", item.front));
+    const listenPrompt = node("button", "▶ Listen to prompt", "button button-quiet memory-audio-btn");
+    listenPrompt.type = "button";
+    listenPrompt.addEventListener("click", () => speakMemoryText(item.front, listenPrompt));
+    card.append(listenPrompt);
     if (!state.revealed) {
       const reveal = node("button", "Show answer", "button button-secondary");
       reveal.type = "button";
@@ -222,6 +267,10 @@
       card.append(reveal);
     } else {
       card.append(node("p", item.back, "memory-review-answer"));
+      const listenAnswer = node("button", "▶ Listen to answer", "button button-quiet memory-audio-btn");
+      listenAnswer.type = "button";
+      listenAnswer.addEventListener("click", () => speakMemoryText(item.back, listenAnswer));
+      card.append(listenAnswer);
       const prompt = node("p", "How well did you recall it?", "section-help");
       card.append(prompt);
       const ratings = node("div", undefined, "memory-ratings");

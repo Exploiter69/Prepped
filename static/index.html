@@ -6,17 +6,23 @@
     <meta name="theme-color" content="#F6F2EA">
     <meta name="description" content="Private, local-first practice for English fluency and placement interviews.">
     <title>Prepped — Practice with purpose</title>
-    <link rel="stylesheet" href="/static/style.css?v=product-ux-2">
-    <script src="/static/voice.js?v=product-ux-2" defer></script>
-    <script src="/static/app.js?v=product-ux-2" defer></script>
-    <script src="/static/learning.js?v=product-ux-2" defer></script>
-    <script src="/static/memory.js?v=product-ux-2" defer></script>
-    <script src="/static/career.js?v=product-ux-2" defer></script>
-    <script src="/static/progress.js?v=product-ux-2" defer></script>
-    <script src="/static/history-memory.js?v=product-ux-2" defer></script>
-    <script src="/static/intelligence.js?v=product-ux-2" defer></script>
-    <script src="/static/dashboard.js?v=product-ux-2" defer></script>
-    <script src="/static/ui-shell.js?v=product-ux-2" defer></script>
+    <link rel="stylesheet" href="/static/style.css?v=packs-abcd-1">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="icon" href="/static/assets/prepped-icon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/static/motion.css?v=packs-abcd-1">
+    <link rel="stylesheet" href="/static/enhancements.css?v=packs-abcd-1">
+    <script src="/static/voice.js?v=packs-abcd-1" defer></script>
+    <script src="/static/app.js?v=packs-abcd-1" defer></script>
+    <script src="/static/learning.js?v=packs-abcd-1" defer></script>
+    <script src="/static/memory.js?v=packs-abcd-1" defer></script>
+    <script src="/static/career.js?v=packs-abcd-1" defer></script>
+    <script src="/static/progress.js?v=packs-abcd-1" defer></script>
+    <script src="/static/history-memory.js?v=packs-abcd-1" defer></script>
+    <script src="/static/intelligence.js?v=packs-abcd-1" defer></script>
+    <script src="/static/dashboard.js?v=packs-abcd-1" defer></script>
+    <script src="/static/ui-shell.js?v=packs-abcd-1" defer></script>
+    <script src="/static/motion.js?v=packs-abcd-1" defer></script>
+    <script src="/static/enhancements.js?v=packs-abcd-1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -46,7 +52,9 @@
           <kbd class="kbd">Ctrl K</kbd>
         </button>
         <div class="app-topbar-actions">
+          <button id="sound-toggle-btn" class="button button-quiet topbar-util-btn sound-toggle-btn" type="button" aria-pressed="false" title="Toggle subtle interface sound effects"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9zM16 9a4 4 0 010 6"/></svg><span>Sound off</span></button>
           <button id="onboarding-open-btn" class="button button-quiet topbar-util-btn" type="button" aria-haspopup="dialog" aria-controls="onboarding-modal">Quick setup</button>
+          <button id="shortcuts-open-btn" class="button button-quiet topbar-util-btn" type="button" aria-haspopup="dialog" aria-controls="shortcuts-modal">Shortcuts <kbd class="kbd">?</kbd></button>
           <button id="help-open-btn" class="button button-quiet topbar-util-btn" type="button" aria-haspopup="dialog" aria-controls="help-modal">Help &amp; privacy</button>
         </div>
       </div>
@@ -75,6 +83,10 @@
             </div>
           </div>
           <div class="dashboard-mascot-wrap">
+            <svg class="today-hero-rings" viewBox="0 0 200 200" fill="none" aria-hidden="true">
+              <circle cx="100" cy="100" r="76" stroke="#5EE0C0" stroke-width="1.2" stroke-dasharray="4 6"/>
+              <circle cx="100" cy="100" r="94" stroke="#5EE0C0" stroke-width="1" opacity="0.5"/>
+            </svg>
             <img class="dashboard-mascot" src="/static/assets/prepped-owl-welcome.svg" alt="Prepped owl mascot" width="128" height="128">
           </div>
         </section>
@@ -114,7 +126,7 @@
               <span class="dashboard-kicker">CAREER STUDIOS</span>
               <h2 id="dashboard-career-title">Try a mock interview round</h2>
               <p>Practise Project, HR, and Technical questions with follow-ups.</p>
-              <button id="dashboard-career-button" class="button button-sun" type="button">Open studios <span aria-hidden="true">→</span></button>
+              <div class="career-project-actions"><button id="dashboard-career-button" class="button button-sun" type="button">Open studios <span aria-hidden="true">→</span></button><button id="dashboard-warmup-button" class="button button-light" type="button">5-min warm-up</button></div>
             </section>
           </aside>
         </div>
@@ -155,6 +167,82 @@
             <div class="form-actions"><button id="profile-cancel" class="button button-quiet" type="button">Cancel</button><button class="button button-primary" type="submit">Save my profile</button></div>
           </form>
         </section>
+
+        <div class="profile-settings-grid">
+          <section class="settings-card" aria-labelledby="preferences-title">
+            <div class="lab">PREFERENCES &amp; ACCESSIBILITY</div>
+            <h3 id="preferences-title">Playback, display &amp; privacy</h3>
+            <div class="settings-row">
+              <label for="pref-tts-speed">Spoken prompt speed (<strong id="pref-tts-speed-label">1.0×</strong>)</label>
+              <input id="pref-tts-speed" type="range" min="0.7" max="1.5" step="0.05" value="1.0">
+              <span class="section-help">Applies to Piper, espeak-ng, and browser audio playback across Practice, Career, Learn, and Memory.</span>
+            </div>
+            <div class="settings-row">
+              <label for="pref-theme">Appearance</label>
+              <select id="pref-theme">
+                <option value="light">Warm cream (Light)</option>
+                <option value="dark">Deep forest (Dark)</option>
+                <option value="system">Match system</option>
+              </select>
+            </div>
+            <div class="settings-row">
+              <label for="pref-text-size">Reading text size</label>
+              <select id="pref-text-size">
+                <option value="normal">Standard</option>
+                <option value="large">Large</option>
+              </select>
+            </div>
+            <label class="settings-inline-row">
+              <span>Allow temporary in-memory audio replay before submitting</span>
+              <input id="pref-ephemeral-replay" type="checkbox" checked>
+            </label>
+            <div class="settings-inline-row">
+              <span id="preferences-status" class="status" role="status" aria-live="polite">Saved locally</span>
+              <button id="preferences-save-btn" class="button button-primary" type="button">Save preferences</button>
+            </div>
+          </section>
+
+          <section class="settings-card" aria-labelledby="ai-settings-title">
+            <div class="lab">OPTIONAL CLOUD AI</div>
+            <h3 id="ai-settings-title">Provider-neutral AI coaching</h3>
+            <p class="section-help">Strictly optional. Prepped works fully offline without any cloud key. Text leaves this device only after you explicitly review and confirm a request. Raw audio is never sent.</p>
+            <label class="settings-inline-row">
+              <span>Enable optional cloud AI coaching</span>
+              <input id="ai-enabled-toggle" type="checkbox">
+            </label>
+            <div class="settings-row">
+              <label for="ai-provider-select">Provider</label>
+              <select id="ai-provider-select">
+                <option value="none">None (Offline only)</option>
+                <option value="gemini">Google Gemini (official API)</option>
+                <option value="groq">Groq (official API)</option>
+              </select>
+            </div>
+            <div class="settings-row">
+              <label for="ai-model-input">Model name</label>
+              <input id="ai-model-input" type="text" maxlength="120" placeholder="e.g. gemini-2.5-flash or llama-3.3-70b-versatile">
+            </div>
+            <div class="settings-row">
+              <label for="ai-daily-limit">Local daily request cap</label>
+              <input id="ai-daily-limit" type="number" min="1" max="200" value="25">
+            </div>
+            <div class="settings-row">
+              <label for="ai-api-key-input">API key (stored locally with 0600 permissions, never shown again)</label>
+              <div class="ai-key-row">
+                <input id="ai-api-key-input" type="password" autocomplete="off" placeholder="Paste key or set GEMINI_API_KEY / GROQ_API_KEY">
+                <button id="ai-save-key-btn" class="button button-secondary" type="button">Save key</button>
+              </div>
+              <span id="ai-key-status" class="section-help">Checking key status…</span>
+            </div>
+            <div class="settings-inline-row">
+              <span id="ai-config-status" class="status" role="status" aria-live="polite">Offline mode active</span>
+              <div class="career-project-actions">
+                <button id="ai-test-btn" class="button button-secondary" type="button">Test connection</button>
+                <button id="ai-save-config-btn" class="button button-primary" type="button">Save AI settings</button>
+              </div>
+            </div>
+          </section>
+        </div>
       </section>
 
       <!-- LEARN -->
@@ -306,6 +394,10 @@
           </div>
           <div id="career-stage-tabs" class="seg-tabs" role="tablist" aria-label="Career workspace sections">
             <button class="seg-tab is-active" type="button" role="tab" aria-selected="true" data-career-nav="studios">Studios</button>
+            <button class="seg-tab" type="button" role="tab" aria-selected="false" data-career-nav="projects">Project Studio</button>
+            <button class="seg-tab" type="button" role="tab" aria-selected="false" data-career-nav="resume">Resume Prep</button>
+            <button class="seg-tab" type="button" role="tab" aria-selected="false" data-career-nav="mock">Timed Mock</button>
+            <button class="seg-tab" type="button" role="tab" aria-selected="false" data-career-nav="warmup">Warm-up</button>
             <button class="seg-tab" type="button" role="tab" aria-selected="false" data-career-nav="history">History</button>
           </div>
         </div>
@@ -358,6 +450,158 @@
           <div class="career-review-actions"><button id="career-add-plan" class="button button-secondary" type="button">Add next practice to today's plan</button><button id="career-back" class="button button-quiet" type="button">Back to studios</button><button id="career-retry" class="button button-primary" type="button">Practise this studio again <span aria-hidden="true">→</span></button></div>
         </section>
 
+        <section id="career-projects-stage" class="career-stage-panel hidden" aria-labelledby="career-projects-title">
+          <div class="career-pack-grid">
+            <form id="project-studio-form" class="career-form-card">
+              <div class="lab">STRUCTURED PROJECT FRAMEWORK</div>
+              <h3 id="career-projects-title">Prepare your own project</h3>
+              <p class="section-help">Organise Problem, Approach, Implementation, Decisions &amp; Trade-offs, Outcome, and Learning locally, then rehearse tailored interview questions.</p>
+              <input id="proj-edit-id" type="hidden">
+              <label for="proj-title">Project title</label>
+              <input id="proj-title" maxlength="140" required placeholder="e.g. Campus Study Planner API">
+              <div class="profile-fields">
+                <div><label for="proj-role">Your personal role</label><input id="proj-role" maxlength="240" placeholder="e.g. Backend &amp; testing lead"></div>
+                <div><label for="proj-stack">Tech stack</label><input id="proj-stack" maxlength="400" placeholder="e.g. Python, FastAPI, SQLite"></div>
+              </div>
+              <label for="proj-problem">1. Problem</label>
+              <textarea id="proj-problem" rows="2" maxlength="2000" placeholder="What real problem did this project address?"></textarea>
+              <label for="proj-approach">2. Approach</label>
+              <textarea id="proj-approach" rows="2" maxlength="2000" placeholder="How did you design the solution?"></textarea>
+              <label for="proj-implementation">3. Implementation</label>
+              <textarea id="proj-implementation" rows="2" maxlength="2000" placeholder="What did you personally build and wire together?"></textarea>
+              <label for="proj-decisions">4. Decisions &amp; trade-offs</label>
+              <textarea id="proj-decisions" rows="2" maxlength="2000" placeholder="What alternative did you reject and why?"></textarea>
+              <label for="proj-outcome">5. Outcome &amp; verification</label>
+              <textarea id="proj-outcome" rows="2" maxlength="2000" placeholder="What did you test or observe? Mention anything unmeasured honestly."></textarea>
+              <label for="proj-learning">6. Learning</label>
+              <textarea id="proj-learning" rows="2" maxlength="2000" placeholder="What would you improve next or do differently?"></textarea>
+              <p id="proj-status" class="status" role="status" aria-live="polite"></p>
+              <div class="form-actions">
+                <button id="proj-reset-btn" class="button button-quiet" type="button">Clear</button>
+                <button id="proj-save-btn" class="button button-primary" type="submit">Save project &amp; generate prompts</button>
+              </div>
+            </form>
+            <div class="career-form-card">
+              <div class="lab">SAVED PROJECTS</div>
+              <h3>Your project studios</h3>
+              <p class="section-help">Start a verbal/text rehearsal or request optional AI review on any saved project.</p>
+              <div id="project-studio-list" class="progress-list"></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="career-resume-stage" class="career-stage-panel hidden" aria-labelledby="career-resume-title">
+          <div class="career-pack-grid">
+            <form id="resume-prep-form" class="career-form-card">
+              <div class="lab">LOCAL RESUME EXTRACTOR</div>
+              <h3 id="career-resume-title">Practise from your resume</h3>
+              <p class="section-help">Paste project bullets or upload a plain text/Markdown resume (`.txt` / `.md`, max 100 KB). Prepped extracts skills and generates tailored questions locally without requiring cloud AI.</p>
+              <label for="resume-file-input">Upload plain text / Markdown file (optional)</label>
+              <input id="resume-file-input" type="file" accept=".txt,.md,text/plain,text/markdown">
+              <label for="resume-text-input">Resume or project bullets</label>
+              <textarea id="resume-text-input" rows="8" maxlength="50000" required placeholder="Paste your project bullets, internship experience, and technical skills here…"></textarea>
+              <label class="settings-inline-row">
+                <span>Save extracted topics as a local project studio</span>
+                <input id="resume-save-project" type="checkbox">
+              </label>
+              <p id="resume-status" class="status" role="status" aria-live="polite"></p>
+              <div class="form-actions">
+                <button id="resume-extract-btn" class="button button-primary" type="submit">Extract topics &amp; questions</button>
+              </div>
+            </form>
+            <div class="career-form-card">
+              <div class="lab">EXTRACTED TOPICS &amp; QUESTIONS</div>
+              <h3>Tailored practice prompts</h3>
+              <div id="resume-skills-chips" class="memory-compact-stats"></div>
+              <div id="resume-questions-list" class="progress-list"><p class="section-help">Paste your resume details on the left to generate questions locally.</p></div>
+              <div class="career-project-actions">
+                <button id="resume-start-mock-btn" class="button button-primary hidden" type="button">Practise these questions →</button>
+                <button id="resume-ai-questions-btn" class="button button-secondary hidden" type="button">Refine with optional Cloud AI…</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="career-mock-stage" class="career-stage-panel hidden" aria-labelledby="career-mock-title">
+          <div id="mock-setup-panel" class="career-form-card">
+            <div class="lab">TIMED MOCK &amp; WARM-UP</div>
+            <h3 id="career-mock-title">Configure your mock interview</h3>
+            <p class="section-help">Rehearse a sequence of questions with an optional countdown timer and receive a grounded debrief based on your actual responses and timing.</p>
+            <div class="profile-fields">
+              <div>
+                <label for="mock-focus-select">Interview focus</label>
+                <select id="mock-focus-select">
+                  <option value="mixed">Mixed placement round</option>
+                  <option value="project">Project deep dive</option>
+                  <option value="hr">HR &amp; behavioural</option>
+                  <option value="technical">Technical fundamentals</option>
+                </select>
+              </div>
+              <div>
+                <label for="mock-time-select">Time limit</label>
+                <select id="mock-time-select">
+                  <option value="600" selected>10 minutes (standard)</option>
+                  <option value="300">5 minutes (quick)</option>
+                  <option value="900">15 minutes (extended)</option>
+                  <option value="0">Untimed</option>
+                </select>
+              </div>
+            </div>
+            <div class="career-project-actions">
+              <button id="mock-start-btn" class="button button-primary" type="button">Start timed mock →</button>
+              <button id="warmup-start-btn" class="button button-secondary" type="button">Start 5-minute warm-up</button>
+            </div>
+            <div class="divider"></div>
+            <h4>Recent mock interviews &amp; warm-ups</h4>
+            <div id="mock-history-list" class="progress-list"></div>
+          </div>
+
+          <div id="mock-active-panel" class="career-form-card hidden">
+            <div class="mock-timer-banner">
+              <div><strong id="mock-active-title">Timed Mock</strong> <span id="mock-active-progress">Question 1 of 5</span></div>
+              <span id="mock-timer-clock" class="mock-timer-clock" aria-live="off">10:00</span>
+            </div>
+            <div class="career-prompt-card">
+              <span id="mock-question-topic" class="meta-label">TOPIC</span>
+              <h3 id="mock-question-prompt" class="career-prompt"></h3>
+              <p id="mock-question-tip" class="section-help"></p>
+            </div>
+            <div class="voice-actions">
+              <button id="mock-tts-btn" class="button button-secondary" type="button">Play question aloud</button>
+              <button id="mock-record-btn" class="button button-secondary" type="button">Record answer</button>
+              <button id="mock-stop-record-btn" class="button button-quiet" type="button" disabled>Stop recording</button>
+              <span id="mock-voice-status" class="voice-status" role="status" aria-live="polite">Voice optional · text always works</span>
+            </div>
+            <label for="mock-answer-input">Your response</label>
+            <textarea id="mock-answer-input" rows="6" maxlength="6000" placeholder="Speak or type your response here…"></textarea>
+            <p id="mock-error" class="inline-error" role="alert"></p>
+            <div class="form-actions">
+              <button id="mock-finish-early-btn" class="button button-quiet" type="button">Finish &amp; view debrief</button>
+              <button id="mock-submit-answer-btn" class="button button-primary" type="button">Next question →</button>
+            </div>
+          </div>
+
+          <div id="mock-debrief-panel" class="career-form-card hidden">
+            <div class="workspace-header-row">
+              <div><span class="lab">INTERVIEW DEBRIEF</span><h3 id="mock-debrief-title">Session debrief</h3></div>
+              <div class="career-project-actions">
+                <button id="mock-debrief-ai-btn" class="button button-secondary" type="button">Optional Cloud AI review…</button>
+                <button id="mock-debrief-print-btn" class="button button-secondary" type="button">Print debrief</button>
+                <button id="mock-debrief-back-btn" class="button button-primary" type="button">New round</button>
+              </div>
+            </div>
+            <p id="mock-debrief-disclaimer" class="section-help"></p>
+            <div id="mock-debrief-metrics" class="delivery-metrics-strip"></div>
+            <div class="mock-debrief-grid">
+              <div class="debrief-card"><h4>Strengths</h4><ul id="mock-debrief-strengths"></ul></div>
+              <div class="debrief-card"><h4>Areas to improve</h4><ul id="mock-debrief-improve"></ul></div>
+            </div>
+            <div id="mock-debrief-ai-output" class="ai-response-panel hidden"></div>
+            <h4>Transcript evidence by question</h4>
+            <div id="mock-debrief-questions" class="feedback-list"></div>
+          </div>
+        </section>
+
         <section id="career-history-stage" class="career-history hidden" aria-labelledby="career-history-title">
           <div class="career-history-heading"><div><span class="meta-label">SAVED ROUNDS</span><h3 id="career-history-title">Recent interview practice</h3><p class="section-help">Resume an unfinished round, revisit feedback, or remove a session from this device.</p></div><button id="career-refresh" class="button button-quiet" type="button">Refresh</button></div>
           <div id="career-history-list" class="career-history-list"></div>
@@ -390,6 +634,14 @@
             <h3 id="progress-activity-title">This week</h3>
             <p id="progress-week-summary" class="progress-week-summary">Your last seven days of saved activity.</p>
             <div id="progress-week" class="progress-week"></div>
+            <div class="heatmap-wrap" aria-labelledby="heatmap-title">
+              <div class="heatmap-header">
+                <strong id="heatmap-title">12-week learning calendar</strong>
+                <div class="heatmap-legend" aria-hidden="true"><span>Less</span><i style="background:var(--surface-2)"></i><i style="background:#CBE8E0"></i><i style="background:#65BFB0"></i><i style="background:#0F766E"></i><i style="background:#0E2F2B"></i><span>More</span></div>
+              </div>
+              <div id="progress-heatmap" class="heatmap-grid" role="group" aria-label="Twelve week saved activity calendar"></div>
+              <p id="progress-heatmap-readout" class="heatmap-readout" role="status" aria-live="polite">Select any day to inspect saved practice activity.</p>
+            </div>
           </section>
           <section class="progress-section" aria-labelledby="progress-recommendations-title">
             <h3 id="progress-recommendations-title">Suggested next steps</h3>
@@ -538,6 +790,13 @@
               <p id="record-status" class="voice-status" role="status" aria-live="polite">Checking microphone and speech provider…</p>
               <p id="voice-slow-hint" class="voice-slow-hint hidden" role="status" aria-live="polite">Still working. You can wait or type instead.</p>
               <p id="voice-error" class="inline-error voice-error" role="alert"></p>
+              <div id="ephemeral-replay-box" class="ephemeral-replay-box hidden" aria-label="Temporary recording replay">
+                <div class="ephemeral-replay-top">
+                  <strong>Replay your recording (temporary · not saved to disk)</strong>
+                  <button id="ephemeral-replay-clear" class="button button-quiet" type="button">Discard audio</button>
+                </div>
+                <audio id="ephemeral-replay-audio" controls preload="metadata"></audio>
+              </div>
               <div class="voice-fallback-row">
                 <button id="voice-type-instead" class="button button-quiet" type="button">Type instead</button>
                 <span class="voice-storage-note">Raw audio is never stored.</span>
@@ -563,6 +822,12 @@
         <div class="feedback-layout">
           <div class="feedback-main-col">
             <div id="feedback-limitations" class="notice"></div>
+            <section class="feedback-section-card" aria-labelledby="delivery-summary-title">
+              <div class="lab">SPEAKING &amp; TRANSCRIPT ANALYTICS</div>
+              <h3 id="delivery-summary-title">Delivery snapshot</h3>
+              <div id="feedback-delivery-metrics" class="delivery-metrics-strip"></div>
+              <p id="feedback-audio-retention-note" class="section-help">Raw voice recordings are not stored permanently on this device.</p>
+            </section>
             <section class="feedback-section-card">
               <div class="lab">Question-by-question notes</div>
               <h3>Your answers and next steps</h3>
@@ -574,6 +839,7 @@
               <p class="section-help">These are simple text signals, not grades. Read the evidence and decide what helps you most.</p>
               <div id="rubric-feedback" class="feedback-list"></div>
             </section>
+            <div id="feedback-ai-output" class="ai-response-panel hidden" role="status" aria-live="polite"></div>
             <section class="feedback-decision-row" aria-label="Additional analysis notes">
               <div class="dash-card"><span class="chip">Not yet built</span><strong>Grammar feedback</strong><p class="section-help">Prepped currently reports checklist signals grounded in your own words rather than automated grammar grading.</p></div>
               <div class="dash-card"><span class="chip">Not yet built</span><strong>Vocabulary feedback</strong><p class="section-help">Save useful phrases to Memory to build your own phrasing list over time.</p></div>
@@ -586,6 +852,7 @@
               <div class="feedback-side-actions">
                 <button id="retry-button" class="button button-primary" type="button">Retry with improvements <span aria-hidden="true">→</span></button>
                 <button id="feedback-save-memory" class="button button-secondary" type="button">Save phrase to Memory</button>
+                <button id="feedback-ai-assist" class="button button-secondary" type="button">Optional Cloud AI feedback…</button>
                 <button id="back-home-button" class="button button-quiet" type="button">Back to scenario</button>
                 <button id="delete-session-button" class="button button-quiet button-danger-text" type="button">Delete this session</button>
               </div>
@@ -742,6 +1009,52 @@
           <div class="help-card"><span class="chip t">Voice</span><h4>How voice works</h4><p>Prepped never stores raw audio recordings. Depending on your setup, transcription runs on-device (Vosk) or via Groq Whisper—the active mode is always shown in the voice privacy badge.</p></div>
           <div class="help-card"><span class="chip a">Limits</span><h4>What feedback can and cannot judge</h4><p>Feedback checks your words against transparent, rule-based checklists. It does not score accent, pronunciation, grammar mastery, or placement readiness.</p></div>
           <div class="help-card"><span class="chip">Shortcuts</span><h4>Keyboard navigation</h4><p>Press <kbd class="kbd">Ctrl K</kbd> (or <kbd class="kbd">Cmd K</kbd>) to search across Prepped, and <kbd class="kbd">Esc</kbd> to close dialogs. Text input is always available alongside voice.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="shortcuts-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="shortcuts-modal-title">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <h3 id="shortcuts-modal-title">Keyboard shortcuts</h3>
+          <button class="button button-quiet modal-close" type="button" data-close-modal="shortcuts-modal" aria-label="Close shortcuts">Esc</button>
+        </div>
+        <p class="section-help">Shortcuts stay inactive while typing inside inputs or textareas.</p>
+        <table class="shortcuts-table">
+          <thead><tr><th>Shortcut</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><kbd class="kbd">Ctrl K</kbd> / <kbd class="kbd">Cmd K</kbd></td><td>Open global search</td></tr>
+            <tr><td><kbd class="kbd">?</kbd></td><td>Show keyboard shortcuts</td></tr>
+            <tr><td><kbd class="kbd">g</kbd> then <kbd class="kbd">t</kbd> / <kbd class="kbd">p</kbd> / <kbd class="kbd">l</kbd> / <kbd class="kbd">c</kbd> / <kbd class="kbd">m</kbd> / <kbd class="kbd">r</kbd></td><td>Jump to Today, Practice, Learn, Career, Memory, Progress</td></tr>
+            <tr><td><kbd class="kbd">Space</kbd> (in Memory review)</td><td>Reveal flashcard answer</td></tr>
+            <tr><td><kbd class="kbd">1</kbd> <kbd class="kbd">2</kbd> <kbd class="kbd">3</kbd> <kbd class="kbd">4</kbd> (in Memory review)</td><td>Rate card: Again, Hard, Good, Easy</td></tr>
+            <tr><td><kbd class="kbd">Alt</kbd> + <kbd class="kbd">R</kbd> (in Practice)</td><td>Start or stop voice recording</td></tr>
+            <tr><td><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Enter</kbd></td><td>Submit active practice or lesson answer</td></tr>
+            <tr><td><kbd class="kbd">Esc</kbd></td><td>Close active dialog</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="ai-consent-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="ai-consent-title">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <h3 id="ai-consent-title">Review before sending to Cloud AI</h3>
+          <button class="button button-quiet modal-close" type="button" data-close-modal="ai-consent-modal" aria-label="Cancel cloud request">Cancel</button>
+        </div>
+        <div class="al al-attention">
+          <div><strong id="ai-consent-provider-label">External provider</strong><br>This text will leave your local device and be sent to your configured cloud provider. Raw audio is never sent. You can edit or redact the text below first.</div>
+        </div>
+        <label for="ai-consent-preview">Text to send (editable)</label>
+        <textarea id="ai-consent-preview" rows="6" maxlength="6000"></textarea>
+        <label class="settings-inline-row" style="margin-top:10px">
+          <span>I consent to sending the text above to this cloud provider</span>
+          <input id="ai-consent-checkbox" type="checkbox">
+        </label>
+        <p id="ai-consent-error" class="inline-error" role="alert"></p>
+        <div class="modal-footer-actions">
+          <button class="button button-secondary" type="button" data-close-modal="ai-consent-modal">Keep offline</button>
+          <button id="ai-consent-send-btn" class="button button-primary" type="button">Send with consent</button>
         </div>
       </div>
     </div>

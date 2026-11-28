@@ -207,23 +207,65 @@ def _overview(db_path: Path, curriculum_path: Path) -> dict[str, Any]:
         lesson_count = len(completed_ids)
         practice_completed = sum(row["status"] == "completed" for row in practice)
         interviews_completed = sum(row["status"] == "completed" for row in interviews)
-        weekly = { (now.date() - timedelta(days=offset)).isoformat(): 0 for offset in range(6, -1, -1) }
+        heatmap_start = (now.date() - timedelta(days=83)).isoformat()
+        heatmap_days: dict[str, dict[str, int]] = {
+            (now.date() - timedelta(days=offset)).isoformat(): {
+                "lessons": 0, "practice": 0, "interviews": 0, "reviews": 0, "total": 0
+            }
+            for offset in range(83, -1, -1)
+        }
+        all_review_rows = conn.execute(
+            "SELECT reviewed_at FROM learning_memory_reviews WHERE reviewed_at >= ?",
+            (heatmap_start,),
+        ).fetchall()
+        mock_rows = []
+        if conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='mock_interviews'").fetchone():
+            mock_rows = conn.execute(
+                "SELECT completed_at FROM mock_interviews WHERE status='completed' AND completed_at >= ?",
+                (heatmap_start,),
+            ).fetchall()
+
         for row in events:
             day = (row["occurred_at"] or "")[:10]
-            if day in weekly and row["lesson_id"] in completed_ids:
-                weekly[day] += 1
+            if day in heatmap_days and row["lesson_id"] in completed_ids:
+                heatmap_days[day]["lessons"] += 1
+                heatmap_days[day]["total"] += 1
         for row in practice:
             day = (row["completed_at"] or "")[:10]
-            if row["status"] == "completed" and day in weekly:
-                weekly[day] += 1
+            if row["status"] == "completed" and day in heatmap_days:
+                heatmap_days[day]["practice"] += 1
+                heatmap_days[day]["total"] += 1
         for row in interviews:
             day = (row["completed_at"] or "")[:10]
-            if row["status"] == "completed" and day in weekly:
-                weekly[day] += 1
-        for row in review_rows:
+            if row["status"] == "completed" and day in heatmap_days:
+                heatmap_days[day]["interviews"] += 1
+                heatmap_days[day]["total"] += 1
+        for row in mock_rows:
+            day = (row["completed_at"] or "")[:10]
+            if day in heatmap_days:
+                heatmap_days[day]["interviews"] += 1
+                heatmap_days[day]["total"] += 1
+        for row in all_review_rows:
             day = (row["reviewed_at"] or "")[:10]
-            if day in weekly:
-                weekly[day] += 1
+            if day in heatmap_days:
+                heatmap_days[day]["reviews"] += 1
+                heatmap_days[day]["total"] += 1
+
+        weekly = {
+            (now.date() - timedelta(days=offset)).isoformat(): heatmap_days[(now.date() - timedelta(days=offset)).isoformat()]["total"]
+            for offset in range(6, -1, -1)
+        }
+        activity_heatmap = [
+            {
+                "date": day,
+                "count": counts["total"],
+                "lessons": counts["lessons"],
+                "practice": counts["practice"],
+                "interviews": counts["interviews"],
+                "reviews": counts["reviews"],
+            }
+            for day, counts in heatmap_days.items()
+        ]
         activity = _recent_activity(conn)
         recommendations = []
         in_progress = next((row for row in lesson_rows if row["status"] == "in_progress"), None)
@@ -261,6 +303,7 @@ def _overview(db_path: Path, curriculum_path: Path) -> dict[str, Any]:
                         "interviews_started": len(interviews)},
             "skills": skills,
             "weekly_activity": [{"date": day, "count": count} for day, count in weekly.items()],
+            "activity_heatmap": activity_heatmap,
             "goals": active_goals,
             "recent_activity": activity,
             "recommendations": recommendations,

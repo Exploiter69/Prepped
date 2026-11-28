@@ -21,16 +21,21 @@
     $("#career-setup")?.classList.toggle("hidden", stage !== "setup");
     $("#career-active")?.classList.toggle("hidden", stage !== "session");
     $("#career-review")?.classList.toggle("hidden", stage !== "review");
+    $("#career-projects-stage")?.classList.toggle("hidden", stage !== "projects");
+    $("#career-resume-stage")?.classList.toggle("hidden", stage !== "resume");
+    $("#career-mock-stage")?.classList.toggle("hidden", stage !== "mock" && stage !== "warmup");
     $("#career-history-stage")?.classList.toggle("hidden", stage !== "history");
     const stageTabs = $("#career-stage-tabs");
     if (stageTabs) {
       stageTabs.classList.toggle("hidden", stage === "session");
+      const activeNav = ["history", "projects", "resume", "mock", "warmup"].includes(stage) ? stage : "studios";
       for (const tab of stageTabs.querySelectorAll("[data-career-nav]")) {
-        const on = tab.dataset.careerNav === (stage === "history" ? "history" : "studios");
+        const on = tab.dataset.careerNav === activeNav;
         tab.classList.toggle("is-active", on);
         tab.setAttribute("aria-selected", String(on));
       }
     }
+    window.dispatchEvent(new CustomEvent("prepped:career-stage", { detail: { stage } }));
   }
   window.PreppedCareerStage = setCareerStage;
   function showCareer() {
@@ -413,7 +418,7 @@
       const response = await fetch("/api/voice/tts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, speed: Number(window.PreppedPrefs?.ttsSpeed || 1.0) }),
         signal: controller.signal,
       });
       if (!response.ok) {
@@ -660,7 +665,7 @@
     $("#career-stage-tabs")?.addEventListener("click", (event) => {
       const tab = event.target.closest("[data-career-nav]");
       if (!tab) return;
-      const target = tab.dataset.careerNav === "history" ? "history" : "studios";
+      const target = tab.dataset.careerNav || "studios";
       setCareerStage(target);
       if (target === "history") loadHistory();
     });

@@ -82,15 +82,28 @@ def test_schema_three_database_upgrade_is_additive_and_idempotent(tmp_path: Path
         connection.execute("DROP TABLE adaptive_plans")
         connection.execute("PRAGMA user_version = 3")
 
+    from prepped.ai_provider import initialize_ai_database
+    from prepped.career_prep import initialize_career_prep_database
+    from prepped.preferences import initialize_preferences_database
+
     initialize_database(database)
     initialize_career_database(database)
     initialize_progress_database(database)
     initialize_intelligence_database(database)
+    initialize_preferences_database(database)
+    initialize_career_prep_database(database)
+    initialize_ai_database(database)
+    with connect_database(database) as ver_conn:
+        ver_conn.execute("PRAGMA user_version = 5")
     initialize_database(database)
 
     with connect_database(database) as connection:
         assert connection.execute("SELECT answer_text FROM answers WHERE id='preserved-answer'").fetchone()[0] == "keep this answer"
-        assert connection.execute("PRAGMA user_version").fetchone()[0] == 4
+        assert connection.execute("PRAGMA user_version").fetchone()[0] == 5
+        assert connection.execute("SELECT name FROM sqlite_master WHERE name='learner_preferences'").fetchone()
+        assert connection.execute("SELECT name FROM sqlite_master WHERE name='learner_projects'").fetchone()
+        assert connection.execute("SELECT name FROM sqlite_master WHERE name='mock_interviews'").fetchone()
+        assert connection.execute("SELECT name FROM sqlite_master WHERE name='ai_settings'").fetchone()
         assert connection.execute("SELECT name FROM sqlite_master WHERE name='adaptive_plans'").fetchone()
         assert connection.execute("PRAGMA foreign_key_check").fetchall() == []
         assert connection.execute("PRAGMA integrity_check").fetchone()[0] == "ok"

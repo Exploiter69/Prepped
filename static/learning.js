@@ -714,7 +714,7 @@
       status.textContent = "Preparing spoken message…";
       const response = await fetch("/api/voice/tts", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, speed: Number(window.PreppedPrefs?.ttsSpeed || 1.0) }),
       });
       if (!response.ok) {
         const payload = await response.json().catch(() => ({}));

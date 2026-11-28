@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import hashlib
+import inspect
 import os
 import threading
 from collections import OrderedDict
@@ -110,13 +111,24 @@ class VoiceService:
             "stored_audio": False,
         }
 
-    def synthesize(self, text: str) -> bytes:
+    @staticmethod
+    def _invoke_tts(engine: TextToSpeechEngine, text: str, speed: float) -> bytes:
+        try:
+            sig = inspect.signature(engine.synthesize)
+            if "speed" in sig.parameters:
+                return engine.synthesize(text, speed=speed)
+        except (ValueError, TypeError):
+            pass
+        return engine.synthesize(text)
+
+    def synthesize(self, text: str, *, speed: float = 1.0) -> bytes:
         clean = " ".join(text.split())
         if not clean:
             raise InvalidSpeechText("No question text was provided to speak.")
         if len(clean) > self.settings.max_tts_characters:
             raise InvalidSpeechText("The question is too long to speak locally.")
-        cache_key = hashlib.sha256(clean.encode("utf-8")).hexdigest()
+        clamped_speed = round(max(0.7, min(1.5, float(speed or 1.0))), 2)
+        cache_key = hashlib.sha256(f"{clamped_speed:.2f}|{clean}".encode("utf-8")).hexdigest()
         with self._tts_cache_lock:
             cached = self._tts_cache.get(cache_key)
             if cached is not None:
@@ -127,16 +139,14 @@ class VoiceService:
         if not tts_status.available:
             raise VoiceUnavailable(tts_status.detail)
         try:
-            audio = self.tts.synthesize(clean)
+            audio = self._invoke_tts(self.tts, clean, clamped_speed)
         except Exception:
-            # Keep the no-cost local path when Groq is throttled, unavailable,
-            # or its short-input limit is exceeded.
             if not getattr(self.tts, "remote", False):
                 raise
             fallback = self.local_tts_fallback
             if fallback is None or not fallback.status().available:
                 raise
-            audio = fallback.synthesize(clean)
+            audio = self._invoke_tts(fallback, clean, clamped_speed)
         if audio and len(audio) <= self._tts_cache_max_bytes:
             with self._tts_cache_lock:
                 prior = self._tts_cache.pop(cache_key, None)

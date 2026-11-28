@@ -16,13 +16,18 @@ from prepped.database import connect_database, initialize_database
 from prepped.career import initialize_career_database
 from prepped.progress import initialize_progress_database
 from prepped.intelligence import initialize_intelligence_database
+from prepped.preferences import initialize_preferences_database
+from prepped.career_prep import initialize_career_prep_database
+from prepped.ai_provider import initialize_ai_database
 
 BACKUP_FORMAT = "prepped-local-backup"
 BACKUP_FORMAT_VERSION = 1
-DATABASE_SCHEMA_VERSION = 4
+DATABASE_SCHEMA_VERSION = 5
+V4_SCHEMA_VERSION = 4
 LEGACY_SCHEMA_VERSION = 3
 MAX_BACKUP_BYTES = 25 * 1024 * 1024
 MAX_BACKUP_ROWS = 200_000
+V5_EXTRA_TABLES = {"learner_preferences", "learner_projects", "mock_interviews", "ai_settings"}
 TABLES = (
     "learner_profile",
     "sessions",
@@ -37,14 +42,22 @@ TABLES = (
     "recommendation_dismissals",
     "adaptive_plans",
     "adaptive_plan_items",
+    "learner_preferences",
+    "learner_projects",
+    "mock_interviews",
+    "ai_settings",
 )
 INSERT_ORDER = (
     "learner_profile",
+    "learner_preferences",
+    "ai_settings",
     "sessions",
     "learning_attempts",
     "career_sessions",
     "learner_goals",
     "recommendation_dismissals",
+    "learner_projects",
+    "mock_interviews",
     "answers",
     "learning_events",
     "learning_memory",
@@ -133,18 +146,38 @@ def create_portability_router(db_path: Path) -> APIRouter:
         backup_schema = payload.get("database_schema_version")
         if (type(payload.get("format_version")) is not int or type(backup_schema) is not int
                 or payload.get("format_version") != BACKUP_FORMAT_VERSION
-                or backup_schema not in {LEGACY_SCHEMA_VERSION, DATABASE_SCHEMA_VERSION}):
+                or backup_schema not in {LEGACY_SCHEMA_VERSION, V4_SCHEMA_VERSION, DATABASE_SCHEMA_VERSION}):
             raise HTTPException(status_code=409, detail="This backup format or database version is not supported by this Prepped build.")
         if payload.get("confirm_replace") is not True:
             raise HTTPException(status_code=400, detail="Explicit confirmation is required because restore replaces all current local learning data.")
         tables = payload.get("tables")
-        expected_tables = set(TABLES) if backup_schema == DATABASE_SCHEMA_VERSION else set(TABLES) - {"adaptive_plans", "adaptive_plan_items"}
+        if backup_schema == DATABASE_SCHEMA_VERSION:
+            expected_tables = set(TABLES)
+        elif backup_schema == V4_SCHEMA_VERSION:
+            expected_tables = set(TABLES) - V5_EXTRA_TABLES
+        else:
+            expected_tables = set(TABLES) - V5_EXTRA_TABLES - {"adaptive_plans", "adaptive_plan_items"}
         if not isinstance(tables, dict) or set(tables) != expected_tables:
             raise HTTPException(status_code=400, detail="Backup is missing required data tables or contains unsupported tables.")
-        # Version 3 backups predate adaptive plans; preserve original records and
-        # initialise the new learner-owned plan tables empty during migration.
+        tables = {**tables}
         if backup_schema == LEGACY_SCHEMA_VERSION:
-            tables = {**tables, "adaptive_plans": [], "adaptive_plan_items": []}
+            tables.setdefault("adaptive_plans", [])
+            tables.setdefault("adaptive_plan_items", [])
+        if backup_schema in {LEGACY_SCHEMA_VERSION, V4_SCHEMA_VERSION}:
+            for extra in V5_EXTRA_TABLES:
+                tables.setdefault(extra, [])
+            upgraded_answers = []
+            for ans in tables.get("answers", []):
+                if isinstance(ans, dict):
+                    upgraded_answers.append({
+                        "speaking_duration_seconds": None,
+                        "pause_count": None,
+                        "silence_seconds": None,
+                        **ans,
+                    })
+                else:
+                    upgraded_answers.append(ans)
+            tables["answers"] = upgraded_answers
         total_rows = 0
         for table in TABLES:
             if not isinstance(tables[table], list):
@@ -162,6 +195,11 @@ def create_portability_router(db_path: Path) -> APIRouter:
                 initialize_career_database(staged_path)
                 initialize_progress_database(staged_path)
                 initialize_intelligence_database(staged_path)
+                initialize_preferences_database(staged_path)
+                initialize_career_prep_database(staged_path)
+                initialize_ai_database(staged_path)
+                with connect_database(staged_path) as ver_conn:
+                    ver_conn.execute("PRAGMA user_version = 5")
                 with connect_database(staged_path) as staged:
                     column_map = {table: _columns(staged, table) for table in TABLES}
                     for table in TABLES:
