@@ -877,7 +877,7 @@ def test_learning_discards_late_microphone_permission_after_navigation(local_app
 
     page.get_by_role("button", name="Record spoken response").click()
     page.wait_for_function("() => typeof window.__resolveMicrophone === 'function'")
-    page.locator("#progress-toggle").click()
+    page.evaluate("window.PreppedApp.showView('progress-view')")
     page.evaluate("window.__resolveMicrophone()")
     page.wait_for_function("() => window.__stoppedTracks === 1")
 
