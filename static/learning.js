@@ -1,8 +1,8 @@
 (() => {
   const $ = (selector, root = document) => root.querySelector(selector);
   const state = { catalog: null, progress: null, diagnostic: null, attempt: null, busy: false, voiceStatus: null,
-    recorder: null, stream: null, chunks: [], recordTimer: null, discardRecording: false, transcribing: false, listeningAudio: null, audioUrl: null, recordingRequestId: 0, recordingPending: false, transcriptionController: null };
-  const viewIds = ["home-view", "practice-view", "feedback-view", "history-view", "learning-view", "career-view", "progress-view"];
+    recorder: null, stream: null, chunks: [], recordTimer: null, discardRecording: false, transcribing: false, listeningAudio: null, audioUrl: null, recordingRequestId: 0, recordingPending: false, transcriptionController: null, selectedTrackId: null, showAllResume: false, showAllRecommended: false };
+  const viewIds = ["home-view", "practice-view", "feedback-view", "history-view", "learning-view", "memory-view", "career-view", "progress-view", "profile-view"];
 
   async function request(url, options = {}) {
     const response = await fetch(url, {
@@ -38,6 +38,7 @@
   function showHome() {
     stopLearningRecording(true);
     stopListeningAudio();
+    $("#learning-runner")?.classList.add("hidden");
     $("#global-status")?.classList.remove("hidden");
     window.PreppedApp?.showView("home-view");
   }
@@ -62,9 +63,25 @@
     $("#learning-route-note").textContent = recommendations.note;
     const container = $("#learning-recommendations");
     container.replaceChildren();
-    for (const item of recommendations.items) {
+    const allItems = recommendations.items || [];
+    const ordered = [
+      ...allItems.filter((item) => !completed.has(item.lesson_id)),
+      ...allItems.filter((item) => completed.has(item.lesson_id)),
+    ];
+    const visibleItems = state.showAllRecommended ? ordered : ordered.slice(0, 2);
+    for (const item of visibleItems) {
       const card = document.createElement("article");
       card.className = "learning-card";
+      const isDone = completed.has(item.lesson_id);
+      const topRow = document.createElement("div");
+      topRow.className = "learning-card-top";
+      const meta = document.createElement("span");
+      meta.className = "meta-label";
+      meta.textContent = "ABOUT " + item.estimated_minutes + " MIN";
+      const badge = document.createElement("span");
+      badge.className = isDone ? "chip g" : "chip t";
+      badge.textContent = isDone ? "Completed" : "Up next";
+      topRow.append(meta, badge);
       const heading = document.createElement("h4");
       heading.textContent = item.title;
       const description = document.createElement("p");
@@ -72,14 +89,11 @@
       const why = document.createElement("p");
       why.className = "learning-why";
       why.textContent = item.why;
-      const meta = document.createElement("span");
-      meta.className = "meta-label";
-      meta.textContent = "ABOUT " + item.estimated_minutes + " MINUTES";
       const lesson = lessons.get(item.lesson_id);
       const missing = (lesson?.prerequisites || []).filter((id) => !completed.has(id));
-      const action = makeButton(completed.has(item.lesson_id) ? "Practise again →" : "Start lesson →",
+      const action = makeButton(isDone ? "Practise again →" : "Start lesson →",
         item.lesson_id, "button button-primary");
-      card.append(meta, heading, description, why, action);
+      card.append(topRow, heading, description, why, action);
       if (missing.length) {
         const prerequisite = document.createElement("p");
         prerequisite.className = "learning-prerequisite";
@@ -88,19 +102,63 @@
       }
       container.append(card);
     }
+    const existingToggle = document.getElementById("learning-rec-toggle");
+    if (existingToggle) existingToggle.remove();
+    if (ordered.length > 2) {
+      const toggleBtn = document.createElement("button");
+      toggleBtn.id = "learning-rec-toggle";
+      toggleBtn.type = "button";
+      toggleBtn.className = "button button-quiet learning-rec-toggle";
+      toggleBtn.textContent = state.showAllRecommended
+        ? "Show fewer recommendations"
+        : "Show all recommended (" + ordered.length + ")";
+      toggleBtn.addEventListener("click", () => {
+        state.showAllRecommended = !state.showAllRecommended;
+        renderRecommendations(recommendations, progress);
+      });
+      container.after(toggleBtn);
+    }
   }
 
   function renderTracks(tracks, progress) {
     tracks = tracks.filter((track) => track.id !== "starting-point-check");
     const container = $("#learning-track-list");
+    const tabsContainer = $("#learning-track-tabs");
     const completed = new Set(progress.completed_lesson_ids || []);
     const titles = Object.fromEntries(tracks.flatMap((track) => track.lessons.map((lesson) => [lesson.id, lesson.title])));
     const units = new Map((state.catalog?.units || []).map((unit) => [unit.id, unit]));
     const levels = new Map((state.catalog?.levels || []).map((level) => [level.id, level]));
+    if (!state.selectedTrackId || !tracks.some((t) => t.id === state.selectedTrackId)) {
+      const recId = state.catalog?.recommendations?.track_id;
+      state.selectedTrackId = tracks.some((t) => t.id === recId) ? recId : (tracks[0]?.id || null);
+    }
+
+    if (tabsContainer) {
+      tabsContainer.replaceChildren();
+      for (const track of tracks) {
+        const done = track.lessons.filter((lesson) => completed.has(lesson.id)).length;
+        const tab = document.createElement("button");
+        tab.type = "button";
+        tab.role = "tab";
+        tab.dataset.trackId = track.id;
+        const isActive = track.id === state.selectedTrackId;
+        tab.className = "seg-tab" + (isActive ? " is-active" : "");
+        tab.setAttribute("aria-selected", String(isActive));
+        tab.textContent = track.title + " (" + done + "/" + track.lessons.length + ")";
+        tab.addEventListener("click", () => {
+          state.selectedTrackId = track.id;
+          renderTracks(tracks, progress);
+        });
+        tabsContainer.append(tab);
+      }
+    }
+
     container.replaceChildren();
     for (const track of tracks) {
+      const isSelected = track.id === state.selectedTrackId;
       const section = document.createElement("section");
-      section.className = "learning-track";
+      section.className = "learning-track" + (isSelected ? "" : " hidden");
+      section.dataset.trackId = track.id;
       const heading = document.createElement("h4");
       heading.textContent = track.title;
       const level = document.createElement("span");
@@ -127,15 +185,54 @@
       trackProgress.append(trackProgressLabel, trackProgressBar);
       const list = document.createElement("div");
       list.className = "learning-track-units";
-      for (const unitId of track.unit_ids || []) {
+
+      const validUnitIds = (track.unit_ids || []).filter((uid) => {
+        const u = units.get(uid);
+        return u && track.lessons.some((l) => l.unit_id === uid);
+      });
+      const firstUnfinishedUnitId = validUnitIds.find((uid) =>
+        track.lessons.some((l) => l.unit_id === uid && !completed.has(l.id))
+      ) || validUnitIds[0];
+
+      validUnitIds.forEach((unitId, unitIndex) => {
         const unit = units.get(unitId);
-        if (!unit) continue;
         const lessons = track.lessons.filter((lesson) => lesson.unit_id === unitId);
-        if (!lessons.length) continue;
-        const unitSection = document.createElement("section");
-        unitSection.className = "learning-unit";
+        const unitDone = lessons.filter((l) => completed.has(l.id)).length;
+        const unitComplete = lessons.length > 0 && unitDone === lessons.length;
+        const unitPercent = lessons.length ? Math.round((unitDone / lessons.length) * 100) : 0;
+        const unitSection = document.createElement("details");
+        unitSection.className = "learning-unit" + (unitComplete ? " is-complete" : "");
+        unitSection.dataset.unitId = unitId;
+        if (unitId === firstUnfinishedUnitId) unitSection.open = true;
+
+        const summaryEl = document.createElement("summary");
+        summaryEl.className = "learning-unit-summary";
+        const leftGroup = document.createElement("div");
+        leftGroup.className = "unit-summary-left";
+        const stepCircle = document.createElement("span");
+        stepCircle.className = "unit-step-badge" + (unitComplete ? " is-complete" : unitDone > 0 ? " is-active" : "");
+        stepCircle.setAttribute("aria-hidden", "true");
+        stepCircle.textContent = unitComplete ? "✓" : String(unitIndex + 1);
         const unitHeading = document.createElement("h5");
         unitHeading.textContent = unit.title;
+        leftGroup.append(stepCircle, unitHeading);
+
+        const rightGroup = document.createElement("div");
+        rightGroup.className = "unit-summary-right";
+        const miniBar = document.createElement("span");
+        miniBar.className = "unit-mini-bar";
+        miniBar.setAttribute("aria-hidden", "true");
+        const miniFill = document.createElement("i");
+        miniFill.style.width = unitPercent + "%";
+        miniBar.append(miniFill);
+        const unitBadge = document.createElement("span");
+        unitBadge.className = "chip" + (unitComplete ? " g" : unitDone > 0 ? " t" : "");
+        unitBadge.textContent = unitDone + " / " + lessons.length + " done";
+        rightGroup.append(miniBar, unitBadge);
+        summaryEl.append(leftGroup, rightGroup);
+
+        const unitBody = document.createElement("div");
+        unitBody.className = "learning-unit-body";
         const unitDescription = document.createElement("p");
         unitDescription.className = "learning-unit-description";
         unitDescription.textContent = unit.description;
@@ -170,9 +267,10 @@
             makeButton(completed.has(lesson.id) ? "Practise again" : "Open lesson", lesson.id, "button button-secondary"));
           cards.append(card);
         }
-        unitSection.append(unitHeading, unitDescription, outcomes, cards);
+        unitBody.append(unitDescription, outcomes, cards);
+        unitSection.append(summaryEl, unitBody);
         list.append(unitSection);
-      }
+      });
       section.append(heading, level, description, trackProgress, list);
       container.append(section);
     }
@@ -265,12 +363,19 @@
     $("#learning-progress-note").textContent = progress.note;
     const resume = $("#learning-resume-list");
     resume.replaceChildren();
-    const active = progress.active_attempts || progress.recent_attempts.filter((item) => item.status === "in_progress");
+    const rawActive = progress.active_attempts || progress.recent_attempts.filter((item) => item.status === "in_progress");
+    const seenLessons = new Set();
+    const active = rawActive.filter((item) => {
+      if (seenLessons.has(item.lesson_id)) return false;
+      seenLessons.add(item.lesson_id);
+      return true;
+    });
     if (active.length) {
       const heading = document.createElement("h4");
-      heading.textContent = "Continue an unfinished lesson";
+      heading.textContent = "Continue learning";
       resume.append(heading);
-      for (const item of active) {
+      const visible = state.showAllResume ? active : active.slice(0, 2);
+      for (const item of visible) {
         const lesson = progress.lesson_titles?.[item.lesson_id] || item.lesson_id.replaceAll("-", " ");
         const button = document.createElement("button");
         button.type = "button";
@@ -279,6 +384,17 @@
         button.textContent = "Resume: " + lesson;
         button.addEventListener("click", () => resumeAttempt(item.id));
         resume.append(button);
+      }
+      if (active.length > 2) {
+        const more = document.createElement("button");
+        more.type = "button";
+        more.className = "button button-quiet";
+        more.textContent = state.showAllResume ? "Show fewer" : "Show all (" + active.length + ")";
+        more.addEventListener("click", () => {
+          state.showAllResume = !state.showAllResume;
+          renderProgress(progress);
+        });
+        resume.append(more);
       }
     }
   }
@@ -586,7 +702,8 @@
     } else {
       renderExercise(attempt.current_exercise, attempt.response_count, attempt.exercise_count);
     }
-    $("#learning-runner").scrollIntoView({ behavior: "smooth", block: "start" });
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
   }
 
   async function playListeningAudio(text) {

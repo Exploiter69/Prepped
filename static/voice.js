@@ -289,6 +289,8 @@
     const unavailableText = "Answers are saved locally. Speech-provider details could not be loaded; check voice status before recording. Prepped does not store raw audio.";
     const detail = state.status ? (remote ? remoteText : localText) : unavailableText;
     if (ui.privacyNote) ui.privacyNote.textContent = detail;
+    const privacyDetails = document.getElementById("practice-privacy");
+    if (privacyDetails && remote) privacyDetails.open = true;
     if (ui.privacyChip) {
       if (!state.status) {
         ui.privacyChip.className = "chip a";

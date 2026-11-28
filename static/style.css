@@ -730,7 +730,13 @@ textarea,.learning-exercise textarea,.learning-order-list select { background:#F
 .history-timeline-entry .button { white-space:nowrap; }
 .history-practice-archive { margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--line); }
 @media(max-width:620px) { .history-timeline-heading { flex-direction:column; } .history-timeline-heading button { width:100%; } .history-timeline-controls { grid-template-columns:1fr; } .history-timeline-controls input,.history-timeline-controls select { grid-row:auto; } .history-timeline-entry { grid-template-columns:34px minmax(0,1fr); gap:.6rem; } .history-timeline-symbol { width:32px; height:32px; } .history-timeline-entry .button { grid-column:2; justify-self:start; } }
-\n/* UI Stage 7 — dashboard next-step and refresh feedback */\n.dashboard-lesson-action { grid-column:2 / 4; justify-self:start; min-height:40px; }\n.dashboard-load-status { margin:.7rem 0 .2rem; color:var(--muted); font-size:.78rem; }\n.dashboard-refresh { margin-top:.35rem; min-height:40px; }\n.dashboard-complete-note { padding:.75rem 1rem; border-radius:10px; background:var(--raised); color:var(--muted); font-size:.85rem; }\n@media(max-width:620px) { .dashboard-lesson-action { grid-column:2; width:100%; justify-self:stretch; } .dashboard-refresh { width:100%; } }\n@media(prefers-reduced-motion:reduce) { .dashboard-mascot { animation:none; } }\n
+/* UI Stage 7 — dashboard next-step and refresh feedback */
+.dashboard-lesson-action { grid-column: 2 / 4; justify-self: start; min-height: 40px; white-space: nowrap; }
+.dashboard-load-status { margin: .7rem 0 .2rem; color: var(--muted); font-size: .78rem; }
+.dashboard-refresh { margin-top: .35rem; min-height: 40px; }
+.dashboard-complete-note { padding: .75rem 1rem; border-radius: 10px; background: var(--raised); color: var(--muted); font-size: .85rem; }
+@media(max-width:620px) { .dashboard-lesson-action { grid-column: 2; width: 100%; justify-self: stretch; } .dashboard-refresh { width: 100%; } }
+@media(prefers-reduced-motion:reduce) { .dashboard-mascot { animation: none; } }
 
 /* UI Stage 8 — shared navigation and accessibility refinements */
 .skip-link {
@@ -2001,4 +2007,782 @@ body.lesson-focus-mode #learning-runner {
   .mobile-nav-btn:focus-visible { outline-offset: -2px; }
   body { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
   body.lesson-focus-mode { padding-bottom: 0; }
+}
+
+/* Visual polish fixes */
+.practice-room textarea,
+.practice-answer-form textarea { background: var(--surface) !important; color: var(--ink) !important; border-color: var(--line-strong) !important; }
+.practice-room textarea::placeholder,
+.practice-answer-form textarea::placeholder { color: var(--ink-2); }
+.voice-recorder .button-primary { color: #fff; }
+.voice-recorder-icon { background: var(--teal-100); color: var(--teal-ink); }
+.recording-stage { background: var(--surface-2); border-color: var(--line); }
+.career-voice-actions .button-secondary { background: var(--surface); color: var(--ink); border-color: var(--line-strong); }
+.career-voice-actions .button-secondary:hover:not(:disabled) { background: var(--surface-2); }
+.onboarding-actions #onboarding-next { margin-left: auto; }
+
+
+/* ==========================================================================
+   Complete Product UX Architecture (Low-scroll, single-task workspaces)
+   Today, Dedicated Profile, Learn Track Switcher + Collapsible Units,
+   Practice Side-by-Side Composer, Career Explicit Stages, Memory Review-First
+   + Modal Editor, Progress 4-Tab Workspace, Coherent Tabbed History.
+   ========================================================================== */
+
+/* Shared workspace header rhythm */
+.workspace-header-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.workspace-header-row h2 {
+  margin: 0 0 4px;
+  font-size: clamp(1.65rem, 2.8vw, 2.25rem);
+  line-height: 1.15;
+}
+.workspace-header-row .scenario-description {
+  margin: 0;
+  max-width: 640px;
+}
+
+/* Today — compact header + tight Next Up layout */
+.today-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 6px 0 18px;
+}
+.today-header .lab { margin-bottom: 4px; }
+.today-title {
+  font-size: clamp(1.9rem, 3.2vw, 2.55rem);
+  line-height: 1.12;
+  margin: 0;
+}
+.today-subtitle {
+  margin: 6px 0 0;
+  color: var(--ink-2);
+  font-size: 0.98rem;
+  max-width: 580px;
+}
+.today-next-up {
+  padding: clamp(22px, 3vw, 32px);
+  margin-bottom: 16px;
+}
+.today-next-up h2 {
+  font-size: clamp(1.55rem, 2.6vw, 2.1rem);
+  margin: 6px 0 8px;
+}
+.today-compact-stats {
+  margin-bottom: 18px;
+}
+.dashboard-memory-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.dashboard-memory-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--bg);
+  font-size: 13.5px;
+}
+
+/* Learn — track switcher, collapsible units, compact Continue strip */
+.learning-compact-metrics {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.learning-continue-bar:has(#learning-resume-list:empty) {
+  display: none;
+}
+.learning-continue-bar {
+  margin-bottom: 18px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: var(--teal-soft);
+  border: 1px solid #D3E6DE;
+}
+.learning-continue-bar .learning-resume-list {
+  margin-top: 0;
+}
+.learning-curriculum-section {
+  margin-top: 20px;
+}
+details.learning-unit {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 0;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+summary.learning-unit-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  cursor: pointer;
+  list-style: none;
+  background: var(--surface);
+}
+summary.learning-unit-summary::-webkit-details-marker { display: none; }
+summary.learning-unit-summary h5 {
+  margin: 0;
+  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+details.learning-unit[open] > summary.learning-unit-summary {
+  border-bottom: 1px solid var(--line);
+  background: #FAF6EE;
+}
+.learning-unit-body {
+  padding: 16px 20px 20px;
+}
+.learning-diagnostic-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.learn-secondary-disclosure {
+  margin-top: 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--bg);
+}
+.learn-secondary-disclosure > summary {
+  padding: 14px 18px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ink);
+}
+.learn-secondary-body {
+  padding: 0 18px 18px;
+  border-top: 1px solid var(--line);
+}
+.learn-progress-disclosure-block {
+  margin-top: 18px;
+}
+
+/* Practice — concise prompt + responsive side-by-side Voice/Text composer */
+.practice-question-card {
+  padding: clamp(18px, 2.5vw, 28px);
+}
+.practice-question-card .question-prompt {
+  margin: 8px 0 14px;
+}
+.practice-composer-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  gap: 20px;
+  align-items: start;
+}
+.practice-text-column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.practice-room textarea,
+.practice-answer-form textarea,
+#answer-input {
+  background: #FFFCF7 !important;
+  color: #16201F !important;
+  border-color: #CFC6B4 !important;
+  min-height: 210px;
+}
+.practice-room textarea::placeholder,
+#answer-input::placeholder {
+  color: #5C6563;
+}
+.voice-recorder .button-primary,
+#record-button {
+  background: #0F5C57;
+  border-color: #0F5C57;
+  color: #FFFFFF !important;
+}
+.voice-recorder .button-primary:hover:not(:disabled),
+#record-button:hover:not(:disabled) {
+  background: #0B4B47;
+  border-color: #0B4B47;
+  color: #FFFFFF !important;
+}
+.practice-privacy {
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
+/* Career — explicit clean stages (Studios | Setup | Session | Review | History) */
+.career-catalog-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.career-stage-back-row {
+  margin-bottom: 10px;
+}
+.career-setup {
+  max-width: 720px;
+}
+.career-voice-actions .button-secondary {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+
+/* Memory — dedicated calm review-first workspace + compact pill stats + modal */
+.memory-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.memory-compact-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.memory-review-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(240px, 0.85fr);
+  gap: 20px;
+  align-items: start;
+  margin-bottom: 24px;
+}
+.memory-workspace .memory-review-section {
+  margin: 0;
+  padding: clamp(20px, 3vw, 28px);
+  background: var(--teal-soft);
+  border: 1px solid #D3E6DE;
+  border-radius: 20px;
+}
+.memory-workspace .memory-review-card {
+  max-width: 640px;
+  margin: 14px auto 18px;
+  padding: clamp(24px, 4vw, 38px) 24px;
+  text-align: center;
+  border-radius: 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: 0 8px 0 -3px #E5DCC9, 0 16px 0 -6px #D9CFBC;
+}
+.memory-workspace .memory-review-card h3 {
+  margin: 14px 0 20px;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  line-height: 1.25;
+}
+.memory-workspace .memory-review-answer {
+  margin: 0 auto 18px;
+  max-width: 520px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  color: var(--ink);
+  text-align: left;
+}
+.memory-workspace .memory-ratings {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+.memory-workspace .memory-ratings .button {
+  min-width: 96px;
+  border: 0;
+  border-radius: 12px;
+}
+.memory-workspace .memory-ratings .button:nth-child(1) { background: #FBDCD3; color: #743B30; }
+.memory-workspace .memory-ratings .button:nth-child(2) { background: #FCE6B4; color: #6E4300; }
+.memory-workspace .memory-ratings .button:nth-child(3) { background: #DCEFEA; color: #0B4B47; }
+.memory-workspace .memory-ratings .button:nth-child(4) { background: #D5EEDC; color: #17502A; }
+.memory-schedule-disclosure {
+  margin-top: 12px;
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+.memory-schedule-disclosure summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--teal-ink);
+}
+.memory-editor-dialog {
+  max-width: 580px;
+}
+
+/* Progress 4-tab panels & History 2-tab panels */
+.progress-tab-panel,
+.history-tab-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Profile dedicated workspace */
+.profile-workspace .profile-panel {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Responsive stacking */
+@media (max-width: 900px) {
+  .practice-composer-grid,
+  .memory-review-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* ==========================================================================
+   Mature Product Polish Pass (video_1.mp4 audit fixes)
+   - True isolated Lesson Focus Mode (no squished Learn catalog or stray skip-link)
+   - High-contrast Career Prompt & Practice Spoken Prompt dark cards
+   - Custom SVG chevrons on ALL <details> & <select> (zero raw browser triangles)
+   - Duolingo-inspired tactile choice tiles, unit badges & mini progress bars
+   - Crisp Today button alignment, compact Progress KPIs & History toolbar
+   ========================================================================== */
+
+/* 1. True Distraction-Free Lesson Focus Mode */
+body.lesson-focus-mode .site-header,
+body.lesson-focus-mode .app-topbar,
+body.lesson-focus-mode .mobile-bottom-nav,
+body.lesson-focus-mode footer,
+body.lesson-focus-mode .principles {
+  display: none !important;
+}
+body.lesson-focus-mode #learning-view {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+}
+body.lesson-focus-mode #learning-view > :not(#learning-runner) {
+  display: none !important;
+}
+body.lesson-focus-mode .app-main {
+  width: min(calc(100% - 32px), 740px);
+  margin: 0 auto !important;
+  padding: 28px 0 calc(40px + env(safe-area-inset-bottom, 0px));
+}
+body.lesson-focus-mode #learning-runner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: clamp(22px, 3.5vw, 34px);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  box-shadow: 0 14px 36px rgba(14, 47, 43, 0.08);
+}
+
+/* Tactile Duolingo-style Lesson Player internals */
+.learning-step-progress {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+#learning-step-progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--teal-500);
+  transition: width 240ms ease;
+}
+.learning-outcomes-panel {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin: 14px 0;
+}
+.learning-outcomes-panel ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  color: var(--ink-2);
+}
+.learning-example {
+  background: var(--teal-soft);
+  border: 1px solid #D3E6DE;
+  border-left: 4px solid var(--teal-500);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin: 14px 0;
+}
+.learning-example p {
+  color: var(--ink);
+  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  font-size: 17px;
+  line-height: 1.5;
+}
+.learning-choice-list {
+  border: 0;
+  padding: 0;
+  margin: 14px 0;
+  display: grid;
+  gap: 10px;
+}
+.learning-choice-list legend {
+  padding: 0;
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: var(--ink);
+  font-size: 15px;
+}
+.learning-choice-list label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1.5px solid #DED6C5;
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease, transform 120ms ease;
+}
+.learning-choice-list label:hover {
+  border-color: var(--teal-500);
+  background: #F4F9F7;
+}
+.learning-choice-list label:has(input:checked) {
+  border-color: var(--teal-700);
+  background: var(--teal-soft);
+  box-shadow: 0 0 0 2px rgba(15, 92, 87, 0.14);
+}
+.learning-choice-list input {
+  margin: 0;
+  width: 18px;
+  height: 18px;
+  flex: none;
+  accent-color: var(--teal-700);
+}
+
+/* 2. Fix Contrast Bugs on Dark Teal Prompt Cards (Career & Practice) */
+.career-prompt-card {
+  background: #173E39 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #24564F !important;
+  border-radius: 20px;
+  padding: clamp(22px, 3.2vw, 34px);
+}
+.career-prompt-card > .meta-label,
+.career-prompt-card .meta-label {
+  color: #F5B942 !important;
+}
+.career-prompt-card h3,
+.career-prompt-card .career-prompt {
+  color: #FFFFFF !important;
+  font-size: clamp(1.45rem, 2.7vw, 2.05rem);
+  line-height: 1.28;
+  margin: 10px 0 14px;
+}
+.career-prompt-card .section-help {
+  color: #D6EBE5;
+}
+.career-prompt-card .career-followup-context {
+  background: rgba(245, 185, 66, 0.14);
+  border-left: 3px solid #F5B942;
+  color: #FFF4D6;
+  border-radius: 0 10px 10px 0;
+}
+.career-prompt-card .career-prompt-hint {
+  background: rgba(255, 255, 255, 0.12);
+  color: #F0FAF7;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.career-prompt-card .career-prompt-help-actions .button-quiet {
+  color: #FFFFFF !important;
+  background: rgba(255, 255, 255, 0.11);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 10px;
+}
+.career-prompt-card .career-prompt-help-actions .button-quiet:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  color: #FFFFFF !important;
+}
+
+.practice-question-card {
+  background: #173E39 !important;
+  color: #FFFFFF !important;
+}
+.practice-question-card h2,
+.practice-question-card .question-prompt {
+  color: #FFFFFF !important;
+}
+.practice-question-card .practice-question-kicker span:last-child {
+  color: #CFE5E0 !important;
+}
+.practice-question-card .spoken-prompt {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+.practice-question-card .spoken-prompt .meta-label {
+  color: #8FD9C8 !important;
+}
+.practice-question-card .spoken-prompt .spoken-prompt-hint,
+.practice-question-card .spoken-prompt .voice-status {
+  color: #DCEEE9 !important;
+}
+.practice-question-card .spoken-prompt #tts-play-button {
+  background: #FFFFFF;
+  color: #0E2F2B;
+  border-color: #FFFFFF;
+  font-weight: 600;
+}
+.practice-question-card .spoken-prompt #tts-play-button:hover:not(:disabled) {
+  background: #EAF3EF;
+}
+.practice-question-card .spoken-prompt .button-quiet {
+  color: #E5F2EE !important;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 10px;
+}
+.practice-question-card .spoken-prompt .button-quiet:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.14);
+  color: #FFFFFF !important;
+}
+
+/* 3. Replace ALL Ugly Browser Default Disclosure Triangles & Native Select Arrows */
+details > summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+details > summary::after {
+  content: "";
+  width: 18px;
+  height: 18px;
+  flex: none;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 16px 16px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235C6563' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  transition: transform 180ms ease;
+}
+details[open] > summary::after {
+  transform: rotate(180deg);
+}
+.learn-secondary-disclosure > summary {
+  padding: 15px 18px;
+  border-radius: 14px;
+  transition: background 150ms ease;
+}
+.learn-secondary-disclosure > summary:hover {
+  background: #EFE9DD;
+}
+.practice-privacy {
+  border-top: 1px solid var(--line);
+  margin-top: 12px;
+  padding-top: 10px;
+}
+.practice-privacy > summary {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-2);
+  transition: background 150ms ease, color 150ms ease;
+}
+.practice-privacy > summary:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+.memory-schedule-disclosure > summary {
+  padding: 8px 10px;
+  border-radius: 10px;
+  color: var(--teal-ink);
+  transition: background 150ms ease;
+}
+.memory-schedule-disclosure > summary:hover {
+  background: rgba(15, 92, 87, 0.08);
+}
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 38px !important;
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 15px 15px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235C6563' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}
+
+/* 4. Duolingo-Inspired Learn Unit Progression & Compact Cards */
+.learning-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 4px;
+}
+.learning-rec-toggle {
+  margin-top: 10px;
+}
+.unit-summary-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.unit-step-badge {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  background: var(--surface-2);
+  color: var(--ink-2);
+}
+.unit-step-badge.is-active {
+  background: var(--teal-100);
+  color: var(--teal-ink);
+}
+.unit-step-badge.is-complete {
+  background: var(--teal-500);
+  color: #FFFFFF;
+}
+.unit-summary-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+  flex: none;
+}
+.unit-mini-bar {
+  width: 56px;
+  height: 6px;
+  border-radius: 99px;
+  background: var(--surface-2);
+  overflow: hidden;
+  display: inline-block;
+}
+.unit-mini-bar i {
+  display: block;
+  height: 100%;
+  background: var(--teal-500);
+  border-radius: 99px;
+}
+summary.learning-unit-summary:hover {
+  background: #FAF6EE;
+}
+
+/* 5. Today Dashboard Crisp Row Alignment */
+.dashboard-lesson {
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  row-gap: 10px;
+}
+.dashboard-lesson-action {
+  grid-column: 2 / 4;
+  justify-self: start;
+  white-space: nowrap;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+.dashboard-empty-plan-btn {
+  margin-top: 10px;
+  width: 100%;
+  justify-content: center;
+}
+
+/* 6. Progress KPI Rhythm & Plan Controls Alignment */
+.progress-summary-stage5 .progress-stat {
+  padding: 16px 18px;
+  border-radius: 16px;
+  min-height: 0;
+}
+.progress-summary-stage5 .progress-stat strong {
+  font-size: clamp(1.5rem, 2.4vw, 1.95rem);
+  color: var(--teal-900);
+}
+.intelligence-plan-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+.intelligence-plan-controls .action-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+/* 7. History Clean 2-Column Stacked-Label Toolbar */
+.history-timeline-controls {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: 12px;
+  align-items: end;
+  margin: 12px 0 16px;
+}
+.history-control-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.history-control-field label {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.history-control-field input,
+.history-control-field select {
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .history-timeline-controls {
+    grid-template-columns: 1fr;
+  }
+  .unit-mini-bar {
+    display: none;
+  }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  details > summary::after,
+  #learning-step-progress-fill {
+    transition: none;
+  }
 }

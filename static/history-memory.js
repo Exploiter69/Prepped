@@ -42,18 +42,19 @@
   }
   async function open(item) {
     if(item.type==="practice") {
-      $("#history-toggle").click();
+      window.PreppedUI?.setHistoryTab?.("sessions");
       const button=await wait("#history-list [data-session-id]",item.id);
       button?.click(); return;
     }
     if(item.type==="interview") {
       $("#career-toggle").click();
+      window.PreppedCareerStage?.("history");
       const button=await wait("#career-history-list [data-session-id]",item.id);
       button?.click(); return;
     }
+    if(item.type==="review") { $("#memory-toggle")?.click(); return; }
     $("#learning-toggle").click();
-    if(item.type==="review") $("#memory-view")?.scrollIntoView({behavior:"smooth",block:"start"});
-    else $("#learning-resume-list")?.scrollIntoView({behavior:"smooth",block:"start"});
+    $("#learning-resume-list")?.scrollIntoView({behavior:"smooth",block:"start"});
   }
   async function wait(selector,id) {
     for(let i=0;i<180;i++){const b=[...document.querySelectorAll(selector)].find(x=>x.dataset.sessionId===id);if(b)return b;await new Promise(r=>requestAnimationFrame(r));}

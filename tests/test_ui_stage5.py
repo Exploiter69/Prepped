@@ -9,7 +9,8 @@ INTELLIGENCE_JS = (ROOT / "static" / "intelligence.js").read_text(encoding="utf-
 
 
 def test_stage5_progress_story_and_live_summary_are_present() -> None:
-    assert "YOUR LEARNING STORY / STAGE 5" in HTML
+    assert "YOUR LEARNING STORY / STAGE 5" not in HTML
+    assert 'id="progress-tabs"' in HTML
     assert 'id="progress-insight-note"' in HTML
     assert "progress-summary-stage5" in HTML
     assert "progress-insight-note" in CSS

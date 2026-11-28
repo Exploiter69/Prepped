@@ -14,6 +14,25 @@
     $("#career-status").textContent = message;
     $("#career-status").classList.toggle("error", error);
   }
+  function setCareerStage(stage) {
+    const view = $("#career-view");
+    if (view) view.dataset.careerStage = stage;
+    $("#career-catalog-stage")?.classList.toggle("hidden", stage !== "studios");
+    $("#career-setup")?.classList.toggle("hidden", stage !== "setup");
+    $("#career-active")?.classList.toggle("hidden", stage !== "session");
+    $("#career-review")?.classList.toggle("hidden", stage !== "review");
+    $("#career-history-stage")?.classList.toggle("hidden", stage !== "history");
+    const stageTabs = $("#career-stage-tabs");
+    if (stageTabs) {
+      stageTabs.classList.toggle("hidden", stage === "session");
+      for (const tab of stageTabs.querySelectorAll("[data-career-nav]")) {
+        const on = tab.dataset.careerNav === (stage === "history" ? "history" : "studios");
+        tab.classList.toggle("is-active", on);
+        tab.setAttribute("aria-selected", String(on));
+      }
+    }
+  }
+  window.PreppedCareerStage = setCareerStage;
   function showCareer() {
     stopRecording(true);
     stopPrompt(false);
@@ -46,8 +65,16 @@
     list.replaceChildren();
     for (const studio of state.studios) {
       const category = String(studio.category || "career").toLowerCase();
+      const studioId = String(studio.id || "").toLowerCase();
+      const filterGroup = studioId.includes("technical") || category.includes("computer science") || category.includes("technical")
+        ? "technical"
+        : studioId.includes("hr") || studioId.includes("behaviour") || category.includes("behaviour") || category.includes("hr")
+          ? "hr"
+          : "project";
       const card = make("article", null, "career-studio-card");
+      card.dataset.studioId = studioId;
       card.dataset.studioCategory = category.replace(/[^a-z0-9_-]/g, "-");
+      card.dataset.filterGroup = filterGroup;
       const icon = make("span", category.includes("technical") ? "⌘" : category.includes("hr") || category.includes("behaviour") ? "✦" : "↗", "career-studio-icon");
       icon.setAttribute("aria-hidden", "true");
       card.append(icon);
@@ -72,18 +99,14 @@
     state.selected = studio;
     $("#career-selected-title").textContent = studio.title;
     $("#career-selected-description").textContent = studio.description;
-    $("#career-setup").classList.remove("hidden");
-    $("#career-active").classList.add("hidden");
-    $("#career-review").classList.add("hidden");
-    $("#career-setup").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    setCareerStage("setup");
+    $("#career-setup")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
   async function startInterview() {
     if (!state.selected) return;
     try {
       state.session = await api("/api/career/sessions", { method: "POST", body: JSON.stringify({ studio_id: state.selected.id, difficulty: $("#career-difficulty").value }) });
-      $("#career-setup").classList.add("hidden");
-      $("#career-review").classList.add("hidden");
-      $("#career-active").classList.remove("hidden");
+      setCareerStage("session");
       renderPrompt();
       status("Interview in progress");
     } catch (error) { status(error.message, true); }
@@ -158,8 +181,7 @@
       if (state.session.status === "completed") {
         const feedback = await api("/api/career/sessions/" + state.session.id + "/feedback");
         renderReview(feedback);
-        $("#career-active").classList.add("hidden");
-        $("#career-review").classList.remove("hidden");
+        setCareerStage("review");
         await loadHistory();
       } else renderPrompt();
     } catch (error) { $("#career-answer-error").textContent = error.message; }
@@ -340,15 +362,12 @@
       const session = await api("/api/career/sessions/" + id);
       state.session = session;
       state.selected = state.studios.find(item => item.id === session.studio_id) || null;
-      $("#career-setup").classList.add("hidden");
       if (session.status === "completed") {
         renderReview(await api("/api/career/sessions/" + id + "/feedback"));
-        $("#career-review").classList.remove("hidden");
-        $("#career-active").classList.add("hidden");
+        setCareerStage("review");
         $("#career-retry").classList.remove("hidden");
       } else if (session.status === "in_progress") {
-        $("#career-active").classList.remove("hidden");
-        $("#career-review").classList.add("hidden");
+        setCareerStage("session");
         renderPrompt();
       } else status("This interview was cancelled.");
       $("#career-active").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -358,8 +377,7 @@
     if (!state.session) return;
     try {
       state.session = await api("/api/career/sessions/" + state.session.id + "/retry", { method: "POST" });
-      $("#career-review").classList.add("hidden");
-      $("#career-active").classList.remove("hidden");
+      setCareerStage("session");
       renderPrompt();
       await loadHistory();
     } catch (error) { status(error.message, true); }
@@ -638,14 +656,25 @@
     $("#career-add-plan").addEventListener("click", addNextPracticeToPlan);
     $("#career-record").addEventListener("click", startRecording);
     $("#career-stop-record").addEventListener("click", () => stopRecording(false));
+    $("#career-setup-back")?.addEventListener("click", () => setCareerStage("studios"));
+    $("#career-stage-tabs")?.addEventListener("click", (event) => {
+      const tab = event.target.closest("[data-career-nav]");
+      if (!tab) return;
+      const target = tab.dataset.careerNav === "history" ? "history" : "studios";
+      setCareerStage(target);
+      if (target === "history") loadHistory();
+    });
     $("#career-exit").addEventListener("click", async () => {
       if (state.session?.status === "in_progress" && window.confirm("Leave this interview? Your saved answers remain in history and you can resume later.")) {
-        stopRecording(true); $("#career-active").classList.add("hidden"); status("Interview saved. Resume it from Recent interview practice.");
+        stopRecording(true);
+        setCareerStage("history");
+        status("Interview saved. Resume it from History.");
         await loadHistory();
       }
     });
     $("#career-back").addEventListener("click", () => {
-      $("#career-review").classList.add("hidden"); $("#career-setup").classList.remove("hidden"); $("#career-studio-list").scrollIntoView({ behavior: "smooth" });
+      setCareerStage("studios");
+      $("#career-studio-list")?.scrollIntoView({ behavior: "smooth" });
     });
     $("#career-retry").addEventListener("click", retryInterview);
     $("#career-refresh").addEventListener("click", loadHistory);

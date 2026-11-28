@@ -124,30 +124,11 @@
   $("#help-open-btn")?.addEventListener("click", (e) => openModal("help-modal", e.currentTarget));
   $("#onboarding-open-btn")?.addEventListener("click", (e) => openOnboarding(e.currentTarget));
 
-  /* --- Profile destination (the form lives on Today) --- */
-  const profileNav = $("#profile-nav-toggle");
-  window.addEventListener("prepped:viewchange", () => {
-    profileNav?.classList.remove("is-active");
-    profileNav?.removeAttribute("aria-current");
-  });
-  profileNav?.addEventListener("click", () => {
-    $("#home-toggle")?.click();
-    const panel = $("#profile-panel");
-    const edit = $("#profile-edit-toggle");
-    if (!panel || !edit) return;
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    panel.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
-    if (edit.getAttribute("aria-expanded") !== "true") edit.click();
-    window.requestAnimationFrame(() => $("#profile-name")?.focus({ preventScroll: true }));
-    profileNav.classList.add("is-active");
-    profileNav.setAttribute("aria-current", "page");
-    $("#home-toggle")?.classList.remove("is-active");
-    $("#home-toggle")?.removeAttribute("aria-current");
-  });
+  /* --- Profile & Memory quick actions --- */
   $("#dashboard-career-button")?.addEventListener("click", () => $("#career-toggle")?.click());
   $("#feedback-save-memory")?.addEventListener("click", () => {
     $("#memory-toggle")?.click();
-    window.setTimeout(() => $("#memory-front")?.focus(), 120);
+    window.setTimeout(() => $("#memory-open-editor")?.click(), 120);
   });
 
   /* --- Mobile Bottom Navigation & More Sheet --- */
@@ -174,10 +155,10 @@
   }
 
   function syncMobileNav(activeView) {
-    const isMemory = $("#learning-view")?.classList.contains("memory-focus");
     const viewToTarget = {
       "dashboard-view": "home-toggle",
-      "learning-view": isMemory ? "memory-toggle" : "learning-toggle",
+      "learning-view": "learning-toggle",
+      "memory-view": "memory-toggle",
       "home-view": "practice-toggle",
       "practice-view": "practice-toggle",
       "feedback-view": "practice-toggle",
@@ -188,11 +169,10 @@
     }
     const moreBtn = $("#mobile-more-trigger");
     if (moreBtn) {
-      moreBtn.classList.toggle("is-active", ["career-view", "progress-view", "history-view"].includes(activeView));
+      moreBtn.classList.toggle("is-active", ["career-view", "progress-view", "history-view", "profile-view"].includes(activeView));
     }
   }
   window.addEventListener("prepped:viewchange", (e) => syncMobileNav(e.detail?.view || "dashboard-view"));
-  $("#memory-toggle")?.addEventListener("click", () => syncMobileNav("learning-view"));
 
   /* --- Global Search Overlay (Ctrl/Cmd+K) --- */
   let searchCache = null;
@@ -316,12 +296,16 @@
 
   /* --- Lesson Focus Mode & Exit Confirmation Dialog --- */
   const runner = $("#learning-runner");
+  const learningViewEl = $("#learning-view");
   if (runner) {
     const syncLessonFocus = () => {
-      const active = !runner.classList.contains("hidden");
+      const active = !runner.classList.contains("hidden") && !learningViewEl?.classList.contains("hidden");
       document.body.classList.toggle("lesson-focus-mode", active);
     };
-    new MutationObserver(syncLessonFocus).observe(runner, { attributes: true, attributeFilter: ["class"] });
+    const focusObserver = new MutationObserver(syncLessonFocus);
+    focusObserver.observe(runner, { attributes: true, attributeFilter: ["class"] });
+    if (learningViewEl) focusObserver.observe(learningViewEl, { attributes: true, attributeFilter: ["class"] });
+    window.addEventListener("prepped:viewchange", syncLessonFocus);
     syncLessonFocus();
   }
   $("#learning-focus-exit")?.addEventListener("click", (e) => {
@@ -346,12 +330,17 @@
         btn.setAttribute("aria-selected", String(on));
       }
       for (const card of $$("#career-studio-list .career-studio-card")) {
-        const text = card.textContent.toLowerCase();
+        const group = (card.dataset.filterGroup || "").toLowerCase();
+        const titleText = (card.querySelector("h3")?.textContent || "").toLowerCase();
+        const catText = (card.dataset.studioCategory || "").toLowerCase();
         const show =
           filter === "all" ||
-          (filter === "project" && text.includes("project")) ||
-          (filter === "hr" && (text.includes("hr") || text.includes("behaviour") || text.includes("behavior"))) ||
-          (filter === "technical" && text.includes("technical"));
+          group === filter ||
+          (!group && (
+            (filter === "project" && (titleText.includes("project") || catText.includes("project"))) ||
+            (filter === "hr" && (titleText.includes("hr") || catText.includes("behaviour"))) ||
+            (filter === "technical" && (titleText.includes("technical") || catText.includes("computer-science")))
+          ));
         card.classList.toggle("hidden", !show);
       }
     });
@@ -380,6 +369,44 @@
       }
     });
   }
+
+  /* --- Progress 4-Tab Workspace (Overview · Plan & Goals · Skills · Backup & Data) --- */
+  function setProgressTab(tabKey) {
+    const bar = $("#progress-tabs");
+    if (!bar) return;
+    for (const btn of bar.querySelectorAll("[data-progress-tab]")) {
+      const on = btn.dataset.progressTab === tabKey;
+      btn.classList.toggle("is-active", on);
+      btn.setAttribute("aria-selected", String(on));
+    }
+    for (const panel of $$("#progress-view [data-progress-panel]")) {
+      panel.classList.toggle("hidden", panel.dataset.progressPanel !== tabKey);
+    }
+  }
+  $("#progress-tabs")?.addEventListener("click", (e) => {
+    const tab = e.target.closest("[data-progress-tab]");
+    if (tab) setProgressTab(tab.dataset.progressTab);
+  });
+
+  /* --- History 2-Tab Workspace (All activity · Project sessions) --- */
+  function setHistoryTab(tabKey) {
+    const bar = $("#history-tabs");
+    if (!bar) return;
+    for (const btn of bar.querySelectorAll("[data-history-tab]")) {
+      const on = btn.dataset.historyTab === tabKey;
+      btn.classList.toggle("is-active", on);
+      btn.setAttribute("aria-selected", String(on));
+    }
+    for (const panel of $$("#history-view [data-history-panel]")) {
+      panel.classList.toggle("hidden", panel.dataset.historyPanel !== tabKey);
+    }
+  }
+  $("#history-tabs")?.addEventListener("click", (e) => {
+    const tab = e.target.closest("[data-history-tab]");
+    if (tab) setHistoryTab(tab.dataset.historyTab);
+  });
+
+  window.PreppedUI = { setProgressTab, setHistoryTab, openModal, closeModal };
 
   /* --- 6-Step Guided Onboarding Modal (backed by /api/profile + localStorage resume) --- */
   const ONBOARD_KEY = "prepped:onboarding_draft_v1";

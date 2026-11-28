@@ -53,29 +53,42 @@
     }
   }
 
+  function openMemoryEditorModal() {
+    const modal = $("#memory-editor-modal");
+    if (!modal) return;
+    modal.classList.remove("hidden");
+    $("#memory-front")?.focus();
+  }
+
+  function closeMemoryEditorModal() {
+    $("#memory-editor-modal")?.classList.add("hidden");
+  }
+
   function renderStats(stats) {
     const target = $("#memory-stats");
     target.replaceChildren();
-    [
-      [stats.active, "Active cards"],
-      [stats.due, "Due to review"],
-      [stats.suspended, "Paused"],
-      [stats.dismissed, "Dismissed"],
-      [stats.reviews_completed, "Reviews completed"],
-    ].forEach(([value, label]) => {
-      const item = node("div", undefined, "learning-progress-item");
-      item.append(node("strong", String(value)), node("span", label));
-      target.append(item);
+    const pills = [
+      [stats.due, "Due today", stats.due > 0 ? "chip a" : "chip t"],
+      [stats.active, "Active cards", "chip"],
+      [stats.reviews_completed, "Reviews completed", "chip g"],
+    ];
+    if (stats.suspended > 0) pills.push([stats.suspended, "Paused", "chip"]);
+    if (stats.dismissed > 0) pills.push([stats.dismissed, "Dismissed", "chip"]);
+    pills.forEach(([value, label, cls]) => {
+      const pill = node("span", undefined, cls);
+      pill.append(node("strong", String(value)), document.createTextNode(" " + label));
+      target.append(pill);
     });
   }
 
-  function resetForm() {
+  function resetForm(closeModal = true) {
     state.editingId = null;
     $("#memory-form").reset();
     $("#memory-form-title").textContent = "Save something worth remembering";
     $("#memory-form-submit").textContent = "Save to memory";
     $("#memory-form-cancel").classList.add("hidden");
-    $("#memory-source-note").textContent = "Manual items stay local. Lesson items keep a link to their source context.";
+    $("#memory-source-note").textContent = "Saved locally on this device. Items from lessons keep a link to their source.";
+    if (closeModal) closeMemoryEditorModal();
   }
 
   function renderItems() {
@@ -156,8 +169,7 @@
     $("#memory-form-cancel").textContent = "Cancel edit";
     $("#memory-form-cancel").classList.remove("hidden");
     $("#memory-source-note").textContent = "Editing preserves the original source and review history.";
-    $("#memory-front").focus();
-    $("#memory-form").scrollIntoView({ behavior: "smooth", block: "center" });
+    openMemoryEditorModal();
   }
 
   async function changeStatus(item, status) {
@@ -276,14 +288,19 @@
     }
   });
 
-  $("#memory-form-cancel").addEventListener("click", resetForm);
+  $("#memory-open-editor")?.addEventListener("click", () => {
+    resetForm(false);
+    openMemoryEditorModal();
+  });
+  $("#memory-form-cancel").addEventListener("click", () => resetForm(true));
   $("#memory-refresh").addEventListener("click", load);
   document.addEventListener("prepped:memory-save", (event) => {
     const detail = event.detail || {};
-    if ($("#learning-view")?.classList.contains("hidden")) {
-      $("#learning-toggle")?.click();
+    if ($("#memory-view")?.classList.contains("hidden")) {
+      window.PreppedApp?.showView("memory-view", { focus: false });
+      load();
     }
-    resetForm();
+    resetForm(false);
     $("#memory-type").value = detail.item_type || "correction";
     $("#memory-form-cancel").textContent = "Discard suggestion";
     $("#memory-form-cancel").classList.remove("hidden");
@@ -294,14 +311,11 @@
     $("#memory-source-title").value = detail.source_title || "";
     $("#memory-source-excerpt").value = detail.source_excerpt || "";
     $("#memory-source-note").textContent = "Review this suggestion, edit it, then choose Save to memory. Nothing is saved until you submit.";
-    $("#memory-form").scrollIntoView({ behavior: "smooth", block: "center" });
-    $("#memory-front").focus();
+    openMemoryEditorModal();
   });
 
   document.addEventListener("DOMContentLoaded", () => {
     if ($("#memory-view")) load();
-    $("#learning-toggle")?.addEventListener("click", () => {
-      if (!$("#learning-view")?.classList.contains("hidden")) load();
-    });
+    $("#memory-toggle")?.addEventListener("click", () => load());
   });
 })();

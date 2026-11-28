@@ -58,8 +58,38 @@ def browser_page():
         browser.close()
 
 
+def open_lesson_in_browser(page, lesson_id: str) -> None:
+    btn = page.locator(f'button[data-lesson-id="{lesson_id}"]').first
+    btn.wait_for(state="attached")
+    if not btn.is_visible():
+        # Switch to the track tab containing this lesson, then expand its unit disclosure if collapsed.
+        track_id = page.evaluate(
+            """(id) => {
+              const el = document.querySelector(`button[data-lesson-id="${id}"]`);
+              return el?.closest('.learning-track')?.dataset?.trackId || null;
+            }""",
+            lesson_id,
+        )
+        if track_id:
+            tab = page.locator(f'#learning-track-tabs button[data-track-id="{track_id}"]')
+            if tab.count():
+                tab.click()
+        unit_id = page.evaluate(
+            """(id) => {
+              const el = document.querySelector(`button[data-lesson-id="${id}"]`);
+              return el?.closest('details.learning-unit')?.dataset?.unitId || null;
+            }""",
+            lesson_id,
+        )
+        if unit_id:
+            unit = page.locator(f'details.learning-unit[data-unit-id="{unit_id}"]')
+            if unit.count() and not unit.evaluate("(el) => el.open"):
+                unit.locator("summary").click()
+    btn.click()
+
+
 def complete_lesson_in_browser(page, lesson_id: str, answers: list[str | list[str]]) -> None:
-    page.locator(f'button[data-lesson-id="{lesson_id}"]').click()
+    open_lesson_in_browser(page, lesson_id)
     page.locator("#learning-runner").wait_for(state="visible")
     for index, answer in enumerate(answers, start=1):
         if isinstance(answer, list):
@@ -108,7 +138,7 @@ def test_learning_path_summary_track_progress_and_guided_step_indicator(
     assert page.locator("#learning-summary-skills").text_content().endswith("/ 14")
     assert page.locator(".learning-track-progressbar[role='progressbar']").count() == 3
 
-    page.locator('button[data-lesson-id="sentence-building"]').first.click()
+    open_lesson_in_browser(page, "sentence-building")
     page.locator("#learning-runner").wait_for(state="visible")
     progress = page.locator("#learning-step-progress")
     assert progress.get_attribute("role") == "progressbar"
@@ -128,7 +158,8 @@ def test_profile_setup_edit_cancel_save_and_reload(local_app_url: str, browser_p
     page.wait_for_function(
         "() => document.querySelector('#profile-save-status').textContent === 'Not set up'"
     )
-    page.locator("#profile-edit-toggle").click()
+    page.locator("#profile-nav-toggle").click()
+    page.locator("#profile-view").wait_for(state="visible")
 
     form = page.locator("#profile-form")
     toggle = page.locator("#profile-edit-toggle")
@@ -158,10 +189,13 @@ def test_profile_setup_edit_cancel_save_and_reload(local_app_url: str, browser_p
     page.wait_for_function(
         "() => document.querySelector('#profile-save-status').textContent === 'Saved locally'"
     )
+    page.locator("#profile-nav-toggle").click()
+    page.locator("#profile-view").wait_for(state="visible")
     assert "English fluency" in page.locator("#profile-summary").inner_text()
     assert "Year 2" in page.locator("#profile-summary").inner_text()
 
-    toggle.click()
+    if form.is_hidden():
+        toggle.click()
     assert form.is_visible()
     page.locator("#profile-goal").select_option("placement_interviews")
     page.locator("#profile-cancel").click()
@@ -177,6 +211,7 @@ def test_profile_setup_edit_cancel_save_and_reload(local_app_url: str, browser_p
         "() => document.querySelector('#profile-summary').textContent.includes('Professional communication')"
     )
     page.reload()
+    page.locator("#profile-nav-toggle").click()
     page.wait_for_function(
         "() => document.querySelector('#profile-summary').textContent.includes('Professional communication')"
     )
@@ -215,7 +250,8 @@ def test_practice_room_is_not_gated_by_profile_and_text_flow_completes(local_app
     assert "There is no overall score." in page.locator("#feedback-summary").inner_text()
 
     page.locator("#question-feedback button").filter(has_text="Save a learning note").first.click()
-    page.locator("#learning-view").wait_for(state="visible")
+    page.locator("#memory-view").wait_for(state="visible")
+    page.locator("#memory-editor-modal").wait_for(state="visible")
     assert page.locator("#memory-source-type").input_value() == "practice"
     assert "Attempt 1" in page.locator("#memory-source-title").input_value()
     assert "I built a small API" in page.locator("#memory-source-excerpt").input_value()
@@ -229,6 +265,7 @@ def test_practice_room_is_not_gated_by_profile_and_text_flow_completes(local_app
 
     page.locator("#history-toggle").click()
     page.locator("#history-view").wait_for(state="visible")
+    page.locator('#history-tabs button[data-history-tab="sessions"]').click()
     assert "project explanation" in page.locator("#history-list").inner_text()
 
 
@@ -241,9 +278,10 @@ def test_learning_workspace_completes_and_resumes_a_saved_lesson(local_app_url: 
     )
     assert "Placement communication" in page.locator("#learning-route-title").inner_text()
     assert page.locator(".learning-skill").count() >= 14
+    page.locator("#learning-view .learn-secondary-disclosure summary").click()
     assert "active" in page.locator("#learning-skill-list").inner_text().lower()
 
-    page.locator('button[data-lesson-id="sentence-building"]').click()
+    open_lesson_in_browser(page, "sentence-building")
     page.locator("#learning-runner").wait_for(state="visible")
     page.locator('input[name="learning-choice"][value="b"]').check()
     page.locator("#learning-submit").click()
@@ -276,20 +314,24 @@ def test_learning_workspace_completes_and_resumes_a_saved_lesson(local_app_url: 
     )
     assert "saved for self review" in page.locator("#learning-feedback").inner_text().lower()
     assert "not automatically graded" in page.locator("#learning-feedback").inner_text().lower()
-    assert "Lessons completed" in page.locator("#learning-progress").inner_text()
     next_lesson = page.locator("#learning-feedback button").filter(has_text="Next lesson: Shape a sentence for clarity")
     assert next_lesson.is_visible()
     next_lesson.click()
     page.wait_for_function(
         "() => document.querySelector('#learning-runner-title').textContent.includes('Shape a sentence for clarity')"
     )
+    page.locator("#learning-exit").click()
+    disclosure = page.locator("#learning-view .learn-secondary-disclosure")
+    if not disclosure.evaluate("(el) => el.open"):
+        disclosure.locator("summary").click()
+    assert "Lessons completed" in page.locator("#learning-progress").inner_text()
 
 
 def test_listening_lesson_has_playback_and_revealed_text_alternative(local_app_url: str, browser_page) -> None:
     page = browser_page
     page.goto(local_app_url)
     page.locator("#learning-toggle").click()
-    page.locator('button[data-lesson-id="sentence-building"]').click()
+    open_lesson_in_browser(page, "sentence-building")
     page.locator('input[name="learning-choice"][value="b"]').check()
     page.locator("#learning-submit").click()
     for position, token in enumerate(["a", "b", "c", "d"]):
@@ -299,7 +341,7 @@ def test_listening_lesson_has_playback_and_revealed_text_alternative(local_app_u
     page.locator("#learning-submit").click()
     page.get_by_role("button", name="Back to lesson list").click()
 
-    page.locator('button[data-lesson-id="listening-for-details"]').click()
+    open_lesson_in_browser(page, "listening-for-details")
     page.locator(".learning-listening-controls").wait_for(state="visible")
     transcript = page.locator(".learning-transcript")
     assert transcript.is_hidden()
@@ -340,6 +382,10 @@ def test_baseline_check_records_responses_without_a_proficiency_score(local_app_
     feedback = page.locator("#learning-feedback").inner_text().lower()
     assert "not automatically graded" in feedback
     assert "score" not in feedback
+    page.get_by_role("button", name="Back to lesson list").click()
+    disclosure = page.locator("#learning-view .learn-secondary-disclosure")
+    if not disclosure.evaluate("(el) => el.open"):
+        disclosure.locator("summary").click()
     assert "Baseline checks completed" in page.locator("#learning-progress").inner_text()
     assert page.locator("#learning-diagnostic-history button").count() == 1
     page.locator("#learning-diagnostic-history button").click()
@@ -353,9 +399,7 @@ def test_lessons_with_uncompleted_prerequisites_are_still_openable(local_app_url
     page.wait_for_function(
         "() => document.querySelector('#learning-status').textContent.includes('skills')"
     )
-    lesson = page.locator('button[data-lesson-id="speaking-opinions"]')
-    assert lesson.is_enabled()
-    lesson.click()
+    open_lesson_in_browser(page, "speaking-opinions")
     page.locator("#learning-runner").wait_for(state="visible")
     assert "Express an opinion" in page.locator("#learning-runner-title").inner_text()
 
@@ -367,9 +411,16 @@ def test_english_track_exposes_complete_phase_c_units(local_app_url: str, browse
     page.wait_for_function(
         "() => document.querySelector('#learning-status').textContent.includes('skills')"
     )
-    track = page.locator(".learning-track").filter(has_text="English foundations")
-    assert track.locator(".learning-unit").count() == 6
+    page.locator('#learning-track-tabs button[data-track-id="english-foundations"]').click()
+    track = page.locator('.learning-track[data-track-id="english-foundations"]')
+    assert track.locator("details.learning-unit").count() == 6
+    # Only the first unfinished unit is expanded by default to keep Learn concise.
+    assert track.locator("details.learning-unit[open]").count() == 1
     assert track.locator(".learning-unit-outcomes li").count() >= 12
+    for unit_idx in range(track.locator("details.learning-unit").count()):
+        unit = track.locator("details.learning-unit").nth(unit_idx)
+        if not unit.evaluate("(el) => el.open"):
+            unit.locator("summary").click()
     for title in [
         "Build a clear sentence", "Shape a sentence for clarity", "Grammar in context",
         "Ask clear questions", "Choose useful words in context", "Use useful study and project phrases",
@@ -410,7 +461,7 @@ def test_pronunciation_lesson_supports_replay_text_and_unscored_self_review(
         "Could you please rephrase the question?",
     ])
     page.get_by_role("button", name="Back to lesson list").click()
-    page.locator('button[data-lesson-id="pronunciation-self-review"]').click()
+    open_lesson_in_browser(page, "pronunciation-self-review")
     page.locator(".learning-listening-controls").wait_for(state="visible")
     assert page.get_by_role("button", name="Play model phrase").is_visible()
     page.get_by_role("button", name="Show phrase text").click()
@@ -454,7 +505,7 @@ def test_listening_conversation_has_replay_controls_and_accessible_text(local_ap
         "b", "b", "The completed task was input validation; deployment testing remains pending."
     ])
     page.get_by_role("button", name="Back to lesson list").click()
-    page.locator('button[data-lesson-id="listening-conversations"]').click()
+    open_lesson_in_browser(page, "listening-conversations")
     page.locator(".learning-listening-controls").wait_for(state="visible")
     assert page.get_by_role("button", name="Play spoken message").is_visible()
     page.get_by_role("button", name="Show text alternative").click()
@@ -516,7 +567,10 @@ def test_grammar_and_question_formation_units_complete_in_the_browser(
 def test_memory_create_edit_and_review_flow_in_browser(local_app_url: str, browser_page) -> None:
     page = browser_page
     page.goto(local_app_url)
-    page.locator("#learning-toggle").click()
+    page.locator("#memory-toggle").click()
+    page.locator("#memory-view").wait_for(state="visible")
+    page.locator("#memory-open-editor").click()
+    page.locator("#memory-editor-modal").wait_for(state="visible")
     page.locator("#memory-front").fill("in the long run")
     page.locator("#memory-back").fill("Over a long period of time.")
     page.locator("#memory-form button[type='submit']").click()
@@ -524,6 +578,8 @@ def test_memory_create_edit_and_review_flow_in_browser(local_app_url: str, brows
         "() => document.querySelector('#memory-items').textContent.includes('in the long run')"
     )
     assert "Active cards" in page.locator("#memory-stats").inner_text()
+    page.locator("#memory-open-editor").click()
+    page.locator("#memory-editor-modal").wait_for(state="visible")
     page.locator("#memory-front").fill("  IN   THE LONG RUN ")
     page.locator("#memory-back").fill("A duplicate attempt.")
     page.locator("#memory-form-submit").click()
@@ -588,7 +644,9 @@ def test_lesson_memory_suggestion_requires_explicit_save_and_keeps_source(local_
     assert page.locator("#memory-form-cancel").inner_text() == "Discard suggestion"
     page.locator("#memory-form-cancel").click()
     assert "No saved items yet" in page.locator("#memory-items").inner_text()
+    page.locator("#learning-toggle").click()
     page.locator("#learning-feedback button").filter(has_text="Save a learning note").first.click()
+    page.locator("#memory-editor-modal").wait_for(state="visible")
     page.locator("#memory-form-submit").click()
     page.wait_for_function(
         "() => document.querySelector('#memory-items').textContent.includes('Which option is a complete sentence?')"
@@ -625,10 +683,14 @@ def test_career_studio_voice_optional_text_interview_feedback_and_retry(local_ap
     page.locator("#career-retry").click()
     page.locator("#career-active").wait_for(state="visible")
     assert page.locator("#career-answer").input_value() == ""
+    page.once("dialog", lambda dialog: dialog.accept())
+    page.locator("#career-exit").click()
+    page.locator("#career-history-stage").wait_for(state="visible")
     page.locator("#career-history-list button").filter(has_text="Open").nth(1).click()
     page.locator("#career-review").wait_for(state="visible")
     page.locator(".career-review-card button").first.click()
-    page.locator("#learning-view").wait_for(state="visible")
+    page.locator("#memory-view").wait_for(state="visible")
+    page.locator("#memory-editor-modal").wait_for(state="visible")
     assert page.locator("#memory-type").input_value() == "example"
     assert page.locator("#memory-front").input_value()
     assert page.locator("#memory-back").input_value()
@@ -676,6 +738,7 @@ def test_progress_goals_and_backup_restore_in_browser(local_app_url: str, browse
         page.locator("#progress-dismissed-recommendations").get_by_role("button", name="Restore suggestion").first.click()
         page.wait_for_function("() => document.querySelector('#progress-dismissed-toggle').textContent.includes('(0)')")
 
+    page.locator('#progress-tabs button[data-progress-tab="plan"]').click()
     page.locator("#goal-title").fill("Complete two lessons")
     page.locator("#goal-type").select_option("lessons_completed")
     page.locator("#goal-target").fill("2")
@@ -698,6 +761,7 @@ def test_progress_goals_and_backup_restore_in_browser(local_app_url: str, browse
     page.locator("#progress-goals").get_by_text("Complete two lessons this month", exact=True).wait_for()
     assert "Complete two lessons this month" in page.locator("#progress-goals").inner_text()
 
+    page.locator('#progress-tabs button[data-progress-tab="data"]').click()
     with page.expect_download() as download_info:
         page.locator("#data-export").click()
     download = download_info.value
@@ -711,6 +775,7 @@ def test_progress_goals_and_backup_restore_in_browser(local_app_url: str, browse
     page.wait_for_function("(before) => performance.timeOrigin > before", arg=before_reload, timeout=10000)
     page.locator("#progress-toggle").click()
     page.wait_for_function("() => document.querySelector('#progress-status').textContent.startsWith('Updated')")
+    page.locator('#progress-tabs button[data-progress-tab="plan"]').click()
     assert "Complete two lessons this month" in page.locator("#progress-goals").inner_text()
 
 
@@ -783,7 +848,7 @@ def test_keyboard_navigation_exposes_focus_and_profile_labels(local_app_url: str
         "(element) => document.activeElement === element"
     )
     page.keyboard.press("Enter")
-    assert page.locator("#dashboard-view").is_visible()
+    assert page.locator("#profile-view").is_visible()
     assert page.locator("#profile-form").is_visible()
     assert page.locator("#profile-edit-toggle").get_attribute("aria-expanded") == "true"
     assert page.locator("#profile-name").evaluate(
@@ -862,7 +927,7 @@ def test_learning_discards_late_microphone_permission_after_navigation(local_app
     page.add_init_script(_deferred_microphone_script())
     page.goto(local_app_url)
     page.locator("#learning-toggle").click()
-    page.locator('button[data-lesson-id="sentence-building"]').click()
+    open_lesson_in_browser(page, "sentence-building")
     page.locator('input[name="learning-choice"][value="b"]').check()
     page.locator("#learning-submit").click()
     page.wait_for_function(
@@ -914,9 +979,11 @@ def test_adaptive_learning_workspace_renders_evidence_and_daily_weekly_plans(
     page.wait_for_function(
         "() => document.querySelector('#intelligence-status').textContent.startsWith('Evidence updated')"
     )
-    assert page.locator("#intelligence-skills .intelligence-skill").count() > 0
     assert page.locator("#intelligence-recommendations").is_visible()
+    page.locator('#progress-tabs button[data-progress-tab="skills"]').click()
+    assert page.locator("#intelligence-skills .intelligence-skill").count() > 0
 
+    page.locator('#progress-tabs button[data-progress-tab="plan"]').click()
     page.locator("#intelligence-generate-day").click()
     page.wait_for_function(
         "() => document.querySelector('#intelligence-plan-date-label').textContent.includes('planned min')"
@@ -928,6 +995,7 @@ def test_adaptive_learning_workspace_renders_evidence_and_daily_weekly_plans(
         "() => document.querySelectorAll('#intelligence-week .intelligence-week-day').length === 7"
     )
     assert page.locator("#intelligence-week .intelligence-week-day").count() == 7
+    page.locator('#progress-tabs button[data-progress-tab="data"]').click()
     assert page.locator("#intelligence-activity .progress-day").count() == 30
 
 
@@ -1283,7 +1351,7 @@ def test_stage8_skip_link_and_primary_navigation_are_accessible(
         ("practice-toggle", "home-view"),
         ("learning-toggle", "learning-view"),
         ("career-toggle", "career-view"),
-        ("memory-toggle", "learning-view"),
+        ("memory-toggle", "memory-view"),
         ("progress-toggle", "progress-view"),
         ("history-toggle", "history-view"),
     ]
@@ -1322,7 +1390,7 @@ def test_stage9_release_smoke_all_workspaces_at_supported_widths(
         ("practice-toggle", "home-view"),
         ("learning-toggle", "learning-view"),
         ("career-toggle", "career-view"),
-        ("memory-toggle", "learning-view"),
+        ("memory-toggle", "memory-view"),
         ("progress-toggle", "progress-view"),
         ("history-toggle", "history-view"),
     ]
@@ -1335,9 +1403,8 @@ def test_stage9_release_smoke_all_workspaces_at_supported_widths(
                 assert page.locator("#memory-view").evaluate(
                     "(element) => document.activeElement === element"
                 )
-                assert "memory-focus" in (page.locator("#learning-view").get_attribute("class") or "")
                 assert page.locator("#memory-view").is_visible()
-                assert not page.locator(".learning-welcome").is_visible()
+                assert not page.locator("#learning-view").is_visible()
             else:
                 assert page.locator(f"#{view_id}").evaluate(
                     "(element) => document.activeElement === element"
@@ -1363,9 +1430,10 @@ def test_profile_destination_and_modal_keyboard_focus_are_integrated(
         "() => document.querySelector('#profile-save-status').textContent === 'Not set up'"
     )
 
-    # Desktop Profile is a real destination even though its editor lives on Today.
+    # Desktop Profile is a dedicated workspace separate from Today.
     page.locator("#profile-nav-toggle").click()
-    page.locator("#dashboard-view").wait_for(state="visible")
+    page.locator("#profile-view").wait_for(state="visible")
+    assert not page.locator("#dashboard-view").is_visible()
     assert page.locator("#profile-form").is_visible()
     assert page.locator("#profile-edit-toggle").get_attribute("aria-expanded") == "true"
     assert page.locator("#profile-nav-toggle").get_attribute("aria-current") == "page"
@@ -1410,12 +1478,16 @@ def test_lesson_focus_mode_hides_global_navigation_and_confirms_exit(
     page.wait_for_function(
         "() => document.querySelector('#learning-status').textContent.includes('skills')"
     )
-    page.locator('button[data-lesson-id="sentence-building"]').first.click()
+    open_lesson_in_browser(page, "sentence-building")
     page.locator("#learning-runner").wait_for(state="visible")
     page.wait_for_function("() => document.body.classList.contains('lesson-focus-mode')")
 
     assert not page.locator(".site-header").is_visible()
     assert not page.locator(".app-topbar").is_visible()
+    assert not page.locator("#learning-view .learning-welcome").is_visible()
+    assert not page.locator("#learning-view .learning-curriculum-section").is_visible()
+    skip_rect = page.locator(".skip-link").bounding_box()
+    assert skip_rect is not None and skip_rect["y"] + skip_rect["height"] <= 0, skip_rect
     page.set_viewport_size({"width": 390, "height": 844})
     assert not page.locator(".mobile-bottom-nav").is_visible()
     assert page.locator("#learning-runner").is_visible()
@@ -1432,3 +1504,102 @@ def test_lesson_focus_mode_hides_global_navigation_and_confirms_exit(
     page.wait_for_function("() => !document.body.classList.contains('lesson-focus-mode')")
     assert page.locator("#learning-runner").is_hidden()
     assert page.locator(".mobile-bottom-nav").is_visible()
+
+
+def test_career_technical_filter_matches_studio_category_not_description(
+    local_app_url: str, browser_page
+) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+    page.locator("#career-toggle").click()
+    page.locator("#career-view").wait_for(state="visible")
+    page.wait_for_function("() => document.querySelectorAll('.career-studio-card').length === 3")
+
+    page.locator('#career-filter-bar button[data-career-filter="technical"]').click()
+    visible_titles = page.locator(".career-studio-card:not(.hidden) h3").all_inner_texts()
+    assert visible_titles == ["Technical Interview Studio"], f"Unexpected Technical filter matches: {visible_titles}"
+
+    page.locator('#career-filter-bar button[data-career-filter="hr"]').click()
+    hr_titles = page.locator(".career-studio-card:not(.hidden) h3").all_inner_texts()
+    assert hr_titles == ["HR & Behavioural Interview Studio"], f"Unexpected HR filter matches: {hr_titles}"
+
+    page.locator('#career-filter-bar button[data-career-filter="project"]').click()
+    proj_titles = page.locator(".career-studio-card:not(.hidden) h3").all_inner_texts()
+    assert proj_titles == ["Project Explanation Studio"], f"Unexpected Project filter matches: {proj_titles}"
+
+
+def test_practice_textarea_and_record_button_have_light_theme_contrast(
+    local_app_url: str, browser_page
+) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+    page.locator("#practice-toggle").click()
+    page.locator("#start-button").click()
+    page.locator("#practice-view").wait_for(state="visible")
+
+    colors = page.evaluate("""() => {
+      const ta = getComputedStyle(document.querySelector('#answer-input'));
+      const btn = getComputedStyle(document.querySelector('#record-button'));
+      return {
+        taBg: ta.backgroundColor,
+        taColor: ta.color,
+        btnBg: btn.backgroundColor,
+        btnColor: btn.color,
+      };
+    }""")
+    # Textarea must be warm cream surface (#FFFCF7 = rgb(255, 252, 247)), not legacy dark #121510.
+    assert colors["taBg"] == "rgb(255, 252, 247)", colors
+    assert colors["taColor"] == "rgb(22, 32, 31)", colors
+    # Record button must have pure white label text on deep teal (#0F5C57 = rgb(15, 92, 87)).
+    assert colors["btnBg"] == "rgb(15, 92, 87)", colors
+    assert colors["btnColor"] == "rgb(255, 255, 255)", colors
+
+
+def test_career_prompt_and_practice_spoken_prompt_have_high_contrast(
+    local_app_url: str, browser_page
+) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+
+    # Verify Career active prompt text is pure white on dark teal card.
+    page.locator("#career-toggle").click()
+    page.wait_for_function("() => document.querySelectorAll('.career-studio-card').length === 3")
+    page.locator(".career-studio-card button").first.click()
+    page.locator("#career-start").click()
+    page.locator("#career-active").wait_for(state="visible")
+    career_colors = page.evaluate("""() => {
+      const card = getComputedStyle(document.querySelector('.career-prompt-card'));
+      const title = getComputedStyle(document.querySelector('#career-prompt-title'));
+      return { bg: card.backgroundColor, titleColor: title.color };
+    }""")
+    assert career_colors["bg"] == "rgb(23, 62, 57)", career_colors
+    assert career_colors["titleColor"] == "rgb(255, 255, 255)", career_colors
+
+    # Verify Practice spoken prompt text and Play button are readable on dark teal card.
+    page.locator("#practice-toggle").click()
+    page.locator("#start-button").click()
+    page.locator("#practice-view").wait_for(state="visible")
+    practice_colors = page.evaluate("""() => {
+      const hint = getComputedStyle(document.querySelector('.practice-question-card .spoken-prompt-hint'));
+      const play = getComputedStyle(document.querySelector('#tts-play-button'));
+      return { hintColor: hint.color, playBg: play.backgroundColor, playColor: play.color };
+    }""")
+    assert practice_colors["hintColor"] == "rgb(220, 238, 233)", practice_colors
+    assert practice_colors["playBg"] == "rgb(255, 255, 255)", practice_colors
+    assert practice_colors["playColor"] == "rgb(14, 47, 43)", practice_colors
+
+
+def test_today_start_button_nowrap_and_learn_caps_recommendations(
+    local_app_url: str, browser_page
+) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+    page.locator("#dashboard-view").wait_for(state="visible")
+    page.wait_for_function("() => document.querySelector('.dashboard-lesson-action') !== null")
+    white_space = page.evaluate("() => getComputedStyle(document.querySelector('.dashboard-lesson-action')).whiteSpace")
+    assert white_space == "nowrap", white_space
+
+    page.locator("#learning-toggle").click()
+    page.wait_for_function("() => document.querySelector('#learning-status').textContent.includes('skills')")
+    # Recommended section shows at most 2 cards by default to keep Learn compact.
+    assert page.locator("#learning-recommendations .learning-card").count() <= 2
