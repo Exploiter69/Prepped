@@ -138,6 +138,7 @@
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     panel.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
     if (edit.getAttribute("aria-expanded") !== "true") edit.click();
+    window.requestAnimationFrame(() => $("#profile-name")?.focus({ preventScroll: true }));
     profileNav.classList.add("is-active");
     profileNav.setAttribute("aria-current", "page");
     $("#home-toggle")?.classList.remove("is-active");
