@@ -94,6 +94,41 @@ WARMUP_QUESTIONS: list[dict[str, Any]] = [
     },
 ]
 
+FLUENCY_432_PROMPTS: tuple[str, ...] = (
+    "Explain your strongest college or personal project: the problem it solves, what you personally built, and one design trade-off.",
+    "Introduce yourself using Present -> Past -> Future: your current focus, two real things you built or learned, and the kind of role you want next.",
+    "Walk through a real technical bug you diagnosed: the symptom, root cause, fix, and how you verified it.",
+)
+
+
+def build_fluency_432_rounds(topic_prompt: str | None = None) -> list[dict[str, Any]]:
+    """Build a 3-round compressed-repetition drill (Nation 1989; de Jong & Perfetti 2011)."""
+    prompt = (topic_prompt or FLUENCY_432_PROMPTS[0]).strip()
+    return [
+        {
+            "id": "fluency_432_r1",
+            "topic": "Round 1 of 3 · 90s Explore (4/3/2 Method)",
+            "prompt": prompt,
+            "tip": "Round 1 (90s): Focus on getting your full idea out cleanly. Do not stop for minor grammar slips.",
+            "suggested_seconds": 90,
+        },
+        {
+            "id": "fluency_432_r2",
+            "topic": "Round 2 of 3 · 60s Tighten (Same Topic)",
+            "prompt": prompt,
+            "tip": "Round 2 (60s): Repeat the EXACT SAME explanation, cutting filler words and tightening long sentences.",
+            "suggested_seconds": 60,
+        },
+        {
+            "id": "fluency_432_r3",
+            "topic": "Round 3 of 3 · 45s Crisp Delivery (Same Topic)",
+            "prompt": prompt,
+            "tip": "Round 3 (45s): Deliver the sharpest, smoothest version of the same points with calm pauses between sentences.",
+            "suggested_seconds": 45,
+        },
+    ]
+
+
 MOCK_QUESTION_BANK: dict[str, list[dict[str, Any]]] = {
     "project": [
         {"id": "mock_proj_1", "topic": "Project overview", "prompt": "Walk me through your strongest project: what problem did it solve and who was it for?", "tip": "Start with one clear sentence on the problem before listing tech."},
@@ -101,13 +136,23 @@ MOCK_QUESTION_BANK: dict[str, list[dict[str, Any]]] = {
         {"id": "mock_proj_3", "topic": "Trade-off", "prompt": "What technical trade-off or alternative did you weigh, and why did you choose your current design?", "tip": "Name the alternative you rejected and the constraint that drove your choice."},
         {"id": "mock_proj_4", "topic": "Verification", "prompt": "How did you verify that your implementation worked, and what edge case surprised you?", "tip": "Cite actual tests, logs, or observations without inventing metrics."},
         {"id": "mock_proj_5", "topic": "Iteration", "prompt": "If you had two more weeks on this project, what would you improve first and why?", "tip": "Prioritise one high-impact limitation."},
+        {"id": "mock_proj_6", "topic": "Data flow", "prompt": "Trace one core user action in your project from input to storage and back to the UI.", "tip": "Explain three layers cleanly: client request, backend validation/logic, and persistence."},
+        {"id": "mock_proj_7", "topic": "Failure mode", "prompt": "What is the single most likely failure point if 50 users used your project concurrently?", "tip": "Be honest about locks, memory, or rate limits and state how you would scale it."},
+        {"id": "mock_proj_8", "topic": "Security & privacy", "prompt": "What security or input-validation checks did you build into your project?", "tip": "Mention concrete bounds like schema validation, file permissions, or safe DOM rendering."},
+        {"id": "mock_proj_9", "topic": "Debugging story", "prompt": "Tell me about the trickiest bug you hit while building this project and how you isolated it.", "tip": "Follow Symptom -> Root Cause -> Fix -> Regression check."},
+        {"id": "mock_proj_10", "topic": "Non-technical pitch", "prompt": "Explain what your project does in 30 seconds to someone who does not write code.", "tip": "Skip jargon and focus on user problem and everyday outcome."},
     ],
     "hr": [
-        {"id": "mock_hr_1", "topic": "Self-introduction", "prompt": "Tell me about yourself and what kind of engineering role you are preparing for.", "tip": "Connect your current skills to the work you want to do."},
-        {"id": "mock_hr_2", "topic": "Teamwork", "prompt": "Describe a time you disagreed with a teammate on how to approach a task. How did you resolve it?", "tip": "Stay constructive and explain what you listened to and decided."},
+        {"id": "mock_hr_1", "topic": "Self-introduction", "prompt": "Tell me about yourself and what kind of engineering role you are preparing for.", "tip": "Use Present -> Past proof -> Future role alignment."},
+        {"id": "mock_hr_2", "topic": "Teamwork", "prompt": "Describe a time you disagreed with a teammate on how to approach a task. How did you resolve it?", "tip": "Stay constructive and explain the shared criteria you used."},
         {"id": "mock_hr_3", "topic": "Pressure", "prompt": "Tell me about a deadline where you had to cut scope or reprioritise. What did you keep and what did you defer?", "tip": "Show clear reasoning behind your priority order."},
         {"id": "mock_hr_4", "topic": "Feedback", "prompt": "Share a piece of critical feedback you received on your work and how you acted on it.", "tip": "Name the feedback plainly and the concrete change you made."},
         {"id": "mock_hr_5", "topic": "Motivation", "prompt": "What kind of engineering problems do you want to work on in your first year after graduation?", "tip": "Be specific rather than generic."},
+        {"id": "mock_hr_6", "topic": "Real weakness", "prompt": "What is one genuine skill or habit you are actively working to improve right now?", "tip": "Pick a real, non-cliché habit and describe the concrete system you use to improve it."},
+        {"id": "mock_hr_7", "topic": "Ownership of mistake", "prompt": "Tell me about a mistake you made on a project or lab task and how you fixed it.", "tip": "Own your part without blaming others and state what habit changed afterward."},
+        {"id": "mock_hr_8", "topic": "Learning fast", "prompt": "Describe a time you had to learn an unfamiliar tool or codebase quickly to finish a task.", "tip": "Explain how you broke the learning down into small working tests."},
+        {"id": "mock_hr_9", "topic": "Handling ambiguity", "prompt": "Tell me about a time requirements were unclear. How did you clarify what to build?", "tip": "Show how you asked targeted questions and confirmed scope early."},
+        {"id": "mock_hr_10", "topic": "Closing questions", "prompt": "Imagine we are at the end of a real interview: what two questions would you ask the panel?", "tip": "Ask one engineering-craft question and one team/onboarding question."},
     ],
     "technical": [
         {"id": "mock_tech_1", "topic": "Debugging", "prompt": "Walk me through a tricky bug you diagnosed recently. What clues did you check first?", "tip": "Explain your hypothesis-and-check sequence step by step."},
@@ -115,6 +160,19 @@ MOCK_QUESTION_BANK: dict[str, list[dict[str, Any]]] = {
         {"id": "mock_tech_3", "topic": "Databases", "prompt": "Why do indexes speed up reads, and what trade-off do they introduce for writes?", "tip": "Mention lookup cost versus extra storage and write updates."},
         {"id": "mock_tech_4", "topic": "API design", "prompt": "How would you design a reliable HTTP endpoint that handles invalid input and slow downstream work?", "tip": "Cover validation, status codes, timeouts, and clear errors."},
         {"id": "mock_tech_5", "topic": "Testing", "prompt": "What is the difference between a unit test and an integration test, and when do you reach for each?", "tip": "Connect it to a real module you have written."},
+        {"id": "mock_tech_6", "topic": "Arrays vs linked lists", "prompt": "Why do dynamic arrays often outperform linked lists in practice even when linked lists have O(1) insertion?", "tip": "Mention contiguous memory, CPU cache locality, and pointer overhead."},
+        {"id": "mock_tech_7", "topic": "Transactions", "prompt": "What problem does a database transaction solve, and what happens during a rollback?", "tip": "Give a concrete multi-step write example."},
+        {"id": "mock_tech_8", "topic": "OS processes & threads", "prompt": "How do processes and threads differ in memory sharing and failure isolation?", "tip": "Contrast isolated address space versus shared heap and race-condition risks."},
+        {"id": "mock_tech_9", "topic": "Networking & HTTP", "prompt": "What happens at a high level between typing a URL in a browser and receiving an HTTP response?", "tip": "Walk cleanly through DNS, TCP/TLS handshake, HTTP request, and server response."},
+        {"id": "mock_tech_10", "topic": "Unknown concept recovery", "prompt": "If I ask about a distributed-systems tool you haven't used yet, how do you reason through it honestly?", "tip": "Use Honest boundary -> Closest known fundamental -> How you'd verify."},
+    ],
+    "workplace": [
+        {"id": "mock_work_1", "topic": "Daily standup", "prompt": "Give a 45-second daily standup update for your current project: Done, Next, and any Blocker.", "tip": "Skip long backstory; state outcomes and specific blockers clearly."},
+        {"id": "mock_work_2", "topic": "Code review", "prompt": "A teammate's pull request skips validation on user input. How do you explain the risk constructively?", "tip": "Focus on the code and failure risk, never the person."},
+        {"id": "mock_work_3", "topic": "Risk escalation", "prompt": "Two days before a demo, a secondary feature is unstable. How do you update your mentor with options?", "tip": "Use Status -> Risk -> Two Options -> Recommendation."},
+        {"id": "mock_work_4", "topic": "BLUF briefing", "prompt": "Summarise a recent technical fix in 20 seconds using Bottom Line Up Front.", "tip": "Lead with the outcome first, then one sentence of technical cause."},
+        {"id": "mock_work_5", "topic": "Requirements clarification", "prompt": "A mentor asks you to 'make the search page faster' with no details. What clarifying questions do you ask?", "tip": "Narrow down data size, query bottleneck, and perceived latency."},
+        {"id": "mock_work_6", "topic": "Receiving critique", "prompt": "A senior engineer points out a race condition in your code during review. How do you respond?", "tip": "Acknowledge the catch objectively and state your fix plus regression test."},
     ],
 }
 
@@ -307,6 +365,16 @@ def _build_mock_debrief(record: dict[str, Any]) -> dict[str, Any]:
         {"title": "Retry one tricky prompt aloud", "action": "Focus on one improvement rather than everything at once."},
     ]
 
+    if len(question_reviews) == 3 and question_reviews[0]["question_id"] == "fluency_432_r1":
+        r1 = question_reviews[0]["speaking_analytics"]
+        r3 = question_reviews[2]["speaking_analytics"]
+        if r1["word_count"] > 0 and r3["word_count"] > 0:
+            filler_diff = r3["filler_total"] - r1["filler_total"]
+            if filler_diff < 0:
+                strengths.append(f"4/3/2 Fluency Drill: filler words dropped by {abs(filler_diff)} from Round 1 to Round 3.")
+            if r1["wpm"] is not None and r3["wpm"] is not None:
+                strengths.append(f"4/3/2 Pace progression: Round 1 ({r1['wpm']} WPM) -> Round 3 ({r3['wpm']} WPM) on the same topic.")
+
     return {
         "mock_id": record["id"],
         "mode": record["mode"],
@@ -355,13 +423,14 @@ class ResumeParsePayload(BaseModel):
 
 
 class MockStartPayload(BaseModel):
-    mode: Literal["timed_mock", "warmup", "project_studio", "resume_prep"] = "timed_mock"
-    focus: Literal["mixed", "project", "hr", "technical"] = "mixed"
+    mode: Literal["timed_mock", "warmup", "project_studio", "resume_prep", "fluency_432"] = "timed_mock"
+    focus: Literal["mixed", "project", "hr", "technical", "workplace"] = "mixed"
     question_count: int = Field(default=5, ge=2, le=6)
     time_limit_seconds: int | None = Field(default=600, ge=60, le=3600)
     project_id: str | None = Field(default=None, max_length=120)
     custom_questions: list[dict[str, Any]] | None = None
     title: str | None = Field(default=None, max_length=160)
+    fluency_prompt: str | None = Field(default=None, max_length=400)
 
 
 class MockResponsePayload(BaseModel):
@@ -511,7 +580,12 @@ def create_career_prep_router(db_path: Path) -> APIRouter:
         title = (payload.title or "").strip()
         time_limit = payload.time_limit_seconds
 
-        if payload.mode == "warmup":
+        persisted_mode = "warmup" if payload.mode == "fluency_432" else payload.mode
+        if payload.mode == "fluency_432":
+            questions = build_fluency_432_rounds(payload.fluency_prompt)
+            title = title or "4/3/2 Oral Fluency Drill (90s -> 60s -> 45s)"
+            time_limit = payload.time_limit_seconds or 240
+        elif payload.mode == "warmup":
             questions = list(WARMUP_QUESTIONS)
             title = title or "5-Minute Interview Warm-up"
             time_limit = payload.time_limit_seconds or 300
@@ -547,7 +621,7 @@ def create_career_prep_router(db_path: Path) -> APIRouter:
             else:
                 pool = MOCK_QUESTION_BANK.get(payload.focus, MOCK_QUESTION_BANK["project"])
             questions = pool[: payload.question_count]
-            focus_labels = {"mixed": "Mixed Placement", "project": "Project Deep Dive", "hr": "HR & Behavioural", "technical": "Technical Fundamentals"}
+            focus_labels = {"mixed": "Mixed Placement", "project": "Project Deep Dive", "hr": "HR & Behavioural", "technical": "Technical Fundamentals", "workplace": "Workplace Engineering"}
             title = title or f"Timed Mock · {focus_labels[payload.focus]}"
 
         if not questions:
@@ -561,7 +635,7 @@ def create_career_prep_router(db_path: Path) -> APIRouter:
                      questions_json, responses_json, project_id, created_at, completed_at)
                 VALUES (?, ?, ?, ?, 0, 'in_progress', ?, '[]', ?, ?, NULL)
                 """,
-                (mid, payload.mode, title[:160], time_limit, json.dumps(questions, ensure_ascii=False), payload.project_id, now),
+                (mid, persisted_mode, title[:160], time_limit, json.dumps(questions, ensure_ascii=False), payload.project_id, now),
             )
             row = conn.execute("SELECT * FROM mock_interviews WHERE id = ?", (mid,)).fetchone()
         return {"mock": _mock_view(row)}

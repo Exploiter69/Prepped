@@ -690,6 +690,7 @@
     startMockSession({ mode: "timed_mock", focus: $("#mock-focus-select")?.value || "mixed", question_count: 5, time_limit_seconds: limit > 0 ? limit : null });
   });
   $("#warmup-start-btn")?.addEventListener("click", () => startMockSession({ mode: "warmup", time_limit_seconds: 300 }));
+  $("#fluency-432-start-btn")?.addEventListener("click", () => startMockSession({ mode: "fluency_432", time_limit_seconds: 240 }));
   $("#dashboard-warmup-button")?.addEventListener("click", () => startMockSession({ mode: "warmup", time_limit_seconds: 300 }));
 
   $("#mock-submit-answer-btn")?.addEventListener("click", async () => {

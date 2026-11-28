@@ -167,3 +167,15 @@
 @media (max-width: 820px) {
   .profile-settings-grid, .career-pack-grid, .mock-debrief-grid, .comparison-notes-grid { grid-template-columns: 1fr; }
 }
+
+.lesson-method-box {
+  margin: 10px 0 14px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  background: var(--teal-soft);
+  border: 1px solid #CBE3DA;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.lesson-method-box strong { color: var(--teal-ink); margin-right: 6px; }

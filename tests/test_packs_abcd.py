@@ -271,3 +271,56 @@ def test_pack_d_cloud_ai_privacy_consent_key_handling_and_quota_fallback(tmp_pat
 
     reply = call_cloud_provider("gemini", "gemini-2.5-flash", "k", "sys", "usr", http_post=_mock_ok)
     assert "Clear role" in reply
+
+
+def test_scientific_curriculum_and_fluency_432_drill(tmp_path: Path) -> None:
+    app = create_app(db_path=tmp_path / "sci.sqlite3")
+    with TestClient(app) as client:
+        catalog = client.get("/api/learning/catalog").json()
+        assert len(catalog["levels"]) == 3
+        assert len(catalog["units"]) == 14
+        lessons_by_id = {lesson["id"]: lesson for track in catalog["tracks"] for lesson in track["lessons"]}
+        assert len(lessons_by_id) == 46
+        fluency_lesson = lessons_by_id["speaking-432-fluency"]
+        assert fluency_lesson["method_tag"] == "4/3/2 Fluency Proceduralization"
+
+        started = client.post("/api/career/mocks", json={"mode": "fluency_432", "time_limit_seconds": 240})
+        assert started.status_code == 201
+        mock = started.json()["mock"]
+        assert mock["question_count"] == 3
+        assert mock["questions"][0]["id"] == "fluency_432_r1"
+        assert mock["questions"][0]["prompt"] == mock["questions"][2]["prompt"]
+
+        r1 = client.post(
+            f"/api/career/mocks/{mock['id']}/respond",
+            json={
+                "question_id": "fluency_432_r1",
+                "answer_text": "Um basically I built a local SQLite app and um I tested the API endpoints.",
+                "elapsed_seconds": 60,
+                "speaking_duration_seconds": 30.0,
+            },
+        )
+        assert r1.status_code == 200
+        r2 = client.post(
+            f"/api/career/mocks/{mock['id']}/respond",
+            json={
+                "question_id": "fluency_432_r2",
+                "answer_text": "I built a local SQLite practice app and verified the API endpoints with automated tests.",
+                "elapsed_seconds": 100,
+                "speaking_duration_seconds": 20.0,
+            },
+        )
+        assert r2.status_code == 200
+        r3 = client.post(
+            f"/api/career/mocks/{mock['id']}/respond",
+            json={
+                "question_id": "fluency_432_r3",
+                "answer_text": "I built a local SQLite practice app and verified all API endpoints with automated regression tests.",
+                "elapsed_seconds": 130,
+                "speaking_duration_seconds": 15.0,
+            },
+        )
+        assert r3.status_code == 200
+        debrief = r3.json()["debrief"]
+        assert any("4/3/2 Fluency Drill" in s for s in debrief["strengths"])
+        assert any("4/3/2 Pace progression" in s for s in debrief["strengths"])

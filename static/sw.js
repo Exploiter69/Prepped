@@ -2,13 +2,13 @@
    Privacy-strict cache strategy:
    - Caches ONLY static application shell assets (HTML/CSS/JS/SVG/manifest).
    - NEVER caches /api/* requests, learner transcripts, audio, or personal data. */
-const CACHE_NAME = "prepped-shell-v1";
+const CACHE_NAME = "prepped-shell-v2";
 const SHELL_ASSETS = [
   "/",
   "/manifest.webmanifest",
-  "/static/style.css?v=packs-abcd-1",
-  "/static/motion.css?v=packs-abcd-1",
-  "/static/enhancements.css?v=packs-abcd-1",
+  "/static/style.css?v=sci-curriculum-1",
+  "/static/motion.css?v=sci-curriculum-1",
+  "/static/enhancements.css?v=sci-curriculum-1",
   "/static/assets/prepped-icon.svg",
   "/static/assets/prepped-owl-welcome.svg",
   "/static/assets/prepped-owl-thinking.svg",

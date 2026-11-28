@@ -663,6 +663,20 @@
     $("#learning-runner").classList.remove("hidden");
     $("#learning-runner-title").textContent = attempt.lesson.title;
     $("#learning-runner-intro").textContent = attempt.lesson.introduction;
+    const methodBox = $("#learning-method-box");
+    if (methodBox) {
+      methodBox.replaceChildren();
+      if (attempt.lesson.method_tag && attempt.lesson.method_note) {
+        const badge = document.createElement("strong");
+        badge.textContent = "Learning method · " + attempt.lesson.method_tag + ":";
+        const detail = document.createElement("span");
+        detail.textContent = " " + attempt.lesson.method_note;
+        methodBox.append(badge, detail);
+        methodBox.classList.remove("hidden");
+      } else {
+        methodBox.classList.add("hidden");
+      }
+    }
     const stepProgress = $("#learning-step-progress");
     const stepFill = $("#learning-step-progress-fill");
     const completedExercises = attempt.status === "completed" ? attempt.exercise_count : attempt.response_count;

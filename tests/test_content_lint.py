@@ -16,12 +16,12 @@ def test_content_bundle_has_complete_skill_and_studio_coverage() -> None:
         "career_version": "1.3.0",
         "skills": 14,
         "tracks": 4,
-        "units": 9,
-        "lessons": 14,
-        "exercises": 49,
+        "units": 14,
+        "lessons": 46,
+        "exercises": 155,
         "studios": 3,
         "studio_questions": 12,
-        "sources": 11,
+        "sources": 18,
     }
 
 

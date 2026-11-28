@@ -6,23 +6,23 @@
     <meta name="theme-color" content="#F6F2EA">
     <meta name="description" content="Private, local-first practice for English fluency and placement interviews.">
     <title>Prepped — Practice with purpose</title>
-    <link rel="stylesheet" href="/static/style.css?v=packs-abcd-1">
+    <link rel="stylesheet" href="/static/style.css?v=sci-curriculum-1">
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="icon" href="/static/assets/prepped-icon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="/static/motion.css?v=packs-abcd-1">
-    <link rel="stylesheet" href="/static/enhancements.css?v=packs-abcd-1">
-    <script src="/static/voice.js?v=packs-abcd-1" defer></script>
-    <script src="/static/app.js?v=packs-abcd-1" defer></script>
-    <script src="/static/learning.js?v=packs-abcd-1" defer></script>
-    <script src="/static/memory.js?v=packs-abcd-1" defer></script>
-    <script src="/static/career.js?v=packs-abcd-1" defer></script>
-    <script src="/static/progress.js?v=packs-abcd-1" defer></script>
-    <script src="/static/history-memory.js?v=packs-abcd-1" defer></script>
-    <script src="/static/intelligence.js?v=packs-abcd-1" defer></script>
-    <script src="/static/dashboard.js?v=packs-abcd-1" defer></script>
-    <script src="/static/ui-shell.js?v=packs-abcd-1" defer></script>
-    <script src="/static/motion.js?v=packs-abcd-1" defer></script>
-    <script src="/static/enhancements.js?v=packs-abcd-1" defer></script>
+    <link rel="stylesheet" href="/static/motion.css?v=sci-curriculum-1">
+    <link rel="stylesheet" href="/static/enhancements.css?v=sci-curriculum-1">
+    <script src="/static/voice.js?v=sci-curriculum-1" defer></script>
+    <script src="/static/app.js?v=sci-curriculum-1" defer></script>
+    <script src="/static/learning.js?v=sci-curriculum-1" defer></script>
+    <script src="/static/memory.js?v=sci-curriculum-1" defer></script>
+    <script src="/static/career.js?v=sci-curriculum-1" defer></script>
+    <script src="/static/progress.js?v=sci-curriculum-1" defer></script>
+    <script src="/static/history-memory.js?v=sci-curriculum-1" defer></script>
+    <script src="/static/intelligence.js?v=sci-curriculum-1" defer></script>
+    <script src="/static/dashboard.js?v=sci-curriculum-1" defer></script>
+    <script src="/static/ui-shell.js?v=sci-curriculum-1" defer></script>
+    <script src="/static/motion.js?v=sci-curriculum-1" defer></script>
+    <script src="/static/enhancements.js?v=sci-curriculum-1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -324,6 +324,7 @@
           </div>
           <h3 id="learning-runner-title"></h3>
           <p id="learning-runner-intro" class="scenario-description"></p>
+          <div id="learning-method-box" class="lesson-method-box hidden" role="note"></div>
           <div class="learning-outcomes-panel"><strong>In this lesson</strong><ul id="learning-outcomes" aria-label="Lesson learning outcomes"></ul></div>
           <div id="learning-example" class="learning-example"></div>
           <div id="learning-exercise" class="learning-exercise"></div>
@@ -535,6 +536,7 @@
                   <option value="project">Project deep dive</option>
                   <option value="hr">HR &amp; behavioural</option>
                   <option value="technical">Technical fundamentals</option>
+                  <option value="workplace">Workplace engineering (standups &amp; reviews)</option>
                 </select>
               </div>
               <div>
@@ -550,6 +552,7 @@
             <div class="career-project-actions">
               <button id="mock-start-btn" class="button button-primary" type="button">Start timed mock →</button>
               <button id="warmup-start-btn" class="button button-secondary" type="button">Start 5-minute warm-up</button>
+              <button id="fluency-432-start-btn" class="button button-secondary" type="button">4/3/2 Fluency drill (90s → 60s → 45s)</button>
             </div>
             <div class="divider"></div>
             <h4>Recent mock interviews &amp; warm-ups</h4>
