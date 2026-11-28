@@ -82,7 +82,7 @@
     });
   }
   document.addEventListener("keydown", (e) => {
-    const openModals = $(".modal-backdrop:not(.hidden)");
+    const openModals = $$(".modal-backdrop:not(.hidden)");
     const activeModal = openModals[openModals.length - 1];
 
     if (e.key === "Escape" && activeModal) {
