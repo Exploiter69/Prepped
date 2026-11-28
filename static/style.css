@@ -1992,3 +1992,13 @@ body.lesson-focus-mode #learning-runner {
     margin-top: 12px;
   }
 }
+
+/* Mobile navigation: compact, thumb-reachable workspace switcher. */
+@media (max-width: 720px) {
+  .mobile-bottom-nav { position: fixed; inset: auto 0 0; z-index: 50; display: flex; align-items: stretch; justify-content: space-around; gap: 2px; padding: 8px 6px calc(8px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); background: var(--surface); }
+  .mobile-nav-btn { display: flex; flex: 1 1 0; min-width: 0; min-height: 48px; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border: 0; border-radius: 10px; padding: 4px 2px; background: transparent; color: var(--ink-2); font-size: 10px; font-weight: 600; }
+  .mobile-nav-btn.is-active { background: var(--teal-soft); color: var(--teal-ink); }
+  .mobile-nav-btn:focus-visible { outline-offset: -2px; }
+  body { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+  body.lesson-focus-mode { padding-bottom: 0; }
+}
