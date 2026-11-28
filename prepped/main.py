@@ -26,6 +26,10 @@ from prepped.memory import create_memory_router
 from prepped.progress import create_progress_router, initialize_progress_database
 from prepped.intelligence import create_intelligence_router, initialize_intelligence_database
 from prepped.portability import create_portability_router
+from prepped.preferences import create_preferences_router, initialize_preferences_database
+from prepped.career_prep import create_career_prep_router, initialize_career_prep_database
+from prepped.ai_provider import create_ai_router, initialize_ai_database
+from prepped.speaking_analytics import compare_attempts
 from prepped.scenarios import DEFAULT_SCENARIO_PATH, ScenarioValidationError, load_scenario
 from prepped.security import RequestSizeLimitMiddleware
 from prepped.voice import VoiceService, build_voice_service
@@ -45,6 +49,9 @@ def _now() -> str:
 class AnswerSubmission(BaseModel):
     question_id: str = Field(min_length=1, max_length=120)
     answer_text: str = Field(max_length=6000)
+    speaking_duration_seconds: float | None = Field(default=None, ge=0, le=3600)
+    pause_count: int | None = Field(default=None, ge=0, le=500)
+    silence_seconds: float | None = Field(default=None, ge=0, le=3600)
 
 
 def _session_from_row(row: sqlite3.Row) -> dict[str, Any]:
@@ -66,7 +73,8 @@ def _get_session(connection: sqlite3.Connection, session_id: str) -> dict[str, A
 
 def _get_answers(connection: sqlite3.Connection, session_id: str) -> list[dict[str, Any]]:
     rows = connection.execute(
-        "SELECT id, session_id, question_id, answer_text, position, created_at "
+        "SELECT id, session_id, question_id, answer_text, position, created_at, "
+        "speaking_duration_seconds, pause_count, silence_seconds "
         "FROM answers WHERE session_id = ? ORDER BY position",
         (session_id,),
     ).fetchall()
@@ -108,6 +116,11 @@ def create_app(
         initialize_career_database(Path(db_path))
         initialize_progress_database(Path(db_path))
         initialize_intelligence_database(Path(db_path))
+        initialize_preferences_database(Path(db_path))
+        initialize_career_prep_database(Path(db_path))
+        initialize_ai_database(Path(db_path))
+        with connect_database(Path(db_path)) as ver_conn:
+            ver_conn.execute("PRAGMA user_version = 5")
         validate_content_bundle(Path(curriculum_path))
         yield
 
@@ -203,10 +216,29 @@ def create_app(
     application.include_router(create_intelligence_router(Path(db_path), Path(curriculum_path)))
     application.include_router(create_portability_router(Path(db_path)))
     application.include_router(create_career_router(Path(db_path)))
+    application.include_router(create_preferences_router(Path(db_path)))
+    application.include_router(create_career_prep_router(Path(db_path)))
+    application.include_router(create_ai_router(Path(db_path)))
 
     @application.get("/", include_in_schema=False)
     def home() -> FileResponse:
         return FileResponse(INDEX_PATH)
+
+    @application.get("/manifest.webmanifest", include_in_schema=False)
+    def web_manifest() -> FileResponse:
+        return FileResponse(
+            ROOT / "static" / "manifest.webmanifest",
+            media_type="application/manifest+json",
+            headers={"Cache-Control": "no-cache"},
+        )
+
+    @application.get("/sw.js", include_in_schema=False)
+    def service_worker() -> FileResponse:
+        return FileResponse(
+            ROOT / "static" / "sw.js",
+            media_type="application/javascript",
+            headers={"Cache-Control": "no-cache", "Service-Worker-Allowed": "/"},
+        )
 
     @application.get("/api/health")
     def health() -> dict[str, str]:
@@ -219,7 +251,7 @@ def create_app(
                 integrity = connection.execute("PRAGMA quick_check").fetchone()[0]
                 required = {"sessions", "answers", "learner_profile", "learning_attempts",
                             "learning_events", "learning_memory", "learning_memory_reviews",
-                            "career_sessions", "career_turns", "learner_goals", "recommendation_dismissals", "adaptive_plans", "adaptive_plan_items"}
+                            "career_sessions", "career_turns", "learner_goals", "recommendation_dismissals", "adaptive_plans", "adaptive_plan_items", "learner_preferences", "learner_projects", "mock_interviews", "ai_settings"}
                 existing = {row["name"] for row in connection.execute(
                     "SELECT name FROM sqlite_master WHERE type='table'"
                 )}
@@ -304,12 +336,15 @@ def create_app(
 
             connection.execute(
                 """
-                INSERT INTO answers (id, session_id, question_id, answer_text, position, created_at)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO answers
+                    (id, session_id, question_id, answer_text, position, created_at,
+                     speaking_duration_seconds, pause_count, silence_seconds)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     str(uuid4()), session_id, submission.question_id,
                     submission.answer_text.strip(), len(answers), _now(),
+                    submission.speaking_duration_seconds, submission.pause_count, submission.silence_seconds,
                 ),
             )
             updated_answers = _get_answers(connection, session_id)
@@ -343,6 +378,29 @@ def create_app(
                 raise HTTPException(status_code=409, detail="Finish all questions before viewing feedback.")
             answers = _get_answers(connection, session_id)
             return build_feedback(session, answers)
+
+    @application.get("/api/sessions/{session_id}/comparison")
+    def session_comparison(session_id: str) -> dict[str, Any]:
+        with connect_database(Path(db_path)) as connection:
+            current_session = _get_session(connection, session_id)
+            if current_session["status"] != "completed":
+                raise HTTPException(status_code=409, detail="Finish all questions before comparing attempts.")
+            current_answers = _get_answers(connection, session_id)
+            current_fb = build_feedback(current_session, current_answers)
+            prev_row = connection.execute(
+                """
+                SELECT * FROM sessions
+                WHERE attempt_group_id = ? AND status = 'completed' AND attempt_number < ?
+                ORDER BY attempt_number DESC LIMIT 1
+                """,
+                (current_session["attempt_group_id"], current_session["attempt_number"]),
+            ).fetchone()
+            if prev_row is None:
+                return {"has_previous": False, "comparison": None}
+            prev_session = _session_from_row(prev_row)
+            prev_answers = _get_answers(connection, prev_session["id"])
+            prev_fb = build_feedback(prev_session, prev_answers)
+            return {"has_previous": True, "comparison": compare_attempts(prev_fb, current_fb)}
 
     @application.post("/api/sessions/{session_id}/retry", status_code=201)
     def retry_session(session_id: str) -> dict[str, Any]:

@@ -205,6 +205,18 @@ def initialize_database(db_path: Path) -> None:
         if "dismissed_at" not in memory_columns:
             connection.execute("ALTER TABLE learning_memory ADD COLUMN dismissed_at TEXT")
 
+        answer_columns = {
+            row["name"] for row in connection.execute("PRAGMA table_info(answers)")
+        }
+        answer_migrations = {
+            "speaking_duration_seconds": "REAL",
+            "pause_count": "INTEGER",
+            "silence_seconds": "REAL",
+        }
+        for name, definition in answer_migrations.items():
+            if name not in answer_columns:
+                connection.execute(f"ALTER TABLE answers ADD COLUMN {name} {definition}")
+
 
 def row_to_dict(row: sqlite3.Row | None) -> dict[str, Any] | None:
     """Convert a SQLite row to a plain dictionary."""

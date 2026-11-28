@@ -55,6 +55,7 @@ def test_export_and_restore_round_trip_all_local_user_tables(tmp_path: Path) -> 
             "learner_profile", "sessions", "answers", "learning_attempts", "learning_events",
             "learning_memory", "learning_memory_reviews", "career_sessions", "career_turns", "learner_goals", "recommendation_dismissals",
             "adaptive_plans", "adaptive_plan_items",
+            "learner_preferences", "learner_projects", "mock_interviews", "ai_settings",
         }
         assert backup["tables"]["sessions"]
         assert backup["tables"]["answers"]
@@ -85,7 +86,7 @@ def test_export_and_restore_round_trip_all_local_user_tables(tmp_path: Path) -> 
         assert status["counts"]["recommendation_dismissals"] == 1
         assert status["counts"]["adaptive_plans"] == 1
         assert status["counts"]["adaptive_plan_items"] >= 1
-        assert status["database_schema_version"] == 4
+        assert status["database_schema_version"] == 5
     finally:
         source.__exit__(None, None, None)
         target.__exit__(None, None, None)
@@ -97,13 +98,13 @@ def test_version_three_backup_restores_with_empty_adaptive_plan_tables(tmp_path:
         client.put("/api/profile", json={"display_name": "Legacy learner"})
         backup = client.get("/api/data/export").json()
         backup["database_schema_version"] = 3
-        backup["tables"].pop("adaptive_plans")
-        backup["tables"].pop("adaptive_plan_items")
+        for table_name in ("adaptive_plans", "adaptive_plan_items", "learner_preferences", "learner_projects", "mock_interviews", "ai_settings"):
+            backup["tables"].pop(table_name, None)
         restored = client.post("/api/data/restore", json={**backup, "confirm_replace": True})
         assert restored.status_code == 200, restored.text
         assert client.get("/api/profile").json()["profile"]["display_name"] == "Legacy learner"
         status = client.get("/api/data/status").json()
-        assert status["database_schema_version"] == 4
+        assert status["database_schema_version"] == 5
         assert status["counts"]["adaptive_plans"] == 0
         assert status["counts"]["adaptive_plan_items"] == 0
     finally:
@@ -137,7 +138,7 @@ def test_restore_rejects_broken_foreign_keys_without_replacing_existing_data(tmp
         backup = client.get("/api/data/export").json()
         backup["tables"]["answers"].append({
             "id": "broken-answer", "session_id": "missing-session", "question_id": "q1",
-            "answer_text": "bad reference", "position": 0, "created_at": "2026-01-01T00:00:00+00:00",
+            "answer_text": "bad reference", "position": 0, "created_at": "2026-01-01T00:00:00+00:00", "speaking_duration_seconds": None, "pause_count": None, "silence_seconds": None,
         })
         response = client.post("/api/data/restore", json={**backup, "confirm_replace": True})
         assert response.status_code == 422
@@ -406,6 +407,7 @@ def test_backup_export_excludes_environment_secrets_and_uses_private_response_he
             "learner_profile", "sessions", "answers", "learning_attempts", "learning_events",
             "learning_memory", "learning_memory_reviews", "career_sessions", "career_turns",
             "learner_goals", "recommendation_dismissals", "adaptive_plans", "adaptive_plan_items",
+            "learner_preferences", "learner_projects", "mock_interviews", "ai_settings",
         }
         assert all(
             "audio" not in column.lower() and "secret" not in column.lower()

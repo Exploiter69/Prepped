@@ -25,6 +25,15 @@
     analyser: null,
     visualizerSource: null,
     visualizerFrame: null,
+    slowTimerId: null,
+    voiceState: "ready",
+    lastDurationSeconds: null,
+    lastPauseCount: null,
+    lastSilenceSeconds: null,
+    inPause: false,
+    pauseCount: 0,
+    silenceSeconds: 0,
+    ephemeralUrl: null,
   };
 
   const ui = {};
@@ -45,6 +54,14 @@
     ui.visualizer = document.getElementById("recording-visualizer");
     ui.recordingClock = document.getElementById("recording-clock");
     ui.draftState = document.getElementById("response-draft-state");
+    ui.recorderPanel = document.getElementById("voice-recorder-panel");
+    ui.statePill = document.getElementById("voice-state-pill");
+    ui.privacyChip = document.getElementById("voice-privacy-chip");
+    ui.slowHint = document.getElementById("voice-slow-hint");
+    ui.typeInstead = document.getElementById("voice-type-instead");
+    ui.replayBox = document.getElementById("ephemeral-replay-box");
+    ui.replayAudio = document.getElementById("ephemeral-replay-audio");
+    ui.replayClear = document.getElementById("ephemeral-replay-clear");
   }
 
   function setRecordStatus(message, tone = "") {
@@ -62,6 +79,82 @@
 
   function setVoiceError(message) {
     if (ui.voiceError) ui.voiceError.textContent = message || "";
+  }
+
+  const VOICE_STATE_LABELS = {
+    ready: "Ready",
+    requesting: "Needs your OK",
+    denied: "Microphone blocked",
+    unavailable: "No microphone found",
+    listening: "Listening",
+    paused: "Paused",
+    processing: "Transcribing your answer",
+    responding: "Prepped is speaking",
+    interrupted: "Connection lost",
+    "cloud-offline": "Cloud voice unavailable",
+    edit: "Review your answer",
+    complete: "Session finished",
+  };
+
+  function setVoiceUiState(nextState, labelOverride = "") {
+    state.voiceState = nextState;
+    if (ui.recorderPanel) ui.recorderPanel.dataset.state = nextState;
+    if (ui.statePill) {
+      const label = labelOverride || VOICE_STATE_LABELS[nextState] || "Ready";
+      const textNode = ui.statePill.querySelector("span:last-child");
+      if (textNode) textNode.textContent = label;
+    }
+    if (nextState !== "processing") clearSlowHint();
+  }
+
+  function startSlowHint() {
+    clearSlowHint();
+    state.slowTimerId = window.setTimeout(() => {
+      if (state.transcribing && ui.slowHint) ui.slowHint.classList.remove("hidden");
+    }, 6000);
+  }
+
+  function clearSlowHint() {
+    if (state.slowTimerId) {
+      window.clearTimeout(state.slowTimerId);
+      state.slowTimerId = null;
+    }
+    if (ui.slowHint) ui.slowHint.classList.add("hidden");
+  }
+
+  function clearEphemeralReplay() {
+    if (ui.replayAudio) {
+      ui.replayAudio.pause();
+      ui.replayAudio.removeAttribute("src");
+      ui.replayAudio.load();
+    }
+    if (state.ephemeralUrl) {
+      URL.revokeObjectURL(state.ephemeralUrl);
+      state.ephemeralUrl = null;
+    }
+    if (ui.replayBox) ui.replayBox.classList.add("hidden");
+  }
+
+  function setEphemeralReplay(blob) {
+    clearEphemeralReplay();
+    const allowed = window.PreppedPrefs ? window.PreppedPrefs.ephemeralAudioReplay !== false : true;
+    if (!allowed || !blob || !blob.size || !ui.replayAudio || !ui.replayBox) return;
+    state.ephemeralUrl = URL.createObjectURL(blob);
+    ui.replayAudio.src = state.ephemeralUrl;
+    ui.replayBox.classList.remove("hidden");
+  }
+
+  function consumeLastMetrics() {
+    const metrics = {
+      speaking_duration_seconds: state.lastDurationSeconds,
+      pause_count: state.lastPauseCount,
+      silence_seconds: state.lastSilenceSeconds,
+    };
+    state.lastDurationSeconds = null;
+    state.lastPauseCount = null;
+    state.lastSilenceSeconds = null;
+    clearEphemeralReplay();
+    return metrics;
   }
 
   function supportsRecording() {
@@ -118,6 +211,13 @@
       state.analyser = analyser;
       state.visualizerSource = source;
       const samples = new Uint8Array(analyser.fftSize);
+      const smoothed = new Float32Array(bars.length).fill(7);
+      state.pauseCount = 0;
+      state.silenceSeconds = 0;
+      state.inPause = false;
+      let silentStart = 0;
+      let lastFrameTime = performance.now();
+      const center = (bars.length - 1) / 2;
       context.resume().catch(() => {});
       const draw = () => {
         if (!state.recording || state.analyser !== analyser) return;
@@ -135,8 +235,31 @@
               energy += amplitude * amplitude;
             }
             const rms = Math.sqrt(energy / windowSize);
-            bar.style.height = (7 + Math.min(31, rms * 72)) + "px";
+            const envelope = 0.55 + 0.45 * Math.cos(((index - center) / Math.max(1, center)) * (Math.PI / 2));
+            const targetHeight = 7 + Math.min(33, rms * 84 * envelope);
+            smoothed[index] = smoothed[index] * 0.68 + targetHeight * 0.32;
+            bar.style.height = smoothed[index].toFixed(1) + "px";
           });
+          let frameEnergy = 0;
+          for (let s = 0; s < samples.length; s += 1) {
+            const amp = (samples[s] - 128) / 128;
+            frameEnergy += amp * amp;
+          }
+          const frameRms = Math.sqrt(frameEnergy / samples.length);
+          const nowMs = performance.now();
+          const dtSec = Math.min(0.25, Math.max(0, (nowMs - lastFrameTime) / 1000));
+          lastFrameTime = nowMs;
+          if (frameRms < 0.018) {
+            state.silenceSeconds += dtSec;
+            if (!silentStart) silentStart = nowMs;
+            if (!state.inPause && nowMs - silentStart >= 900) {
+              state.inPause = true;
+              state.pauseCount += 1;
+            }
+          } else {
+            silentStart = 0;
+            state.inPause = false;
+          }
         }
         state.visualizerFrame = window.requestAnimationFrame(draw);
       };
@@ -168,6 +291,7 @@
   function refreshRecordHint() {
     if (state.recording || state.transcribing) return;
     if (!supportsRecording()) {
+      setVoiceUiState("unavailable");
       setRecordStatus(
         "This browser cannot record audio here. Type your answer instead.",
         "error"
@@ -176,12 +300,14 @@
     }
     if (!state.status) return;
     if (state.status.stt?.available) {
+      setVoiceUiState(ui.answer?.value.trim() ? "edit" : "ready");
       if (state.status.stt?.engine === "groq-whisper") {
         setRecordStatus("Ready to record. Your audio will be sent to Groq for transcription.");
       } else {
         setRecordStatus("Ready to record locally. Audio is not sent to a provider or saved.");
       }
     } else {
+      setVoiceUiState(state.status.stt?.engine === "groq-whisper" ? "cloud-offline" : "unavailable");
       setRecordStatus(
         state.status.stt?.detail ||
           "Speech-to-text is not available. Type your answer instead.",
@@ -238,6 +364,20 @@
     const unavailableText = "Answers are saved locally. Speech-provider details could not be loaded; check voice status before recording. Prepped does not store raw audio.";
     const detail = state.status ? (remote ? remoteText : localText) : unavailableText;
     if (ui.privacyNote) ui.privacyNote.textContent = detail;
+    const privacyDetails = document.getElementById("practice-privacy");
+    if (privacyDetails && remote) privacyDetails.open = true;
+    if (ui.privacyChip) {
+      if (!state.status) {
+        ui.privacyChip.className = "chip a";
+        ui.privacyChip.textContent = "Voice status unavailable";
+      } else if (remoteStt) {
+        ui.privacyChip.className = "chip a";
+        ui.privacyChip.textContent = "Cloud voice (Groq): audio is sent for transcription";
+      } else {
+        ui.privacyChip.className = "chip t";
+        ui.privacyChip.textContent = "On-device voice";
+      }
+    }
     if (ui.privacySummary) {
       ui.privacySummary.textContent = !state.status
         ? "Answers stay in the local app. Speech-provider details are unavailable until status can be checked."
@@ -250,6 +390,7 @@
   function stopSpeech(updateStatus = false) {
     state.ttsController?.abort();
     state.ttsController = null;
+    document.querySelector(".spoken-prompt")?.classList.remove("is-speaking");
     if (ui.audio) {
       ui.audio.pause();
       ui.audio.onended = null;
@@ -276,7 +417,8 @@
     const requestGeneration = state.generation;
     const controller = new AbortController();
     state.ttsController = controller;
-    const cacheKey = state.questionText;
+    const ttsSpeed = Number(window.PreppedPrefs?.ttsSpeed || 1.0);
+    const cacheKey = `${ttsSpeed.toFixed(2)}:${state.questionText}`;
     const cachedBlob = state.promptAudioCache.get(cacheKey);
     setTtsStatus(cachedBlob ? "Loading saved question audio…" : "Preparing question audio…");
     try {
@@ -285,7 +427,7 @@
       const response = await fetch("/api/voice/tts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: state.questionText }),
+        body: JSON.stringify({ text: state.questionText, speed: ttsSpeed }),
         signal: controller.signal,
       });
       if (!response.ok) {
@@ -306,15 +448,21 @@
       if (requestGeneration !== state.generation || controller.signal.aborted) return;
       state.audioUrl = URL.createObjectURL(blob);
       ui.audio.src = state.audioUrl;
+      const spokenBox = document.querySelector(".spoken-prompt");
       ui.audio.onended = () => {
+        spokenBox?.classList.remove("is-speaking");
+        if (!state.recording && !state.transcribing) setVoiceUiState(ui.answer?.value.trim() ? "edit" : "ready");
         setTtsStatus("Question finished. Use Replay to hear it again.");
         updateControls();
       };
       ui.audio.onerror = () => {
+        spokenBox?.classList.remove("is-speaking");
         setTtsStatus("The local audio could not be played. Read the question on screen.", "error");
       };
       await ui.audio.play();
       if (requestGeneration !== state.generation || controller.signal.aborted) return;
+      spokenBox?.classList.add("is-speaking");
+      if (!state.recording && !state.transcribing) setVoiceUiState("responding");
       setTtsStatus("Playing question audio. Use Stop to interrupt.");
     } catch (error) {
       if (error.name !== "AbortError" && requestGeneration === state.generation) {
@@ -542,6 +690,7 @@
       return;
     }
 
+    const capturedSeconds = state.startedAt ? Math.max(0, (Date.now() - state.startedAt) / 1000) : 0;
     const mimeType = recorder?.mimeType || "audio/webm";
     const blob = new Blob(state.chunks, { type: mimeType });
     state.chunks = [];
@@ -550,6 +699,10 @@
       updateControls();
       return;
     }
+    state.lastDurationSeconds = capturedSeconds >= 1 ? Number(capturedSeconds.toFixed(1)) : null;
+    state.lastPauseCount = state.pauseCount;
+    state.lastSilenceSeconds = Number(state.silenceSeconds.toFixed(1));
+    setEphemeralReplay(blob);
 
     const generation = state.generation;
     const controller = new AbortController();
@@ -613,6 +766,7 @@
     ui.answer.focus();
     ui.answer.setSelectionRange(ui.answer.value.length, ui.answer.value.length);
     if (ui.draftState) ui.draftState.textContent = "Transcript added · review before saving";
+    window.dispatchEvent(new CustomEvent("prepped:transcript-inserted"));
     setRecordStatus(
       truncated
         ? "Transcript added, but it was cut at the 6,000-character limit. Edit before saving."
@@ -623,6 +777,7 @@
 
   function stopAll() {
     state.generation += 1;
+    clearEphemeralReplay();
     state.permissionPending = false;
     state.transcriptionController?.abort();
     state.transcriptionController = null;
@@ -660,6 +815,15 @@
     if (!ui.record) return;
 
     ui.record.addEventListener("click", startRecording);
+    if (ui.replayClear) ui.replayClear.addEventListener("click", clearEphemeralReplay);
+    if (ui.typeInstead) {
+      ui.typeInstead.addEventListener("click", () => {
+        if (ui.answer) {
+          ui.answer.focus();
+          ui.answer.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
+        }
+      });
+    }
     ui.stopRecord.addEventListener("click", () => stopRecording(false));
     ui.ttsPlay.addEventListener("click", playQuestion);
     ui.ttsStop.addEventListener("click", stopQuestion);
@@ -672,5 +836,5 @@
     refreshStatus();
   }
 
-  window.PreppedVoice = { init, setQuestion, stopAll, setBusy };
+  window.PreppedVoice = { init, setQuestion, stopAll, setBusy, consumeLastMetrics, clearEphemeralReplay };
 })();

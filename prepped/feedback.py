@@ -10,6 +10,8 @@ import re
 import unicodedata
 from typing import Any
 
+from prepped.speaking_analytics import analyze_transcript, summarize_session_delivery
+
 
 # These are deliberately small, inspectable phrase lists, not a language model.
 # A match is only a prompt for learner review, never a quality verdict.
@@ -253,6 +255,8 @@ def build_feedback(session: dict[str, Any], answers: list[dict[str, Any]]) -> di
     questions = scenario.get("questions", [])
     rubric = session.get("rubric") or scenario.get("rubric", [])
     by_question = {answer["question_id"]: answer["answer_text"] for answer in answers}
+    answer_meta = {answer["question_id"]: answer for answer in answers}
+    all_question_analytics: list[dict[str, Any]] = []
     nonempty = [text.strip() for text in by_question.values() if text.strip()]
     combined = "\n".join(nonempty)
     total_words = sum(len(_words(text)) for text in nonempty)
@@ -278,6 +282,14 @@ def build_feedback(session: dict[str, Any], answers: list[dict[str, Any]]) -> di
             else:
                 status = "try_next"
                 message = "The checklist could not find all of the expected signals for this prompt. That does not prove the answer is wrong."
+        meta = answer_meta.get(question_id) or {}
+        speaking_analytics = analyze_transcript(
+            answer,
+            duration_seconds=meta.get("speaking_duration_seconds"),
+            pause_count=meta.get("pause_count"),
+            silence_seconds=meta.get("silence_seconds"),
+        )
+        all_question_analytics.append(speaking_analytics)
         question_feedback.append({
             "question_id": question_id,
             "prompt": question["prompt"],
@@ -286,6 +298,8 @@ def build_feedback(session: dict[str, Any], answers: list[dict[str, Any]]) -> di
             "evidence": _evidence_excerpt(answer),
             "message": message,
             "next_action": next_action,
+            "answer_text": answer,
+            "speaking_analytics": speaking_analytics,
         })
 
     rubric_feedback: list[dict[str, Any]] = []
@@ -436,6 +450,7 @@ def build_feedback(session: dict[str, Any], answers: list[dict[str, Any]]) -> di
         "answered_questions": sum(bool(by_question.get(q["id"], "").strip()) for q in questions),
         "total_questions": len(questions),
         "total_words": total_words,
+        "delivery_summary": summarize_session_delivery(all_question_analytics),
         "question_feedback": question_feedback,
         "rubric_feedback": rubric_feedback,
         "limitations": [

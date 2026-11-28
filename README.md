@@ -210,3 +210,20 @@ This is deterministic local adaptation, not an AI tutor, proficiency assessment,
 
 
 Progress is evidence of saved activity, not proficiency, learning gains, confidence measurement, hiring likelihood, or placement prediction. The optional student usability pilot has not been run; no results are claimed.
+
+
+## Product Enhancements (Packs A–D)
+
+Prepped includes four integrated local-first enhancement packs built on the existing FastAPI, SQLite (schema v5), and vanilla HTML/CSS/JavaScript stack:
+
+- **Pack A — Speaking Analytics & Evidence-Based Feedback:** Deterministic transcript analysis (`prepped/speaking_analytics.py`) measuring word count, real recorded duration and WPM (strictly when microphone capture duration is available), client-side pause/silence estimates, filler words, repetitions, long sentences, grammar/phrasing review hints, and relevant technical vocabulary—paired with highlighted transcript evidence, temporary in-memory self-replay (never saved to disk), and attempt-to-attempt comparisons (`/api/sessions/{id}/comparison`).
+- **Pack B — Daily Learning Experience, Preferences & PWA:** 12-week persisted activity heatmap in Progress, non-intrusive keyboard shortcuts (`?`, `g+...`, `Space`, `1–4`, `Alt+R`, `Ctrl+Enter`), configurable TTS speed (`0.7×`–`1.5×`) integrated into Piper and `espeak-ng`, audio-assisted Memory flashcard review, persisted Deep Forest dark theme and Large reading text preferences (`/api/preferences`), and an installable PWA (`/manifest.webmanifest`, `/sw.js`) that caches only static shell assets and never caches `/api/*`.
+- **Pack C — Career & Placement Preparation:** Structured 6-part Project Explanation Studio (`/api/career/projects`), deterministic local Resume topic/question extraction (`/api/career/resume/parse`, supporting pasted text or `.txt`/`.md` up to 100 KB), Timed Mock Interviews with countdown timer (`/api/career/mocks`), grounded printable Interview Debriefs, and a 5-minute Interview Warm-up.
+- **Pack D — Optional Cloud AI (Free-Tier Aware):** Strictly optional provider-neutral adapter (`prepped/ai_provider.py`) supporting official Google Gemini and Groq APIs with configurable models (`PREPPED_GEMINI_MODEL`, `PREPPED_GROQ_MODEL`). Keys stay server-side in environment variables or a `0600` local file (`data/.ai_keys.json`) excluded from backups and logs. Every cloud request requires explicit per-request user consent on an editable text preview, never sends raw audio, enforces a local daily cap, and falls back cleanly to offline practice on rate limits, invalid keys, or outages.
+
+### Database Migration Notes (Schema v4 → v5)
+
+Upgrading an existing Prepped SQLite database is additive and automatic on startup:
+- Adds nullable timing columns (`speaking_duration_seconds`, `pause_count`, `silence_seconds`) to `answers`.
+- Adds `learner_preferences`, `learner_projects`, `mock_interviews`, and `ai_settings` tables.
+- Backup restore (`/api/data/restore`) validates and upgrades v3, v4, and v5 backups transactionally without losing existing records.

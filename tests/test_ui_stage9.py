@@ -15,14 +15,14 @@ def test_stage9_primary_workspaces_are_integrated_and_named() -> None:
         "practice-toggle": ("home-view", "Practice"),
         "learning-toggle": ("learning-view", "Learn"),
         "career-toggle": ("career-view", "Career"),
-        "memory-toggle": ("learning-view", "Memory"),
+        "memory-toggle": ("memory-view", "Memory"),
         "progress-toggle": ("progress-view", "Progress"),
         "history-toggle": ("history-view", "History"),
     }
     nav = HTML.split('<nav class="header-actions"', 1)[1].split("</nav>", 1)[0]
     assert nav.count('aria-current="page"') == 1
     assert 'id="profile-nav-toggle"' in nav
-    assert 'aria-controls="profile-panel"' in nav
+    assert 'aria-controls="profile-view"' in nav
     assert ">Profile</span>" in nav
     for control, (view, label) in destinations.items():
         assert f'id="{control}"' in nav

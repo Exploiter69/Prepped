@@ -1,7 +1,44 @@
 (() => {
   "use strict";
   const $ = (selector) => document.querySelector(selector);
-  const state = { items: [], queue: [], editingId: null, revealed: false };
+  const state = { items: [], queue: [], editingId: null, revealed: false, audio: null, audioUrl: null };
+
+  async function speakMemoryText(text, triggerButton) {
+    const clean = String(text || "").trim();
+    if (!clean) return;
+    if (state.audio) { state.audio.pause(); state.audio = null; }
+    if (state.audioUrl) { URL.revokeObjectURL(state.audioUrl); state.audioUrl = null; }
+    const origLabel = triggerButton ? triggerButton.textContent : "";
+    if (triggerButton) { triggerButton.disabled = true; triggerButton.textContent = "Loading audio…"; }
+    try {
+      const speed = Number(window.PreppedPrefs?.ttsSpeed || 1.0);
+      const res = await fetch("/api/voice/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: clean.slice(0, 1000), speed }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(typeof body.detail === "string" ? body.detail : "Spoken audio is unavailable right now.");
+      }
+      const blob = await res.blob();
+      state.audioUrl = URL.createObjectURL(blob);
+      const audio = new Audio(state.audioUrl);
+      state.audio = audio;
+      audio.onended = () => {
+        if (triggerButton) { triggerButton.disabled = false; triggerButton.textContent = origLabel; }
+      };
+      audio.onerror = () => {
+        setStatus("Audio playback could not start. You can continue reviewing by reading.", true);
+        if (triggerButton) { triggerButton.disabled = false; triggerButton.textContent = origLabel; }
+      };
+      await audio.play();
+      if (triggerButton) { triggerButton.disabled = false; triggerButton.textContent = origLabel; }
+    } catch (error) {
+      setStatus(error.message || "Audio is unavailable. Review remains fully usable by reading.", true);
+      if (triggerButton) { triggerButton.disabled = false; triggerButton.textContent = origLabel; }
+    }
+  }
   const typeLabels = { word: "Word", phrase: "Phrase", correction: "Correction", concept: "Concept", example: "Example" };
 
   async function request(url, options = {}) {
@@ -53,29 +90,42 @@
     }
   }
 
+  function openMemoryEditorModal() {
+    const modal = $("#memory-editor-modal");
+    if (!modal) return;
+    modal.classList.remove("hidden");
+    $("#memory-front")?.focus();
+  }
+
+  function closeMemoryEditorModal() {
+    $("#memory-editor-modal")?.classList.add("hidden");
+  }
+
   function renderStats(stats) {
     const target = $("#memory-stats");
     target.replaceChildren();
-    [
-      [stats.active, "Active cards"],
-      [stats.due, "Due to review"],
-      [stats.suspended, "Paused"],
-      [stats.dismissed, "Dismissed"],
-      [stats.reviews_completed, "Reviews completed"],
-    ].forEach(([value, label]) => {
-      const item = node("div", undefined, "learning-progress-item");
-      item.append(node("strong", String(value)), node("span", label));
-      target.append(item);
+    const pills = [
+      [stats.due, "Due today", stats.due > 0 ? "chip a" : "chip t"],
+      [stats.active, "Active cards", "chip"],
+      [stats.reviews_completed, "Reviews completed", "chip g"],
+    ];
+    if (stats.suspended > 0) pills.push([stats.suspended, "Paused", "chip"]);
+    if (stats.dismissed > 0) pills.push([stats.dismissed, "Dismissed", "chip"]);
+    pills.forEach(([value, label, cls]) => {
+      const pill = node("span", undefined, cls);
+      pill.append(node("strong", String(value)), document.createTextNode(" " + label));
+      target.append(pill);
     });
   }
 
-  function resetForm() {
+  function resetForm(closeModal = true) {
     state.editingId = null;
     $("#memory-form").reset();
     $("#memory-form-title").textContent = "Save something worth remembering";
     $("#memory-form-submit").textContent = "Save to memory";
     $("#memory-form-cancel").classList.add("hidden");
-    $("#memory-source-note").textContent = "Manual items stay local. Lesson items keep a link to their source context.";
+    $("#memory-source-note").textContent = "Saved locally on this device. Items from lessons keep a link to their source.";
+    if (closeModal) closeMemoryEditorModal();
   }
 
   function renderItems() {
@@ -102,6 +152,10 @@
           : "Reviews paused until resumed";
       card.append(node("p", due, "section-help"));
       const actions = node("div", undefined, "memory-actions");
+      const listen = node("button", "Listen", "button button-quiet");
+      listen.type = "button";
+      listen.addEventListener("click", () => speakMemoryText(item.front + ". " + item.back, listen));
+      actions.append(listen);
       const edit = node("button", "Edit", "button button-quiet");
       edit.type = "button";
       edit.addEventListener("click", () => editItem(item));
@@ -156,8 +210,7 @@
     $("#memory-form-cancel").textContent = "Cancel edit";
     $("#memory-form-cancel").classList.remove("hidden");
     $("#memory-source-note").textContent = "Editing preserves the original source and review history.";
-    $("#memory-front").focus();
-    $("#memory-form").scrollIntoView({ behavior: "smooth", block: "center" });
+    openMemoryEditorModal();
   }
 
   async function changeStatus(item, status) {
@@ -203,6 +256,10 @@
     const card = node("article", undefined, "memory-review-card");
     card.append(node("span", "CARD 1 OF " + state.queue.length, "meta-label"));
     card.append(node("h3", item.front));
+    const listenPrompt = node("button", "▶ Listen to prompt", "button button-quiet memory-audio-btn");
+    listenPrompt.type = "button";
+    listenPrompt.addEventListener("click", () => speakMemoryText(item.front, listenPrompt));
+    card.append(listenPrompt);
     if (!state.revealed) {
       const reveal = node("button", "Show answer", "button button-secondary");
       reveal.type = "button";
@@ -210,6 +267,10 @@
       card.append(reveal);
     } else {
       card.append(node("p", item.back, "memory-review-answer"));
+      const listenAnswer = node("button", "▶ Listen to answer", "button button-quiet memory-audio-btn");
+      listenAnswer.type = "button";
+      listenAnswer.addEventListener("click", () => speakMemoryText(item.back, listenAnswer));
+      card.append(listenAnswer);
       const prompt = node("p", "How well did you recall it?", "section-help");
       card.append(prompt);
       const ratings = node("div", undefined, "memory-ratings");
@@ -276,14 +337,19 @@
     }
   });
 
-  $("#memory-form-cancel").addEventListener("click", resetForm);
+  $("#memory-open-editor")?.addEventListener("click", () => {
+    resetForm(false);
+    openMemoryEditorModal();
+  });
+  $("#memory-form-cancel").addEventListener("click", () => resetForm(true));
   $("#memory-refresh").addEventListener("click", load);
   document.addEventListener("prepped:memory-save", (event) => {
     const detail = event.detail || {};
-    if ($("#learning-view")?.classList.contains("hidden")) {
-      $("#learning-toggle")?.click();
+    if ($("#memory-view")?.classList.contains("hidden")) {
+      window.PreppedApp?.showView("memory-view", { focus: false });
+      load();
     }
-    resetForm();
+    resetForm(false);
     $("#memory-type").value = detail.item_type || "correction";
     $("#memory-form-cancel").textContent = "Discard suggestion";
     $("#memory-form-cancel").classList.remove("hidden");
@@ -294,14 +360,11 @@
     $("#memory-source-title").value = detail.source_title || "";
     $("#memory-source-excerpt").value = detail.source_excerpt || "";
     $("#memory-source-note").textContent = "Review this suggestion, edit it, then choose Save to memory. Nothing is saved until you submit.";
-    $("#memory-form").scrollIntoView({ behavior: "smooth", block: "center" });
-    $("#memory-front").focus();
+    openMemoryEditorModal();
   });
 
   document.addEventListener("DOMContentLoaded", () => {
     if ($("#memory-view")) load();
-    $("#learning-toggle")?.addEventListener("click", () => {
-      if (!$("#learning-view")?.classList.contains("hidden")) load();
-    });
+    $("#memory-toggle")?.addEventListener("click", () => load());
   });
 })();

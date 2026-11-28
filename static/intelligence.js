@@ -1,7 +1,7 @@
 (() => {
   "use strict";
   const $ = (selector) => document.querySelector(selector);
-  const state = { overview: null, plan: null, week: null, dismissed: [], catalog: null, loading: false };
+  const state = { overview: null, plan: null, week: null, dismissed: [], catalog: null, loading: false , showAllRecs: false };
 
   async function request(url, options = {}) {
     const response = await fetch(url, {
@@ -43,7 +43,7 @@
     target.replaceChildren();
     [
       [summary.skills_with_activity + " / " + summary.skill_count, "Skills with saved activity"],
-      [summary.closed_exercise_responses, "Skill-linked closed responses"],
+      [summary.closed_exercise_responses, "Checked exercises"],
       [summary.review_needed_responses, "Responses marked for review"],
       [summary.due_memory_items, "Revision items due"],
       [Object.entries(summary.revision_ratings || {}).map(([rating, count]) => rating + ": " + count).join(" · ") || "No ratings yet", "Learner-rated revision history"],
@@ -68,7 +68,7 @@
         node("span", skill.freshness === "unknown" ? "No dated evidence" :
           skill.freshness + (skill.evidence_age_days === null ? "" : " · " + skill.evidence_age_days + "d ago")),
         node("span", skill.activity_count + " activity records"),
-        node("span", skill.closed_response_count + " closed responses"),
+        node("span", skill.closed_response_count + " checked exercises"),
         node("span", skill.evidence_coverage + " evidence coverage"),
       );
       card.append(meta);
@@ -115,7 +115,8 @@
       target.append(node("p", "No urgent next step is identified from current evidence. You can still choose any lesson or practice studio."));
       return;
     }
-    for (const item of items) {
+    const visible = state.showAllRecs ? items : items.slice(0, 3);
+    for (const item of visible) {
       const row = node("article", undefined, "intelligence-recommendation");
       row.append(node("strong", item.title));
       row.append(node("p", item.reason));
@@ -138,6 +139,15 @@
       actions.append(dismiss);
       row.append(actions);
       target.append(row);
+    }
+    if (items.length > 3) {
+      const toggle = node("button", state.showAllRecs ? "Show fewer suggestions" : "Show all suggestions (" + items.length + ")", "button button-quiet");
+      toggle.type = "button";
+      toggle.addEventListener("click", () => {
+        state.showAllRecs = !state.showAllRecs;
+        renderRecommendations(items);
+      });
+      target.append(toggle);
     }
   }
 

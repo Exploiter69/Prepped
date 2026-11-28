@@ -103,6 +103,44 @@
     }
   }
 
+  function renderHeatmap(days) {
+    const grid = $("#progress-heatmap");
+    const readout = $("#progress-heatmap-readout");
+    if (!grid) return;
+    grid.replaceChildren();
+    if (!days.length) {
+      if (readout) readout.textContent = "Complete a lesson, practice session, interview, or review to populate your 12-week calendar.";
+      return;
+    }
+    const totalActiveDays = days.filter((d) => d.count > 0).length;
+    if (readout) {
+      readout.textContent = totalActiveDays
+        ? totalActiveDays + " active day(s) in the last 12 weeks. Select any square for details."
+        : "No saved learning activity in the last 12 weeks yet. Page visits are never counted.";
+    }
+    for (let weekIdx = 0; weekIdx < days.length; weekIdx += 7) {
+      const col = node("div", "heatmap-week-col");
+      for (const day of days.slice(weekIdx, weekIdx + 7)) {
+        const cell = node("button", "heatmap-cell");
+        cell.type = "button";
+        const level = day.count === 0 ? 0 : day.count === 1 ? 1 : day.count <= 3 ? 2 : day.count <= 5 ? 3 : 4;
+        cell.dataset.level = String(level);
+        const parts = [];
+        if (day.lessons) parts.push(day.lessons + " lesson(s)");
+        if (day.practice) parts.push(day.practice + " practice");
+        if (day.interviews) parts.push(day.interviews + " interview(s)");
+        if (day.reviews) parts.push(day.reviews + " review(s)");
+        const summary = day.date + ": " + (parts.length ? parts.join(" · ") : "No saved activity");
+        cell.title = summary;
+        cell.setAttribute("aria-label", summary);
+        cell.addEventListener("click", () => { if (readout) readout.textContent = summary; });
+        cell.addEventListener("focus", () => { if (readout) readout.textContent = summary; });
+        col.append(cell);
+      }
+      grid.append(col);
+    }
+  }
+
   function renderGoals(goals, archived = []) {
     const target = $("#progress-goals");
     target.replaceChildren();
@@ -300,6 +338,7 @@
       renderSummary(overview.summary);
       renderSkills(overview.skills);
       renderWeek(overview.weekly_activity);
+      renderHeatmap(overview.activity_heatmap || []);
       renderGoals(goals.goals.filter(goal => goal.status === "active"),
         goals.goals.filter(goal => goal.status === "archived"));
       renderActivity(overview.recent_activity);

@@ -44,7 +44,7 @@ def test_catalog_hides_answer_keys_and_exposes_profile_based_recommendations(tmp
         catalog = response.json()
         assert catalog["recommendations"]["track_id"] == "placement-communication"
         assert catalog["levels"][0]["id"] == "foundation"
-        assert len(catalog["units"]) == 9
+        assert len(catalog["units"]) == 14
         assert len(catalog["skills"]) >= 14
         serialized = json.dumps(catalog)
         assert '"answer"' not in serialized

@@ -16,7 +16,7 @@ def test_stage8_skip_link_and_main_landmark_are_keyboard_reachable() -> None:
 def test_stage8_all_workspace_views_have_programmatic_focus_targets() -> None:
     view_ids = (
         "dashboard-view", "home-view", "practice-view", "feedback-view",
-        "history-view", "learning-view", "career-view", "progress-view",
+        "history-view", "learning-view", "memory-view", "career-view", "progress-view", "profile-view",
     )
     for view_id in view_ids:
         match = re.search(r'<section id="' + re.escape(view_id) + r'"[^>]*>', HTML)
