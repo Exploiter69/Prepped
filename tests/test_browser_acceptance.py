@@ -1352,3 +1352,50 @@ def test_stage9_release_smoke_all_workspaces_at_supported_widths(
         )
 
     assert not runtime_errors, f"uncaught browser errors: {runtime_errors}"
+
+
+def test_profile_destination_and_modal_keyboard_focus_are_integrated(
+    local_app_url: str, browser_page
+) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+    page.wait_for_function(
+        "() => document.querySelector('#profile-save-status').textContent === 'Not set up'"
+    )
+
+    # Desktop Profile is a real destination even though its editor lives on Today.
+    page.locator("#profile-nav-toggle").click()
+    page.locator("#dashboard-view").wait_for(state="visible")
+    assert page.locator("#profile-form").is_visible()
+    assert page.locator("#profile-edit-toggle").get_attribute("aria-expanded") == "true"
+    assert page.locator("#profile-nav-toggle").get_attribute("aria-current") == "page"
+    assert page.locator(".nav-button[aria-current='page']").count() == 1
+
+    # Moving to another workspace clears the Profile destination state.
+    page.locator("#learning-toggle").click()
+    assert page.locator("#profile-nav-toggle").get_attribute("aria-current") is None
+
+    # Dialog keyboard focus remains inside the active modal and Escape restores focus.
+    trigger = page.locator("#help-open-btn")
+    trigger.click()
+    modal = page.locator("#help-modal")
+    modal.wait_for(state="visible")
+    first = modal.locator("button, a[href], input, select, textarea").filter(
+        has=page.locator(":visible")
+    ).first
+    first.focus()
+    page.keyboard.press("Shift+Tab")
+    assert page.evaluate(
+        "() => document.activeElement?.closest('#help-modal') !== null"
+    )
+    page.keyboard.press("Escape")
+    assert modal.is_hidden()
+    assert trigger.evaluate("(element) => document.activeElement === element")
+
+    # The mobile More sheet routes Profile & Goals through the same handler.
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.locator("#mobile-more-trigger").click()
+    page.locator("#mobile-more-sheet").wait_for(state="visible")
+    page.get_by_role("button", name="Profile & Goals").click()
+    assert page.locator("#profile-form").is_visible()
+    assert page.locator("#profile-nav-toggle").get_attribute("aria-current") == "page"
