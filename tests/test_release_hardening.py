@@ -50,14 +50,14 @@ def test_local_secrets_databases_backups_and_models_are_git_ignored() -> None:
 def test_core_theme_text_tokens_meet_wcag_aa_contrast_against_panel() -> None:
     css = (ROOT / "static" / "style.css").read_text(encoding="utf-8")
     root = css.split("}", 1)[0]
-    raw = dict(re.findall(r"--([a-z-]+):\s*([^;]+);", root))
+    raw = dict(re.findall(r"--([a-z0-9-]+):\s*([^;]+);", root))
 
     def resolve(token: str, seen: set[str] | None = None) -> str:
         seen = set() if seen is None else seen
         assert token not in seen, f"cyclic CSS variable: --{token}"
         seen.add(token)
         value = raw[token].strip()
-        match = re.fullmatch(r"var\(--([a-z-]+)\)", value)
+        match = re.fullmatch(r"var\(--([a-z0-9-]+)\)", value)
         if match:
             return resolve(match.group(1), seen)
         assert re.fullmatch(r"#[0-9a-fA-F]{6}", value), f"unsupported color token --{token}: {value}"
