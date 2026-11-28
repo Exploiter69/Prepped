@@ -32,13 +32,25 @@
 
   /* --- Accessible Modal Manager --- */
   let lastTrigger = null;
+  function modalFocusableElements(modal) {
+    return Array.from(modal.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )).filter((element) =>
+      !element.hidden &&
+      element.getAttribute("aria-hidden") !== "true" &&
+      element.getClientRects().length > 0
+    );
+  }
+
   function openModal(modalId, trigger = null) {
     const modal = document.getElementById(modalId);
     if (!modal) return;
     lastTrigger = trigger || document.activeElement;
     modal.classList.remove("hidden");
-    const focusable = modal.querySelector("input, button, select, textarea, [tabindex]:not([tabindex='-1'])");
-    if (focusable) focusable.focus();
+    modal.setAttribute("tabindex", "-1");
+    const focusable = modalFocusableElements(modal);
+    if (focusable.length) focusable[0].focus();
+    else modal.focus();
   }
 
   function closeModal(modalId) {
@@ -70,7 +82,33 @@
     });
   }
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeAllModals();
+    const openModals = $(".modal-backdrop:not(.hidden)");
+    const activeModal = openModals[openModals.length - 1];
+
+    if (e.key === "Escape" && activeModal) {
+      closeModal(activeModal.id);
+      return;
+    }
+
+    if (e.key === "Tab" && activeModal) {
+      const focusable = modalFocusableElements(activeModal);
+      if (!focusable.length) {
+        e.preventDefault();
+        activeModal.focus();
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && (document.activeElement === first || !activeModal.contains(document.activeElement))) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && (document.activeElement === last || !activeModal.contains(document.activeElement))) {
+        e.preventDefault();
+        first.focus();
+      }
+      return;
+    }
+
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
       e.preventDefault();
       openModal("search-modal", $("#global-search-trigger"));
@@ -85,6 +123,26 @@
   });
   $("#help-open-btn")?.addEventListener("click", (e) => openModal("help-modal", e.currentTarget));
   $("#onboarding-open-btn")?.addEventListener("click", (e) => openOnboarding(e.currentTarget));
+
+  /* --- Profile destination (the form lives on Today) --- */
+  const profileNav = $("#profile-nav-toggle");
+  window.addEventListener("prepped:viewchange", () => {
+    profileNav?.classList.remove("is-active");
+    profileNav?.removeAttribute("aria-current");
+  });
+  profileNav?.addEventListener("click", () => {
+    $("#home-toggle")?.click();
+    const panel = $("#profile-panel");
+    const edit = $("#profile-edit-toggle");
+    if (!panel || !edit) return;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    panel.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+    if (edit.getAttribute("aria-expanded") !== "true") edit.click();
+    profileNav.classList.add("is-active");
+    profileNav.setAttribute("aria-current", "page");
+    $("#home-toggle")?.classList.remove("is-active");
+    $("#home-toggle")?.removeAttribute("aria-current");
+  });
   $("#dashboard-career-button")?.addEventListener("click", () => $("#career-toggle")?.click());
   $("#feedback-save-memory")?.addEventListener("click", () => {
     $("#memory-toggle")?.click();
