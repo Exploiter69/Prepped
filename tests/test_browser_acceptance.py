@@ -1380,8 +1380,8 @@ def test_profile_destination_and_modal_keyboard_focus_are_integrated(
     trigger.click()
     modal = page.locator("#help-modal")
     modal.wait_for(state="visible")
-    first = modal.locator("button, a[href], input, select, textarea").filter(
-        has=page.locator(":visible")
+    first = modal.locator(
+        "button:visible, a[href]:visible, input:visible, select:visible, textarea:visible"
     ).first
     first.focus()
     page.keyboard.press("Shift+Tab")
