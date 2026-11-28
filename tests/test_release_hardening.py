@@ -47,15 +47,26 @@ def test_local_secrets_databases_backups_and_models_are_git_ignored() -> None:
     assert required <= ignored
 
 
-def test_core_dark_theme_text_tokens_meet_wcag_aa_contrast_against_panel() -> None:
+def test_core_theme_text_tokens_meet_wcag_aa_contrast_against_panel() -> None:
     css = (ROOT / "static" / "style.css").read_text(encoding="utf-8")
     root = css.split("}", 1)[0]
-    tokens = dict(re.findall(r"--([a-z-]+):\s*(#[0-9a-fA-F]{6})", root))
-    panel = tokens["panel"]
-    for token in ("text", "muted", "accent", "danger"):
-        ratio = _contrast_ratio(tokens[token], panel)
-        assert ratio >= 4.5, f"--{token} contrast is {ratio:.2f}:1"
+    raw = dict(re.findall(r"--([a-z-]+):\s*([^;]+);", root))
 
+    def resolve(token: str, seen: set[str] | None = None) -> str:
+        seen = set() if seen is None else seen
+        assert token not in seen, f"cyclic CSS variable: --{token}"
+        seen.add(token)
+        value = raw[token].strip()
+        match = re.fullmatch(r"var\(--([a-z-]+)\)", value)
+        if match:
+            return resolve(match.group(1), seen)
+        assert re.fullmatch(r"#[0-9a-fA-F]{6}", value), f"unsupported color token --{token}: {value}"
+        return value
+
+    panel = resolve("panel")
+    for token in ("text", "muted", "accent", "danger"):
+        ratio = _contrast_ratio(resolve(token), panel)
+        assert ratio >= 4.5, f"--{token} contrast is {ratio:.2f}:1 against --panel"
 
 def test_loopback_host_is_not_enough_when_peer_is_remote(tmp_path: Path) -> None:
     from fastapi.testclient import TestClient
