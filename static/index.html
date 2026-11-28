@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#F6F2E8">
+    <meta name="theme-color" content="#F6F2EA">
     <meta name="description" content="Private, local-first practice for placement conversations.">
     <title>Prepped — Practice with purpose</title>
-    <link rel="stylesheet" href="/static/style.css?v=ui-design-reference-2">
+    <link rel="stylesheet" href="/static/style.css?v=ui-claude-v1">
     <script src="/static/voice.js?v=ui-stage-3-1" defer></script>
     <script src="/static/app.js?v=ui-stage-8-5" defer></script>
     <script src="/static/learning.js?v=ui-stage-2-1" defer></script>
@@ -16,6 +16,7 @@
     <script src="/static/history-memory.js?v=ui-stage-6-1" defer></script>
     <script src="/static/intelligence.js?v=phase-h-3" defer></script>
     <script src="/static/dashboard.js?v=ui-foundation-1" defer></script>
+    <script src="/static/ui-shell.js?v=ui-claude-v1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -32,9 +33,23 @@
         <button id="profile-nav-toggle" class="nav-button" type="button" aria-controls="profile-panel"><span aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/></svg></span><span>Profile</span></button>
         <button id="history-toggle" class="nav-button" type="button" aria-controls="history-view"><span aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5h13a3 3 0 0 1 3 3V20H7a3 3 0 0 1-3-3z"/><path d="M4 6.5V4h13v2.5M8 10h8m-8 4h6"/></svg></span><span>History</span></button>
       </nav>
-      <div class="sidebar-footer"><span class="sidebar-local-dot"></span><span>Private · stored locally</span></div>
+      <div class="sidebar-footer"><div class="sidebar-footer-title"><span class="sidebar-local-dot" aria-hidden="true"></span><span>Private by design</span></div><p class="sidebar-footer-copy">Your learning data is stored on this device.</p></div>
     </header>
+        <div id="offline-banner" class="offline-banner hidden" role="status" aria-live="polite">
+      <span>You're offline. Local lessons and saved memory still work on this device.</span>
+    </div>
     <main id="main-content" class="app-main" tabindex="-1">
+      <div class="app-topbar" aria-label="Workspace utilities">
+        <button id="global-search-trigger" class="srch-trigger" type="button" aria-haspopup="dialog" aria-controls="search-modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4a7 7 0 100 14 7 7 0 000-14zM21 21l-5-5"/></svg>
+          <span class="srch-placeholder">Search lessons, prompts, memory</span>
+          <kbd class="kbd">Ctrl K</kbd>
+        </button>
+        <div class="app-topbar-actions">
+          <button id="onboarding-open-btn" class="button button-quiet topbar-util-btn" type="button" aria-haspopup="dialog" aria-controls="onboarding-modal">Guided setup</button>
+          <button id="help-open-btn" class="button button-quiet topbar-util-btn" type="button" aria-haspopup="dialog" aria-controls="help-modal">Help &amp; privacy</button>
+        </div>
+      </div>
       <section id="dashboard-view" class="dashboard-view" aria-labelledby="page-title" tabindex="-1">
       <section class="intro" aria-labelledby="page-title">
         <p class="eyebrow">PRACTICE ROOM / 001</p>
@@ -97,6 +112,12 @@
           <section class="dashboard-card dashboard-coach-card" aria-labelledby="dashboard-coach-title">
             <img src="/static/assets/prepped-owl-thinking.svg" alt="" width="58" height="58" loading="lazy"><div><h3 id="dashboard-coach-title">A gentle reminder</h3><p id="dashboard-coach-copy">You don't need a perfect answer. You just need a place to begin.</p></div>
           </section>
+          <section class="dashboard-card dashboard-career-card" aria-labelledby="dashboard-career-title">
+            <span class="dashboard-kicker">CAREER STUDIOS</span>
+            <h2 id="dashboard-career-title">Try a timed mock round</h2>
+            <p>Five questions with real follow-ups, answered by voice or text.</p>
+            <button id="dashboard-career-button" class="button button-sun" type="button">Begin round <span aria-hidden="true">→</span></button>
+          </section>
         </aside>
       </div>
       </section>
@@ -134,6 +155,13 @@
             <span id="memory-status" class="status" role="status" aria-live="polite">Loading saved items…</span>
           </div>
           <p class="section-help">Save only the words, phrases, corrections, examples, and concepts you choose to keep. Every lesson suggestion is editable before saving. Items stay in this local database.</p>
+                    <div id="memory-filter-bar" class="seg-tabs" role="tablist" aria-label="Filter memory items">
+            <button class="seg-tab is-active" type="button" role="tab" aria-selected="true" data-memory-filter="due">Due today</button>
+            <button class="seg-tab" type="button" role="tab" aria-selected="false" data-memory-filter="all">All</button>
+            <button class="seg-tab" type="button" role="tab" aria-selected="false" data-memory-filter="phrase">Phrases</button>
+            <button class="seg-tab" type="button" role="tab" aria-selected="false" data-memory-filter="word">Words</button>
+            <button class="seg-tab" type="button" role="tab" aria-selected="false" data-memory-filter="correction">Corrections</button>
+          </div>
           <div id="memory-stats" class="learning-progress" aria-label="Memory and revision summary"></div>
           <section class="memory-review-section" aria-labelledby="memory-review-title">
             <div class="learning-section-heading"><div><span class="meta-label">SPACED REVISION</span><h4 id="memory-review-title">Due for review</h4></div><button id="memory-refresh" class="button button-quiet" type="button">Refresh</button></div>
@@ -179,7 +207,14 @@
           <div id="learning-progress" class="learning-progress"></div>
           <div id="learning-resume-list" class="learning-resume-list"></div>
         </section>
-        <section id="learning-runner" class="learning-runner hidden" aria-labelledby="learning-runner-title">
+                <section id="learning-runner" class="learning-runner hidden" aria-labelledby="learning-runner-title">
+          <div class="lesson-focus-bar">
+            <button id="learning-focus-exit" class="button button-quiet lesson-exit-icon" type="button" aria-label="Exit lesson">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+              <span>Exit</span>
+            </button>
+            <span class="lesson-autosave-chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg> Progress saved locally</span>
+          </div>
           <div class="divider"></div>
           <div class="panel-topline"><span class="eyebrow">LESSON IN PROGRESS</span><span id="learning-exercise-count" class="status"></span></div>
           <div class="learning-step-track">
@@ -205,6 +240,20 @@
         </div>
         <div class="panel-topline"><span class="eyebrow">LOCAL INTERVIEW PRACTICE</span><span id="career-status" class="status" role="status" aria-live="polite">Loading your studios…</span></div>
         <div class="career-local-note"><span class="career-local-mark" aria-hidden="true">●</span><span>Private local practice</span><span class="career-local-divider" aria-hidden="true">·</span><span>Authored prompts</span><span class="career-local-divider" aria-hidden="true">·</span><span>No interview score</span></div>
+                <div class="career-hero-banner" aria-label="Timed mock round overview">
+          <div class="career-hero-copy">
+            <span class="dashboard-kicker career-hero-kicker">TIMED MOCK ROUND</span>
+            <h3>Five questions. Realistic pace.</h3>
+            <p>Answer by voice or text, handle authored follow-ups, then review every answer line by line.</p>
+          </div>
+          <div class="career-timer-ring" role="img" aria-label="Ten minute suggested pace"><strong>10:00</strong><span>minutes</span></div>
+        </div>
+        <div id="career-filter-bar" class="seg-tabs" role="tablist" aria-label="Filter career studios">
+          <button class="seg-tab is-active" type="button" role="tab" aria-selected="true" data-career-filter="all">All</button>
+          <button class="seg-tab" type="button" role="tab" aria-selected="false" data-career-filter="project">Project</button>
+          <button class="seg-tab" type="button" role="tab" aria-selected="false" data-career-filter="hr">HR</button>
+          <button class="seg-tab" type="button" role="tab" aria-selected="false" data-career-filter="technical">Technical</button>
+        </div>
         <div class="career-studio-section">
           <div class="career-section-heading"><div><span class="meta-label">CHOOSE YOUR FOCUS</span><h3>Three ways to practise</h3><p class="section-help">Pick the conversation you want to feel more prepared for.</p></div><span class="career-section-number">01 / 03</span></div>
           <div id="career-studio-list" class="career-studio-list" aria-label="Available career practice studios"></div>
@@ -348,13 +397,20 @@
         <details id="practice-privacy" class="practice-privacy" open><summary>How your voice and answers are handled</summary><p class="privacy-note" id="privacy-note">Checking speech and data handling…</p></details>
         <form id="answer-form" class="practice-answer-form">
           <div class="practice-response-heading"><div><span class="meta-label">YOUR RESPONSE</span><h3 id="voice-answer-title">Say it in your own words</h3><p>Speak naturally, or type if that feels easier. You can edit everything before saving.</p></div><span class="practice-input-choice">VOICE + TEXT</span></div>
-          <section class="voice-recorder" aria-label="Optional voice response">
+          <section id="voice-recorder-panel" class="voice-recorder" data-state="ready" aria-label="Optional voice response">
+            <div class="voice-state-header">
+              <span id="voice-state-pill" class="voice-state-pill" role="status" aria-live="polite"><span class="voice-state-dot" aria-hidden="true"></span><span>Ready</span></span>
+              <span id="voice-privacy-chip" class="chip t">Checking voice mode…</span>
+            </div>
             <div class="voice-recorder-heading">
               <div class="voice-recorder-intro"><span class="voice-recorder-icon" aria-hidden="true">◖</span><div><h4>Record your answer <span class="optional-label">· optional</span></h4><p>Short, clear thoughts are enough. Stop when you're done.</p></div></div>
               <div class="voice-actions"><button id="record-button" class="button button-primary" type="button" disabled>Start recording</button><button id="stop-recording-button" class="button button-quiet" type="button" disabled>Stop recording</button></div>
             </div>
             <div class="recording-stage"><div id="recording-visualizer" class="recording-visualizer" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div><span id="recording-clock" class="recording-clock">00:00 / 01:00</span></div>
-            <p id="record-status" class="voice-status" role="status" aria-live="polite">Checking microphone and speech provider…</p><p id="voice-error" class="inline-error voice-error" role="alert"></p>
+            <p id="record-status" class="voice-status" role="status" aria-live="polite">Checking microphone and speech provider…</p>
+            <p id="voice-slow-hint" class="voice-slow-hint hidden" role="status" aria-live="polite">Still working. You can wait or type instead.</p>
+            <p id="voice-error" class="inline-error voice-error" role="alert"></p>
+            <div class="voice-fallback-row"><button id="voice-type-instead" class="button button-quiet" type="button">Type instead</button><span class="voice-storage-note">Prepped does not store raw audio recordings.</span></div>
           </section>
           <div class="practice-transcript-heading"><label for="answer-input">Your answer</label><span id="response-draft-state" class="response-draft-state">Nothing saved for this question yet.</span></div>
           <textarea id="answer-input" name="answer" rows="6" maxlength="6000" placeholder="Your answer will appear here after transcription. You can also type directly. Add specific details, and do not invent results." aria-describedby="answer-help answer-count response-draft-state"></textarea>
@@ -366,11 +422,42 @@
       <section id="feedback-view" class="practice-review scenario-panel hidden" aria-labelledby="feedback-title" tabindex="-1">
         <div class="panel-topline"><span class="eyebrow">PRACTICE STUDIO / YOUR REVIEW</span><span id="attempt-label" class="status"></span></div>
         <div class="practice-review-heading"><span class="practice-review-mark" aria-hidden="true">✦</span><div><h2 id="feedback-title">A moment to reflect.</h2><p id="feedback-summary" class="scenario-description"></p></div></div>
-        <div id="feedback-limitations" class="notice"></div><div class="divider"></div>
-        <h3>Question-by-question notes</h3><div id="question-feedback" class="feedback-list"></div>
-        <div class="divider"></div><h3>Transparent checklist</h3><p class="section-help">These are simple text signals, not grades. Read the evidence and decide what is useful.</p><div id="rubric-feedback" class="feedback-list"></div>
-        <section id="comparison-section" class="comparison-section hidden" aria-labelledby="comparison-title"><div class="divider"></div><h3 id="comparison-title">Attempt comparison</h3><p id="comparison-note" class="section-help"></p><div id="comparison-content"></div></section>
-        <div class="form-actions review-actions"><button id="back-home-button" class="button button-quiet" type="button">Back to scenario</button><div class="action-group"><button id="delete-session-button" class="button button-secondary" type="button">Delete this session</button><button id="retry-button" class="button button-primary" type="button">Try again <span aria-hidden="true">→</span></button></div></div>
+        <div class="feedback-layout">
+          <div class="feedback-main-col">
+            <div id="feedback-limitations" class="notice"></div>
+            <section class="feedback-section-card">
+              <div class="lab">Question-by-question notes</div>
+              <h3>Your answers and next steps</h3>
+              <div id="question-feedback" class="feedback-list"></div>
+            </section>
+            <section class="feedback-section-card">
+              <div class="lab">Transparent checklist</div>
+              <h3>Signals found in your own words</h3>
+              <p class="section-help">These are simple text signals, not grades. Read the evidence and decide what is useful.</p>
+              <div id="rubric-feedback" class="feedback-list"></div>
+            </section>
+            <section class="feedback-decision-row" aria-label="Unsupported analysis notices">
+              <div class="dash-card"><span class="chip">Product decision</span><strong>Grammar feedback</strong><p class="section-help">Not available yet. Prepped only reports checklist signals backed by your own words.</p></div>
+              <div class="dash-card"><span class="chip">Product decision</span><strong>Vocabulary feedback</strong><p class="section-help">Not available yet. Save useful phrases to Memory to build your own phrasing list.</p></div>
+            </section>
+            <section id="comparison-section" class="comparison-section hidden" aria-labelledby="comparison-title"><div class="divider"></div><h3 id="comparison-title">Attempt comparison</h3><p id="comparison-note" class="section-help"></p><div id="comparison-content"></div></section>
+          </div>
+          <aside class="feedback-side-col" aria-label="Review next steps">
+            <div class="feedback-side-card">
+              <div class="lab">Next step</div>
+              <div class="feedback-side-actions">
+                <button id="retry-button" class="button button-primary" type="button">Retry with improvements <span aria-hidden="true">→</span></button>
+                <button id="feedback-save-memory" class="button button-secondary" type="button">Save phrase to Memory</button>
+                <button id="back-home-button" class="button button-quiet" type="button">Back to scenario</button>
+                <button id="delete-session-button" class="button button-quiet button-danger-text" type="button">Delete this session</button>
+              </div>
+            </div>
+            <div class="feedback-side-card feedback-info-card">
+              <div class="lab">How to read this</div>
+              <p>Feedback checks your words against a checklist for this prompt. It does not judge accent or pronunciation, and it is not a score.</p>
+            </div>
+          </aside>
+        </div>
       </section>
       <section id="history-view" class="scenario-panel hidden" aria-labelledby="history-title" tabindex="-1">
         <div class="panel-topline"><span class="eyebrow">LOCAL ONLY</span><span class="status">Saved on this device</span></div><h2 id="history-title">Practice history</h2>
@@ -389,5 +476,85 @@
       </section>
     </main>
     <footer><span>PREPPED / TDP</span><span>Built for practice, not prediction.</span></footer>
+    <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+      <button class="mobile-nav-btn is-active" type="button" data-mobile-target="home-toggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2"/></svg><span>Today</span></button>
+      <button class="mobile-nav-btn" type="button" data-mobile-target="learning-toggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5c3-1 6-1 8 1 2-2 5-2 8-1v14c-3-1-6-1-8 1-2-2-5-2-8-1z"/></svg><span>Learn</span></button>
+      <button class="mobile-nav-btn" type="button" data-mobile-target="practice-toggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><span>Practice</span></button>
+      <button class="mobile-nav-btn" type="button" data-mobile-target="memory-toggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h12v13H4zM8 4h12v13"/></svg><span>Memory</span></button>
+      <button id="mobile-more-trigger" class="mobile-nav-btn" type="button" aria-haspopup="dialog" aria-controls="mobile-more-sheet"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg><span>More</span></button>
+    </nav>
+
+    <div id="mobile-more-sheet" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="mobile-more-title">
+      <div class="mobile-sheet-panel">
+        <div class="modal-header"><h3 id="mobile-more-title">More spaces</h3><button class="button button-quiet modal-close" type="button" data-close-modal="mobile-more-sheet" aria-label="Close menu">Close</button></div>
+        <div class="mobile-sheet-list">
+          <button class="button button-secondary" type="button" data-sheet-target="career-toggle">Career Studios</button>
+          <button class="button button-secondary" type="button" data-sheet-target="progress-toggle">Progress &amp; Plan</button>
+          <button class="button button-secondary" type="button" data-sheet-target="history-toggle">Practice History</button>
+          <button class="button button-secondary" type="button" data-sheet-target="profile-nav-toggle">Profile &amp; Goals</button>
+          <button class="button button-quiet" type="button" data-sheet-modal="search-modal">Search</button>
+          <button class="button button-quiet" type="button" data-sheet-modal="help-modal">Help &amp; Privacy</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="search-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="search-modal-title">
+      <div class="modal-dialog search-dialog">
+        <div class="modal-header">
+          <h3 id="search-modal-title">Search Prepped</h3>
+          <button class="button button-quiet modal-close" type="button" data-close-modal="search-modal" aria-label="Close search">Esc</button>
+        </div>
+        <label class="sr-only" for="global-search-input">Search lessons, career studios, memory, and history</label>
+        <input id="global-search-input" type="search" placeholder="Search lessons, career studios, memory items…" autocomplete="off">
+        <p id="global-search-status" class="section-help" role="status" aria-live="polite">Type to search your local curriculum, studios, and saved memory.</p>
+        <div id="global-search-results" class="search-results-list"></div>
+      </div>
+    </div>
+
+    <div id="onboarding-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
+      <div class="modal-dialog onboarding-dialog">
+        <div class="onboarding-top">
+          <button id="onboarding-back" class="button button-quiet" type="button" aria-label="Previous step">← Back</button>
+          <div class="pb" aria-hidden="true"><i id="onboarding-pb-fill" style="width:17%"></i></div>
+          <span id="onboarding-step-count" class="section-help">1/6</span>
+          <button class="button button-quiet modal-close" type="button" data-close-modal="onboarding-modal" aria-label="Close setup">Close</button>
+        </div>
+        <div id="onboarding-resume-banner" class="al al-attention hidden"><div><strong>Welcome back.</strong> You paused at an earlier step. Continue where you left off or start over.</div></div>
+        <div id="onboarding-step-body" class="onboarding-step-body"></div>
+        <p id="onboarding-error" class="inline-error" role="alert"></p>
+        <div class="onboarding-actions">
+          <button id="onboarding-skip" class="button button-quiet" type="button">Skip for now</button>
+          <button id="onboarding-next" class="button button-primary" type="button">Continue →</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="lesson-exit-dialog" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="lesson-exit-title">
+      <div class="modal-dialog confirm-dialog">
+        <h3 id="lesson-exit-title">Pause this lesson?</h3>
+        <p class="section-help">Your completed steps are saved locally on this device. You can resume this lesson from Learn whenever you return.</p>
+        <div class="modal-footer-actions">
+          <button id="lesson-exit-keep" class="button button-secondary" type="button">Keep going</button>
+          <button id="lesson-exit-confirm" class="button button-primary" type="button">Pause and exit</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="help-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="help-modal-title">
+      <div class="modal-dialog help-dialog">
+        <div class="modal-header">
+          <h3 id="help-modal-title">Help, Privacy &amp; Honest Limits</h3>
+          <button class="button button-quiet modal-close" type="button" data-close-modal="help-modal" aria-label="Close help">Close</button>
+        </div>
+        <div class="help-grid">
+          <div class="help-card"><span class="chip t">Storage</span><h4>Where your data lives</h4><p>Your profile, answers, lesson progress, and Memory cards are stored in your local SQLite database on this device. Export or restore a backup any time in Progress.</p></div>
+          <div class="help-card"><span class="chip t">Voice</span><h4>How voice works</h4><p>Prepped never stores raw audio recordings. Depending on your local configuration, speech transcription runs on-device (Vosk) or via Groq Whisper—the active mode is always shown in the voice privacy chip.</p></div>
+          <div class="help-card"><span class="chip a">Limits</span><h4>What feedback can and cannot judge</h4><p>Feedback checks your words against transparent, rule-based checklists. It does not score accent, pronunciation, grammar mastery, or placement readiness.</p></div>
+          <div class="help-card"><span class="chip">Shortcuts</span><h4>Keyboard navigation</h4><p>Press <kbd class="kbd">Ctrl K</kbd> (or <kbd class="kbd">Cmd K</kbd>) to search across Prepped, and <kbd class="kbd">Esc</kbd> to close dialogs. Text input is always available alongside voice.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="app-toast" class="app-toast hidden" role="status" aria-live="polite"></div>
   </body>
 </html>

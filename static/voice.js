@@ -25,6 +25,8 @@
     analyser: null,
     visualizerSource: null,
     visualizerFrame: null,
+    slowTimerId: null,
+    voiceState: "ready",
   };
 
   const ui = {};
@@ -45,6 +47,11 @@
     ui.visualizer = document.getElementById("recording-visualizer");
     ui.recordingClock = document.getElementById("recording-clock");
     ui.draftState = document.getElementById("response-draft-state");
+    ui.recorderPanel = document.getElementById("voice-recorder-panel");
+    ui.statePill = document.getElementById("voice-state-pill");
+    ui.privacyChip = document.getElementById("voice-privacy-chip");
+    ui.slowHint = document.getElementById("voice-slow-hint");
+    ui.typeInstead = document.getElementById("voice-type-instead");
   }
 
   function setRecordStatus(message, tone = "") {
@@ -62,6 +69,47 @@
 
   function setVoiceError(message) {
     if (ui.voiceError) ui.voiceError.textContent = message || "";
+  }
+
+  const VOICE_STATE_LABELS = {
+    ready: "Ready",
+    requesting: "Needs your OK",
+    denied: "Microphone blocked",
+    unavailable: "No microphone found",
+    listening: "Listening",
+    paused: "Paused",
+    processing: "Transcribing your answer",
+    responding: "Prepped is speaking",
+    interrupted: "Connection lost",
+    "cloud-offline": "Cloud voice unavailable",
+    edit: "Review your answer",
+    complete: "Session finished",
+  };
+
+  function setVoiceUiState(nextState, labelOverride = "") {
+    state.voiceState = nextState;
+    if (ui.recorderPanel) ui.recorderPanel.dataset.state = nextState;
+    if (ui.statePill) {
+      const label = labelOverride || VOICE_STATE_LABELS[nextState] || "Ready";
+      const textNode = ui.statePill.querySelector("span:last-child");
+      if (textNode) textNode.textContent = label;
+    }
+    if (nextState !== "processing") clearSlowHint();
+  }
+
+  function startSlowHint() {
+    clearSlowHint();
+    state.slowTimerId = window.setTimeout(() => {
+      if (state.transcribing && ui.slowHint) ui.slowHint.classList.remove("hidden");
+    }, 6000);
+  }
+
+  function clearSlowHint() {
+    if (state.slowTimerId) {
+      window.clearTimeout(state.slowTimerId);
+      state.slowTimerId = null;
+    }
+    if (ui.slowHint) ui.slowHint.classList.add("hidden");
   }
 
   function supportsRecording() {
@@ -168,6 +216,7 @@
   function refreshRecordHint() {
     if (state.recording || state.transcribing) return;
     if (!supportsRecording()) {
+      setVoiceUiState("unavailable");
       setRecordStatus(
         "This browser cannot record audio here. Type your answer instead.",
         "error"
@@ -176,12 +225,14 @@
     }
     if (!state.status) return;
     if (state.status.stt?.available) {
+      setVoiceUiState(ui.answer?.value.trim() ? "edit" : "ready");
       if (state.status.stt?.engine === "groq-whisper") {
         setRecordStatus("Ready to record. Your audio will be sent to Groq for transcription.");
       } else {
         setRecordStatus("Ready to record locally. Audio is not sent to a provider or saved.");
       }
     } else {
+      setVoiceUiState(state.status.stt?.engine === "groq-whisper" ? "cloud-offline" : "unavailable");
       setRecordStatus(
         state.status.stt?.detail ||
           "Speech-to-text is not available. Type your answer instead.",
@@ -238,6 +289,18 @@
     const unavailableText = "Answers are saved locally. Speech-provider details could not be loaded; check voice status before recording. Prepped does not store raw audio.";
     const detail = state.status ? (remote ? remoteText : localText) : unavailableText;
     if (ui.privacyNote) ui.privacyNote.textContent = detail;
+    if (ui.privacyChip) {
+      if (!state.status) {
+        ui.privacyChip.className = "chip a";
+        ui.privacyChip.textContent = "Voice status unavailable";
+      } else if (remoteStt) {
+        ui.privacyChip.className = "chip a";
+        ui.privacyChip.textContent = "Cloud voice (Groq): audio is sent for transcription";
+      } else {
+        ui.privacyChip.className = "chip t";
+        ui.privacyChip.textContent = "On-device voice";
+      }
+    }
     if (ui.privacySummary) {
       ui.privacySummary.textContent = !state.status
         ? "Answers stay in the local app. Speech-provider details are unavailable until status can be checked."
@@ -660,6 +723,14 @@
     if (!ui.record) return;
 
     ui.record.addEventListener("click", startRecording);
+    if (ui.typeInstead) {
+      ui.typeInstead.addEventListener("click", () => {
+        if (ui.answer) {
+          ui.answer.focus();
+          ui.answer.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
+        }
+      });
+    }
     ui.stopRecord.addEventListener("click", () => stopRecording(false));
     ui.ttsPlay.addEventListener("click", playQuestion);
     ui.ttsStop.addEventListener("click", stopQuestion);
