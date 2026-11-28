@@ -1399,3 +1399,36 @@ def test_profile_destination_and_modal_keyboard_focus_are_integrated(
     page.get_by_role("button", name="Profile & Goals").click()
     assert page.locator("#profile-form").is_visible()
     assert page.locator("#profile-nav-toggle").get_attribute("aria-current") == "page"
+
+
+def test_lesson_focus_mode_hides_global_navigation_and_confirms_exit(
+    local_app_url: str, browser_page
+) -> None:
+    page = browser_page
+    page.goto(local_app_url)
+    page.locator("#learning-toggle").click()
+    page.wait_for_function(
+        "() => document.querySelector('#learning-status').textContent.includes('skills')"
+    )
+    page.locator('button[data-lesson-id="sentence-building"]').first.click()
+    page.locator("#learning-runner").wait_for(state="visible")
+    page.wait_for_function("() => document.body.classList.contains('lesson-focus-mode')")
+
+    assert not page.locator(".site-header").is_visible()
+    assert not page.locator(".app-topbar").is_visible()
+    page.set_viewport_size({"width": 390, "height": 844})
+    assert not page.locator(".mobile-bottom-nav").is_visible()
+    assert page.locator("#learning-runner").is_visible()
+
+    page.locator("#learning-focus-exit").click()
+    dialog = page.locator("#lesson-exit-dialog")
+    dialog.wait_for(state="visible")
+    page.locator("#lesson-exit-keep").click()
+    assert dialog.is_hidden()
+    assert page.locator("#learning-runner").is_visible()
+
+    page.locator("#learning-focus-exit").click()
+    page.locator("#lesson-exit-confirm").click()
+    page.wait_for_function("() => !document.body.classList.contains('lesson-focus-mode')")
+    assert page.locator("#learning-runner").is_hidden()
+    assert page.locator(".mobile-bottom-nav").is_visible()
